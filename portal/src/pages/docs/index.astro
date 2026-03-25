@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const sections = [
+  { title: "Быстрый старт", items: ["Регистрация и настройка", "Подключение первого канала", "Создание первого бота", "Тестирование"] },
+  { title: "Каналы", items: ["WhatsApp Business API", "Telegram Bot API", "Instagram Direct", "SMS и Email"] },
+  { title: "Интеграции", items: ["AmoCRM", "Bitrix24", "Altegio", "Google Calendar", "Webhooks"] },
+  { title: "AI-агенты", items: ["Настройка AI", "Обучение на данных", "Автозапись в календарь", "Эскалация на оператора"] },
+  { title: "API", items: ["Аутентификация", "Отправка сообщений", "Получение событий", "Webhooks"] },
+  { title: "Безопасность", items: ["152-ФЗ", "Хранение данных", "Права доступа", "Аудит"] },
+];
+---
+
+<Base title="Документация Chat Plus" description="Техническая документация Chat Plus: API, интеграции, настройка каналов и AI-агентов.">
+
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 240px 1fr; gap: 3rem;">
+
+      <!-- Sidebar -->
+      <nav style="border-right: 1px solid #e2e8f0; padding-right: 2rem;">
+        <p style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem;">Разделы</p>
+        {sections.map(s => (
+          <div style="margin-bottom: 1.5rem;">
+            <p style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem;">{s.title}</p>
+            {s.items.map(item => (
+              <a href="#" style="display: block; font-size: 0.85rem; color: #64748b; padding: 0.25rem 0; line-height: 1.5;">{item}</a>
+            ))}
+          </div>
+        ))}
+      </nav>
+
+      <!-- Content -->
+      <div>
+        <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Документация Chat Plus</h1>
+        <p style="color: #64748b; margin-bottom: 3rem; font-size: 1.1rem;">Всё что нужно для подключения и настройки Chat Plus.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem;">
+          {sections.map(s => (
+            <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+              <h3 style="font-weight: 700; margin-bottom: 1rem;">{s.title}</h3>
+              {s.items.map(item => (
+                <a href="#" style="display: block; font-size: 0.9rem; color: #6366f1; padding: 0.2rem 0;">{item} →</a>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+</Base>

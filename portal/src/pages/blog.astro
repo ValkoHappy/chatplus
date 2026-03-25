@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+const posts = [
+  { title: "Как снизить неявки в салоне красоты на 40% с помощью WhatsApp", tag: "Beauty", date: "Март 2026" },
+  { title: "Programmatic SEO: как Zapier получил 25 000 страниц в Google", tag: "SEO", date: "Март 2026" },
+  { title: "AI-агенты vs операторы: что выгоднее для малого бизнеса", tag: "AI", date: "Февраль 2026" },
+  { title: "Топ-5 мессенджеров для бизнеса в России в 2026 году", tag: "Мессенджеры", date: "Февраль 2026" },
+  { title: "Как настроить автозапись клиентов из Telegram в Altegio", tag: "Интеграции", date: "Январь 2026" },
+];
+---
+<Base title="Блог" description="Статьи о автоматизации бизнеса, мессенджер-маркетинге и AI.">
+  <section style="padding: 5rem 2rem; text-align: center; background: #f8fafc;">
+    <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Chat Plus Блог</h1>
+    <p style="color: #64748b; font-size: 1.1rem;">Практические статьи об автоматизации и AI для бизнеса</p>
+  </section>
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 900px; margin: 0 auto; display: grid; gap: 2rem;">
+      {posts.map(post => (
+        <article style="border: 1px solid #e2e8f0; border-radius: 16px; padding: 2rem; background: white;">
+          <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+            <span style="background: #ede9fe; color: #6366f1; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">{post.tag}</span>
+            <span style="color: #94a3b8; font-size: 0.85rem;">{post.date}</span>
+          </div>
+          <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">{post.title}</h2>
+          <a href="#" style="color: #6366f1; font-weight: 600; font-size: 0.9rem;">Читать</a>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>

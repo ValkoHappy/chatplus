@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+const courses = [
+  { title: "Основы Chat Plus", level: "Начальный", lessons: 8, emoji: "🎯" },
+  { title: "WhatsApp для бизнеса", level: "Начальный", lessons: 6, emoji: "💬" },
+  { title: "Настройка AI-агентов", level: "Средний", lessons: 10, emoji: "🤖" },
+  { title: "Programmatic SEO с Chat Plus", level: "Продвинутый", lessons: 12, emoji: "📈" },
+  { title: "Интеграция с CRM", level: "Средний", lessons: 8, emoji: "🔗" },
+  { title: "Сертификация Chat Plus Partner", level: "Продвинутый", lessons: 15, emoji: "🏆" },
+];
+---
+<Base title="Академия" description="Бесплатные курсы по автоматизации бизнеса с Chat Plus.">
+  <section style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 5rem 2rem; text-align: center;">
+    <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">Chat Plus Academy</h1>
+    <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">Бесплатные курсы по автоматизации бизнеса. Получите сертификат.</p>
+  </section>
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+      {courses.map(c => (
+        <div style="border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.75rem; background: white;">
+          <div style="font-size: 2rem; margin-bottom: 1rem;">{c.emoji}</div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem;">{c.title}</h3>
+          <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 1rem;">{c.level} · {c.lessons} уроков</p>
+          <a href="#" style="color: #6366f1; font-weight: 600; font-size: 0.9rem;">Начать бесплатно</a>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>

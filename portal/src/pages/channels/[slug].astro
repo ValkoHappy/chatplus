@@ -1,0 +1,126 @@
+---
+import Base from '../../layouts/Base.astro';
+import { channels } from '../../data/channels';
+
+export function getStaticPaths() {
+  return channels.map(channel => ({
+    params: { slug: channel.slug },
+    props: { channel }
+  }));
+}
+
+const { channel } = Astro.props;
+
+const steps = [
+  { step: "1", title: "Подключение", desc: `Подключаете ${channel.name} к Chat Plus за 15 минут — без программиста` },
+  { step: "2", title: "Настройка", desc: "Выбираете готовый шаблон или создаёте свой сценарий в визуальном конструкторе" },
+  { step: "3", title: "Автоматизация", desc: "AI отвечает клиентам 24/7, квалифицирует лиды и записывает на встречи" },
+  { step: "4", title: "Результат", desc: "Все переписки в CRM, аналитика в реальном времени, команда работает эффективнее" },
+];
+
+const faq = [
+  { q: `Нужен ли официальный аккаунт ${channel.name} для бизнеса?`, a: `Да, для полноценной работы нужен бизнес-аккаунт. Chat Plus помогает с получением доступа и настройкой.` },
+  { q: `Сколько времени занимает подключение ${channel.name}?`, a: `От 15 минут до 1 часа в зависимости от канала. Наша команда поддержки поможет на каждом шаге.` },
+  { q: `Можно ли подключить несколько каналов одновременно?`, a: `Да — все каналы (WhatsApp, Telegram, Instagram, Viber и другие) работают в едином инбоксе Chat Plus.` },
+  { q: `Есть ли ограничения на количество сообщений?`, a: `Нет. Chat Plus не берёт наценку за сообщения — вы платите только провайдеру канала по его тарифу.` },
+];
+---
+
+<Base title={`Chat Plus ${channel.name}`} description={channel.description}>
+
+  <!-- Hero -->
+  <section style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 5rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">{channel.emoji}</div>
+      <h1 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1.5rem;">Chat Plus {channel.name}</h1>
+      <p style="font-size: 1.15rem; opacity: 0.9; max-width: 580px; margin: 0 auto 2.5rem;">{channel.description}</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/demo" style="background: white; color: #6366f1; padding: 0.875rem 2rem; border-radius: 10px; font-weight: 700;">{channel.cta}</a>
+        <a href="#how" style="border: 1px solid rgba(255,255,255,0.4); color: white; padding: 0.875rem 2rem; border-radius: 10px; font-weight: 600;">Как подключить</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Возможности -->
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Что умеет Chat Plus {channel.name}</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
+        {channel.features.map(feature => (
+          <div style="padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem; background: white;">
+            <span style="color: #6366f1; font-weight: 800; font-size: 1.1rem;">✓</span>
+            <span style="font-weight: 600;">{feature}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Как подключить -->
+  <section id="how" style="padding: 4rem 2rem; background: #f8fafc;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Как подключить {channel.name}</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+        {steps.map(s => (
+          <div style="background: white; border-radius: 16px; padding: 1.75rem; border: 1px solid #e2e8f0;">
+            <div style="width: 36px; height: 36px; background: #6366f1; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem;">{s.step}</div>
+            <h3 style="font-weight: 700; margin-bottom: 0.5rem;">{s.title}</h3>
+            <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Пример чата -->
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 3rem;">Пример диалога в {channel.name}</h2>
+      <div style="background: #e5ddd5; border-radius: 20px; padding: 1.5rem; max-width: 380px; margin: 0 auto; font-size: 0.9rem; text-align: left;">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <div style="background: #dcf8c6; padding: 0.75rem 1rem; border-radius: 16px 16px 4px 16px; max-width: 75%;">
+            <p>Здравствуйте, хочу узнать о ваших услугах</p>
+            <p style="font-size: 0.7rem; color: #64748b; margin-top: 0.25rem; text-align: right;">10:31 ✓✓</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: flex-end;">
+          <div style="width: 28px; height: 28px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: white; flex-shrink: 0;">AI</div>
+          <div style="background: white; padding: 0.75rem 1rem; border-radius: 16px 16px 16px 4px; max-width: 75%; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+            <p>Привет! Я AI-помощник Chat Plus 👋</p>
+            <p style="margin-top: 0.4rem;">Расскажите — чем занимается ваш бизнес? Подберу оптимальное решение.</p>
+            <p style="font-size: 0.7rem; color: #64748b; margin-top: 0.25rem;">10:31</p>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 0.75rem; color: #94a3b8; padding: 0.4rem; background: white; border-radius: 8px; opacity: 0.8;">
+          ⚡ Ответ за 3 секунды · 24/7
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section style="padding: 4rem 2rem; background: #f8fafc;">
+    <div style="max-width: 700px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Частые вопросы</h2>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {faq.map(item => (
+          <details style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; background: white;">
+            <summary style="font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+              {item.q}
+              <span style="color: #6366f1; font-size: 1.25rem; flex-shrink: 0; margin-left: 1rem;">+</span>
+            </summary>
+            <p style="margin-top: 1rem; color: #475569; line-height: 1.7; font-size: 0.95rem;">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 5rem 2rem; text-align: center;">
+    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Подключите {channel.name} уже сегодня</h2>
+    <p style="opacity: 0.85; margin-bottom: 2rem;">Настройка за 15 минут. Первые 14 дней бесплатно.</p>
+    <a href="/demo" style="background: white; color: #6366f1; padding: 1rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; display: inline-block;">{channel.cta}</a>
+  </section>
+
+</Base>

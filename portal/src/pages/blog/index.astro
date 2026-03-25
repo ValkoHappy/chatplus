@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const posts = [
+  { title: "Как снизить количество неявок на 40% с помощью WhatsApp-напоминаний", category: "Beauty", date: "18 марта 2026", slug: "whatsapp-reminders-beauty" },
+  { title: "AI-агенты в медицине: автоматическая запись к врачу через Telegram", category: "Медицина", date: "15 марта 2026", slug: "ai-doctor-booking" },
+  { title: "Chat Plus vs Intercom: честное сравнение для малого бизнеса", category: "Сравнения", date: "12 марта 2026", slug: "chatplus-vs-intercom" },
+  { title: "Programmatic SEO: как Zapier получил 25,000+ страниц в Google", category: "Маркетинг", date: "10 марта 2026", slug: "programmatic-seo-zapier" },
+  { title: "5 способов использовать WhatsApp для увеличения повторных продаж", category: "Продажи", date: "7 марта 2026", slug: "whatsapp-repeat-sales" },
+  { title: "Интеграция Chat Plus с AmoCRM: пошаговая инструкция", category: "Интеграции", date: "5 марта 2026", slug: "amocrm-integration-guide" },
+];
+---
+
+<Base title="Блог Chat Plus" description="Статьи об автоматизации бизнеса через мессенджеры, омниканальных продажах и AI-агентах.">
+
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 1100px; margin: 0 auto;">
+      <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;">Блог Chat Plus</h1>
+      <p style="color: #64748b; margin-bottom: 3rem;">Автоматизация, мессенджеры, AI и рост бизнеса</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+        {posts.map(post => (
+          <a href={`/blog/${post.slug}`} style="border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.75rem; display: block; transition: box-shadow 0.2s;">
+            <span style="font-size: 0.75rem; font-weight: 600; color: #6366f1; text-transform: uppercase;">{post.category}</span>
+            <h2 style="font-size: 1.1rem; font-weight: 700; margin: 0.75rem 0; line-height: 1.5; color: #0f172a;">{post.title}</h2>
+            <p style="font-size: 0.85rem; color: #94a3b8;">{post.date}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Base>

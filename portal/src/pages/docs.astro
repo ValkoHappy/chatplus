@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+const sections = [
+  { title: "Быстрый старт", items: ["Создание аккаунта", "Подключение первого канала", "Настройка первого бота", "Интеграция с CRM"] },
+  { title: "Каналы", items: ["WhatsApp Business API", "Telegram Bot API", "Instagram Direct", "Viber Business"] },
+  { title: "AI и автоматизация", items: ["AI-агенты", "Конструктор ботов", "Воронки", "AI-календарь"] },
+  { title: "Интеграции", items: ["AmoCRM", "Bitrix24", "Google Calendar", "REST API"] },
+];
+---
+<Base title="Документация" description="Полная документация Chat Plus.">
+  <div style="display: grid; grid-template-columns: 260px 1fr; max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; gap: 3rem;">
+    <aside style="border-right: 1px solid #e2e8f0; padding-right: 2rem;">
+      <p style="font-weight: 800; color: #6366f1; margin-bottom: 1.5rem;">Документация</p>
+      {sections.map(s => (
+        <div style="margin-bottom: 1.5rem;">
+          <p style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 0.5rem;">{s.title}</p>
+          {s.items.map(item => <a href="#" style="display: block; padding: 0.35rem 0; color: #475569; font-size: 0.9rem;">{item}</a>)}
+        </div>
+      ))}
+    </aside>
+    <main>
+      <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Добро пожаловать в Chat Plus</h1>
+      <p style="color: #64748b; line-height: 1.8; margin-bottom: 2rem;">Chat Plus — омниканальная платформа для автоматизации коммуникаций. Подключите WhatsApp, Telegram, Instagram и другие каналы в одном месте.</p>
+      <div style="background: #ede9fe; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <p style="font-weight: 700; color: #6366f1; margin-bottom: 0.5rem;">Быстрый старт</p>
+        <p style="color: #475569;">Начните с подключения WhatsApp — самый популярный канал для бизнеса в СНГ.</p>
+      </div>
+      <a href="#" style="background: #6366f1; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; display: inline-block;">WhatsApp: начать</a>
+    </main>
+  </div>
+</Base>

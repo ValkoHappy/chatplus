@@ -1,0 +1,166 @@
+---
+import Base from '../../layouts/Base.astro';
+import { industries } from '../../data/industries';
+
+export function getStaticPaths() {
+  return industries.map(industry => ({
+    params: { slug: industry.slug },
+    props: { industry }
+  }));
+}
+
+const { industry } = Astro.props;
+
+// Данные для блоков (потом Claude будет генерировать уникальные под каждую отрасль)
+const steps = [
+  { step: "1", title: "Клиент пишет", desc: `Клиент отправляет сообщение в WhatsApp, Telegram или Instagram` },
+  { step: "2", title: "AI читает", desc: `Понимает намерение — запись, вопрос, жалоба — без участия сотрудника` },
+  { step: "3", title: "Действие", desc: industry.solution },
+  { step: "4", title: "Результат", desc: `Клиент доволен, сотрудник не отвлекался. Всё в CRM автоматически` },
+];
+
+const faq = [
+  { q: `Сколько времени занимает настройка Chat Plus для ${industry.name.toLowerCase()}?`, a: `От 15 минут до 1 часа. Подключаете WhatsApp/Telegram, выбираете готовый шаблон для ${industry.name.toLowerCase()} и настраиваете под себя. Не нужно программистов.` },
+  { q: `Какие мессенджеры поддерживаются?`, a: `WhatsApp Business API, Telegram, Instagram Direct, Viber, ВКонтакте, SMS, Email — все в одном окне.` },
+  { q: `Есть ли интеграция с популярными CRM?`, a: `Да — AmoCRM, Bitrix24, Altegio, YCLIENTS, Google Calendar, Outlook и 25+ других интеграций из коробки.` },
+  { q: `Сколько стоит Chat Plus?`, a: `От $49/мес фиксированно — без платы за каждого агента и без наценок на сообщения. В 2–5 раз дешевле Intercom и Zendesk.` },
+];
+
+const stats = [
+  { value: "40%", label: "снижение неявок" },
+  { value: "3 мин", label: "среднее время ответа" },
+  { value: "80%", label: "запросов решает AI" },
+  { value: "14 дней", label: "бесплатный период" },
+];
+---
+
+<Base title={`Chat Plus ${industry.name}`} description={industry.description}>
+
+  <!-- Hero -->
+  <section style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 5rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">{industry.emoji}</div>
+      <p style="font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; opacity: 0.5; margin-bottom: 0.75rem; text-transform: uppercase;">Chat Plus для {industry.name}</p>
+      <h1 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1.5rem;">
+        Chat Plus {industry.name}
+      </h1>
+      <p style="font-size: 1.15rem; opacity: 0.85; max-width: 580px; margin: 0 auto 2.5rem;">{industry.description}</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/demo" style="background: #6366f1; color: white; padding: 0.875rem 2rem; border-radius: 10px; font-weight: 700;">{industry.cta}</a>
+        <a href="#how" style="border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.875rem 2rem; border-radius: 10px; font-weight: 600;">Как это работает</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- БЛОК 1: Статистика -->
+  <section style="background: #6366f1; padding: 2.5rem 2rem;">
+    <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; text-align: center;">
+      {stats.map(s => (
+        <div style="color: white;">
+          <p style="font-size: 2rem; font-weight: 800;">{s.value}</p>
+          <p style="font-size: 0.85rem; opacity: 0.8;">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Проблема → Решение -->
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+      <div style="padding: 2rem; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+        <h3 style="font-weight: 700; color: #dc2626; margin-bottom: 1rem;">😤 Проблема</h3>
+        <p style="color: #7f1d1d; line-height: 1.7;">{industry.pain}</p>
+      </div>
+      <div style="padding: 2rem; background: #f0fdf4; border-radius: 16px; border: 1px solid #bbf7d0;">
+        <h3 style="font-weight: 700; color: #16a34a; margin-bottom: 1rem;">✅ Решение Chat Plus</h3>
+        <p style="color: #14532d; line-height: 1.7;">{industry.solution}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- БЛОК 2: Как это работает (шаги) -->
+  <section id="how" style="padding: 4rem 2rem; background: #f8fafc;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Как это работает</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+        {steps.map(s => (
+          <div style="background: white; border-radius: 16px; padding: 1.75rem; border: 1px solid #e2e8f0; position: relative;">
+            <div style="width: 36px; height: 36px; background: #6366f1; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem;">{s.step}</div>
+            <h3 style="font-weight: 700; margin-bottom: 0.5rem;">{s.title}</h3>
+            <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- БЛОК 3: Живой пример чата -->
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Пример переписки</h2>
+      <div style="background: #f0f0f0; border-radius: 20px; padding: 1.5rem; max-width: 400px; margin: 0 auto; font-size: 0.9rem;">
+        <!-- Сообщение клиента -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <div style="background: #dcf8c6; padding: 0.75rem 1rem; border-radius: 16px 16px 4px 16px; max-width: 75%;">
+            <p>Привет! Хочу записаться на {industry.name === 'Салоны красоты' ? 'стрижку' : industry.name === 'Медицина' ? 'приём к врачу' : industry.name === 'Фитнес' ? 'тренировку' : 'консультацию'} на пятницу в 15:00</p>
+            <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; text-align: right;">14:22 ✓✓</p>
+          </div>
+        </div>
+        <!-- Ответ AI -->
+        <div style="display: flex; margin-bottom: 1rem; gap: 0.5rem; align-items: flex-end;">
+          <div style="width: 28px; height: 28px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; flex-shrink: 0;">AI</div>
+          <div style="background: white; padding: 0.75rem 1rem; border-radius: 16px 16px 16px 4px; max-width: 75%; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+            <p>Отлично! Пятница 15:00 свободна ✅</p>
+            <p style="margin-top: 0.4rem;">Записал вас. Напомню в четверг вечером 🔔</p>
+            <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">14:22</p>
+          </div>
+        </div>
+        <!-- Статус -->
+        <div style="text-align: center; font-size: 0.75rem; color: #94a3b8; padding: 0.5rem; background: white; border-radius: 8px;">
+          📅 Запись создана в CRM автоматически
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Возможности -->
+  <section style="padding: 2rem 2rem 4rem; background: #f8fafc;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 2.5rem;">Что входит</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        {industry.features.map(feature => (
+          <div style="padding: 1.25rem 1.5rem; background: white; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem;">
+            <span style="color: #6366f1; font-weight: 700;">✓</span>
+            <span style="font-weight: 600; font-size: 0.95rem;">{feature}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- БЛОК 4: FAQ -->
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 700px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Частые вопросы</h2>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {faq.map(item => (
+          <details style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; background: white;">
+            <summary style="font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+              {item.q}
+              <span style="color: #6366f1; font-size: 1.25rem; flex-shrink: 0; margin-left: 1rem;">+</span>
+            </summary>
+            <p style="margin-top: 1rem; color: #475569; line-height: 1.7; font-size: 0.95rem;">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 5rem 2rem; text-align: center;">
+    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Попробуйте бесплатно 14 дней</h2>
+    <p style="opacity: 0.85; margin-bottom: 2rem; font-size: 1.1rem;">Настройка за 15 минут. Никакой технической экспертизы не нужно.</p>
+    <a href="/demo" style="background: white; color: #6366f1; padding: 1rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; display: inline-block;">{industry.cta}</a>
+  </section>
+
+</Base>

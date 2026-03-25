@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import { solutions } from '../../data/solutions';
+
+export function getStaticPaths() {
+  return solutions.map(solution => ({
+    params: { slug: solution.slug },
+    props: { solution }
+  }));
+}
+
+const { solution } = Astro.props;
+---
+
+<Base title={`Chat Plus ${solution.name}`} description={solution.description}>
+
+  <section style="background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%); color: white; padding: 5rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 3.5rem; margin-bottom: 1rem;">{solution.emoji}</div>
+      <p style="font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; opacity: 0.7; margin-bottom: 0.75rem; text-transform: uppercase;">Решение Chat Plus</p>
+      <h1 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1.5rem;">
+        Chat Plus {solution.name}
+      </h1>
+      <p style="font-size: 1.15rem; opacity: 0.9; max-width: 580px; margin: 0 auto 2.5rem;">
+        {solution.description}
+      </p>
+      <a href="/demo" style="background: white; color: #10b981; padding: 0.875rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; display: inline-block;">
+        {solution.cta}
+      </a>
+    </div>
+  </section>
+
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+      <div style="padding: 2rem; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+        <h3 style="font-weight: 700; color: #dc2626; margin-bottom: 1rem;">😤 Проблема</h3>
+        <p style="color: #7f1d1d; line-height: 1.7;">{solution.pain}</p>
+      </div>
+      <div style="padding: 2rem; background: #f0fdf4; border-radius: 16px; border: 1px solid #bbf7d0;">
+        <h3 style="font-weight: 700; color: #16a34a; margin-bottom: 1rem;">✅ Решение Chat Plus</h3>
+        <p style="color: #14532d; line-height: 1.7;">{solution.solution}</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 2rem 2rem 4rem;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 2.5rem;">Что входит</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+        {solution.features.map(f => (
+          <div style="padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem;">
+            <span style="color: #10b981; font-size: 1.25rem;">✓</span>
+            <span style="font-weight: 600;">{f}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section style="background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%); color: white; padding: 4rem 2rem; text-align: center;">
+    <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem;">Начните за 15 минут</h2>
+    <p style="opacity: 0.85; margin-bottom: 2rem;">14 дней бесплатно. Без кредитной карты.</p>
+    <a href="/demo" style="background: white; color: #10b981; padding: 1rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; display: inline-block;">
+      {solution.cta}
+    </a>
+  </section>
+
+</Base>

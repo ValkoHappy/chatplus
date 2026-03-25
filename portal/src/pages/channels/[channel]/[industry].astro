@@ -1,0 +1,108 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { channels } from '../../../data/channels';
+import { industries } from '../../../data/industries';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const channel of channels) {
+    for (const industry of industries) {
+      paths.push({
+        params: { channel: channel.slug, industry: industry.slug },
+        props: { channel, industry }
+      });
+    }
+  }
+  return paths;
+}
+
+const { channel, industry } = Astro.props;
+---
+
+<Base
+  title={`Chat Plus ${channel.name} для ${industry.name}`}
+  description={`${channel.name} для ${industry.name} — автоматизируйте общение с клиентами через Chat Plus. ${industry.description}`}
+>
+
+  <section style="background: linear-gradient(135deg, #6366f1 0%, #10b981 100%); color: white; padding: 5rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">{channel.emoji} + {industry.emoji}</div>
+      <p style="font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; opacity: 0.7; margin-bottom: 0.75rem; text-transform: uppercase;">
+        {channel.name} · {industry.name}
+      </p>
+      <h1 style="font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 800; margin-bottom: 1.5rem;">
+        Chat Plus {channel.name} для {industry.name}
+      </h1>
+      <p style="font-size: 1.1rem; opacity: 0.9; max-width: 580px; margin: 0 auto 2.5rem;">
+        Автоматизируйте общение с клиентами через {channel.name}. {industry.description}
+      </p>
+      <a href="/demo" style="background: white; color: #6366f1; padding: 0.875rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; display: inline-block;">
+        Попробовать бесплатно
+      </a>
+    </div>
+  </section>
+
+  <section style="padding: 4rem 2rem;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h2 style="font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">
+        Как Chat Plus {channel.name} помогает {industry.name}
+      </h2>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+        <div style="padding: 2rem; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
+          <h3 style="font-weight: 700; color: #dc2626; margin-bottom: 1rem;">😤 Проблема</h3>
+          <p style="color: #7f1d1d; line-height: 1.7;">{industry.pain}</p>
+        </div>
+        <div style="padding: 2rem; background: #f0fdf4; border-radius: 16px; border: 1px solid #bbf7d0;">
+          <h3 style="font-weight: 700; color: #16a34a; margin-bottom: 1rem;">✅ Решение</h3>
+          <p style="color: #14532d; line-height: 1.7;">{industry.solution}</p>
+        </div>
+      </div>
+
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">Возможности {channel.name}:</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        {channel.features.map(f => (
+          <div style="padding: 1rem 1.25rem; border: 1px solid #e2e8f0; border-radius: 10px; display: flex; align-items: center; gap: 0.75rem;">
+            <span style="color: #6366f1;">✓</span>
+            <span style="font-weight: 500; font-size: 0.95rem;">{f}</span>
+          </div>
+        ))}
+      </div>
+
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">Решения для {industry.name}:</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        {industry.features.map(f => (
+          <div style="padding: 1rem 1.25rem; border: 1px solid #e2e8f0; border-radius: 10px; display: flex; align-items: center; gap: 0.75rem;">
+            <span style="color: #10b981;">✓</span>
+            <span style="font-weight: 500; font-size: 0.95rem;">{f}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Ссылки на смежные страницы (внутренние ссылки для SEO) -->
+  <section style="background: #f8fafc; padding: 3rem 2rem;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem;">Другие каналы для {industry.name}:</h3>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        {channels.filter(c => c.slug !== channel.slug).map(c => (
+          <a href={`/channels/${c.slug}/${industry.slug}`}
+             style="padding: 0.5rem 1rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; background: white; color: #6366f1; font-weight: 500;">
+            {c.emoji} {c.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 4rem 2rem; text-align: center;">
+    <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem;">
+      Попробуйте Chat Plus {channel.name} для {industry.name}
+    </h2>
+    <p style="opacity: 0.85; margin-bottom: 2rem;">14 дней бесплатно. Настройка за 15 минут.</p>
+    <a href="/demo" style="background: white; color: #6366f1; padding: 1rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; display: inline-block;">
+      Начать бесплатно
+    </a>
+  </section>
+
+</Base>

@@ -1,0 +1,100 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = "Chat Plus — омниканальная платформа для бизнеса" } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} | Chat Plus</title>
+  <meta name="description" content={description} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #fff; }
+    a { text-decoration: none; color: inherit; }
+    .nav-link { color: #475569; font-size: 0.9rem; font-weight: 500; transition: color 0.15s; }
+    .nav-link:hover { color: #6366f1; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 2rem; }
+  </style>
+</head>
+<body>
+  <header style="border-bottom: 1px solid #e2e8f0; padding: 0 2rem; position: sticky; top: 0; background: white; z-index: 100;">
+    <nav style="max-width: 1200px; margin: 0 auto; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
+      <a href="/" style="font-size: 1.25rem; font-weight: 800; color: #6366f1; flex-shrink: 0;">Chat Plus</a>
+      <div style="display: flex; gap: 1.75rem; align-items: center;">
+        <a href="/channels/whatsapp" class="nav-link">Каналы</a>
+        <a href="/industries/beauty" class="nav-link">Отрасли</a>
+        <a href="/integrations/amocrm" class="nav-link">Интеграции</a>
+        <a href="/solutions/sales" class="nav-link">Решения</a>
+        <a href="/features/ai" class="nav-link">AI</a>
+        <a href="/pricing" class="nav-link" style="color: #6366f1; font-weight: 600;">Цены</a>
+        <a href="/partnership" class="nav-link">Партнёрам</a>
+      </div>
+      <a href="/demo" style="background: #6366f1; color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; flex-shrink: 0;">Попробовать</a>
+    </nav>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer style="background: #0f172a; color: #94a3b8; padding: 4rem 2rem 2rem; margin-top: 4rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <div class="footer-grid" style="margin-bottom: 3rem;">
+        <div>
+          <p style="font-weight: 800; font-size: 1.1rem; color: white; margin-bottom: 0.5rem;">Chat Plus</p>
+          <p style="font-size: 0.85rem; line-height: 1.6;">Мы продаём не чаты —<br/>мы продаём то, что чаты<br/>делают возможным.</p>
+        </div>
+        <div>
+          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Каналы</p>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+            <a href="/channels/whatsapp" style="color: #94a3b8;">WhatsApp</a>
+            <a href="/channels/telegram" style="color: #94a3b8;">Telegram</a>
+            <a href="/channels/instagram" style="color: #94a3b8;">Instagram</a>
+            <a href="/channels/viber" style="color: #94a3b8;">Viber</a>
+            <a href="/channels/sms" style="color: #94a3b8;">SMS</a>
+          </div>
+        </div>
+        <div>
+          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Отрасли</p>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+            <a href="/industries/beauty" style="color: #94a3b8;">Салоны красоты</a>
+            <a href="/industries/med" style="color: #94a3b8;">Медицина</a>
+            <a href="/industries/fitness" style="color: #94a3b8;">Фитнес</a>
+            <a href="/industries/horeca" style="color: #94a3b8;">HoReCa</a>
+            <a href="/industries/real-estate" style="color: #94a3b8;">Недвижимость</a>
+          </div>
+        </div>
+        <div>
+          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Интеграции</p>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+            <a href="/integrations/amocrm" style="color: #94a3b8;">AmoCRM</a>
+            <a href="/integrations/bitrix24" style="color: #94a3b8;">Bitrix24</a>
+            <a href="/integrations/altegio" style="color: #94a3b8;">Altegio</a>
+            <a href="/integrations/google-calendar" style="color: #94a3b8;">Google Calendar</a>
+            <a href="/integrations/zapier" style="color: #94a3b8;">Zapier</a>
+          </div>
+        </div>
+        <div>
+          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Компания</p>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+            <a href="/pricing" style="color: #94a3b8;">Цены</a>
+            <a href="/partnership" style="color: #94a3b8;">Партнёрам</a>
+            <a href="/features/ai" style="color: #94a3b8;">AI-возможности</a>
+            <a href="/solutions/support" style="color: #94a3b8;">Поддержка</a>
+          </div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid #1e293b; padding-top: 1.5rem; text-align: center; font-size: 0.8rem;">
+        © 2026 Chat Plus. Все права защищены.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

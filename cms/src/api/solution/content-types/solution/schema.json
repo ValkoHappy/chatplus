@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "solutions",
+  "info": {
+    "singularName": "solution",
+    "pluralName": "solutions",
+    "displayName": "Solution",
+    "description": "Бизнес-функции и решения"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "slug": { "type": "uid", "targetField": "name", "required": true },
+    "name": { "type": "string", "required": true },
+    "emoji": { "type": "string" },
+    "description": { "type": "text", "required": true },
+    "features": { "type": "json" },
+    "cta": { "type": "string" },
+    "seo_title": { "type": "string" },
+    "seo_description": { "type": "text" },
+    "content": { "type": "richtext" }
+  }
+}

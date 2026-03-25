@@ -1,0 +1,10 @@
+node_modules
+.env
+.tmp
+dist
+.cache
+portal/dist
+portal/.astro
+cms/.tmp
+cms/dist
+*.log
