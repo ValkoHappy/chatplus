@@ -1,8 +1,29 @@
 // Скрипт: заливает базовые данные из portal/src/data в Strapi
 // Запуск: node seed.mjs
 
-const STRAPI_URL = 'http://localhost:1337';
-const TOKEN = '063d683906bd9ba008e34bf993d2f0f5c32a248d7f381d4610211101e56a4e5d21a2d69c4f93677ecb18bbb66ed9763879b3b783b843cdf0b04ef1e2e8d154532a25ed7d69b25a9ab1ca55d1ba5ffb0cb5d41436fdb611b80a918809b9aa1fc68b4dfe1680d48b78500c61dac6a3d802accdeb79a6afc56e051b9b10ec0c86de';
+import { readFileSync } from 'fs';
+
+// Читаем токен из .env
+function loadEnv() {
+  try {
+    const env = readFileSync('.env', 'utf-8');
+    const vars = {};
+    env.split('\n').forEach(line => {
+      const [key, ...val] = line.split('=');
+      if (key && val.length) vars[key.trim()] = val.join('=').trim();
+    });
+    return vars;
+  } catch { return {}; }
+}
+
+const env = loadEnv();
+const STRAPI_URL = env.STRAPI_URL || 'http://localhost:1337';
+const TOKEN = env.STRAPI_TOKEN || '';
+
+if (!TOKEN) {
+  console.error('❌ STRAPI_TOKEN не найден в .env');
+  process.exit(1);
+}
 
 const headers = {
   'Content-Type': 'application/json',
