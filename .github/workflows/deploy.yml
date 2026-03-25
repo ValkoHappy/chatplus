@@ -1,0 +1,53 @@
+name: Deploy Chat Plus
+
+on:
+  # Запуск вручную из GitHub
+  workflow_dispatch:
+
+  # Запуск через webhook от Strapi (когда публикуется контент)
+  repository_dispatch:
+    types: [strapi-content-update]
+
+  # Запуск при пуше в main
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: portal/package-lock.json
+
+      - name: Install dependencies
+        working-directory: portal
+        run: npm ci
+
+      - name: Build Astro
+        working-directory: portal
+        env:
+          STRAPI_URL: ${{ secrets.STRAPI_URL }}
+          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+        run: npm run build
+
+      # Деплой на сервер (раскомментировать когда появится сервер)
+      # - name: Deploy to server
+      #   uses: appleboy/scp-action@v0.1.7
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     key: ${{ secrets.SERVER_SSH_KEY }}
+      #     source: "portal/dist/*"
+      #     target: "/var/www/chatplus"
+      #     strip_components: 2
+
+      - name: Notify success
+        run: echo "✅ Build completed - $(date)"

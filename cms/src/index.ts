@@ -1,20 +1,34 @@
-// import type { Core } from '@strapi/strapi';
-
 export default {
-  /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
-   */
-  register(/* { strapi }: { strapi: Core.Strapi } */) {},
+  register() {},
 
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {},
+  async bootstrap({ strapi }: { strapi: any }) {
+    const tracked = ['channel', 'industry', 'integration', 'solution', 'feature'];
+
+    strapi.db.lifecycles.subscribe({
+      afterCreate: (event: any) => triggerDeploy(event),
+      afterUpdate: (event: any) => triggerDeploy(event),
+    });
+
+    async function triggerDeploy(event: any) {
+      if (!tracked.includes(event.model?.singularName)) return;
+
+      const token = process.env.GITHUB_ACTIONS_TOKEN;
+      if (!token) return;
+
+      try {
+        await fetch('https://api.github.com/repos/ValkoHappy/chatplus/dispatches', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ event_type: 'strapi-content-update' })
+        });
+        console.log(`[Deploy] Rebuild triggered → ${event.model.singularName}`);
+      } catch (e: any) {
+        console.error('[Deploy] Failed:', e.message);
+      }
+    }
+  },
 };
