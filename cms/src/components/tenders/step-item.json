@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_tenders_step_items",
+  "info": {
+    "displayName": "Step Item"
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

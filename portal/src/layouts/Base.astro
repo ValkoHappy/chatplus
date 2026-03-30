@@ -1,42 +1,470 @@
 ---
+import '../styles/global.css';
+import { getSiteSettings } from '../lib/strapi';
+
 export interface Props {
   title: string;
   description?: string;
+  image?: string;
+  canonical?: string;
 }
-const { title, description = "Chat Plus — омниканальная платформа для бизнеса" } = Astro.props;
+
+const {
+  title,
+  description,
+  image = '/og-image.svg',
+  canonical,
+} = Astro.props;
+
+const settings = await getSiteSettings();
+const site = settings.site_url;
+const finalDescription = description || settings.default_description;
+const canonicalURL = canonical || new URL(Astro.url.pathname, site).toString();
+const ogImage = new URL(image, site).toString();
+const fullTitle = `${title} | ${settings.site_name}`;
+
+const orgSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: settings.site_name,
+  url: site,
+  logo: `${site}/favicon.svg`,
+  description: settings.organization_description || settings.default_description,
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'sales',
+    url: `${site}${settings.header_cta_url || '/demo'}`,
+  },
+});
+
+const websiteSchema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: settings.site_name,
+  url: site,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${site}/search?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+});
 ---
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title} | Chat Plus</title>
-  <meta name="description" content={description} />
+  {import.meta.env.DEV && (
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+  )}
+  <title>{fullTitle}</title>
+  <meta name="description" content={finalDescription} />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href={canonicalURL} />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={settings.site_name} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={finalDescription} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="ru_RU" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={finalDescription} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+
+  <script type="application/ld+json" set:html={orgSchema} />
+  <script type="application/ld+json" set:html={websiteSchema} />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <slot name="head" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #fff; }
-    a { text-decoration: none; color: inherit; }
-    .nav-link { color: #475569; font-size: 0.9rem; font-weight: 500; transition: color 0.15s; }
-    .nav-link:hover { color: #6366f1; }
-    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 2rem; }
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(99, 102, 241, .06), transparent 20%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      padding-bottom: 76px;
+    }
+
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 clamp(1rem, 3vw, 1.5rem);
+      border-bottom: 1px solid rgba(226, 232, 240, .95);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 6px 24px rgba(15, 23, 42, .03);
+    }
+
+    .site-nav {
+      max-width: var(--container);
+      margin: 0 auto;
+      min-height: 68px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: clamp(.75rem, 2vw, 1.25rem);
+    }
+
+    .brand-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      flex-shrink: 0;
+      color: var(--text-main);
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: -.03em;
+    }
+
+    .brand-link::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      box-shadow: 0 0 0 6px rgba(99, 102, 241, .09);
+      flex-shrink: 0;
+    }
+
+    .nav-links-wrap {
+      display: flex;
+      gap: .2rem;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .nav-link {
+      color: #475569;
+      font-size: .94rem;
+      font-weight: 600;
+      line-height: 1;
+      padding: .7rem .78rem;
+      border-radius: 10px;
+      transition: color .18s ease, background .18s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--brand-dark);
+      background: rgba(99, 102, 241, .06);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-shrink: 0;
+    }
+
+    .header-cta,
+    .sticky-cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      font-weight: 700;
+      font-size: .9rem;
+      white-space: nowrap;
+      box-shadow: var(--shadow-brand);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    .header-cta {
+      min-height: 42px;
+      padding: .68rem 1.05rem;
+      border-radius: 10px;
+      font-size: .88rem;
+    }
+
+    .sticky-cta-button {
+      padding: .62rem 1.15rem;
+    }
+
+    .header-cta:hover,
+    .sticky-cta-button:hover {
+      transform: translateY(-1px);
+      filter: saturate(1.05);
+      box-shadow: 0 14px 28px rgba(99, 102, 241, .18);
+    }
+
+    .nav-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border-main);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease;
+    }
+
+    .nav-toggle:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .site-footer {
+      margin-top: 0;
+      padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 4vw, 2rem) 2rem;
+      background:
+        radial-gradient(circle at top center, rgba(99, 102, 241, .12), transparent 24%),
+        #0a0f1e;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.4fr) repeat(auto-fit, minmax(140px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand {
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -.03em;
+      margin-bottom: .8rem;
+    }
+
+    .footer-tagline {
+      max-width: 240px;
+      font-size: .9rem;
+      line-height: 1.75;
+      color: var(--text-soft);
+    }
+
+    .footer-title {
+      margin-bottom: 1rem;
+      color: #e2e8f0;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: .68rem;
+    }
+
+    .footer-link {
+      color: var(--text-soft);
+      font-size: .9rem;
+      transition: color .18s ease;
+    }
+
+    .footer-link:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(148, 163, 184, .14);
+      padding-top: 1.35rem;
+      text-align: center;
+      color: #475569;
+      font-size: .82rem;
+    }
+
+    #sticky-cta {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .95rem clamp(1rem, 4vw, 2rem);
+      background: rgba(10, 15, 30, .88);
+      border-top: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(14px);
+      color: #fff;
+      transform: translateY(100%);
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+    }
+
+    #sticky-cta.visible {
+      transform: translateY(0);
+    }
+
+    .sticky-cta-inner {
+      width: 100%;
+      max-width: var(--container);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .sticky-cta-text {
+      color: var(--text-soft);
+      font-size: .9rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .sticky-cta-actions {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      flex-shrink: 0;
+    }
+
+    .sticky-close {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 10px;
+      background: rgba(255,255,255,.08);
+      color: var(--text-soft);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: background .18s ease, color .18s ease;
+    }
+
+    .sticky-close:hover {
+      background: rgba(255,255,255,.16);
+      color: #fff;
+    }
+
+    @media (max-width: 1024px) {
+      .site-nav {
+        grid-template-columns: auto 1fr auto;
+      }
+
+      .nav-links-wrap {
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .nav-links-wrap::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      .nav-links-wrap {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 1rem;
+        right: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: .15rem;
+        padding: .65rem;
+        border: 1px solid var(--border-main);
+        border-radius: 16px;
+        background: rgba(255,255,255,.98);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, .10);
+      }
+
+      .nav-links-wrap.open {
+        display: flex;
+      }
+
+      .nav-link {
+        width: 100%;
+        justify-content: flex-start;
+        border-radius: 12px;
+        padding: .9rem .95rem;
+      }
+
+      .nav-toggle {
+        display: inline-flex;
+      }
+
+      .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sticky-cta-text {
+        display: none;
+      }
+
+      .sticky-cta-inner {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .site-header {
+        padding: 0 .9rem;
+      }
+
+      .site-nav {
+        min-height: 62px;
+      }
+
+      .header-cta {
+        display: none;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <header style="border-bottom: 1px solid #e2e8f0; padding: 0 2rem; position: sticky; top: 0; background: white; z-index: 100;">
-    <nav style="max-width: 1200px; margin: 0 auto; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 2rem;">
-      <a href="/" style="font-size: 1.25rem; font-weight: 800; color: #6366f1; flex-shrink: 0;">Chat Plus</a>
-      <div style="display: flex; gap: 1.75rem; align-items: center;">
-        <a href="/channels/whatsapp" class="nav-link">Каналы</a>
-        <a href="/industries/beauty" class="nav-link">Отрасли</a>
-        <a href="/integrations/amocrm" class="nav-link">Интеграции</a>
-        <a href="/solutions/sales" class="nav-link">Решения</a>
-        <a href="/features/ai" class="nav-link">AI</a>
-        <a href="/pricing" class="nav-link" style="color: #6366f1; font-weight: 600;">Цены</a>
-        <a href="/partnership" class="nav-link">Партнёрам</a>
+  <header class="site-header" id="site-header">
+    <nav class="site-nav">
+      <a href="/" class="brand-link">{settings.site_name}</a>
+      <div id="nav-links" class="nav-links-wrap">
+        {settings.header_links.map((link) => (
+          <a href={link.href} class="nav-link">{link.label}</a>
+        ))}
       </div>
-      <a href="/demo" style="background: #6366f1; color: white; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; flex-shrink: 0;">Попробовать</a>
+      <div class="nav-actions">
+        <a href={settings.header_cta_url} class="header-cta">{settings.header_cta_label}</a>
+        <button id="nav-toggle" class="nav-toggle" aria-label="Меню" aria-expanded="false">
+          <svg id="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg id="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </nav>
   </header>
 
@@ -44,57 +472,153 @@ const { title, description = "Chat Plus — омниканальная плат�
     <slot />
   </main>
 
-  <footer style="background: #0f172a; color: #94a3b8; padding: 4rem 2rem 2rem; margin-top: 4rem;">
-    <div style="max-width: 1200px; margin: 0 auto;">
-      <div class="footer-grid" style="margin-bottom: 3rem;">
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
         <div>
-          <p style="font-weight: 800; font-size: 1.1rem; color: white; margin-bottom: 0.5rem;">Chat Plus</p>
-          <p style="font-size: 0.85rem; line-height: 1.6;">Мы продаём не чаты —<br/>мы продаём то, что чаты<br/>делают возможным.</p>
+          <p class="footer-brand">{settings.site_name}</p>
+          <p class="footer-tagline">{settings.footer_tagline}</p>
         </div>
-        <div>
-          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Каналы</p>
-          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-            <a href="/channels/whatsapp" style="color: #94a3b8;">WhatsApp</a>
-            <a href="/channels/telegram" style="color: #94a3b8;">Telegram</a>
-            <a href="/channels/instagram" style="color: #94a3b8;">Instagram</a>
-            <a href="/channels/viber" style="color: #94a3b8;">Viber</a>
-            <a href="/channels/sms" style="color: #94a3b8;">SMS</a>
+        {settings.footer_columns.map((column) => (
+          <div>
+            <p class="footer-title">{column.title}</p>
+            <div class="footer-links">
+              {column.links.map((link) => (
+                <a href={link.href} class="footer-link">{link.label}</a>
+              ))}
+            </div>
           </div>
-        </div>
-        <div>
-          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Отрасли</p>
-          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-            <a href="/industries/beauty" style="color: #94a3b8;">Салоны красоты</a>
-            <a href="/industries/med" style="color: #94a3b8;">Медицина</a>
-            <a href="/industries/fitness" style="color: #94a3b8;">Фитнес</a>
-            <a href="/industries/horeca" style="color: #94a3b8;">HoReCa</a>
-            <a href="/industries/real-estate" style="color: #94a3b8;">Недвижимость</a>
-          </div>
-        </div>
-        <div>
-          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Интеграции</p>
-          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-            <a href="/integrations/amocrm" style="color: #94a3b8;">AmoCRM</a>
-            <a href="/integrations/bitrix24" style="color: #94a3b8;">Bitrix24</a>
-            <a href="/integrations/altegio" style="color: #94a3b8;">Altegio</a>
-            <a href="/integrations/google-calendar" style="color: #94a3b8;">Google Calendar</a>
-            <a href="/integrations/zapier" style="color: #94a3b8;">Zapier</a>
-          </div>
-        </div>
-        <div>
-          <p style="font-weight: 600; color: white; margin-bottom: 1rem; font-size: 0.9rem;">Компания</p>
-          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-            <a href="/pricing" style="color: #94a3b8;">Цены</a>
-            <a href="/partnership" style="color: #94a3b8;">Партнёрам</a>
-            <a href="/features/ai" style="color: #94a3b8;">AI-возможности</a>
-            <a href="/solutions/support" style="color: #94a3b8;">Поддержка</a>
-          </div>
-        </div>
+        ))}
       </div>
-      <div style="border-top: 1px solid #1e293b; padding-top: 1.5rem; text-align: center; font-size: 0.8rem;">
-        © 2026 Chat Plus. Все права защищены.
-      </div>
+      <div class="footer-bottom">{settings.footer_copyright}</div>
     </div>
   </footer>
+
+  <div id="sticky-cta">
+    <div class="sticky-cta-inner">
+      <p class="sticky-cta-text">{settings.sticky_cta_text}</p>
+      <div class="sticky-cta-actions">
+        <a href={settings.sticky_cta_url} class="sticky-cta-button">{settings.sticky_cta_label}</a>
+        <button id="close-sticky" class="sticky-close" aria-label="Закрыть">&times;</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('nav-toggle');
+      const menu = document.getElementById('nav-links');
+      const iconMenu = document.getElementById('icon-menu');
+      const iconClose = document.getElementById('icon-close');
+      if (!toggle || !menu || !iconMenu || !iconClose) return;
+
+      function openMenu() {
+        menu.classList.add('open');
+        toggle.setAttribute('aria-expanded', 'true');
+        iconMenu.style.display = 'none';
+        iconClose.style.display = '';
+        document.addEventListener('click', onOutsideClick);
+        document.addEventListener('keydown', onEscape);
+      }
+
+      function closeMenu() {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        iconMenu.style.display = '';
+        iconClose.style.display = 'none';
+        document.removeEventListener('click', onOutsideClick);
+        document.removeEventListener('keydown', onEscape);
+      }
+
+      function onOutsideClick(e) {
+        if (!menu.contains(e.target) && !toggle.contains(e.target)) closeMenu();
+      }
+
+      function onEscape(e) {
+        if (e.key === 'Escape') closeMenu();
+      }
+
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        menu.classList.contains('open') ? closeMenu() : openMenu();
+      });
+
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', closeMenu);
+      });
+
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) closeMenu();
+      }, { passive: true });
+    })();
+
+    (function () {
+      const bar = document.getElementById('sticky-cta');
+      const btn = document.getElementById('close-sticky');
+      if (!bar || !btn) return;
+      if (sessionStorage.getItem('cta-off')) return;
+      const show = () => {
+        if (window.scrollY > 400) {
+          bar.classList.add('visible');
+          window.removeEventListener('scroll', show);
+        }
+      };
+      window.addEventListener('scroll', show, { passive: true });
+      btn.addEventListener('click', () => {
+        bar.classList.remove('visible');
+        sessionStorage.setItem('cta-off', '1');
+      });
+    })();
+
+    (function () {
+      const obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.07 });
+
+      document.querySelectorAll('main section').forEach(function (section, index) {
+        if (index === 0) return;
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(28px)';
+        section.style.transition = 'opacity 0.65s ease, transform 0.65s ease';
+        obs.observe(section);
+      });
+    })();
+
+    (function () {
+      const els = document.querySelectorAll('[data-count]');
+      if (!els.length) return;
+
+      const obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+
+          const el = entry.target;
+          const target = +el.dataset.count;
+          const start = performance.now();
+          const duration = 1600;
+
+          function frame(now) {
+            const t = Math.min((now - start) / duration, 1);
+            const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+            el.textContent = Math.round(ease * target).toLocaleString('ru');
+            if (t < 1) requestAnimationFrame(frame);
+          }
+
+          requestAnimationFrame(frame);
+          obs.unobserve(el);
+        });
+      }, { threshold: 0.5 });
+
+      els.forEach(function (el) {
+        obs.observe(el);
+      });
+    })();
+  </script>
 </body>
 </html>

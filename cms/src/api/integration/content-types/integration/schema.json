@@ -12,12 +12,14 @@
     "slug": { "type": "uid", "targetField": "name", "required": true },
     "name": { "type": "string", "required": true },
     "emoji": { "type": "string" },
+    "icon": { "type": "string" },
     "category": { "type": "string" },
     "description": { "type": "text", "required": true },
     "features": { "type": "json" },
     "cta": { "type": "string" },
     "seo_title": { "type": "string" },
     "seo_description": { "type": "text" },
+    "faq": { "type": "json" },
     "content": { "type": "richtext" }
   }
 }

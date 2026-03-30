@@ -1,128 +1,24 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { integrations } from '../../data/integrations';
+import StructuredLandingPage from '../../components/StructuredLandingPage.astro';
+import { adaptIntegrationPage } from '../../lib/page-adapters';
+import { getChannels, getIntegrations, getSiteSettings, getSolutions } from '../../lib/strapi';
 
-export function getStaticPaths() {
-  return integrations.map(integration => ({
+export async function getStaticPaths() {
+  const integrations = await getIntegrations();
+  return integrations.map((integration) => ({
     params: { slug: integration.slug },
-    props: { integration }
+    props: { integration },
   }));
 }
 
 const { integration } = Astro.props;
-
-const steps = [
-  { step: "1", title: "Получите API-ключ", desc: `Зайдите в настройки ${integration.name} и создайте API-ключ для интеграции` },
-  { step: "2", title: "Подключите в Chat Plus", desc: "Вставьте ключ в раздел Интеграции → несколько кликов без кода" },
-  { step: "3", title: "Настройте маппинг", desc: `Укажите какие данные синхронизировать между Chat Plus и ${integration.name}` },
-  { step: "4", title: "Готово!", desc: "Данные синхронизируются автоматически. Все переписки и лиды в одном месте" },
-];
-
-const faq = [
-  { q: `Сложно ли настроить интеграцию Chat Plus + ${integration.name}?`, a: `Нет. Настройка занимает 15–30 минут и не требует программиста. Пошаговая инструкция в документации.` },
-  { q: `Данные синхронизируются в реальном времени?`, a: `Да, синхронизация происходит мгновенно при каждом новом событии — сообщении, сделке или контакте.` },
-  { q: `Что происходит если ${integration.name} недоступен?`, a: `Chat Plus буферизует события и синхронизирует их когда сервис восстановится. Данные не теряются.` },
-  { q: `Можно ли подключить несколько аккаунтов ${integration.name}?`, a: `Да, на тарифах Бизнес и Enterprise можно подключить несколько аккаунтов одновременно.` },
-];
+const [settings, channels, integrations, solutions] = await Promise.all([
+  getSiteSettings(),
+  getChannels(),
+  getIntegrations(),
+  getSolutions(),
+]);
+const page = adaptIntegrationPage(integration, { settings, channels, integrations, solutions });
 ---
 
-<Base title={`Chat Plus + ${integration.name}`} description={integration.description}>
-
-  <!-- Hero -->
-  <section style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); color: white; padding: 5rem 2rem;">
-    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
-      <div style="font-size: 3.5rem; margin-bottom: 1rem;">{integration.emoji}</div>
-      <p style="font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; opacity: 0.7; margin-bottom: 0.75rem; text-transform: uppercase;">Интеграция · {integration.category}</p>
-      <h1 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1.5rem;">Chat Plus + {integration.name}</h1>
-      <p style="font-size: 1.15rem; opacity: 0.9; max-width: 580px; margin: 0 auto 2.5rem;">{integration.description}</p>
-      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="/demo" style="background: white; color: #6366f1; padding: 0.875rem 2rem; border-radius: 10px; font-weight: 700;">{integration.cta}</a>
-        <a href="#steps" style="border: 1px solid rgba(255,255,255,0.4); color: white; padding: 0.875rem 2rem; border-radius: 10px; font-weight: 600;">Как настроить</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Что получаете -->
-  <section style="padding: 4rem 2rem;">
-    <div style="max-width: 900px; margin: 0 auto;">
-      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Что получаете с интеграцией</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
-        {integration.features.map(feature => (
-          <div style="padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem; background: white;">
-            <span style="color: #0ea5e9; font-weight: 800;">✓</span>
-            <span style="font-weight: 600;">{feature}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- До / После -->
-  <section style="padding: 4rem 2rem; background: #f8fafc;">
-    <div style="max-width: 900px; margin: 0 auto;">
-      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">До и после интеграции</h2>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-        <div style="padding: 2rem; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca;">
-          <h3 style="font-weight: 700; color: #dc2626; margin-bottom: 1.5rem;">❌ Без интеграции</h3>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem; color: #7f1d1d;">
-            <p>Переключаетесь между мессенджерами и {integration.name} вручную</p>
-            <p>Данные о клиентах теряются между системами</p>
-            <p>Менеджеры дублируют информацию</p>
-            <p>Нет единой картины по клиенту</p>
-          </div>
-        </div>
-        <div style="padding: 2rem; background: #f0fdf4; border-radius: 16px; border: 1px solid #bbf7d0;">
-          <h3 style="font-weight: 700; color: #16a34a; margin-bottom: 1.5rem;">✅ С Chat Plus + {integration.name}</h3>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem; color: #14532d;">
-            <p>Все данные синхронизируются автоматически</p>
-            <p>Единая история клиента: переписки + сделки</p>
-            <p>Менеджеры работают в одном окне</p>
-            <p>Полная аналитика по каналам и конверсии</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Шаги подключения -->
-  <section id="steps" style="padding: 4rem 2rem;">
-    <div style="max-width: 900px; margin: 0 auto;">
-      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Как подключить за 15 минут</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-        {steps.map(s => (
-          <div style="background: #f8fafc; border-radius: 16px; padding: 1.75rem; border: 1px solid #e2e8f0;">
-            <div style="width: 36px; height: 36px; background: #0ea5e9; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; margin-bottom: 1rem;">{s.step}</div>
-            <h3 style="font-weight: 700; margin-bottom: 0.5rem;">{s.title}</h3>
-            <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6;">{s.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section style="padding: 4rem 2rem; background: #f8fafc;">
-    <div style="max-width: 700px; margin: 0 auto;">
-      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Частые вопросы</h2>
-      <div style="display: flex; flex-direction: column; gap: 1rem;">
-        {faq.map(item => (
-          <details style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem 1.5rem; background: white;">
-            <summary style="font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
-              {item.q}
-              <span style="color: #0ea5e9; font-size: 1.25rem; flex-shrink: 0; margin-left: 1rem;">+</span>
-            </summary>
-            <p style="margin-top: 1rem; color: #475569; line-height: 1.7; font-size: 0.95rem;">{item.a}</p>
-          </details>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section style="background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); color: white; padding: 5rem 2rem; text-align: center;">
-    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">Подключите {integration.name} прямо сейчас</h2>
-    <p style="opacity: 0.85; margin-bottom: 2rem;">Настройка за 15 минут. Первые 14 дней бесплатно.</p>
-    <a href="/demo" style="background: white; color: #6366f1; padding: 1rem 2.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; display: inline-block;">{integration.cta}</a>
-  </section>
-
-</Base>
+<StructuredLandingPage page={page} />

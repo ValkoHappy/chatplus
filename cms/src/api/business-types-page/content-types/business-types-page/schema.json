@@ -1,0 +1,34 @@
+{
+  "kind": "singleType",
+  "collectionName": "business_types_page",
+  "info": {
+    "singularName": "business-types-page",
+    "pluralName": "business-types-pages",
+    "displayName": "Business Types Page",
+    "description": "Контент страницы /for"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "meta_title": {
+      "type": "string",
+      "required": true
+    },
+    "meta_description": {
+      "type": "text",
+      "required": true
+    },
+    "hero_title": {
+      "type": "string",
+      "required": true
+    },
+    "hero_description": {
+      "type": "text",
+      "required": true
+    },
+    "hero_cta_label": {
+      "type": "string"
+    }
+  }
+}

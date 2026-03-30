@@ -1,0 +1,1026 @@
+---
+import Base from '../layouts/Base.astro';
+import { Icon } from 'astro-icon/components';
+import { getSiteSettings } from '../lib/strapi';
+import ChatIllustration from './ChatIllustration.astro';
+
+interface LinkItem {
+  label?: string;
+  href?: string;
+  description?: string;
+}
+
+interface PageData {
+  meta_title: string;
+  meta_description: string;
+  h1: string;
+  subtitle?: string;
+  canonical?: string;
+  hreflang_ru?: string;
+  hreflang_uk?: string;
+  hreflang_en?: string;
+  hero_cta_primary_label?: string;
+  hero_cta_primary_url?: string;
+  hero_cta_secondary_label?: string;
+  hero_cta_secondary_url?: string;
+  hero_trust_facts?: string[];
+  problem_title?: string;
+  problem_intro?: string;
+  problems?: { title?: string; text?: string }[];
+  problem_summary?: string;
+  solution_title?: string;
+  solution_intro?: string;
+  solution_steps?: { title?: string; text?: string }[];
+  features_title?: string;
+  features?: { title?: string; text?: string }[];
+  integrations_title?: string;
+  integration_blocks?: { label?: string; text?: string }[];
+  roi_title?: string;
+  roi_intro?: string;
+  roi_without_items?: string[];
+  roi_with_items?: string[];
+  roi_quote?: string;
+  use_cases_title?: string;
+  use_cases?: { title?: string; audience?: string; text?: string }[];
+  comparison_title?: string;
+  comparison_rows?: { parameter?: string; option_one?: string; option_two?: string; chat_plus?: string }[];
+  faq_title?: string;
+  faqs?: { question?: string; answer?: string }[];
+  internal_links_title?: string;
+  internal_links?: LinkItem[];
+  sticky_cta_title?: string;
+  sticky_cta_text?: string;
+  sticky_cta_primary_label?: string;
+  sticky_cta_primary_url?: string;
+  sticky_cta_secondary_label?: string;
+  sticky_cta_secondary_url?: string;
+  software_schema?: Record<string, any> | null;
+  faq_schema?: Record<string, any> | null;
+}
+
+const { page } = Astro.props as { page: PageData };
+const siteSettings = await getSiteSettings();
+const labels = siteSettings?.page_templates?.shared?.structured_page || {};
+const softwareSchema = page.software_schema ? JSON.stringify(page.software_schema) : '';
+const faqSchema = page.faq_schema ? JSON.stringify(page.faq_schema) : '';
+
+function getLinkIcon(href = '') {
+  if (href.startsWith('/channels')) return 'lucide:message-circle-more';
+  if (href.startsWith('/industries')) return 'lucide:briefcase-business';
+  if (href.startsWith('/integrations')) return 'lucide:plug';
+  if (href.startsWith('/features')) return 'lucide:star';
+  if (href.startsWith('/solutions')) return 'lucide:layout-grid';
+  if (href.startsWith('/pricing')) return 'lucide:circle-dollar-sign';
+  if (href.startsWith('/docs')) return 'lucide:file-text';
+  if (href.startsWith('/blog')) return 'lucide:newspaper';
+  if (href.startsWith('/demo')) return 'lucide:play';
+  if (href.startsWith('/for')) return 'lucide:users';
+  if (href.startsWith('/compare') || href.startsWith('/vs')) return 'lucide:scale';
+  return 'lucide:arrow-right';
+}
+---
+
+<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical}>
+  {page.hreflang_ru && <link slot="head" rel="alternate" hreflang="ru" href={page.hreflang_ru} />}
+  {page.hreflang_uk && <link slot="head" rel="alternate" hreflang="uk" href={page.hreflang_uk} />}
+  {page.hreflang_en && <link slot="head" rel="alternate" hreflang="en" href={page.hreflang_en} />}
+  {softwareSchema && <script slot="head" type="application/ld+json" set:html={softwareSchema} />}
+  {faqSchema && <script slot="head" type="application/ld+json" set:html={faqSchema} />}
+
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="hero-bg-dots"></div>
+    <div class="container hero-grid">
+      <div class="hero-inner">
+        <h1 class="hero-h1 text-gradient reveal">{page.h1}</h1>
+        {page.subtitle && <p class="hero-subtitle reveal delay-1">{page.subtitle}</p>}
+        {(page.hero_cta_primary_label || page.hero_cta_secondary_label) && (
+          <div class="hero-ctas reveal delay-2">
+            {page.hero_cta_primary_label && page.hero_cta_primary_url && (
+              <a href={page.hero_cta_primary_url} class="btn-primary">{page.hero_cta_primary_label}</a>
+            )}
+            {page.hero_cta_secondary_label && page.hero_cta_secondary_url && (
+              <a href={page.hero_cta_secondary_url} class="btn-outline">{page.hero_cta_secondary_label}</a>
+            )}
+          </div>
+        )}
+        {page.hero_trust_facts && page.hero_trust_facts.length > 0 && (
+          <ul class="hero-trust">
+            {page.hero_trust_facts.map((fact) => (
+              <li class="trust-item">
+                <span class="trust-check">
+                  <svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+                </span>
+                {fact}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div class="hero-visual animate-float reveal delay-3">
+        <ChatIllustration />
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMS -->
+  {page.problem_title && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.problem_title}</h2>
+          {page.problem_intro && <p class="section-intro">{page.problem_intro}</p>}
+        </div>
+        {page.problems && page.problems.length > 0 && (
+          <div class="problems-grid">
+            {page.problems.map((item, i) => (
+              <article class="problem-card reveal">
+                <div class="problem-num">{String(i + 1).padStart(2, '0')}</div>
+                <div>
+                  <h3 class="card-title">{item.title}</h3>
+                  <p class="card-text">{item.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+        {page.problem_summary && (
+          <p class="problem-summary">{page.problem_summary}</p>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- SOLUTION STEPS -->
+  {page.solution_title && (
+    <section class="section section-tinted" id="solution">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.solution_title}</h2>
+          {page.solution_intro && <p class="section-intro">{page.solution_intro}</p>}
+        </div>
+        {page.solution_steps && page.solution_steps.length > 0 && (
+          <div class="steps-list">
+            {page.solution_steps.map((item, i) => (
+              <article class="step-item reveal">
+                <div class="step-num-wrap">
+                  <div class="step-num">{i + 1}</div>
+                  {i < (page.solution_steps?.length ?? 0) - 1 && <div class="step-line"></div>}
+                </div>
+                <div class="step-body">
+                  <h3 class="step-title">{item.title}</h3>
+                  <p class="card-text">{item.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- FEATURES -->
+  {page.features_title && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.features_title}</h2>
+        </div>
+        {page.features && page.features.length > 0 && (
+          <div class="features-grid">
+            {page.features.map((item, i) => {
+              const icons = [
+                'lucide:message-circle-more',
+                'lucide:bot',
+                'lucide:radio',
+                'lucide:workflow',
+                'lucide:briefcase-business',
+                'lucide:chart-column-big',
+                'lucide:webhook',
+                'lucide:circle-check-big',
+              ];
+              const icon = icons[i % icons.length];
+              return (
+                <article class="feature-card reveal delay-1">
+                  <div class="feature-icon-wrap">
+                    <Icon name={icon} class="feature-icon" />
+                  </div>
+                  <div>
+                    <h3 class="feature-title">{item.title}</h3>
+                    {item.text && <p class="card-text-sm">{item.text}</p>}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- INTEGRATIONS -->
+  {page.integrations_title && (
+    <section class="section section-tinted">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.integrations_title}</h2>
+        </div>
+        {page.integration_blocks && page.integration_blocks.length > 0 && (
+          <div class="integrations-grid">
+            {page.integration_blocks.map((item, i) => {
+              const icons = ['lucide:plug', 'lucide:database', 'lucide:calendar-days', 'lucide:webhook', 'lucide:bot', 'lucide:briefcase-business'];
+              const icon = icons[i % icons.length];
+              return (
+                <article class="integration-card reveal delay-2">
+                  <div class="integration-head">
+                    <div class="integration-icon-wrap">
+                      <Icon name={icon} class="integration-icon" />
+                    </div>
+                    <h3 class="integration-label">{item.label}</h3>
+                  </div>
+                  <p class="card-text-sm">{item.text}</p>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- ROI -->
+  {page.roi_title && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.roi_title}</h2>
+          {page.roi_intro && <p class="section-intro">{page.roi_intro}</p>}
+        </div>
+        {(page.roi_without_items?.length || page.roi_with_items?.length) && (
+          <div class="roi-grid">
+            {page.roi_without_items && page.roi_without_items.length > 0 && (
+              <article class="roi-card roi-card--bad">
+                <div class="roi-card-header">
+                  <span class="roi-icon roi-icon--bad">✕</span>
+                  <h3 class="roi-card-title">{labels.roi_without_title || 'Без Chat Plus'}</h3>
+                </div>
+                <ul class="roi-list">
+                  {page.roi_without_items.map((item) => <li class="roi-item">{item}</li>)}
+                </ul>
+              </article>
+            )}
+            {page.roi_with_items && page.roi_with_items.length > 0 && (
+              <article class="roi-card roi-card--good">
+                <div class="roi-card-header">
+                  <span class="roi-icon roi-icon--good">✓</span>
+                  <h3 class="roi-card-title">{labels.roi_with_title || 'С Chat Plus'}</h3>
+                </div>
+                <ul class="roi-list">
+                  {page.roi_with_items.map((item) => <li class="roi-item">{item}</li>)}
+                </ul>
+              </article>
+            )}
+          </div>
+        )}
+        {page.roi_quote && (
+          <blockquote class="roi-quote">
+            <span class="roi-quote-mark">&ldquo;</span>
+            {page.roi_quote}
+          </blockquote>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- USE CASES -->
+  {page.use_cases_title && (
+    <section class="section section-tinted">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.use_cases_title}</h2>
+        </div>
+        {page.use_cases && page.use_cases.length > 0 && (
+          <div class="use-cases-grid">
+            {page.use_cases.map((item, i) => {
+              const icons = ['lucide:briefcase-business', 'lucide:headset', 'lucide:megaphone', 'lucide:building', 'lucide:store', 'lucide:users'];
+              const icon = icons[i % icons.length];
+              return (
+                <article class="use-case-card">
+                  <div class="use-case-head">
+                    <div class="use-case-icon-wrap">
+                      <Icon name={icon} class="use-case-icon" />
+                    </div>
+                    <h3 class="card-title">{item.title || item.audience}</h3>
+                  </div>
+                  <p class="card-text">{item.text}</p>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- COMPARISON TABLE -->
+  {page.comparison_title && page.comparison_rows && page.comparison_rows.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.comparison_title}</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>{labels.comparison_header_parameter || 'Параметр'}</th>
+                <th>{labels.comparison_header_one || 'Вариант 1'}</th>
+                <th>{labels.comparison_header_two || 'Вариант 2'}</th>
+                <th class="table-accent">{labels.comparison_header_chat_plus || 'Chat Plus'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {page.comparison_rows.map((row) => (
+                <tr>
+                  <td class="table-param">{row.parameter}</td>
+                  <td>{row.option_one}</td>
+                  <td>{row.option_two}</td>
+                  <td class="table-accent table-bold">{row.chat_plus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ -->
+  {page.faq_title && (
+    <section class="section section-tinted">
+      <div class="container container-narrow">
+        <div class="section-header reveal">
+          <h2 class="section-title">{page.faq_title}</h2>
+        </div>
+        {page.faqs && page.faqs.length > 0 && (
+          <div class="faq-list">
+            {page.faqs.map((item) => (
+              <details class="faq-item">
+                <summary class="faq-question">
+                  {item.question}
+                  <span class="faq-chevron">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </summary>
+                <p class="faq-answer">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- INTERNAL LINKS -->
+  {page.internal_links_title && page.internal_links && page.internal_links.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title section-title--compact">{page.internal_links_title}</h2>
+        </div>
+        <div class="links-grid">
+          {page.internal_links.map((item) => (
+            <a href={item.href} class="link-card">
+              <div class="link-icon-wrap">
+                <Icon name={getLinkIcon(item.href)} class="link-icon" />
+              </div>
+              <div class="link-card-inner">
+                <span class="link-label">{item.label}</span>
+                {item.description && <span class="link-desc">{item.description}</span>}
+              </div>
+              <svg class="link-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- FINAL CTA -->
+  {(page.sticky_cta_title || page.sticky_cta_text) && (
+    <section class="cta-section">
+      <div class="cta-bg"></div>
+      <div class="container cta-inner">
+        {page.sticky_cta_title && <h2 class="cta-title">{page.sticky_cta_title}</h2>}
+        {page.sticky_cta_text && <p class="cta-text">{page.sticky_cta_text}</p>}
+        {(page.sticky_cta_primary_label || page.sticky_cta_secondary_label) && (
+          <div class="cta-buttons">
+            {page.sticky_cta_primary_label && page.sticky_cta_primary_url && (
+              <a href={page.sticky_cta_primary_url} class="btn-white">{page.sticky_cta_primary_label}</a>
+            )}
+            {page.sticky_cta_secondary_label && page.sticky_cta_secondary_url && (
+              <a href={page.sticky_cta_secondary_url} class="btn-ghost">{page.sticky_cta_secondary_label}</a>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => {
+          if(e.isIntersecting) {
+            e.target.classList.add('revealed');
+            obs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    });
+  </script>
+</Base>
+
+<style>
+  /* ── Typography cards ── */
+  .card-text  { font-size: 0.95rem; color: #475569; line-height: 1.7; }
+  .card-text-sm { font-size: 0.9rem; color: #475569; line-height: 1.65; }
+
+  /* ── HERO ── */
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(2rem, 4.5vw, 3.5rem);
+    background: linear-gradient(160deg, #eef2ff 0%, #ffffff 50%, #f8fafc 100%);
+  }
+  .hero-bg-dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(#c7d2fe 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  .hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.5rem;
+    position: relative;
+  }
+  .hero-visual::before {
+    content: '';
+    position: absolute;
+    inset: 8% 0 auto 12%;
+    height: 72%;
+    border-radius: 32px;
+    background: radial-gradient(circle, rgba(99, 102, 241, .18), transparent 68%);
+    filter: blur(26px);
+    pointer-events: none;
+  }
+  .hero-h1 {
+    font-size: clamp(1.9rem, 3.5vw, 3rem);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+  .hero-subtitle {
+    font-size: clamp(0.975rem, 1.5vw, 1.1rem);
+    color: #475569;
+    line-height: 1.75;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .hero-trust {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0; margin: 0;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #334155;
+    font-weight: 500;
+  }
+  .trust-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #6366f1;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  /* ── PROBLEMS ── */
+  .problems-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.25rem;
+  }
+  .problem-card {
+    display: flex;
+    gap: 1.15rem;
+    align-items: flex-start;
+    padding: 1rem 1.1rem;
+    background: rgba(255,255,255,.95);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .04);
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .problem-card:hover {
+    box-shadow: 0 20px 40px rgba(79, 70, 229, .08);
+    border-color: rgba(129, 140, 248, .35);
+  }
+  .problem-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #4f46e5;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .problem-summary {
+    margin-top: 1.5rem;
+    font-size: .95rem;
+    font-weight: 700;
+    color: #1e293b;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border-left: 4px solid #6366f1;
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* ── SOLUTION STEPS ── */
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .step-item {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+  .step-num-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #6366f1;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(99,102,241,.3);
+  }
+  .step-line {
+    width: 2px;
+    flex: 1;
+    min-height: 24px;
+    background: linear-gradient(to bottom, #c7d2fe, #e2e8f0);
+    margin: 6px 0;
+  }
+  .step-body {
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.85rem;
+    background: rgba(255,255,255,.95);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .03);
+    flex: 1;
+  }
+  .step-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.4rem;
+    padding-top: 0.5rem;
+  }
+  .step-item:last-child .step-body { margin-bottom: 0; }
+
+  /* ── FEATURES ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .feature-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2.2rem 2rem;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+  }
+  .feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(99, 102, 241, 0.12);
+    background: rgba(255, 255, 255, 0.9);
+  }
+  .feature-icon-wrap {
+    flex-shrink: 0;
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    color: #4f46e5;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
+  }
+  .feature-icon { width: 20px; height: 20px; }
+  .feature-title { font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
+  .feature-card .card-text-sm {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── INTEGRATIONS ── */
+  .integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: .75rem;
+  }
+  .integration-card {
+    padding: 1rem;
+    background: rgba(255,255,255,.95);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .03);
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .integration-card:hover {
+    box-shadow: 0 20px 40px rgba(79, 70, 229, .08);
+    border-color: rgba(129, 140, 248, .35);
+  }
+  .integration-label {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #4f46e5;
+    margin-bottom: 0.55rem;
+    letter-spacing: -0.01em;
+  }
+  .integration-head {
+    display: flex;
+    align-items: center;
+    gap: .72rem;
+    margin-bottom: .65rem;
+  }
+  .integration-icon-wrap {
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    color: #4f46e5;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
+    flex-shrink: 0;
+  }
+  .integration-icon { width: 18px; height: 18px; }
+  .integration-card .card-text-sm {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.52;
+  }
+
+  /* ── ROI ── */
+  .roi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .roi-card {
+    border-radius: 22px;
+    padding: 1.6rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, .05);
+  }
+  .roi-card--bad  { background: #fef2f2; border: 1px solid #fecaca; }
+  .roi-card--good { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .roi-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .roi-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .roi-icon--bad  { background: #fecaca; color: #991b1b; }
+  .roi-icon--good { background: #bbf7d0; color: #166534; }
+  .roi-card-title { font-size: 1rem; font-weight: 700; }
+  .roi-card--bad  .roi-card-title { color: #991b1b; }
+  .roi-card--good .roi-card-title { color: #166534; }
+  .roi-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+  .roi-item { font-size: 0.9rem; color: #374151; line-height: 1.6; padding-left: 0.25rem; }
+  .roi-card--bad  .roi-item::before { content: '— '; color: #ef4444; }
+  .roi-card--good .roi-item::before { content: '✓ '; color: #22c55e; font-weight: 700; }
+  .roi-quote {
+    margin-top: 1.75rem;
+    padding: 1.25rem 1.5rem;
+    background: #f8fafc;
+    border-left: 4px solid #6366f1;
+    border-radius: 0 12px 12px 0;
+    font-size: 1rem;
+    color: #334155;
+    font-style: italic;
+    line-height: 1.7;
+    position: relative;
+  }
+  .roi-quote-mark {
+    font-size: 2.5rem;
+    color: #c7d2fe;
+    line-height: 0;
+    vertical-align: -0.6rem;
+    margin-right: 0.25rem;
+    font-style: normal;
+  }
+
+  /* ── USE CASES ── */
+  .use-cases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: .75rem;
+  }
+  .use-case-card {
+    padding: 1rem 1.1rem;
+    background: rgba(255,255,255,.98);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .04);
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .use-case-card:hover {
+    box-shadow: 0 22px 44px rgba(79, 70, 229, .08);
+    border-color: rgba(129, 140, 248, .35);
+  }
+  .use-case-head {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    margin-bottom: .55rem;
+  }
+  .use-case-icon-wrap {
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    color: #4f46e5;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
+    flex-shrink: 0;
+  }
+  .use-case-icon { width: 18px; height: 18px; }
+  .use-case-card .card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.55;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 22px;
+    border: 1px solid rgba(226, 232, 240, .95);
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, .05);
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+    background: #fff;
+  }
+  .compare-table thead tr { background: linear-gradient(180deg, #f8fafc, #f1f5f9); }
+  .compare-table th {
+    text-align: left;
+    padding: 0.85rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .compare-table td {
+    padding: 0.85rem 1rem;
+    font-size: 0.9rem;
+    color: #374151;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    line-height: 1.65;
+  }
+  .compare-table tbody tr:last-child td { border-bottom: none; }
+  .compare-table tbody tr:hover td { background: #fafafa; }
+  .table-param { font-weight: 600; color: #0f172a; }
+  .table-accent th, .table-accent { color: #6366f1 !important; }
+  .table-bold { font-weight: 700 !important; }
+
+  /* ── FAQ ── */
+  .faq-list { display: grid; gap: 0.65rem; }
+  .faq-item {
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, .04);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .faq-item[open] {
+    border-color: rgba(129, 140, 248, .4);
+    box-shadow: 0 18px 38px rgba(79, 70, 229, .08);
+  }
+  .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.975rem;
+    color: #0f172a;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  .faq-question::-webkit-details-marker { display: none; }
+  .faq-question:hover { color: #6366f1; }
+  .faq-chevron { flex-shrink: 0; color: #94a3b8; transition: transform 0.25s; }
+  .faq-item[open] .faq-chevron { transform: rotate(180deg); color: #6366f1; }
+  .faq-answer {
+    padding: 0 1.25rem 1.1rem;
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.75;
+  }
+
+  /* ── INTERNAL LINKS ── */
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .link-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    min-height: 82px;
+    padding: 1.25rem;
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(226, 232, 240, .9);
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .link-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(129, 140, 248, .4);
+    box-shadow: 0 16px 36px rgba(79, 70, 229, .08);
+  }
+  .link-icon-wrap {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    color: #4f46e5;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
+    flex-shrink: 0;
+  }
+  .link-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .link-card-inner { display: flex; flex-direction: column; gap: 0.2rem; }
+  .link-label { font-size: 0.9rem; font-weight: 700; color: #1e293b; }
+  .link-desc  {
+    font-size: 0.76rem;
+    color: #94a3b8;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+  }
+  .link-arrow { flex-shrink: 0; color: #cbd5e1; transition: color 0.2s, transform 0.2s; }
+  .link-card:hover .link-arrow { color: #6366f1; transform: translateX(3px); }
+
+  /* ── FINAL CTA ── */
+  .cta-section {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(3.5rem, 7vw, 5rem) 0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    color: #fff;
+    margin-top: 2rem;
+  }
+  .cta-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,.26), transparent),
+      radial-gradient(circle at 15% 20%, rgba(56, 189, 248, .12), transparent 22%);
+    pointer-events: none;
+  }
+  .cta-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 720px;
+    padding: 1rem 0;
+  }
+  .cta-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .cta-text {
+    font-size: 1.05rem;
+    color: #cbd5e1;
+    line-height: 1.7;
+    max-width: 560px;
+  }
+  .cta-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-visual { justify-content: center; padding-right: 0; }
+  }
+  @media (max-width: 768px) {
+    .hero-inner { align-items: stretch; }
+    .hero-visual { display: none; }
+    .hero-ctas  { flex-direction: column; }
+    .problems-grid, .features-grid, .integrations-grid, .use-cases-grid, .links-grid { grid-template-columns: 1fr; }
+    .roi-grid { grid-template-columns: 1fr; }
+    .step-line { min-height: 16px; }
+    .cta-buttons { flex-direction: column; }
+    .section { padding: 2.5rem 0; }
+  }
+  @media (max-width: 480px) {
+    .hero-section { padding: 2.5rem 0 2rem; }
+    .section-title { font-size: 1.5rem; }
+    .cta-title { font-size: 1.4rem; }
+  }
+</style>

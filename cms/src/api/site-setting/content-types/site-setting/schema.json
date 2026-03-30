@@ -1,0 +1,60 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_settings",
+  "info": {
+    "singularName": "site-setting",
+    "pluralName": "site-settings",
+    "displayName": "Site Settings",
+    "description": "Глобальный контент сайта: шапка, футер, sticky CTA и SEO-описание"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "site_name": {
+      "type": "string",
+      "required": true
+    },
+    "site_url": {
+      "type": "string",
+      "required": true
+    },
+    "default_description": {
+      "type": "text",
+      "required": true
+    },
+    "organization_description": {
+      "type": "text"
+    },
+    "header_links": {
+      "type": "json"
+    },
+    "header_cta_label": {
+      "type": "string"
+    },
+    "header_cta_url": {
+      "type": "string"
+    },
+    "footer_tagline": {
+      "type": "text"
+    },
+    "footer_columns": {
+      "type": "json"
+    },
+    "footer_copyright": {
+      "type": "string"
+    },
+    "sticky_cta_text": {
+      "type": "text"
+    },
+    "sticky_cta_label": {
+      "type": "string"
+    },
+    "sticky_cta_url": {
+      "type": "string"
+    },
+    "page_templates": {
+      "type": "json"
+    }
+  }
+}

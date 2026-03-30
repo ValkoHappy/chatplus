@@ -1,0 +1,130 @@
+{
+  "kind": "collectionType",
+  "collectionName": "business_types",
+  "info": {
+    "singularName": "business-type",
+    "pluralName": "business-types",
+    "displayName": "Business Type",
+    "description": "Контент страниц /for/[slug]"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "icon": {
+      "type": "string"
+    },
+    "emoji": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "cta": {
+      "type": "string"
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "seo_description": {
+      "type": "text"
+    },
+    "hero_eyebrow": {
+      "type": "string"
+    },
+    "hero_title": {
+      "type": "string"
+    },
+    "hero_secondary_cta_label": {
+      "type": "string"
+    },
+    "hero_secondary_cta_url": {
+      "type": "string"
+    },
+    "problem_title": {
+      "type": "string"
+    },
+    "problem_points": {
+      "type": "json"
+    },
+    "solution_title": {
+      "type": "string"
+    },
+    "solution_points": {
+      "type": "json"
+    },
+    "features_title": {
+      "type": "string"
+    },
+    "features": {
+      "type": "json"
+    },
+    "steps_title": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "json"
+    },
+    "integrations_title": {
+      "type": "string"
+    },
+    "integrations_intro": {
+      "type": "text"
+    },
+    "integrations": {
+      "type": "json"
+    },
+    "integrations_more_text": {
+      "type": "string"
+    },
+    "roi_title": {
+      "type": "string"
+    },
+    "roi_intro": {
+      "type": "string"
+    },
+    "roi_metrics": {
+      "type": "json"
+    },
+    "roi_quote": {
+      "type": "text"
+    },
+    "roi_quote_author": {
+      "type": "string"
+    },
+    "faq_title": {
+      "type": "string"
+    },
+    "faq": {
+      "type": "json"
+    },
+    "related_types_title": {
+      "type": "string"
+    },
+    "related_links_intro": {
+      "type": "string"
+    },
+    "pricing_link_label": {
+      "type": "string"
+    },
+    "final_cta_title": {
+      "type": "string"
+    },
+    "final_cta_text": {
+      "type": "text"
+    },
+    "final_cta_label": {
+      "type": "string"
+    }
+  }
+}

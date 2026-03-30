@@ -1,0 +1,322 @@
+---
+import Base from '../layouts/Base.astro';
+import { Icon } from 'astro-icon/components';
+
+interface CardItem {
+  href: string;
+  title: string;
+  description: string;
+  icon?: string;
+  badges?: string[];
+  ctaLabel?: string;
+}
+
+interface Props {
+  metaTitle: string;
+  metaDescription: string;
+  title: string;
+  subtitle?: string;
+  primaryLabel?: string;
+  primaryUrl?: string;
+  items: CardItem[];
+  stickyTitle?: string;
+  stickyText?: string;
+  stickyPrimaryLabel?: string;
+  stickyPrimaryUrl?: string;
+}
+
+const page = Astro.props as Props;
+---
+
+<Base title={page.metaTitle} description={page.metaDescription}>
+  <section class="dir-hero">
+    <div class="hero-dots"></div>
+    <div class="hero-glow"></div>
+    <div class="container dir-hero-inner">
+      <h1 class="dir-h1">{page.title}</h1>
+      {page.subtitle && <p class="dir-subtitle">{page.subtitle}</p>}
+      {page.primaryLabel && page.primaryUrl && (
+        <a href={page.primaryUrl} class="btn-primary">{page.primaryLabel}</a>
+      )}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="cards-grid">
+        {page.items.map((item) => (
+          <a href={item.href} class="item-card">
+            <div class="card-top">
+              {item.icon && (
+                <div class="card-icon-wrap">
+                  <Icon name={item.icon} class="card-icon" />
+                </div>
+              )}
+              <div class="card-head-copy">
+                <h2 class="card-title">{item.title}</h2>
+                <p class="card-desc">{item.description}</p>
+              </div>
+            </div>
+            {item.badges && item.badges.length > 0 && (
+              <div class="card-badges">
+                {item.badges.map((badge) => (
+                  <span class="badge">{badge}</span>
+                ))}
+              </div>
+            )}
+            <div class="card-cta">
+              <span>{item.ctaLabel || 'Подробнее'}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {(page.stickyTitle || page.stickyText) && (
+    <section class="dir-cta">
+      <div class="cta-glow"></div>
+      <div class="container dir-cta-inner">
+        <div class="dir-cta-copy">
+          {page.stickyTitle && <h2 class="dir-cta-title">{page.stickyTitle}</h2>}
+          {page.stickyText && <p class="dir-cta-text">{page.stickyText}</p>}
+        </div>
+        {page.stickyPrimaryLabel && page.stickyPrimaryUrl && (
+          <a href={page.stickyPrimaryUrl} class="btn-white">{page.stickyPrimaryLabel}</a>
+        )}
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .dir-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(3rem, 6vw, 4.5rem) 0 clamp(2.5rem, 5vw, 3.5rem);
+    background: linear-gradient(160deg, #eef2ff 0%, #ffffff 52%, #f8fafc 100%);
+  }
+
+  .hero-dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(#c7d2fe 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: .38;
+    pointer-events: none;
+  }
+
+  .hero-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 18%, rgba(99, 102, 241, .18), transparent 18%),
+      radial-gradient(circle at 82% 22%, rgba(14, 165, 233, .12), transparent 16%);
+    pointer-events: none;
+  }
+
+  .dir-hero-inner {
+    position: relative;
+    max-width: 820px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.3rem;
+  }
+
+  .dir-h1 {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: .98;
+    letter-spacing: -.05em;
+    color: #0f172a;
+    max-width: 12ch;
+  }
+
+  .dir-subtitle {
+    font-size: clamp(1rem, 1.7vw, 1.12rem);
+    color: #475569;
+    line-height: 1.8;
+    max-width: 650px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .item-card {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    min-height: 160px;
+    padding: 1.1rem;
+    background: rgba(255,255,255,.88);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 22px;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, .05);
+    backdrop-filter: blur(10px);
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+
+  .item-card:hover {
+    border-color: rgba(129, 140, 248, .45);
+    box-shadow: 0 22px 48px rgba(79, 70, 229, .11);
+  }
+
+  .card-top {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .68rem;
+    align-items: start;
+  }
+
+  .card-icon-wrap {
+    width: 2.55rem;
+    height: 2.55rem;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    color: #4f46e5;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    flex-shrink: 0;
+  }
+
+  .card-icon {
+    width: 1.06rem;
+    height: 1.06rem;
+  }
+
+  .card-head-copy {
+    display: grid;
+    gap: .22rem;
+  }
+
+  .card-title {
+    font-size: .98rem;
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -.03em;
+    color: #0f172a;
+  }
+
+  .card-desc {
+    font-size: .84rem;
+    line-height: 1.42;
+    color: #475569;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 27px;
+    padding: .2rem .56rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(226, 232, 240, .95);
+    color: #475569;
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .card-cta {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: #4f46e5;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    padding-top: .1rem;
+  }
+
+  .card-cta svg {
+    transition: transform .18s ease;
+  }
+
+  .item-card:hover .card-cta svg {
+    transform: translateX(3px);
+  }
+
+  .dir-cta {
+    position: relative;
+    overflow: hidden;
+    margin-top: .5rem;
+    padding: clamp(2.5rem, 5vw, 3.5rem) 0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    color: #fff;
+  }
+
+  .cta-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99, 102, 241, .24), transparent);
+    pointer-events: none;
+  }
+
+  .dir-cta-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.4rem;
+  }
+
+  .dir-cta-copy {
+    max-width: 720px;
+  }
+
+  .dir-cta-title {
+    font-size: clamp(1.6rem, 3vw, 2.35rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -.04em;
+  }
+
+  .dir-cta-text {
+    margin-top: .8rem;
+    font-size: 1rem;
+    color: #cbd5e1;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 900px) {
+    .dir-h1 {
+      max-width: none;
+    }
+
+    .dir-cta-inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .dir-hero-inner {
+      align-items: stretch;
+    }
+  }
+</style>
+

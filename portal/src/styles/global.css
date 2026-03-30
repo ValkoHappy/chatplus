@@ -1,0 +1,215 @@
+/* ── Chat Plus Design Tokens ── */
+
+:root {
+  --bg-page: #fff;
+  --bg-subtle: #f8fafc;
+  --bg-glass: rgba(255, 255, 255, .78);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-soft: #94a3b8;
+  --border-main: #e2e8f0;
+  --border-soft: rgba(226, 232, 240, .75);
+  --brand: #6366f1;
+  --brand-dark: #4f46e5;
+  --shadow-soft: 0 14px 36px rgba(15, 23, 42, .06);
+  --shadow-brand: 0 12px 28px rgba(99, 102, 241, .18);
+  --container: 1060px;
+}
+
+/* ── Reset ── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── Typography ── */
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Layout Utilities ── */
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 2rem);
+}
+
+.container-narrow {
+  max-width: 780px;
+}
+
+.section {
+  padding: clamp(2rem, 4.5vw, 4rem) 0;
+}
+
+.section-tinted {
+  background: var(--bg-subtle);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* ── Buttons ── */
+
+.btn-primary,
+.btn-outline,
+.btn-white,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.65rem 1.4rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: #fff;
+  box-shadow: 0 14px 34px rgba(99, 102, 241, .22);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 38px rgba(99, 102, 241, .28);
+}
+
+.btn-outline {
+  background: #fff;
+  color: var(--text-main);
+  border: 1.5px solid #cbd5e1;
+}
+
+.btn-outline:hover {
+  border-color: var(--brand);
+  background: #f5f3ff;
+  transform: translateY(-1px);
+}
+
+.btn-white {
+  background: rgba(255, 255, 255, .96);
+  color: var(--text-main);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, .12);
+}
+
+.btn-white:hover {
+  background: #f5f3ff;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: rgba(255, 255, 255, .85);
+  border: 1.5px solid rgba(255, 255, 255, .25);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, .1);
+  border-color: rgba(255, 255, 255, .45);
+}
+
+/* ── Section Header ── */
+
+.section-header {
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.section-title {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.section-intro {
+  margin-top: 0.75rem;
+  font-size: 1.05rem;
+  color: #475569;
+  line-height: 1.75;
+  max-width: 680px;
+}
+
+/* ── Eyebrow Badge ── */
+
+.eyebrow {
+  display: inline-flex;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--brand-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .two-col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Upgraded Micro-Animations & Utilities ── */
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(0.5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--brand-dark) 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}

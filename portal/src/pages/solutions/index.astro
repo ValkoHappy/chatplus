@@ -1,0 +1,10 @@
+---
+import DirectoryPage from '../../components/DirectoryPage.astro';
+import { adaptDirectoryPage } from '../../lib/page-adapters';
+import { getSiteSettings, getSolutions } from '../../lib/strapi';
+
+const [settings, solutions] = await Promise.all([getSiteSettings(), getSolutions()]);
+const page = adaptDirectoryPage('solutions', settings, solutions);
+---
+
+<DirectoryPage {...page} />

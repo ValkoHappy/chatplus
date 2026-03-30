@@ -430,6 +430,106 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBusinessTypeBusinessType
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'business_types';
+  info: {
+    description: '\u041A\u043E\u043D\u0442\u0435\u043D\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446 /for/[slug]';
+    displayName: 'Business Type';
+    pluralName: 'business-types';
+    singularName: 'business-type';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cta: Schema.Attribute.String;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    emoji: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
+    features: Schema.Attribute.JSON;
+    features_title: Schema.Attribute.String;
+    final_cta_label: Schema.Attribute.String;
+    final_cta_text: Schema.Attribute.Text;
+    final_cta_title: Schema.Attribute.String;
+    hero_eyebrow: Schema.Attribute.String;
+    hero_secondary_cta_label: Schema.Attribute.String;
+    hero_secondary_cta_url: Schema.Attribute.String;
+    hero_title: Schema.Attribute.String;
+    icon: Schema.Attribute.String;
+    integrations: Schema.Attribute.JSON;
+    integrations_intro: Schema.Attribute.Text;
+    integrations_more_text: Schema.Attribute.String;
+    integrations_title: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::business-type.business-type'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    pricing_link_label: Schema.Attribute.String;
+    problem_points: Schema.Attribute.JSON;
+    problem_title: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    related_links_intro: Schema.Attribute.String;
+    related_types_title: Schema.Attribute.String;
+    roi_intro: Schema.Attribute.String;
+    roi_metrics: Schema.Attribute.JSON;
+    roi_quote: Schema.Attribute.Text;
+    roi_quote_author: Schema.Attribute.String;
+    roi_title: Schema.Attribute.String;
+    seo_description: Schema.Attribute.Text;
+    seo_title: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    solution_points: Schema.Attribute.JSON;
+    solution_title: Schema.Attribute.String;
+    steps: Schema.Attribute.JSON;
+    steps_title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiBusinessTypesPageBusinessTypesPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'business_types_page';
+  info: {
+    description: '\u041A\u043E\u043D\u0442\u0435\u043D\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B /for';
+    displayName: 'Business Types Page';
+    pluralName: 'business-types-pages';
+    singularName: 'business-types-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    hero_cta_label: Schema.Attribute.String;
+    hero_description: Schema.Attribute.Text & Schema.Attribute.Required;
+    hero_title: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::business-types-page.business-types-page'
+    > &
+      Schema.Attribute.Private;
+    meta_description: Schema.Attribute.Text & Schema.Attribute.Required;
+    meta_title: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
   collectionName: 'channels';
   info: {
@@ -449,7 +549,9 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON;
     features: Schema.Attribute.JSON;
+    icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -458,12 +560,62 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    roi_metrics: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    steps: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
+  collectionName: 'competitors';
+  info: {
+    description: '\u041A\u043E\u043D\u0442\u0435\u043D\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446 /compare/[slug] \u0438 /vs/[slug]';
+    displayName: 'Competitor';
+    pluralName: 'competitors';
+    singularName: 'competitor';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    competitor_price_caption: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    eyebrow: Schema.Attribute.String;
+    final_cta_label: Schema.Attribute.String;
+    final_cta_text: Schema.Attribute.Text;
+    final_cta_title: Schema.Attribute.String;
+    hero_description: Schema.Attribute.Text;
+    hero_title: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::competitor.competitor'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    our_price: Schema.Attribute.String & Schema.Attribute.Required;
+    our_price_caption: Schema.Attribute.String;
+    our_price_label: Schema.Attribute.String;
+    our_strengths: Schema.Attribute.JSON;
+    price: Schema.Attribute.String & Schema.Attribute.Required;
+    pricing_title: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo_description: Schema.Attribute.Text;
+    seo_title: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    strengths_title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    weaknesses: Schema.Attribute.JSON;
+    weaknesses_title: Schema.Attribute.String;
   };
 }
 
@@ -486,7 +638,9 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON;
     features: Schema.Attribute.JSON;
+    icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -523,7 +677,9 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON;
     features: Schema.Attribute.JSON;
+    icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -533,6 +689,7 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     pain: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
+    roi_metrics: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
@@ -563,7 +720,9 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON;
     features: Schema.Attribute.JSON;
+    icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -575,6 +734,131 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
+  collectionName: 'landing_pages';
+  info: {
+    description: '\u0423\u043D\u0438\u0444\u0438\u0446\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u043F\u0440\u043E\u0434\u0430\u044E\u0449\u0430\u044F \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u043F\u043E \u0441\u0442\u0440\u0443\u043A\u0442\u0443\u0440\u0435 PDF';
+    displayName: 'Landing Page';
+    pluralName: 'landing-pages';
+    singularName: 'landing-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    breadcrumb: Schema.Attribute.JSON;
+    canonical: Schema.Attribute.String;
+    comparison_rows: Schema.Attribute.Component<'tenders.compare-row', true>;
+    comparison_title: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    faq_schema: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
+    faqs: Schema.Attribute.Component<'tenders.faq-item', true>;
+    features: Schema.Attribute.Component<'tenders.feature-item', true>;
+    features_title: Schema.Attribute.String;
+    h1: Schema.Attribute.String & Schema.Attribute.Required;
+    hero_cta_primary_label: Schema.Attribute.String;
+    hero_cta_primary_url: Schema.Attribute.String;
+    hero_cta_secondary_label: Schema.Attribute.String;
+    hero_cta_secondary_url: Schema.Attribute.String;
+    hero_trust_facts: Schema.Attribute.JSON;
+    hreflang_en: Schema.Attribute.String;
+    hreflang_ru: Schema.Attribute.String;
+    hreflang_uk: Schema.Attribute.String;
+    integration_blocks: Schema.Attribute.Component<
+      'tenders.integration-block',
+      true
+    >;
+    integrations_title: Schema.Attribute.String;
+    internal_links: Schema.Attribute.Component<'tenders.link-item', true>;
+    internal_links_title: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::landing-page.landing-page'
+    > &
+      Schema.Attribute.Private;
+    meta_description: Schema.Attribute.Text & Schema.Attribute.Required;
+    meta_title: Schema.Attribute.String & Schema.Attribute.Required;
+    problem_intro: Schema.Attribute.Text;
+    problem_summary: Schema.Attribute.Text;
+    problem_title: Schema.Attribute.String;
+    problems: Schema.Attribute.Component<'tenders.problem-item', true>;
+    publishedAt: Schema.Attribute.DateTime;
+    roi_intro: Schema.Attribute.Text;
+    roi_quote: Schema.Attribute.Text;
+    roi_title: Schema.Attribute.String;
+    roi_with_items: Schema.Attribute.JSON;
+    roi_without_items: Schema.Attribute.JSON;
+    schema_type: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'h1'> &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    software_schema: Schema.Attribute.JSON;
+    solution_intro: Schema.Attribute.Text;
+    solution_steps: Schema.Attribute.Component<'tenders.step-item', true>;
+    solution_title: Schema.Attribute.String;
+    sticky_cta_primary_label: Schema.Attribute.String;
+    sticky_cta_primary_url: Schema.Attribute.String;
+    sticky_cta_secondary_label: Schema.Attribute.String;
+    sticky_cta_secondary_url: Schema.Attribute.String;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
+    subtitle: Schema.Attribute.Text;
+    target_keywords: Schema.Attribute.JSON;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    use_cases: Schema.Attribute.Component<'tenders.use-case-item', true>;
+    use_cases_title: Schema.Attribute.String;
+    word_count: Schema.Attribute.Integer;
+  };
+}
+
+export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
+  collectionName: 'site_settings';
+  info: {
+    description: '\u0413\u043B\u043E\u0431\u0430\u043B\u044C\u043D\u044B\u0439 \u043A\u043E\u043D\u0442\u0435\u043D\u0442 \u0441\u0430\u0439\u0442\u0430: \u0448\u0430\u043F\u043A\u0430, \u0444\u0443\u0442\u0435\u0440, sticky CTA \u0438 SEO-\u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435';
+    displayName: 'Site Settings';
+    pluralName: 'site-settings';
+    singularName: 'site-setting';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    default_description: Schema.Attribute.Text & Schema.Attribute.Required;
+    footer_columns: Schema.Attribute.JSON;
+    footer_copyright: Schema.Attribute.String;
+    footer_tagline: Schema.Attribute.Text;
+    header_cta_label: Schema.Attribute.String;
+    header_cta_url: Schema.Attribute.String;
+    header_links: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::site-setting.site-setting'
+    > &
+      Schema.Attribute.Private;
+    organization_description: Schema.Attribute.Text;
+    page_templates: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    site_name: Schema.Attribute.String & Schema.Attribute.Required;
+    site_url: Schema.Attribute.String & Schema.Attribute.Required;
+    sticky_cta_label: Schema.Attribute.String;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_url: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -600,7 +884,9 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON;
     features: Schema.Attribute.JSON;
+    icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -608,13 +894,97 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    pain: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
+    roi_metrics: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    solution: Schema.Attribute.Text;
+    steps: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
+  collectionName: 'tenders_pages';
+  info: {
+    description: '\u041A\u043E\u043D\u0442\u0435\u043D\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B /solutions/tenders';
+    displayName: 'Tenders Page';
+    pluralName: 'tenders-pages';
+    singularName: 'tenders-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    breadcrumb: Schema.Attribute.JSON;
+    canonical: Schema.Attribute.String;
+    comparison_rows: Schema.Attribute.Component<'tenders.compare-row', true>;
+    comparison_title: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    faq_schema: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
+    faqs: Schema.Attribute.Component<'tenders.faq-item', true>;
+    features: Schema.Attribute.Component<'tenders.feature-item', true>;
+    features_title: Schema.Attribute.String;
+    h1: Schema.Attribute.String & Schema.Attribute.Required;
+    hero_cta_primary_label: Schema.Attribute.String;
+    hero_cta_primary_url: Schema.Attribute.String;
+    hero_cta_secondary_label: Schema.Attribute.String;
+    hero_cta_secondary_url: Schema.Attribute.String;
+    hero_trust_facts: Schema.Attribute.JSON;
+    hreflang_en: Schema.Attribute.String;
+    hreflang_ru: Schema.Attribute.String;
+    hreflang_uk: Schema.Attribute.String;
+    integration_blocks: Schema.Attribute.Component<
+      'tenders.integration-block',
+      true
+    >;
+    integrations_title: Schema.Attribute.String;
+    internal_links: Schema.Attribute.Component<'tenders.link-item', true>;
+    internal_links_title: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tenders-page.tenders-page'
+    > &
+      Schema.Attribute.Private;
+    meta_description: Schema.Attribute.Text & Schema.Attribute.Required;
+    meta_title: Schema.Attribute.String & Schema.Attribute.Required;
+    problem_intro: Schema.Attribute.Text;
+    problem_summary: Schema.Attribute.Text;
+    problem_title: Schema.Attribute.String;
+    problems: Schema.Attribute.Component<'tenders.problem-item', true>;
+    publishedAt: Schema.Attribute.DateTime;
+    roi_intro: Schema.Attribute.Text;
+    roi_quote: Schema.Attribute.Text;
+    roi_title: Schema.Attribute.String;
+    roi_with_items: Schema.Attribute.JSON;
+    roi_without_items: Schema.Attribute.JSON;
+    schema_type: Schema.Attribute.String;
+    software_schema: Schema.Attribute.JSON;
+    solution_intro: Schema.Attribute.Text;
+    solution_steps: Schema.Attribute.Component<'tenders.step-item', true>;
+    solution_title: Schema.Attribute.String;
+    sticky_cta_primary_label: Schema.Attribute.String;
+    sticky_cta_primary_url: Schema.Attribute.String;
+    sticky_cta_secondary_label: Schema.Attribute.String;
+    sticky_cta_secondary_url: Schema.Attribute.String;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
+    subtitle: Schema.Attribute.Text;
+    target_keywords: Schema.Attribute.JSON;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    use_cases: Schema.Attribute.Component<'tenders.use-case-item', true>;
+    use_cases_title: Schema.Attribute.String;
+    word_count: Schema.Attribute.Integer;
   };
 }
 
@@ -1129,11 +1499,17 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::business-type.business-type': ApiBusinessTypeBusinessType;
+      'api::business-types-page.business-types-page': ApiBusinessTypesPageBusinessTypesPage;
       'api::channel.channel': ApiChannelChannel;
+      'api::competitor.competitor': ApiCompetitorCompetitor;
       'api::feature.feature': ApiFeatureFeature;
       'api::industry.industry': ApiIndustryIndustry;
       'api::integration.integration': ApiIntegrationIntegration;
+      'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::site-setting.site-setting': ApiSiteSettingSiteSetting;
       'api::solution.solution': ApiSolutionSolution;
+      'api::tenders-page.tenders-page': ApiTendersPageTendersPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

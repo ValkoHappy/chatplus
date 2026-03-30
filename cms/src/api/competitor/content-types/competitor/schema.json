@@ -1,0 +1,80 @@
+{
+  "kind": "collectionType",
+  "collectionName": "competitors",
+  "info": {
+    "singularName": "competitor",
+    "pluralName": "competitors",
+    "displayName": "Competitor",
+    "description": "Контент страниц /compare/[slug] и /vs/[slug]"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "price": {
+      "type": "string",
+      "required": true
+    },
+    "our_price": {
+      "type": "string",
+      "required": true
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "seo_description": {
+      "type": "text"
+    },
+    "eyebrow": {
+      "type": "string"
+    },
+    "hero_title": {
+      "type": "string"
+    },
+    "hero_description": {
+      "type": "text"
+    },
+    "pricing_title": {
+      "type": "string"
+    },
+    "our_price_label": {
+      "type": "string"
+    },
+    "our_price_caption": {
+      "type": "string"
+    },
+    "competitor_price_caption": {
+      "type": "string"
+    },
+    "strengths_title": {
+      "type": "string"
+    },
+    "weaknesses_title": {
+      "type": "string"
+    },
+    "our_strengths": {
+      "type": "json"
+    },
+    "weaknesses": {
+      "type": "json"
+    },
+    "final_cta_title": {
+      "type": "string"
+    },
+    "final_cta_text": {
+      "type": "text"
+    },
+    "final_cta_label": {
+      "type": "string"
+    }
+  }
+}

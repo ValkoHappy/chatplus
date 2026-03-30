@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_tenders_compare_rows",
+  "info": {
+    "displayName": "Compare Row"
+  },
+  "attributes": {
+    "parameter": {
+      "type": "string",
+      "required": true
+    },
+    "email_aggregator": {
+      "type": "string",
+      "required": true
+    },
+    "mobile_aggregator": {
+      "type": "string",
+      "required": true
+    },
+    "chatplus": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

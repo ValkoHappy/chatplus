@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "generate-content": "node --env-file=.env scripts/generate-seo-content.mjs",
+    "seed-content": "node --env-file=.env scripts/seed-runtime-content.mjs"
+  },
   "dependencies": {
     "dotenv": "^17.3.1"
   }

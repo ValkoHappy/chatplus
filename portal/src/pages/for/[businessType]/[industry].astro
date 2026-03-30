@@ -1,0 +1,26 @@
+---
+import StructuredLandingPage from '../../../components/StructuredLandingPage.astro';
+import { adaptBusinessTypeIndustryPage } from '../../../lib/page-adapters';
+import { getBusinessTypes, getIndustries, getIntegrations, getChannels, getSiteSettings } from '../../../lib/strapi';
+
+export async function getStaticPaths() {
+  const [businessTypes, industries] = await Promise.all([getBusinessTypes(), getIndustries()]);
+  return businessTypes.flatMap((businessType) =>
+    industries.map((industry) => ({
+      params: { businessType: businessType.slug, industry: industry.slug },
+      props: { businessType, industry },
+    }))
+  );
+}
+
+const { businessType, industry } = Astro.props;
+const [settings, integrations, channels, industriesList] = await Promise.all([
+  getSiteSettings(),
+  getIntegrations(),
+  getChannels(),
+  getIndustries(),
+]);
+const page = adaptBusinessTypeIndustryPage(businessType, industry, { settings, integrations, channels, industries: industriesList });
+---
+
+<StructuredLandingPage page={page} />

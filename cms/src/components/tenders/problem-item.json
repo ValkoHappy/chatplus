@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_tenders_problem_items",
+  "info": {
+    "displayName": "Problem Item"
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

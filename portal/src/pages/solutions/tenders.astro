@@ -1,0 +1,8 @@
+---
+import StructuredLandingPage from '../../components/StructuredLandingPage.astro';
+import { getTendersPage } from '../../lib/strapi';
+
+const page = await getTendersPage();
+---
+
+<StructuredLandingPage page={page} />

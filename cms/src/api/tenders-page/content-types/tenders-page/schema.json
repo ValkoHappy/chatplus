@@ -1,0 +1,181 @@
+{
+  "kind": "singleType",
+  "collectionName": "tenders_pages",
+  "info": {
+    "singularName": "tenders-page",
+    "pluralName": "tenders-pages",
+    "displayName": "Tenders Page",
+    "description": "Контент страницы /solutions/tenders"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "meta_title": {
+      "type": "string",
+      "required": true
+    },
+    "meta_description": {
+      "type": "text",
+      "required": true
+    },
+    "h1": {
+      "type": "string",
+      "required": true
+    },
+    "subtitle": {
+      "type": "text"
+    },
+    "canonical": {
+      "type": "string"
+    },
+    "hreflang_ru": {
+      "type": "string"
+    },
+    "hreflang_uk": {
+      "type": "string"
+    },
+    "hreflang_en": {
+      "type": "string"
+    },
+    "breadcrumb": {
+      "type": "json"
+    },
+    "schema_type": {
+      "type": "string"
+    },
+    "target_keywords": {
+      "type": "json"
+    },
+    "word_count": {
+      "type": "integer"
+    },
+    "hero_cta_primary_label": {
+      "type": "string"
+    },
+    "hero_cta_primary_url": {
+      "type": "string"
+    },
+    "hero_cta_secondary_label": {
+      "type": "string"
+    },
+    "hero_cta_secondary_url": {
+      "type": "string"
+    },
+    "hero_trust_facts": {
+      "type": "json"
+    },
+    "problem_title": {
+      "type": "string"
+    },
+    "problem_intro": {
+      "type": "text"
+    },
+    "problems": {
+      "type": "component",
+      "component": "tenders.problem-item",
+      "repeatable": true
+    },
+    "problem_summary": {
+      "type": "text"
+    },
+    "solution_title": {
+      "type": "string"
+    },
+    "solution_intro": {
+      "type": "text"
+    },
+    "solution_steps": {
+      "type": "component",
+      "component": "tenders.step-item",
+      "repeatable": true
+    },
+    "features_title": {
+      "type": "string"
+    },
+    "features": {
+      "type": "component",
+      "component": "tenders.feature-item",
+      "repeatable": true
+    },
+    "integrations_title": {
+      "type": "string"
+    },
+    "integration_blocks": {
+      "type": "component",
+      "component": "tenders.integration-block",
+      "repeatable": true
+    },
+    "roi_title": {
+      "type": "string"
+    },
+    "roi_intro": {
+      "type": "text"
+    },
+    "roi_without_items": {
+      "type": "json"
+    },
+    "roi_with_items": {
+      "type": "json"
+    },
+    "roi_quote": {
+      "type": "text"
+    },
+    "use_cases_title": {
+      "type": "string"
+    },
+    "use_cases": {
+      "type": "component",
+      "component": "tenders.use-case-item",
+      "repeatable": true
+    },
+    "comparison_title": {
+      "type": "string"
+    },
+    "comparison_rows": {
+      "type": "component",
+      "component": "tenders.compare-row",
+      "repeatable": true
+    },
+    "faq_title": {
+      "type": "string"
+    },
+    "faqs": {
+      "type": "component",
+      "component": "tenders.faq-item",
+      "repeatable": true
+    },
+    "internal_links_title": {
+      "type": "string"
+    },
+    "internal_links": {
+      "type": "component",
+      "component": "tenders.link-item",
+      "repeatable": true
+    },
+    "sticky_cta_title": {
+      "type": "string"
+    },
+    "sticky_cta_text": {
+      "type": "text"
+    },
+    "sticky_cta_primary_label": {
+      "type": "string"
+    },
+    "sticky_cta_primary_url": {
+      "type": "string"
+    },
+    "sticky_cta_secondary_label": {
+      "type": "string"
+    },
+    "sticky_cta_secondary_url": {
+      "type": "string"
+    },
+    "software_schema": {
+      "type": "json"
+    },
+    "faq_schema": {
+      "type": "json"
+    }
+  }
+}

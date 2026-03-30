@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_tenders_integration_blocks",
+  "info": {
+    "displayName": "Integration Block"
+  },
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,80 @@
+<div class="orbit-illustration" aria-hidden="true">
+  <svg viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg" class="orbit-svg" fill="none">
+    <defs>
+      <linearGradient id="orbitBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#eef2ff" />
+        <stop offset="100%" stop-color="#ffffff" />
+      </linearGradient>
+      <linearGradient id="orbitPrimary" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#6366f1" />
+        <stop offset="100%" stop-color="#4f46e5" />
+      </linearGradient>
+      <linearGradient id="orbitCyan" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#67e8f9" />
+        <stop offset="100%" stop-color="#0ea5e9" />
+      </linearGradient>
+      <linearGradient id="orbitPink" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f9a8d4" />
+        <stop offset="100%" stop-color="#ec4899" />
+      </linearGradient>
+      <filter id="orbitShadow" x="-20%" y="-20%" width="140%" height="160%">
+        <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#1e1b4b" flood-opacity="0.15" />
+      </filter>
+    </defs>
+
+    <rect x="70" y="38" width="380" height="284" rx="32" fill="url(#orbitBg)" stroke="#dbe3f2" />
+    <ellipse cx="260" cy="182" rx="154" ry="98" stroke="#c7d2fe" stroke-width="1.5" stroke-dasharray="8 10" />
+    <ellipse cx="260" cy="182" rx="112" ry="68" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="6 10" />
+
+    <rect x="180" y="104" width="160" height="156" rx="26" fill="white" stroke="#dbe3f2" filter="url(#orbitShadow)" />
+    <rect x="198" y="124" width="124" height="18" rx="9" fill="#eef2ff" />
+    <rect x="198" y="152" width="92" height="10" rx="5" fill="#dbeafe" />
+    <rect x="198" y="170" width="112" height="10" rx="5" fill="#e2e8f0" />
+    <rect x="198" y="202" width="50" height="42" rx="14" fill="url(#orbitPrimary)" />
+    <rect x="256" y="202" width="66" height="42" rx="14" fill="#f8fafc" stroke="#e2e8f0" />
+    <path d="M213 222h20M223 212v20" stroke="white" stroke-width="2.5" stroke-linecap="round" />
+    <path d="M272 214h34" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" />
+    <path d="M272 226h22" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" />
+
+    <g filter="url(#orbitShadow)">
+      <rect x="80" y="138" width="110" height="64" rx="18" fill="white" stroke="#dbe3f2" />
+      <circle cx="112" cy="170" r="18" fill="url(#orbitPrimary)" />
+      <path d="M104 170h16M112 162v16" stroke="white" stroke-width="2.5" stroke-linecap="round" />
+      <rect x="138" y="158" width="34" height="8" rx="4" fill="#c7d2fe" />
+      <rect x="138" y="174" width="24" height="8" rx="4" fill="#e2e8f0" />
+    </g>
+
+    <g filter="url(#orbitShadow)">
+      <rect x="330" y="78" width="120" height="72" rx="20" fill="white" stroke="#dbe3f2" />
+      <rect x="348" y="98" width="84" height="10" rx="5" fill="#dbeafe" />
+      <rect x="348" y="116" width="60" height="10" rx="5" fill="#e2e8f0" />
+      <circle cx="412" cy="122" r="16" fill="url(#orbitCyan)" />
+      <path d="M405 123l5 5 10-11" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+
+    <g filter="url(#orbitShadow)">
+      <rect x="322" y="224" width="128" height="74" rx="20" fill="white" stroke="#dbe3f2" />
+      <rect x="342" y="246" width="54" height="10" rx="5" fill="#e9d5ff" />
+      <rect x="342" y="264" width="88" height="10" rx="5" fill="#e2e8f0" />
+      <circle cx="410" cy="248" r="18" fill="url(#orbitPink)" />
+      <path d="M410 239v18M401 248h18" stroke="white" stroke-width="2.5" stroke-linecap="round" />
+    </g>
+
+    <circle cx="120" cy="86" r="10" fill="#c7d2fe" />
+    <circle cx="432" cy="196" r="8" fill="#bfdbfe" />
+    <circle cx="392" cy="316" r="6" fill="#fbcfe8" />
+  </svg>
+</div>
+
+<style>
+  .orbit-illustration {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .orbit-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

@@ -1,37 +1,20 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { businessTypes } from '../../data/businessTypes';
+import StructuredLandingPage from '../../components/StructuredLandingPage.astro';
+import { adaptBusinessTypePage } from '../../lib/page-adapters';
+import { getBusinessTypes, getChannels, getIndustries } from '../../lib/strapi';
 
-export function getStaticPaths() {
-  return businessTypes.map(bt => ({ params: { slug: bt.slug }, props: { bt } }));
+export async function getStaticPaths() {
+  const businessTypes = await getBusinessTypes();
+  return businessTypes.map((bt) => ({ params: { slug: bt.slug }, props: { bt } }));
 }
+
 const { bt } = Astro.props;
+const [businessTypes, industries, channels] = await Promise.all([
+  getBusinessTypes(),
+  getIndustries(),
+  getChannels(),
+]);
+const page = adaptBusinessTypePage(bt, { businessTypes, industries, channels });
 ---
-<Base title={`Chat Plus для ${bt.name}`} description={bt.description}>
-  <section style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 5rem 2rem;">
-    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
-      <div style="font-size: 3.5rem; margin-bottom: 1rem;">{bt.emoji}</div>
-      <h1 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1.5rem;">Chat Plus для {bt.name}</h1>
-      <p style="font-size: 1.15rem; opacity: 0.9; max-width: 580px; margin: 0 auto 2.5rem;">{bt.description}</p>
-      <a href="/demo" style="background: white; color: #6366f1; padding: 0.875rem 2.5rem; border-radius: 10px; font-weight: 700; display: inline-block;">{bt.cta}</a>
-    </div>
-  </section>
-  <section style="padding: 4rem 2rem;">
-    <div style="max-width: 900px; margin: 0 auto;">
-      <h2 style="font-size: 1.75rem; font-weight: 800; text-align: center; margin-bottom: 3rem;">Что включено</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-        {bt.features.map(f => (
-          <div style="padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem;">
-            <span style="color: #6366f1;">✓</span>
-            <span style="font-weight: 600;">{f}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-  <section style="background: #f8fafc; padding: 4rem 2rem; text-align: center;">
-    <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem;">Попробуйте бесплатно 14 дней</h2>
-    <p style="color: #64748b; margin-bottom: 2rem;">Настройка за 15 минут. Никакой технической экспертизы не нужно.</p>
-    <a href="/demo" style="background: #6366f1; color: white; padding: 1rem 2.5rem; border-radius: 10px; font-weight: 700; display: inline-block;">{bt.cta}</a>
-  </section>
-</Base>
+
+<StructuredLandingPage page={page} />

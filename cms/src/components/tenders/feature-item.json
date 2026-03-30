@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_tenders_feature_items",
+  "info": {
+    "displayName": "Feature Item"
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

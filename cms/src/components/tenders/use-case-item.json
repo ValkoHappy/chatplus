@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_tenders_use_case_items",
+  "info": {
+    "displayName": "Use Case Item"
+  },
+  "attributes": {
+    "audience": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}
