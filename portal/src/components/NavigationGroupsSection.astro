@@ -1,0 +1,198 @@
+---
+import { Icon } from 'astro-icon/components';
+import {
+  getLinkIcon,
+  resolveNavigationGroupsEyebrow,
+  resolveNavigationGroupsIntro,
+  resolveNavigationGroupsTitle,
+  type LinkSectionPageData,
+  type NavigationGroup,
+} from '../lib/link-sections';
+import { withBasePath } from '../lib/urls';
+
+interface Props {
+  page: LinkSectionPageData;
+}
+
+const { page } = Astro.props as Props;
+const groups = (page.navigation_groups || []).filter(
+  (group: NavigationGroup) =>
+    group?.title && Array.isArray(group.items) && group.items.some((item) => item?.label && item?.href),
+);
+const title = resolveNavigationGroupsTitle(page);
+const intro = resolveNavigationGroupsIntro(page);
+const eyebrow = resolveNavigationGroupsEyebrow(page);
+const toHref = (href?: string) => withBasePath(href);
+---
+
+{groups.length > 0 && title && (
+  <section class="matrix-section">
+    <div class="container">
+      <div class="matrix-header">
+        {eyebrow && <p class="matrix-eyebrow">{eyebrow}</p>}
+        <h2 class="matrix-title">{title}</h2>
+        {intro && <p class="matrix-intro">{intro}</p>}
+      </div>
+
+      <div class="matrix-groups">
+        {groups.map((group) => (
+          <section class="matrix-group">
+            <h3 class="matrix-group-title">{group.title}</h3>
+            <div class="matrix-grid">
+              {group.items?.map((item) => (
+                <a href={toHref(item.href)} class="matrix-card">
+                  <div class="matrix-card-icon">
+                    <Icon name={getLinkIcon(item.href)} class="matrix-card-icon-svg" />
+                  </div>
+                  <div class="matrix-card-copy">
+                    <span class="matrix-card-title">{item.label}</span>
+                    {item.description && <span class="matrix-card-description">{item.description}</span>}
+                  </div>
+                  <Icon name="lucide:arrow-right" class="matrix-card-arrow" />
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .matrix-section {
+    padding: clamp(3rem, 6vw, 4.8rem) 0;
+    background:
+      radial-gradient(circle at top left, rgba(99, 102, 241, 0.08), transparent 28%),
+      linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  }
+
+  .matrix-header {
+    max-width: 860px;
+    margin-bottom: 1.8rem;
+  }
+
+  .matrix-eyebrow {
+    margin: 0 0 0.55rem;
+    color: #4f46e5;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .matrix-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+  }
+
+  .matrix-intro {
+    margin: 0.8rem 0 0;
+    color: #64748b;
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 66ch;
+  }
+
+  .matrix-groups {
+    display: grid;
+    gap: 1.7rem;
+  }
+
+  .matrix-group {
+    display: grid;
+    gap: 0.95rem;
+  }
+
+  .matrix-group-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+  }
+
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .matrix-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: start;
+    padding: 1.2rem 1.25rem;
+    border-radius: 22px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(255, 255, 255, 0.97);
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .matrix-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 22px 42px rgba(15, 23, 42, 0.09);
+  }
+
+  .matrix-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%);
+    color: #4f46e5;
+    flex-shrink: 0;
+  }
+
+  .matrix-card-icon-svg {
+    width: 1.22rem;
+    height: 1.22rem;
+  }
+
+  .matrix-card-copy {
+    min-width: 0;
+  }
+
+  .matrix-card-title {
+    display: block;
+    color: #0f172a;
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1.24;
+  }
+
+  .matrix-card-description {
+    display: -webkit-box;
+    margin-top: 0.42rem;
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.58;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .matrix-card-arrow {
+    width: 1.08rem;
+    height: 1.08rem;
+    color: #94a3b8;
+    margin-top: 0.12rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 980px) {
+    .matrix-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,8 +1,8 @@
 ---
-import StructuredLandingPage from '../components/StructuredLandingPage.astro';
+import PartnershipPage from '../components/PartnershipPage.astro';
 import { getLandingPage } from '../lib/strapi';
 
 const page = await getLandingPage('partnership');
 ---
 
-<StructuredLandingPage page={page} />
+<PartnershipPage page={page} />

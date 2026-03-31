@@ -1,19 +1,21 @@
 name: Deploy Chat Plus
 
 on:
-  # Запуск вручную из GitHub
   workflow_dispatch:
-
-  # Запуск через webhook от Strapi (когда публикуется контент)
   repository_dispatch:
     types: [strapi-content-update]
 
-  # Запуск при пуше в main
-  push:
-    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,9 +29,17 @@ jobs:
           cache: 'npm'
           cache-dependency-path: portal/package-lock.json
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Install dependencies
         working-directory: portal
         run: npm ci
+
+      - name: Validate build secrets
+        run: |
+          test -n "${{ secrets.STRAPI_URL }}" || (echo "STRAPI_URL secret is missing" && exit 1)
+          test -n "${{ secrets.STRAPI_TOKEN }}" || (echo "STRAPI_TOKEN secret is missing" && exit 1)
 
       - name: Build Astro
         working-directory: portal
@@ -38,16 +48,19 @@ jobs:
           STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
         run: npm run build
 
-      # Деплой на сервер (раскомментировать когда появится сервер)
-      # - name: Deploy to server
-      #   uses: appleboy/scp-action@v0.1.7
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_USER }}
-      #     key: ${{ secrets.SERVER_SSH_KEY }}
-      #     source: "portal/dist/*"
-      #     target: "/var/www/chatplus"
-      #     strip_components: 2
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: portal/dist
 
-      - name: Notify success
-        run: echo "✅ Build completed - $(date)"
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

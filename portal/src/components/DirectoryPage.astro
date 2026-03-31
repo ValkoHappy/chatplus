@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { Icon } from 'astro-icon/components';
+import { withBasePath } from '../lib/urls';
 
 interface CardItem {
   href: string;
@@ -26,6 +27,7 @@ interface Props {
 }
 
 const page = Astro.props as Props;
+const toHref = (href?: string) => withBasePath(href);
 ---
 
 <Base title={page.metaTitle} description={page.metaDescription}>
@@ -36,7 +38,7 @@ const page = Astro.props as Props;
       <h1 class="dir-h1">{page.title}</h1>
       {page.subtitle && <p class="dir-subtitle">{page.subtitle}</p>}
       {page.primaryLabel && page.primaryUrl && (
-        <a href={page.primaryUrl} class="btn-primary">{page.primaryLabel}</a>
+        <a href={toHref(page.primaryUrl)} class="btn-primary">{page.primaryLabel}</a>
       )}
     </div>
   </section>
@@ -45,7 +47,7 @@ const page = Astro.props as Props;
     <div class="container">
       <div class="cards-grid">
         {page.items.map((item) => (
-          <a href={item.href} class="item-card">
+          <a href={toHref(item.href)} class="item-card">
             <div class="card-top">
               {item.icon && (
                 <div class="card-icon-wrap">
@@ -83,7 +85,7 @@ const page = Astro.props as Props;
           {page.stickyText && <p class="dir-cta-text">{page.stickyText}</p>}
         </div>
         {page.stickyPrimaryLabel && page.stickyPrimaryUrl && (
-          <a href={page.stickyPrimaryUrl} class="btn-white">{page.stickyPrimaryLabel}</a>
+          <a href={toHref(page.stickyPrimaryUrl)} class="btn-white">{page.stickyPrimaryLabel}</a>
         )}
       </div>
     </section>

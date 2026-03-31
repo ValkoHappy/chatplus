@@ -550,7 +550,10 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
     faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
+    features_title: Schema.Attribute.String;
+    h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -559,12 +562,25 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    problem_intro: Schema.Attribute.Text;
+    problem_title: Schema.Attribute.String;
+    problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
     roi_metrics: Schema.Attribute.JSON;
+    roi_quote: Schema.Attribute.Text;
+    roi_title: Schema.Attribute.String;
+    roi_with_items: Schema.Attribute.JSON;
+    roi_without_items: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    solution_intro: Schema.Attribute.Text;
+    solution_steps: Schema.Attribute.JSON;
+    solution_title: Schema.Attribute.String;
     steps: Schema.Attribute.JSON;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
+    subtitle: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -639,7 +655,10 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
     faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
+    features_title: Schema.Attribute.String;
+    h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -648,10 +667,23 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    problem_intro: Schema.Attribute.Text;
+    problem_title: Schema.Attribute.String;
+    problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    roi_quote: Schema.Attribute.Text;
+    roi_title: Schema.Attribute.String;
+    roi_with_items: Schema.Attribute.JSON;
+    roi_without_items: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    solution_intro: Schema.Attribute.Text;
+    solution_steps: Schema.Attribute.JSON;
+    solution_title: Schema.Attribute.String;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
+    subtitle: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -678,7 +710,10 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
     faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
+    features_title: Schema.Attribute.String;
+    h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -688,12 +723,25 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     pain: Schema.Attribute.Text;
+    problem_intro: Schema.Attribute.Text;
+    problem_title: Schema.Attribute.String;
+    problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
     roi_metrics: Schema.Attribute.JSON;
+    roi_quote: Schema.Attribute.Text;
+    roi_title: Schema.Attribute.String;
+    roi_with_items: Schema.Attribute.JSON;
+    roi_without_items: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     solution: Schema.Attribute.Text;
+    solution_intro: Schema.Attribute.Text;
+    solution_steps: Schema.Attribute.JSON;
+    solution_title: Schema.Attribute.String;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
+    subtitle: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -721,7 +769,10 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
     faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
+    features_title: Schema.Attribute.String;
+    h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -730,10 +781,23 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    problem_intro: Schema.Attribute.Text;
+    problem_title: Schema.Attribute.String;
+    problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    roi_quote: Schema.Attribute.Text;
+    roi_title: Schema.Attribute.String;
+    roi_with_items: Schema.Attribute.JSON;
+    roi_without_items: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    solution_intro: Schema.Attribute.Text;
+    solution_steps: Schema.Attribute.JSON;
+    solution_title: Schema.Attribute.String;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
+    subtitle: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -885,7 +949,10 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
     faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
+    features_title: Schema.Attribute.String;
+    h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -895,13 +962,26 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     pain: Schema.Attribute.Text;
+    problem_intro: Schema.Attribute.Text;
+    problem_title: Schema.Attribute.String;
+    problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
     roi_metrics: Schema.Attribute.JSON;
+    roi_quote: Schema.Attribute.Text;
+    roi_title: Schema.Attribute.String;
+    roi_with_items: Schema.Attribute.JSON;
+    roi_without_items: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     solution: Schema.Attribute.Text;
+    solution_intro: Schema.Attribute.Text;
+    solution_steps: Schema.Attribute.JSON;
+    solution_title: Schema.Attribute.String;
     steps: Schema.Attribute.JSON;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
+    subtitle: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { Icon } from 'astro-icon/components';
+import { withBasePath } from '../../lib/urls';
 
 const meta = {
   title: "AI Календарь | Синхронизация записей из чата | Chat Plus",
@@ -62,6 +63,7 @@ const industries = [
     icon: "lucide:graduation-cap"
   }
 ];
+const toHref = (href?: string) => withBasePath(href);
 ---
 
 <Base title={meta.title} description={meta.description}>
@@ -79,7 +81,7 @@ const industries = [
           Перестаньте вручную переносить записи из мессенджеров. Наш AI агент читает контекст переписки, сверяется с расписанием и автоматически создает события в вашем календаре.
         </p>
         <div class="hero-actions">
-          <a href="/demo" class="btn-primary">Попробовать бесплатно</a>
+          <a href={toHref('/demo')} class="btn-primary">Попробовать бесплатно</a>
           <a href="#how-it-works" class="btn-outline">Как это работает</a>
         </div>
       </div>
@@ -197,8 +199,8 @@ const industries = [
           <h2>Готовы автоматизировать записи?</h2>
           <p>Постройте бесшовный процесс от первого сообщения до подтвержденного визита.</p>
           <div class="cta-actions">
-            <a href="/demo" class="btn-primary">Записаться на демо</a>
-            <a href="/pricing" class="btn-white">Смотреть цены</a>
+            <a href={toHref('/demo')} class="btn-primary">Записаться на демо</a>
+            <a href={toHref('/pricing')} class="btn-white">Смотреть цены</a>
           </div>
         </div>
       </div>

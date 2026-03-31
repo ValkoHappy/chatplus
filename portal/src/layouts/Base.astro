@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { getSiteSettings } from '../lib/strapi';
+import { getFooterColumns, getHeaderLinks, getMobileNavSections, isPathActive } from '../lib/navigation';
+import { withBasePath } from '../lib/urls';
 
 export interface Props {
   title: string;
@@ -17,11 +19,21 @@ const {
 } = Astro.props;
 
 const settings = await getSiteSettings();
-const site = settings.site_url;
+const site = (Astro.site?.toString() || settings.site_url).replace(/\/$/, '');
+const pathname = Astro.url.pathname;
+const isDemoPreview = site.includes('github.io/chatplus');
 const finalDescription = description || settings.default_description;
-const canonicalURL = canonical || new URL(Astro.url.pathname, site).toString();
-const ogImage = new URL(image, site).toString();
-const fullTitle = `${title} | ${settings.site_name}`;
+const canonicalURL = (isDemoPreview ? null : canonical) || new URL(Astro.url.pathname, `${site}/`).toString();
+const ogImage = /^https?:\/\//.test(image) ? image : `${site}${image.startsWith('/') ? image : `/${image}`}`;
+const siteName = settings.site_name?.trim() || 'Chat Plus';
+const headerLinks = getHeaderLinks(settings.header_links);
+const footerColumns = getFooterColumns(settings.footer_columns);
+const mobileNavSections = getMobileNavSections(headerLinks, footerColumns);
+const toHref = (href?: string) => withBasePath(href);
+const normalizedTitle = (title || '').trim();
+const fullTitle = normalizedTitle.endsWith(`| ${siteName}`) || normalizedTitle === siteName
+  ? normalizedTitle
+  : `${normalizedTitle} | ${siteName}`;
 
 const orgSchema = JSON.stringify({
   '@context': 'https://schema.org',
@@ -83,9 +95,9 @@ const websiteSchema = JSON.stringify({
   <meta name="twitter:description" content={finalDescription} />
   <meta name="twitter:image" content={ogImage} />
 
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href={toHref('/favicon.svg')} />
+  <link rel="icon" type="image/x-icon" href={toHref('/favicon.ico')} />
+  <link rel="apple-touch-icon" href={toHref('/favicon.svg')} />
 
   <script type="application/ld+json" set:html={orgSchema} />
   <script type="application/ld+json" set:html={websiteSchema} />
@@ -94,12 +106,12 @@ const websiteSchema = JSON.stringify({
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <slot name="head" />
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     body {
       background:
         radial-gradient(circle at top left, rgba(99, 102, 241, .06), transparent 20%),
         linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-      padding-bottom: 76px;
     }
 
 
@@ -170,6 +182,12 @@ const websiteSchema = JSON.stringify({
       background: rgba(99, 102, 241, .06);
     }
 
+    .nav-link.is-active {
+      color: var(--brand-dark);
+      background: rgba(99, 102, 241, .10);
+      box-shadow: inset 0 0 0 1px rgba(99, 102, 241, .12);
+    }
+
     .nav-actions {
       display: flex;
       align-items: center;
@@ -228,6 +246,10 @@ const websiteSchema = JSON.stringify({
     .nav-toggle:hover {
       background: #f8fafc;
       border-color: #cbd5e1;
+    }
+
+    .mobile-nav-panel {
+      display: none;
     }
 
     .site-footer {
@@ -294,9 +316,32 @@ const websiteSchema = JSON.stringify({
     .footer-bottom {
       border-top: 1px solid rgba(148, 163, 184, .14);
       padding-top: 1.35rem;
-      text-align: center;
       color: #475569;
       font-size: .82rem;
+    }
+
+    .footer-bottom-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-meta-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-meta-link {
+      color: #94a3b8;
+      transition: color .18s ease;
+    }
+
+    .footer-meta-link:hover {
+      color: #fff;
     }
 
     #sticky-cta {
@@ -383,37 +428,82 @@ const websiteSchema = JSON.stringify({
     }
 
     @media (max-width: 768px) {
-
       .nav-links-wrap {
         display: none;
-        position: absolute;
-        top: calc(100% + 8px);
-        left: 1rem;
-        right: 1rem;
-        flex-direction: column;
-        align-items: stretch;
-        justify-content: flex-start;
-        gap: .15rem;
-        padding: .65rem;
-        border: 1px solid var(--border-main);
-        border-radius: 16px;
-        background: rgba(255,255,255,.98);
-        box-shadow: 0 18px 40px rgba(15, 23, 42, .10);
-      }
-
-      .nav-links-wrap.open {
-        display: flex;
-      }
-
-      .nav-link {
-        width: 100%;
-        justify-content: flex-start;
-        border-radius: 12px;
-        padding: .9rem .95rem;
       }
 
       .nav-toggle {
         display: inline-flex;
+      }
+
+      .mobile-nav-panel {
+        display: none;
+        margin: 0 auto .85rem;
+        max-width: var(--container);
+        padding: .9rem;
+        border: 1px solid var(--border-main);
+        border-radius: 20px;
+        background: rgba(255,255,255,.98);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, .10);
+      }
+
+      .mobile-nav-panel.open {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .mobile-nav-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 46px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+        color: #fff;
+        font-size: .92rem;
+        font-weight: 700;
+        box-shadow: var(--shadow-brand);
+      }
+
+      .mobile-nav-sections {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .mobile-nav-section {
+        display: grid;
+        gap: .45rem;
+      }
+
+      .mobile-nav-title {
+        color: #64748b;
+        font-size: .76rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      .mobile-nav-links {
+        display: grid;
+        gap: .15rem;
+      }
+
+      .mobile-nav-link {
+        display: block;
+        width: 100%;
+        padding: .82rem .95rem;
+        border-radius: 12px;
+        color: #475569;
+        font-size: .95rem;
+        font-weight: 600;
+        transition: color .18s ease, background .18s ease;
+      }
+
+      .mobile-nav-link:hover,
+      .mobile-nav-link.is-active {
+        color: var(--brand-dark);
+        background: rgba(99, 102, 241, .06);
       }
 
       .footer-grid {
@@ -446,26 +536,46 @@ const websiteSchema = JSON.stringify({
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
       }
+
+      .footer-bottom-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
   <header class="site-header" id="site-header">
     <nav class="site-nav">
-      <a href="/" class="brand-link">{settings.site_name}</a>
-      <div id="nav-links" class="nav-links-wrap">
-        {settings.header_links.map((link) => (
-          <a href={link.href} class="nav-link">{link.label}</a>
+      <a href={toHref('/')} class="brand-link">{settings.site_name}</a>
+      <div class="nav-links-wrap">
+        {headerLinks.map((link) => (
+          <a href={toHref(link.href)} class:list={['nav-link', { 'is-active': isPathActive(pathname, link.href) }]}>{link.label}</a>
         ))}
       </div>
       <div class="nav-actions">
-        <a href={settings.header_cta_url} class="header-cta">{settings.header_cta_label}</a>
+        <a href={toHref(settings.header_cta_url)} class="header-cta">{settings.header_cta_label}</a>
         <button id="nav-toggle" class="nav-toggle" aria-label="Меню" aria-expanded="false">
           <svg id="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           <svg id="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
     </nav>
+    <div id="mobile-nav" class="mobile-nav-panel">
+      <a href={toHref(settings.header_cta_url)} class="mobile-nav-cta">{settings.header_cta_label}</a>
+      <div class="mobile-nav-sections">
+        {mobileNavSections.map((section) => (
+          <section class="mobile-nav-section">
+            <p class="mobile-nav-title">{section.title}</p>
+            <div class="mobile-nav-links">
+              {section.links.map((link) => (
+                <a href={toHref(link.href)} class:list={['mobile-nav-link', { 'is-active': isPathActive(pathname, link.href) }]}>{link.label}</a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
   </header>
 
   <main>
@@ -479,18 +589,25 @@ const websiteSchema = JSON.stringify({
           <p class="footer-brand">{settings.site_name}</p>
           <p class="footer-tagline">{settings.footer_tagline}</p>
         </div>
-        {settings.footer_columns.map((column) => (
+        {footerColumns.map((column) => (
           <div>
             <p class="footer-title">{column.title}</p>
             <div class="footer-links">
               {column.links.map((link) => (
-                <a href={link.href} class="footer-link">{link.label}</a>
+                <a href={toHref(link.href)} class="footer-link">{link.label}</a>
               ))}
             </div>
           </div>
         ))}
       </div>
-      <div class="footer-bottom">{settings.footer_copyright}</div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <span>{settings.footer_copyright}</span>
+          <div class="footer-meta-links">
+            <a href={toHref('/site-map')} class="footer-meta-link">Карта сайта</a>
+          </div>
+        </div>
+      </div>
     </div>
   </footer>
 
@@ -498,7 +615,7 @@ const websiteSchema = JSON.stringify({
     <div class="sticky-cta-inner">
       <p class="sticky-cta-text">{settings.sticky_cta_text}</p>
       <div class="sticky-cta-actions">
-        <a href={settings.sticky_cta_url} class="sticky-cta-button">{settings.sticky_cta_label}</a>
+        <a href={toHref(settings.sticky_cta_url)} class="sticky-cta-button">{settings.sticky_cta_label}</a>
         <button id="close-sticky" class="sticky-close" aria-label="Закрыть">&times;</button>
       </div>
     </div>
@@ -507,7 +624,7 @@ const websiteSchema = JSON.stringify({
   <script>
     (function () {
       const toggle = document.getElementById('nav-toggle');
-      const menu = document.getElementById('nav-links');
+      const menu = document.getElementById('mobile-nav');
       const iconMenu = document.getElementById('icon-menu');
       const iconClose = document.getElementById('icon-close');
       if (!toggle || !menu || !iconMenu || !iconClose) return;

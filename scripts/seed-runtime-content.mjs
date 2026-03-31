@@ -22,10 +22,232 @@ function loadEnv() {
 function loadArrayFromJson(relativePath) {
   const generatedPath = relativePath.replace('cms/seed/', 'cms/seed/generated/');
   if (existsSync(resolve(generatedPath))) {
-    console.log(`\n✨ Загружаем сгенерированный AI контент: ${generatedPath}`);
+    console.log(`
+→ Используем generated JSON: ${generatedPath}`);
     return JSON.parse(readFileSync(resolve(generatedPath), 'utf-8'));
   }
   return JSON.parse(readFileSync(resolve(relativePath), 'utf-8'));
+}
+
+function loadJsonIfExists(relativePath) {
+  if (!existsSync(resolve(relativePath))) {
+    return null;
+  }
+
+  console.log(`
+→ Используем managed JSON: ${relativePath}`);
+  return JSON.parse(readFileSync(resolve(relativePath), 'utf-8'));
+}
+
+function hasStructuredSeoFields(item = {}) {
+  return Boolean(
+    item.h1 ||
+    item.subtitle ||
+    item.problem_title ||
+    item.solution_title ||
+    item.sticky_cta_title
+  );
+}
+
+function normalizeFaqItems(items = []) {
+  return items
+    .filter(Boolean)
+    .map((item) => ({
+      q: item.q || item.question || '',
+      a: item.a || item.answer || '',
+    }))
+    .filter((item) => item.q && item.a);
+}
+
+function normalizeStepItems(items = []) {
+  return items
+    .filter(Boolean)
+    .map((item, index) => ({
+      step: String(index + 1),
+      title: item.title || `Step ${index + 1}`,
+      desc: item.desc || item.text || item.description || '',
+    }))
+    .filter((item) => item.title || item.desc);
+}
+
+function normalizeRoiItems(items = []) {
+  return items
+    .filter(Boolean)
+    .map((item) => {
+      if (typeof item === 'string') {
+        return item;
+      }
+
+      return [item.value, item.label, item.text].filter(Boolean).join(' - ');
+    })
+    .filter(Boolean);
+}
+
+function buildStructuredContent(item = {}) {
+  const blocks = [];
+
+  const pushText = (value) => {
+    if (typeof value === 'string' && value.trim()) {
+      blocks.push(value.trim());
+    }
+  };
+
+  const pushList = (items = []) => {
+    items.forEach((value) => {
+      if (typeof value === 'string' && value.trim()) {
+        blocks.push(`- ${value.trim()}`);
+      }
+    });
+  };
+
+  const pushCardList = (items = []) => {
+    items.forEach((entry) => {
+      const title = entry?.title || entry?.question || '';
+      const text = entry?.text || entry?.answer || '';
+
+      if (title) {
+        blocks.push(`### ${title}`);
+      }
+
+      pushText(text);
+    });
+  };
+
+  if (item.h1) {
+    blocks.push(`# ${item.h1}`);
+  }
+
+  pushText(item.subtitle);
+
+  if (item.problem_title) {
+    blocks.push(`## ${item.problem_title}`);
+  }
+  pushText(item.problem_intro);
+  pushCardList(item.problems);
+
+  if (item.solution_title) {
+    blocks.push(`## ${item.solution_title}`);
+  }
+  pushText(item.solution_intro);
+  pushCardList(item.solution_steps);
+
+  if (item.features_title) {
+    blocks.push(`## ${item.features_title}`);
+  }
+  pushCardList(item.features);
+
+  if (item.roi_title) {
+    blocks.push(`## ${item.roi_title}`);
+  }
+  pushList(item.roi_without_items);
+  pushList(item.roi_with_items);
+  pushText(item.roi_quote);
+
+  if (Array.isArray(item.faqs) && item.faqs.length) {
+    blocks.push('## FAQ');
+    pushCardList(item.faqs);
+  }
+
+  if (item.sticky_cta_title) {
+    blocks.push(`## ${item.sticky_cta_title}`);
+  }
+  pushText(item.sticky_cta_text);
+
+  return blocks.join('\n\n').trim();
+}
+
+function prepareStructuredSeedItem(endpoint, item) {
+  if (!hasStructuredSeoFields(item)) {
+    return item;
+  }
+
+  const base = {
+    slug: item.slug,
+    name: item.name,
+    emoji: item.emoji || '',
+    icon: item.icon || '',
+    description: item.description || item.subtitle || '',
+    h1: item.h1 || item.name || '',
+    subtitle: item.subtitle || item.description || '',
+    problem_title: item.problem_title || '',
+    problem_intro: item.problem_intro || item.pain || '',
+    problems: Array.isArray(item.problems) ? item.problems : [],
+    solution_title: item.solution_title || '',
+    solution_intro: item.solution_intro || item.solution || '',
+    solution_steps: Array.isArray(item.solution_steps) ? item.solution_steps : (Array.isArray(item.steps) ? item.steps : []),
+    features_title: item.features_title || '',
+    features: Array.isArray(item.features) ? item.features : [],
+    roi_title: item.roi_title || '',
+    roi_without_items: Array.isArray(item.roi_without_items) ? item.roi_without_items : [],
+    roi_with_items: Array.isArray(item.roi_with_items) ? item.roi_with_items : [],
+    roi_quote: item.roi_quote || '',
+    faq_title: item.faq_title || 'FAQ',
+    sticky_cta_title: item.sticky_cta_title || '',
+    sticky_cta_text: item.sticky_cta_text || '',
+    cta: item.cta || '',
+    seo_title: item.seo_title || (item.h1 ? `${item.h1} | Chat Plus` : ''),
+    seo_description: item.seo_description || item.subtitle || item.description || '',
+    faq: normalizeFaqItems(item.faq || item.faqs || []),
+    content: buildStructuredContent(item),
+  };
+
+  // Backwards compatibility
+  if (endpoint === 'channels' || endpoint === 'industries' || endpoint === 'solutions') {
+    base.roi_metrics = normalizeRoiItems(item.roi_metrics || item.roi_with_items || []);
+  }
+
+  if (endpoint === 'channels' || endpoint === 'solutions') {
+    base.steps = normalizeStepItems(item.steps || item.solution_steps || []);
+  }
+
+  if (endpoint === 'industries' || endpoint === 'solutions') {
+    base.pain = base.problem_intro;
+    base.solution = base.solution_intro;
+  }
+
+  return base;
+}
+
+function prepareCollectionItem(endpoint, item) {
+  const stripReservedKeys = value => {
+    if (Array.isArray(value)) {
+      return value.map(stripReservedKeys);
+    }
+
+    if (value && typeof value === 'object') {
+      const {
+        id,
+        documentId,
+        createdAt,
+        updatedAt,
+        publishedAt,
+        ...rest
+      } = value;
+
+      return Object.fromEntries(
+        Object.entries(rest).map(([key, nested]) => [key, stripReservedKeys(nested)])
+      );
+    }
+
+    return value;
+  };
+
+  if (
+    endpoint === 'channels' ||
+    endpoint === 'industries' ||
+    endpoint === 'solutions' ||
+    endpoint === 'integrations' ||
+    endpoint === 'features'
+  ) {
+    return prepareStructuredSeedItem(endpoint, item);
+  }
+
+  if (endpoint === 'business-types') {
+    const { sticky_cta_title, sticky_cta_text, ...rest } = item;
+    return stripReservedKeys(rest);
+  }
+
+  return stripReservedKeys(item);
 }
 
 const env = loadEnv();
@@ -56,9 +278,10 @@ async function request(path, init = {}) {
 }
 
 async function upsertCollection(endpoint, item) {
-  const found = await request(`/api/${endpoint}?filters[slug][$eq]=${encodeURIComponent(item.slug)}`);
+  const preparedItem = prepareCollectionItem(endpoint, item);
+  const found = await request(`/api/${endpoint}?filters[slug][$eq]=${encodeURIComponent(preparedItem.slug)}`);
   const existing = found.data?.[0];
-  const data = { ...item, publishedAt: now };
+  const data = { ...preparedItem, publishedAt: now };
   if (existing) {
     const key = existing.documentId || existing.id;
     await request(`/api/${endpoint}/${key}`, {
@@ -75,9 +298,32 @@ async function upsertCollection(endpoint, item) {
 }
 
 async function upsertSingle(endpoint, data) {
+  const stripReservedKeys = value => {
+    if (Array.isArray(value)) {
+      return value.map(stripReservedKeys);
+    }
+
+    if (value && typeof value === 'object') {
+      const {
+        id,
+        documentId,
+        createdAt,
+        updatedAt,
+        publishedAt,
+        ...rest
+      } = value;
+
+      return Object.fromEntries(
+        Object.entries(rest).map(([key, nested]) => [key, stripReservedKeys(nested)])
+      );
+    }
+
+    return value;
+  };
+
   await request(`/api/${endpoint}`, {
     method: 'PUT',
-    body: JSON.stringify({ data: { ...data, publishedAt: now } }),
+    body: JSON.stringify({ data: { ...stripReservedKeys(data), publishedAt: now } }),
   });
 }
 
@@ -131,33 +377,33 @@ const solutions = loadArrayFromJson('cms/seed/solutions.json');
 
 const businessTypes = loadArrayFromJson('cms/seed/businessTypes.json').map(item => ({
   ...item,
-  hero_eyebrow: 'Chat Plus для',
+  hero_eyebrow: item.hero_eyebrow || 'Chat Plus для',
   hero_title: `Chat Plus для ${item.name}`,
-  hero_secondary_cta_label: 'Как это работает',
-  hero_secondary_cta_url: '#how',
+  hero_secondary_cta_label: item.hero_secondary_cta_label || 'Как это работает',
+  hero_secondary_cta_url: item.hero_secondary_cta_url || '#how',
   problem_title: `Типичная проблема ${item.name}`,
-  problem_points: [
+  problem_points: item.problem_points || [
     'Клиенты пишут в разные каналы — команда теряет заявки и контекст.',
     'Ответы занимают часы, конкуренты отвечают быстрее.',
     'Рост обращений означает рост штата и расходов.'
   ],
   solution_title: `Chat Plus для ${item.name}`,
-  solution_points: [
+  solution_points: item.solution_points || [
     'Все каналы собираются в одном окне и не теряются.',
     'AI отвечает мгновенно и разгружает команду.',
     'Автоматизация масштабирует процесс без роста операционных затрат.'
   ],
-  features_title: 'Что включено',
+  features_title: item.features_title || 'Что включено',
   steps_title: 'Как запустить за 15 минут',
-  steps: [
+  steps: item.steps || [
     { step: '1', title: 'Подключите каналы', desc: 'WhatsApp, Telegram, Instagram и другие каналы подключаются в одном окне Chat Plus.' },
     { step: '2', title: 'Настройте под бизнес', desc: `Готовые сценарии и шаблоны для ${item.name} запускаются без разработки.` },
     { step: '3', title: 'Включите AI', desc: 'AI отвечает 24/7, квалифицирует лиды и автоматизирует рутину.' },
     { step: '4', title: 'Масштабируйте', desc: 'Фиксированная модель работы позволяет расти без роста хаоса.' }
   ],
-  integrations_title: 'Работает с вашими инструментами',
-  integrations_intro: 'Подключите привычные сервисы и сохраните текущий процесс.',
-  integrations: [
+  integrations_title: item.integrations_title || 'Работает с вашими инструментами',
+  integrations_intro: item.integrations_intro || 'Подключите привычные сервисы и сохраните текущий процесс.',
+  integrations: item.integrations || [
     { name: 'WhatsApp', icon: 'simple-icons:whatsapp', href: '/channels/whatsapp' },
     { name: 'Telegram', icon: 'simple-icons:telegram', href: '/channels/telegram' },
     { name: 'AmoCRM', icon: 'lucide:link', href: '/integrations/amocrm' },
@@ -165,54 +411,54 @@ const businessTypes = loadArrayFromJson('cms/seed/businessTypes.json').map(item 
     { name: 'HubSpot', icon: 'simple-icons:hubspot', href: '/integrations/hubspot' },
     { name: 'Zapier', icon: 'simple-icons:zapier', href: '/integrations/zapier' }
   ],
-  integrations_more_text: 'Также доступны Instagram, Viber, SMS, Salesforce, Pipedrive, n8n и другие интеграции.',
-  roi_title: 'Результаты клиентов Chat Plus',
-  roi_intro: 'Средние метрики после внедрения и настройки сценариев.',
-  roi_metrics: [
+  integrations_more_text: item.integrations_more_text || 'Также доступны Instagram, Viber, SMS, Salesforce, Pipedrive, n8n и другие интеграции.',
+  roi_title: item.roi_title || 'Результаты клиентов Chat Plus',
+  roi_intro: item.roi_intro || 'Средние метрики после внедрения и настройки сценариев.',
+  roi_metrics: item.roi_metrics || [
     { icon: 'lucide:zap', value: '15 мин', label: 'до первого запуска' },
     { icon: 'lucide:trending-up', value: '+35%', label: 'рост конверсии из обращений' },
     { icon: 'lucide:clock', value: '-60%', label: 'снижение нагрузки на команду' },
     { icon: 'lucide:dollar-sign', value: '×3', label: 'ROI за первые 90 дней' }
   ],
-  roi_quote: 'Внедрение занимает день, а команда перестаёт тонуть в переписках уже на старте.',
+  roi_quote: item.roi_quote || 'Внедрение занимает день, а команда перестаёт тонуть в переписках уже на старте.',
   roi_quote_author: `Клиент Chat Plus · ${item.name}`,
-  faq_title: 'Частые вопросы',
-  faq: [
+  faq_title: item.faq_title || 'Частые вопросы',
+  faq: item.faq || [
     { q: `Подходит ли Chat Plus для ${item.name}?`, a: `Да. Решение адаптируется под процессы ${item.name} и запускается без отдельной разработки.` },
     { q: 'Какие каналы поддерживаются?', a: 'WhatsApp Business API, Telegram, Instagram Direct, Viber, SMS, Email и VoIP.' },
     { q: 'Какие интеграции есть?', a: 'AmoCRM, Bitrix24, HubSpot, Salesforce, Pipedrive, Google Calendar и другие сервисы.' },
     { q: 'Есть ли тестовый период?', a: 'Да, можно начать с пилота и проверить сценарии на реальных обращениях.' },
     { q: `Сколько стоит Chat Plus для ${item.name}?`, a: 'Стоимость зависит от сценариев и подключений, но модель остаётся заметно дешевле тяжёлых enterprise-решений.' }
   ],
-  related_types_title: 'Другие типы бизнеса',
-  related_links_intro: 'Смежные сценарии по отраслям и каналам.',
-  pricing_link_label: 'Цены →',
+  related_types_title: item.related_types_title || 'Другие типы бизнеса',
+  related_links_intro: item.related_links_intro || 'Смежные сценарии по отраслям и каналам.',
+  pricing_link_label: item.pricing_link_label || 'Цены →',
   final_cta_title: 'Запустите Chat Plus в своём процессе',
   final_cta_text: 'Подключение занимает минуты, а основной контент и сценарии уже готовы для запуска.',
-  final_cta_label: item.cta,
+  final_cta_label: item.final_cta_label || item.cta,
 }));
 
 const competitors = loadArrayFromJson('cms/seed/competitors.json').map(item => ({
   slug: item.slug,
   name: item.name,
   price: item.price,
-  our_price: item.ourPrice,
-  seo_title: `Chat Plus vs ${item.name} — сравнение`,
+  our_price: item.our_price || item.ourPrice,
+  seo_title: item.seo_title || `Chat Plus vs ${item.name} — сравнение`,
   seo_description: `Сравнение Chat Plus и ${item.name}: цены, функции, различия и итоговый вывод.`,
-  eyebrow: 'Сравнение',
-  hero_title: `Chat Plus vs ${item.name}`,
-  hero_description: item.verdict,
-  pricing_title: 'Сравнение цен',
-  our_price_label: 'Chat Plus',
-  our_price_caption: 'Фиксированная цена',
-  competitor_price_caption: '+ скрытые платежи',
-  strengths_title: '✓ Преимущества Chat Plus',
+  eyebrow: item.eyebrow || 'Сравнение',
+  hero_title: item.hero_title || `Chat Plus vs ${item.name}`,
+  hero_description: item.hero_description || item.verdict,
+  pricing_title: item.pricing_title || 'Сравнение цен',
+  our_price_label: item.our_price_label || 'Chat Plus',
+  our_price_caption: item.our_price_caption || 'Фиксированная цена',
+  competitor_price_caption: item.competitor_price_caption || '+ скрытые платежи',
+  strengths_title: item.strengths_title || '✓ Преимущества Chat Plus',
   weaknesses_title: `✕ Слабые стороны ${item.name}`,
-  our_strengths: item.ourStrengths,
+  our_strengths: item.our_strengths || item.ourStrengths,
   weaknesses: item.weaknesses,
-  final_cta_title: `Переходите с ${item.name} на Chat Plus`,
-  final_cta_text: 'Поможем перенести процессы и собрать рабочий пилот без затяжного внедрения.',
-  final_cta_label: 'Попробовать бесплатно'
+  final_cta_title: item.final_cta_title || `Переходите с ${item.name} на Chat Plus`,
+  final_cta_text: item.final_cta_text || 'Поможем перенести процессы и собрать рабочий пилот без затяжного внедрения.',
+  final_cta_label: item.final_cta_label || 'Попробовать бесплатно'
 }));
 
 const businessTypesPage = {
@@ -331,7 +577,7 @@ const tendersPage = {
     { question: 'Нужна ли электронная подпись для работы с Chat Plus?', answer: 'Нет. Подача заявки и подписание контракта по-прежнему происходят на вашей ЭТП с вашей ЭЦП.' },
     { question: 'Можно ли использовать Chat Plus для внутренних закупок?', answer: 'Да. Решение подходит и для заказчиков, которые собирают предложения и маршрутизируют закупочные процессы внутри компании.' }
   ],
-  internal_links_title: 'Смежные решения Chat Plus',
+  internal_links_title: '',
   internal_links: [
     { title: 'Chat Plus Prozorro', url: '/solutions/tenders', description: 'Мониторинг украинских госзакупок с AI-уведомлениями' },
     { title: 'Chat Plus Government', url: '/for/government', description: 'Омниканальная коммуникация для государственных организаций' },
@@ -407,52 +653,64 @@ const siteSetting = {
   default_description: 'Омниканальная платформа для бизнеса: WhatsApp, Telegram и другие каналы в одном окне с AI и автоматизацией.',
   organization_description: 'Chat Plus объединяет каналы коммуникации, автоматизацию и AI-слои в единой платформе для бизнеса.',
   header_links: [
-    { label: 'Каналы', href: '/channels' },
-    { label: 'Отрасли', href: '/industries' },
-    { label: 'Интеграции', href: '/integrations' },
-    { label: 'Решения', href: '/solutions' },
-    { label: 'Возможности', href: '/features' },
-    { label: 'Цены', href: '/pricing' },
-    { label: 'Партнёрам', href: '/partnership' }
+    { label: '??????', href: '/channels' },
+    { label: '???????', href: '/industries' },
+    { label: '??????????', href: '/integrations' },
+    { label: '???????', href: '/solutions' },
+    { label: '???????????', href: '/features' },
+    { label: '??? ???????', href: '/for' },
+    { label: '????', href: '/pricing' },
+    { label: '?????????', href: '/partnership' }
   ],
   header_cta_label: 'Попробовать',
   header_cta_url: '/demo',
   footer_tagline: 'Мы продаём не чаты — мы продаём то, что чаты делают возможным.',
   footer_columns: [
     {
-      title: 'Каналы',
+      title: '???????',
       links: [
-        { label: 'WhatsApp', href: '/channels/whatsapp' },
-        { label: 'Telegram', href: '/channels/telegram' },
-        { label: 'Instagram', href: '/channels/instagram' },
-        { label: 'Viber', href: '/channels/viber' }
-      ]
-    },
-    {
-      title: 'Отрасли',
-      links: [
-        { label: 'Beauty', href: '/industries/beauty' },
-        { label: 'Медицина', href: '/industries/med' },
-        { label: 'Фитнес', href: '/industries/fitness' },
-        { label: 'Недвижимость', href: '/industries/real-estate' }
-      ]
-    },
-    {
-      title: 'Интеграции',
-      links: [
-        { label: 'AmoCRM', href: '/integrations/amocrm' },
-        { label: 'Bitrix24', href: '/integrations/bitrix24' },
-        { label: 'HubSpot', href: '/integrations/hubspot' },
-        { label: 'Zapier', href: '/integrations/zapier' }
-      ]
-    },
-    {
-      title: 'Компания',
-      links: [
-        { label: 'Цены', href: '/pricing' },
-        { label: 'Партнёрам', href: '/partnership' },
+        { label: '????', href: '/pricing' },
         { label: 'Demo', href: '/demo' },
-        { label: 'Блог', href: '/blog' }
+        { label: '?????????', href: '/partnership' },
+        { label: '??? ???????', href: '/for' }
+      ]
+    },
+    {
+      title: '????????',
+      links: [
+        { label: '??????', href: '/channels' },
+        { label: '???????', href: '/industries' },
+        { label: '??????????', href: '/integrations' },
+        { label: '???????', href: '/solutions' },
+        { label: '???????????', href: '/features' }
+      ]
+    },
+    {
+      title: '???????',
+      links: [
+        { label: 'Docs', href: '/docs' },
+        { label: 'Help', href: '/help' },
+        { label: 'Academy', href: '/academy' },
+        { label: '????', href: '/blog' },
+        { label: '??????', href: '/status' }
+      ]
+    },
+    {
+      title: '????????',
+      links: [
+        { label: 'Media', href: '/media' },
+        { label: 'Team', href: '/team' },
+        { label: 'Conversation', href: '/conversation' },
+        { label: 'TV', href: '/tv' }
+      ]
+    },
+    {
+      title: '???????????',
+      links: [
+        { label: 'Promo', href: '/promo' },
+        { label: 'Prozorro', href: '/prozorro' },
+        { label: '?????????', href: '/compare' },
+        { label: '????? ?????', href: '/site-map' }
       ]
     }
   ],
@@ -578,7 +836,7 @@ const siteSetting = {
         roi_title: 'Результат после подключения {name}',
         roi_intro: 'Эти блоки дальше можно заменить на финальные коммерческие цифры через Strapi.',
         faq_title: 'Частые вопросы',
-        internal_links_title: 'Смежные страницы',
+        internal_links_title: '',
         pricing_label: 'Цены Chat Plus',
         pricing_description: 'Посмотреть общую коммерческую модель',
         sticky_cta_title: 'Подключите {name} через Chat Plus',
@@ -596,7 +854,7 @@ const siteSetting = {
         features_title: 'Что можно автоматизировать',
         integrations_title: 'С какими каналами и системами это работает',
         use_cases_title: 'Сценарии применения в {name}',
-        internal_links_title: 'Смежные страницы',
+        internal_links_title: '',
         sticky_cta_title: 'Запустите Chat Plus в вашем {name}-бизнесе',
         sticky_cta_text: 'Запустите пилот под сегмент {name} и проверьте результат на реальных обращениях.',
         sticky_cta_primary_label: 'Записаться на демо'
@@ -610,7 +868,7 @@ const siteSetting = {
         solution_intro: 'Chat Plus синхронизирует все каналы коммуникации с {name} — история переписки, статусы и контакты обновляются автоматически.',
         features_title: 'Что входит в интеграцию',
         use_cases_title: 'Где это применяется',
-        internal_links_title: 'Смежные страницы',
+        internal_links_title: '',
         sticky_cta_title: 'Подключите {name} к Chat Plus',
         sticky_cta_text: 'Подключите {name} к Chat Plus без потери данных и привычного рабочего процесса.',
         sticky_cta_primary_label: 'Записаться на демо'
@@ -625,7 +883,7 @@ const siteSetting = {
         features_title: 'Что включает модуль',
         integrations_title: 'С какими сервисами работает {name}',
         use_cases_title: 'Где {name} приносит результат',
-        internal_links_title: 'Смежные страницы',
+        internal_links_title: '',
         docs_label: 'Документация',
         docs_description: 'Технические материалы и следующая детализация',
         sticky_cta_title: 'Подключите {name} в вашем процессе',
@@ -642,7 +900,7 @@ const siteSetting = {
         features_title: 'Что входит в решение',
         integrations_title: 'Что можно подключить',
         use_cases_title: 'Для кого это подходит',
-        internal_links_title: 'Смежные страницы',
+        internal_links_title: '',
         sticky_cta_title: 'Запустите сценарий {name}',
         sticky_cta_text: 'Запустите сценарий {name} и проверьте ROI на реальных задачах вашей команды.',
         sticky_cta_primary_label: 'Записаться на демо'
@@ -691,7 +949,7 @@ const siteSetting = {
         solution_title: 'Как Chat Plus настраивает {channel} для {industry}',
         features_title: 'Что входит в готовый сценарий',
         integrations_title: 'Связанные интеграции',
-        internal_links_title: 'Смежные страницы',
+        internal_links_title: '',
         sticky_cta_title: 'Запустите {channel} для {industry}',
         sticky_cta_text: 'Готовый сценарий {channel} для {industry} запускается за 30 минут без участия разработчика.',
         sticky_cta_primary_label: 'Записаться на демо'
@@ -805,7 +1063,7 @@ function makeLandingPage({
     ],
     comparison_title: comparisonTitle ?? null,
     comparison_rows: comparisonRows ?? [],
-    internal_links_title: 'Смежные страницы',
+    internal_links_title: '',
     internal_links: internalLinks.map((item) => ({
       title: item.label,
       url: item.href,
@@ -953,7 +1211,7 @@ const landingPages = [
       { question: 'Какие каналы поддерживаются?', answer: 'WhatsApp Business API, Telegram, Instagram Direct, Viber, SMS, Email и VoIP. Подключение через единый интерфейс без технических ограничений.' },
       { question: 'Есть ли интеграция с AmoCRM и Bitrix24?', answer: 'Да. Двусторонняя синхронизация с AmoCRM, Bitrix24, HubSpot, Salesforce, Pipedrive и другими CRM включена в базовый план.' }
     ],
-    internal_links_title: 'Узнайте больше о Chat Plus',
+    internal_links_title: '',
     internal_links: [
       { title: 'Каналы', url: '/channels', description: 'WhatsApp, Telegram, Instagram и другие' },
       { title: 'Возможности', url: '/features', description: 'AI, автоматизация, рассылки, аналитика' },
@@ -1298,6 +1556,11 @@ const landingPages = [
   })
 ];
 
+const managedLandingPages = loadJsonIfExists('cms/seed/generated/landingPages.json');
+const managedTendersPage = loadJsonIfExists('cms/seed/generated/tendersPage.json');
+const managedSiteSetting = loadJsonIfExists('cms/seed/generated/siteSetting.json');
+const managedBusinessTypesPage = loadJsonIfExists('cms/seed/generated/businessTypesPage.json');
+
 async function main() {
   console.log(`Seeding ${STRAPI_URL}`);
   await seedCollection('channels', channels);
@@ -1307,12 +1570,12 @@ async function main() {
   await seedCollection('solutions', solutions);
   await seedCollection('business-types', businessTypes);
   await seedCollection('competitors', competitors);
-  await upsertSingle('site-setting', siteSetting);
+  await upsertSingle('site-setting', managedSiteSetting || siteSetting);
   console.log('\n- upserted site-setting');
-  await seedCollection('landing-pages', landingPages);
-  await upsertSingle('business-types-page', businessTypesPage);
+  await seedCollection('landing-pages', managedLandingPages || landingPages);
+  await upsertSingle('business-types-page', managedBusinessTypesPage || businessTypesPage);
   console.log('\n- upserted business-types-page');
-  await upsertSingle('tenders-page', tendersPage);
+  await upsertSingle('tenders-page', managedTendersPage || tendersPage);
   console.log('- upserted tenders-page');
   console.log('\nDone');
 }

@@ -1,5 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
+import { withBasePath } from '../lib/urls';
+
+const toHref = (href?: string) => withBasePath(href);
 ---
 
 <Base title="Страница не найдена" description="Запрашиваемая страница не существует">
@@ -10,8 +13,8 @@ import Base from '../layouts/Base.astro';
       <h1>Страница не найдена</h1>
       <p>Возможно, страница была перемещена или вы перешли по неверной ссылке.</p>
       <div class="error-actions">
-        <a href="/" class="btn-primary">На главную</a>
-        <a href="/channels" class="btn-outline">Каталог каналов</a>
+        <a href={toHref('/')} class="btn-primary">На главную</a>
+        <a href={toHref('/channels')} class="btn-outline">Каталог каналов</a>
       </div>
     </div>
   </section>

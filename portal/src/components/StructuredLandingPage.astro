@@ -2,12 +2,15 @@
 import Base from '../layouts/Base.astro';
 import { Icon } from 'astro-icon/components';
 import { getSiteSettings } from '../lib/strapi';
+import NavigationGroupsSection from './NavigationGroupsSection.astro';
+import InternalLinksSection from './InternalLinksSection.astro';
 import ChatIllustration from './ChatIllustration.astro';
+import type { InternalLinksContext, InternalLinksVariant, LinkItem, NavigationGroup } from '../lib/link-sections';
+import { withBasePath } from '../lib/urls';
 
-interface LinkItem {
+interface BreadcrumbItem {
   label?: string;
   href?: string;
-  description?: string;
 }
 
 interface PageData {
@@ -46,8 +49,15 @@ interface PageData {
   comparison_rows?: { parameter?: string; option_one?: string; option_two?: string; chat_plus?: string }[];
   faq_title?: string;
   faqs?: { question?: string; answer?: string }[];
+  breadcrumbs?: BreadcrumbItem[];
+  navigation_groups_title?: string;
+  navigation_groups_intro?: string;
+  navigation_groups?: NavigationGroup[];
   internal_links_title?: string;
+  internal_links_intro?: string;
   internal_links?: LinkItem[];
+  internal_links_variant?: InternalLinksVariant;
+  internal_links_context?: InternalLinksContext;
   sticky_cta_title?: string;
   sticky_cta_text?: string;
   sticky_cta_primary_label?: string;
@@ -63,21 +73,7 @@ const siteSettings = await getSiteSettings();
 const labels = siteSettings?.page_templates?.shared?.structured_page || {};
 const softwareSchema = page.software_schema ? JSON.stringify(page.software_schema) : '';
 const faqSchema = page.faq_schema ? JSON.stringify(page.faq_schema) : '';
-
-function getLinkIcon(href = '') {
-  if (href.startsWith('/channels')) return 'lucide:message-circle-more';
-  if (href.startsWith('/industries')) return 'lucide:briefcase-business';
-  if (href.startsWith('/integrations')) return 'lucide:plug';
-  if (href.startsWith('/features')) return 'lucide:star';
-  if (href.startsWith('/solutions')) return 'lucide:layout-grid';
-  if (href.startsWith('/pricing')) return 'lucide:circle-dollar-sign';
-  if (href.startsWith('/docs')) return 'lucide:file-text';
-  if (href.startsWith('/blog')) return 'lucide:newspaper';
-  if (href.startsWith('/demo')) return 'lucide:play';
-  if (href.startsWith('/for')) return 'lucide:users';
-  if (href.startsWith('/compare') || href.startsWith('/vs')) return 'lucide:scale';
-  return 'lucide:arrow-right';
-}
+const toHref = (href?: string) => withBasePath(href);
 ---
 
 <Base title={page.meta_title} description={page.meta_description} canonical={page.canonical}>
@@ -92,15 +88,29 @@ function getLinkIcon(href = '') {
     <div class="hero-bg-dots"></div>
     <div class="container hero-grid">
       <div class="hero-inner">
+        {page.breadcrumbs && page.breadcrumbs.length > 0 && (
+          <nav class="breadcrumbs reveal" aria-label="Хлебные крошки">
+            {page.breadcrumbs.map((item, index) => (
+              <>
+                {index > 0 && <span class="breadcrumbs-sep">/</span>}
+                {item.href ? (
+                <a href={toHref(item.href)} class="breadcrumbs-link">{item.label}</a>
+                ) : (
+                  <span class="breadcrumbs-current">{item.label}</span>
+                )}
+              </>
+            ))}
+          </nav>
+        )}
         <h1 class="hero-h1 text-gradient reveal">{page.h1}</h1>
         {page.subtitle && <p class="hero-subtitle reveal delay-1">{page.subtitle}</p>}
         {(page.hero_cta_primary_label || page.hero_cta_secondary_label) && (
           <div class="hero-ctas reveal delay-2">
             {page.hero_cta_primary_label && page.hero_cta_primary_url && (
-              <a href={page.hero_cta_primary_url} class="btn-primary">{page.hero_cta_primary_label}</a>
+            <a href={toHref(page.hero_cta_primary_url)} class="btn-primary">{page.hero_cta_primary_label}</a>
             )}
             {page.hero_cta_secondary_label && page.hero_cta_secondary_url && (
-              <a href={page.hero_cta_secondary_url} class="btn-outline">{page.hero_cta_secondary_label}</a>
+            <a href={toHref(page.hero_cta_secondary_url)} class="btn-outline">{page.hero_cta_secondary_label}</a>
             )}
           </div>
         )}
@@ -125,7 +135,7 @@ function getLinkIcon(href = '') {
 
   <!-- PROBLEMS -->
   {page.problem_title && (
-    <section class="section">
+    <section class="section section-dark">
       <div class="container">
         <div class="section-header reveal">
           <h2 class="section-title">{page.problem_title}</h2>
@@ -136,9 +146,9 @@ function getLinkIcon(href = '') {
             {page.problems.map((item, i) => (
               <article class="problem-card reveal">
                 <div class="problem-num">{String(i + 1).padStart(2, '0')}</div>
-                <div>
-                  <h3 class="card-title">{item.title}</h3>
-                  <p class="card-text">{item.text}</p>
+                <div class="problem-content">
+                  <h3 class="card-title text-white">{item.title}</h3>
+                  <p class="card-text text-soft">{item.text}</p>
                 </div>
               </article>
             ))}
@@ -154,27 +164,31 @@ function getLinkIcon(href = '') {
   <!-- SOLUTION STEPS -->
   {page.solution_title && (
     <section class="section section-tinted" id="solution">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title">{page.solution_title}</h2>
-          {page.solution_intro && <p class="section-intro">{page.solution_intro}</p>}
-        </div>
-        {page.solution_steps && page.solution_steps.length > 0 && (
-          <div class="steps-list">
-            {page.solution_steps.map((item, i) => (
-              <article class="step-item reveal">
-                <div class="step-num-wrap">
-                  <div class="step-num">{i + 1}</div>
-                  {i < (page.solution_steps?.length ?? 0) - 1 && <div class="step-line"></div>}
-                </div>
-                <div class="step-body">
-                  <h3 class="step-title">{item.title}</h3>
-                  <p class="card-text">{item.text}</p>
-                </div>
-              </article>
-            ))}
+      <div class="container steps-container">
+        <div class="steps-left-sticky">
+          <div class="section-header reveal">
+            <h2 class="section-title">{page.solution_title}</h2>
+            {page.solution_intro && <p class="section-intro">{page.solution_intro}</p>}
           </div>
-        )}
+        </div>
+        <div class="steps-right-scroll">
+          {page.solution_steps && page.solution_steps.length > 0 && (
+            <div class="steps-list">
+              {page.solution_steps.map((item, i) => (
+                <article class="step-item reveal">
+                  <div class="step-num-wrap">
+                    <div class="step-num">{i + 1}</div>
+                    {i < (page.solution_steps?.length ?? 0) - 1 && <div class="step-line"></div>}
+                  </div>
+                  <div class="step-body">
+                    <h3 class="step-title">{item.title}</h3>
+                    <p class="card-text">{item.text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )}
@@ -220,26 +234,23 @@ function getLinkIcon(href = '') {
 
   <!-- INTEGRATIONS -->
   {page.integrations_title && (
-    <section class="section section-tinted">
+    <section class="section section-tinted overflow-hidden">
       <div class="container">
-        <div class="section-header reveal">
+        <div class="section-header reveal text-center">
           <h2 class="section-title">{page.integrations_title}</h2>
         </div>
         {page.integration_blocks && page.integration_blocks.length > 0 && (
-          <div class="integrations-grid">
+          <div class="integrations-cloud reveal delay-1">
             {page.integration_blocks.map((item, i) => {
               const icons = ['lucide:plug', 'lucide:database', 'lucide:calendar-days', 'lucide:webhook', 'lucide:bot', 'lucide:briefcase-business'];
               const icon = icons[i % icons.length];
               return (
-                <article class="integration-card reveal delay-2">
-                  <div class="integration-head">
-                    <div class="integration-icon-wrap">
-                      <Icon name={icon} class="integration-icon" />
-                    </div>
-                    <h3 class="integration-label">{item.label}</h3>
+                <div class="integration-pill">
+                  <div class="integration-icon-wrap">
+                    <Icon name={icon} class="integration-icon" />
                   </div>
-                  <p class="card-text-sm">{item.text}</p>
-                </article>
+                  <span class="integration-label">{item.label}</span>
+                </div>
               );
             })}
           </div>
@@ -367,12 +378,14 @@ function getLinkIcon(href = '') {
             {page.faqs.map((item) => (
               <details class="faq-item">
                 <summary class="faq-question">
-                  {item.question}
+                  <span>{item.question}</span>
                   <span class="faq-chevron">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                   </span>
                 </summary>
-                <p class="faq-answer">{item.answer}</p>
+                <div class="faq-body">
+                  <p class="faq-answer">{item.answer}</p>
+                </div>
               </details>
             ))}
           </div>
@@ -381,30 +394,8 @@ function getLinkIcon(href = '') {
     </section>
   )}
 
-  <!-- INTERNAL LINKS -->
-  {page.internal_links_title && page.internal_links && page.internal_links.length > 0 && (
-    <section class="section">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title section-title--compact">{page.internal_links_title}</h2>
-        </div>
-        <div class="links-grid">
-          {page.internal_links.map((item) => (
-            <a href={item.href} class="link-card">
-              <div class="link-icon-wrap">
-                <Icon name={getLinkIcon(item.href)} class="link-icon" />
-              </div>
-              <div class="link-card-inner">
-                <span class="link-label">{item.label}</span>
-                {item.description && <span class="link-desc">{item.description}</span>}
-              </div>
-              <svg class="link-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
+  <NavigationGroupsSection page={page} />
+  <InternalLinksSection page={page} />
 
   <!-- FINAL CTA -->
   {(page.sticky_cta_title || page.sticky_cta_text) && (
@@ -416,10 +407,10 @@ function getLinkIcon(href = '') {
         {(page.sticky_cta_primary_label || page.sticky_cta_secondary_label) && (
           <div class="cta-buttons">
             {page.sticky_cta_primary_label && page.sticky_cta_primary_url && (
-              <a href={page.sticky_cta_primary_url} class="btn-white">{page.sticky_cta_primary_label}</a>
+          <a href={toHref(page.sticky_cta_primary_url)} class="btn-white">{page.sticky_cta_primary_label}</a>
             )}
             {page.sticky_cta_secondary_label && page.sticky_cta_secondary_url && (
-              <a href={page.sticky_cta_secondary_url} class="btn-ghost">{page.sticky_cta_secondary_label}</a>
+          <a href={toHref(page.sticky_cta_secondary_url)} class="btn-ghost">{page.sticky_cta_secondary_label}</a>
             )}
           </div>
         )}
@@ -429,6 +420,7 @@ function getLinkIcon(href = '') {
 
   <script is:inline>
     document.addEventListener("DOMContentLoaded", () => {
+      // Reveal animation
       const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(e => {
           if(e.isIntersecting) {
@@ -438,6 +430,7 @@ function getLinkIcon(href = '') {
         });
       }, { threshold: 0.1 });
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
     });
   </script>
 </Base>
@@ -447,19 +440,47 @@ function getLinkIcon(href = '') {
   .card-text  { font-size: 0.95rem; color: #475569; line-height: 1.7; }
   .card-text-sm { font-size: 0.9rem; color: #475569; line-height: 1.65; }
 
-  /* ── HERO ── */
+  /* ── HERO (PREMIUM GLOW) ── */
   .hero-section {
     position: relative;
     overflow: hidden;
-    padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(2rem, 4.5vw, 3.5rem);
-    background: linear-gradient(160deg, #eef2ff 0%, #ffffff 50%, #f8fafc 100%);
+    padding: clamp(3rem, 6vw, 5rem) 0 clamp(2.5rem, 5vw, 4rem);
+    background: linear-gradient(175deg, #0f172a 0%, #1a1040 55%, #0f172a 100%);
+  }
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, #0f172a);
+    pointer-events: none;
+    z-index: 2;
   }
   .hero-bg-dots {
     position: absolute; inset: 0;
-    background-image: radial-gradient(#c7d2fe 1px, transparent 1px);
-    background-size: 28px 28px;
-    opacity: 0.5;
+    background-image: radial-gradient(rgba(99, 102, 241, 0.4) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.25;
     pointer-events: none;
+    z-index: 0;
+  }
+  .hero-bg-dots::before {
+    content: '';
+    position: absolute;
+    top: -15%; left: -10%;
+    width: 60%; height: 70%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    filter: blur(60px);
+    animation: float 8s infinite alternate ease-in-out;
+  }
+  .hero-bg-dots::after {
+    content: '';
+    position: absolute;
+    bottom: -15%; right: -5%;
+    width: 70%; height: 80%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%);
+    filter: blur(80px);
+    animation: float 12s infinite alternate-reverse ease-in-out;
   }
   .hero-grid {
     position: relative;
@@ -467,12 +488,40 @@ function getLinkIcon(href = '') {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     align-items: center;
+    z-index: 1;
   }
   .hero-inner {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 1.5rem;
+  }
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+  }
+  .breadcrumbs-link,
+  .breadcrumbs-current {
+    position: relative;
+    z-index: 1;
+  }
+  .breadcrumbs-link {
+    color: #e2e8f0;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .breadcrumbs-link:hover {
+    color: #ffffff;
+  }
+  .breadcrumbs-current {
+    color: #94a3b8;
+  }
+  .breadcrumbs-sep {
+    color: rgba(148, 163, 184, 0.75);
   }
   .hero-visual {
     display: flex;
@@ -487,54 +536,57 @@ function getLinkIcon(href = '') {
     inset: 8% 0 auto 12%;
     height: 72%;
     border-radius: 32px;
-    background: radial-gradient(circle, rgba(99, 102, 241, .18), transparent 68%);
-    filter: blur(26px);
+    background: radial-gradient(circle, rgba(99, 102, 241, .25), transparent 68%);
+    filter: blur(30px);
     pointer-events: none;
   }
   .hero-h1 {
-    font-size: clamp(1.9rem, 3.5vw, 3rem);
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
     font-weight: 800;
-    color: #0f172a;
-    line-height: 1.15;
+    color: #ffffff;
+    line-height: 1.12;
     letter-spacing: -0.03em;
   }
   .hero-subtitle {
-    font-size: clamp(0.975rem, 1.5vw, 1.1rem);
-    color: #475569;
-    line-height: 1.75;
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    color: #94a3b8;
+    line-height: 1.8;
+    max-width: 90%;
   }
   .hero-ctas {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+    margin-top: 0.5rem;
   }
   .hero-trust {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
     list-style: none;
-    padding: 0; margin: 0;
+    padding: 0; margin: 1rem 0 0 0;
   }
   .trust-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: #334155;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: #cbd5e1;
     font-weight: 500;
   }
   .trust-check {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px; height: 18px;
+    width: 20px; height: 20px;
     border-radius: 50%;
-    background: #6366f1;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
   }
 
-  /* ── PROBLEMS ── */
+  /* ── PROBLEMS (DARK MODE) ── */
   .problems-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
@@ -544,44 +596,77 @@ function getLinkIcon(href = '') {
     display: flex;
     gap: 1.15rem;
     align-items: flex-start;
-    padding: 1rem 1.1rem;
-    background: rgba(255,255,255,.95);
-    border: 1px solid rgba(226, 232, 240, .95);
-    border-radius: 18px;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, .04);
-    transition: box-shadow 0.2s, border-color 0.2s;
+    padding: 1.5rem;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    border-radius: 20px;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   }
   .problem-card:hover {
-    box-shadow: 0 20px 40px rgba(79, 70, 229, .08);
-    border-color: rgba(129, 140, 248, .35);
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(99, 102, 241, 0.5);
+    transform: translateY(-4px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(99, 102, 241, 0.2);
   }
   .problem-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.8rem;
+    height: 2.8rem;
     border-radius: 14px;
-    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
-    font-size: 0.8rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    font-size: 0.9rem;
     font-weight: 800;
-    color: #4f46e5;
+    color: #e0e7ff;
     letter-spacing: 0.05em;
     flex-shrink: 0;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
   }
+  .problem-card:hover .problem-num {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4));
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+    border-color: rgba(129, 140, 248, 0.6);
+  }
+  .text-white { color: #f8fafc; }
+  .text-soft { color: #94a3b8; font-size: 0.95rem; line-height: 1.7; }
+  
   .problem-summary {
-    margin-top: 1.5rem;
-    font-size: .95rem;
-    font-weight: 700;
-    color: #1e293b;
-    padding: 1rem 1.25rem;
-    background: #f8fafc;
-    border-left: 4px solid #6366f1;
-    border-radius: 0 8px 8px 0;
+    margin-top: 2.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(30, 41, 59, 0.4) 100%);
+    border-left: 4px solid #818cf8;
+    border-radius: 0 16px 16px 0;
+    backdrop-filter: blur(8px);
+  }
+  /* ── SOLUTION STEPS (STICKY SCROLL) ── */
+  .steps-container {
+    display: flex;
+    gap: 4rem;
+    align-items: flex-start;
+  }
+  .steps-left-sticky {
+    flex: 0 0 38%;
+    position: sticky;
+    top: 120px;
+    padding-bottom: 2rem;
+  }
+  .steps-right-scroll {
+    flex: 1;
+  }
+  @media (max-width: 992px) {
+    .steps-container { flex-direction: column; gap: 2rem; }
+    .steps-left-sticky { position: static; flex: none; width: 100%; top: auto; padding-bottom: 0; }
   }
 
-  /* ── SOLUTION STEPS ── */
   .steps-list {
     display: flex;
     flex-direction: column;
@@ -589,7 +674,7 @@ function getLinkIcon(href = '') {
   }
   .step-item {
     display: flex;
-    gap: 1.25rem;
+    gap: 1.5rem;
     align-items: flex-start;
   }
   .step-num-wrap {
@@ -599,64 +684,93 @@ function getLinkIcon(href = '') {
     flex-shrink: 0;
   }
   .step-num {
-    width: 40px; height: 40px;
+    width: 44px; height: 44px;
     border-radius: 50%;
-    background: #6366f1;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: #fff;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 0.9rem;
+    font-weight: 800; font-size: 1rem;
     flex-shrink: 0;
-    box-shadow: 0 2px 12px rgba(99,102,241,.3);
+    box-shadow: 0 4px 14px rgba(99,102,241,.3);
   }
   .step-line {
     width: 2px;
     flex: 1;
-    min-height: 24px;
-    background: linear-gradient(to bottom, #c7d2fe, #e2e8f0);
-    margin: 6px 0;
+    min-height: 28px;
+    background: linear-gradient(to bottom, #d8b4fe, #e2e8f0);
+    margin: 8px 0;
   }
   .step-body {
-    padding: 1rem 1.1rem;
-    margin-bottom: 0.85rem;
-    background: rgba(255,255,255,.95);
-    border: 1px solid rgba(226, 232, 240, .95);
-    border-radius: 16px;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, .03);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: rgba(255,255,255,.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     flex: 1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .step-item:hover .step-body {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(99, 102, 241, 0.08);
   }
   .step-title {
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     color: #0f172a;
-    margin-bottom: 0.4rem;
-    padding-top: 0.5rem;
+    margin-bottom: 0.6rem;
   }
   .step-item:last-child .step-body { margin-bottom: 0; }
 
-  /* ── FEATURES ── */
+  /* ── FEATURES (BENTO GRID) ── */
   .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
   }
   .feature-card {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
     padding: 2.2rem 2rem;
     background: rgba(255, 255, 255, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.9);
-    border-radius: 24px;
+    border-radius: 28px;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
   }
   .feature-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
     box-shadow: 0 20px 48px rgba(99, 102, 241, 0.12);
     background: rgba(255, 255, 255, 0.9);
   }
+  /* Bento sizing overrides */
+  .feature-card:nth-child(1) { 
+    grid-column: span 2; 
+    grid-row: span 2; 
+    background: linear-gradient(160deg, #f8fafc, #eff6ff); 
+  }
+  .feature-card:nth-child(1) .feature-title { font-size: 1.75rem; }
+  .feature-card:nth-child(1) .feature-icon-wrap { width: 56px; height: 56px; }
+  .feature-card:nth-child(1) .feature-icon { width: 26px; height: 26px; }
+  
+  .feature-card:nth-child(4n) { grid-column: span 2; }
+  .feature-card:nth-child(7n) { grid-column: span 3; }
+  
+  @media (max-width: 992px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .feature-card:nth-child(1), .feature-card:nth-child(4n), .feature-card:nth-child(7n) { grid-column: span 2; }
+  }
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .feature-card:nth-child(n) { grid-column: span 1; grid-row: auto; }
+    .feature-card:nth-child(1) .feature-title { font-size: 1.25rem; }
+  }
+
   .feature-icon-wrap {
     flex-shrink: 0;
     width: 44px; height: 44px;
@@ -669,62 +783,60 @@ function getLinkIcon(href = '') {
   .feature-icon { width: 20px; height: 20px; }
   .feature-title { font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
   .feature-card .card-text-sm {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #475569;
   }
 
-  /* ── INTEGRATIONS ── */
-  .integrations-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
-    gap: .75rem;
+  /* ── INTEGRATIONS (LOGO CLOUD) ── */
+  .overflow-hidden { overflow: hidden; }
+  .text-center { text-align: center; }
+  .text-center .section-intro { margin: 0.75rem auto 0; }
+  
+  .integrations-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem 1.25rem;
+    padding: 1rem 0 2rem;
+    max-width: 900px;
+    margin: 0 auto;
   }
-  .integration-card {
-    padding: 1rem;
-    background: rgba(255,255,255,.95);
-    border: 1px solid rgba(226, 232, 240, .95);
-    border-radius: 16px;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, .03);
-    transition: box-shadow 0.2s, border-color 0.2s;
-  }
-  .integration-card:hover {
-    box-shadow: 0 20px 40px rgba(79, 70, 229, .08);
-    border-color: rgba(129, 140, 248, .35);
-  }
-  .integration-label {
-    font-size: 0.92rem;
-    font-weight: 800;
-    color: #4f46e5;
-    margin-bottom: 0.55rem;
-    letter-spacing: -0.01em;
-  }
-  .integration-head {
+  .integration-pill {
     display: flex;
     align-items: center;
-    gap: .72rem;
-    margin-bottom: .65rem;
+    gap: 0.75rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+  }
+  .integration-pill:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 12px 24px rgba(99, 102, 241, 0.12);
+    border-color: rgba(129, 140, 248, 0.6);
   }
   .integration-icon-wrap {
-    width: 2.8rem;
-    height: 2.8rem;
-    border-radius: 14px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #eef2ff, #ddd6fe);
     color: #4f46e5;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
-    flex-shrink: 0;
   }
-  .integration-icon { width: 18px; height: 18px; }
-  .integration-card .card-text-sm {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.52;
+  .integration-icon {
+    width: 16px;
+    height: 16px;
+  }
+  .integration-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.01em;
   }
 
   /* ── ROI ── */
@@ -870,14 +982,17 @@ function getLinkIcon(href = '') {
   /* ── FAQ ── */
   .faq-list { display: grid; gap: 0.65rem; }
   .faq-item {
+    display: grid;
+    grid-template-rows: auto 0fr;
     background: rgba(255,255,255,.94);
     border: 1px solid rgba(226, 232, 240, .95);
     border-radius: 18px;
     overflow: hidden;
     box-shadow: 0 14px 34px rgba(15, 23, 42, .04);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, grid-template-rows .35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .faq-item[open] {
+    grid-template-rows: auto 1fr;
     border-color: rgba(129, 140, 248, .4);
     box-shadow: 0 18px 38px rgba(79, 70, 229, .08);
   }
@@ -891,13 +1006,23 @@ function getLinkIcon(href = '') {
     font-size: 0.975rem;
     color: #0f172a;
     cursor: pointer;
-    list-style: none;
     user-select: none;
+    list-style: none;
+    text-align: left;
+    font-family: inherit;
   }
   .faq-question::-webkit-details-marker { display: none; }
+  .faq-body { overflow: hidden; }
   .faq-question:hover { color: #6366f1; }
-  .faq-chevron { flex-shrink: 0; color: #94a3b8; transition: transform 0.25s; }
-  .faq-item[open] .faq-chevron { transform: rotate(180deg); color: #6366f1; }
+  .faq-chevron {
+    flex-shrink: 0;
+    color: #94a3b8;
+    transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1), color .2s ease;
+  }
+  .faq-item[open] .faq-chevron {
+    color: #6366f1;
+    transform: rotate(180deg);
+  }
   .faq-answer {
     padding: 0 1.25rem 1.1rem;
     font-size: 0.9rem;
@@ -905,61 +1030,118 @@ function getLinkIcon(href = '') {
     line-height: 1.75;
   }
 
-  /* ── INTERNAL LINKS ── */
+  /* ── INTERNAL LINKS (PREMIUM GRID) ── */
   .links-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+  .navigation-groups {
+    display: grid;
+    gap: 2rem;
+  }
+  .navigation-group {
+    display: grid;
     gap: 1rem;
   }
+  .navigation-group-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+  }
   .link-card {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.85rem;
-    min-height: 82px;
-    padding: 1.25rem;
-    background: rgba(255,255,255,.94);
-    border: 1px solid rgba(226, 232, 240, .9);
-    border-radius: 20px;
+    gap: 1.2rem;
+    min-height: 96px;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 22px;
     text-decoration: none;
     color: inherit;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+  .link-card::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 120%; height: 120%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.05), transparent 70%);
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 0;
   }
   .link-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(129, 140, 248, .4);
-    box-shadow: 0 16px 36px rgba(79, 70, 229, .08);
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+  }
+  .link-card:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
   }
   .link-icon-wrap {
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 14px;
+    position: relative;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 18px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    background: linear-gradient(135deg, rgba(238, 242, 255, 0.6), rgba(221, 214, 254, 0.6));
     color: #4f46e5;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
     flex-shrink: 0;
+    z-index: 1;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .link-card:hover .link-icon-wrap {
+    background: linear-gradient(135deg, #eef2ff, #ddd6fe);
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.15);
   }
   .link-icon {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
   }
-  .link-card-inner { display: flex; flex-direction: column; gap: 0.2rem; }
-  .link-label { font-size: 0.9rem; font-weight: 700; color: #1e293b; }
+  .link-card-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    z-index: 1;
+  }
+  .link-label { font-size: 1.05rem; font-weight: 800; color: #0f172a; letter-spacing: -0.01em; }
   .link-desc  {
-    font-size: 0.76rem;
-    color: #94a3b8;
+    font-size: 0.85rem;
+    color: #475569;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.4;
+    line-height: 1.55;
   }
-  .link-arrow { flex-shrink: 0; color: #cbd5e1; transition: color 0.2s, transform 0.2s; }
-  .link-card:hover .link-arrow { color: #6366f1; transform: translateX(3px); }
+  .link-arrow {
+    flex-shrink: 0;
+    color: #cbd5e1;
+    z-index: 1;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease;
+  }
+  .link-card:hover .link-arrow {
+    transform: translateX(4px);
+    color: #4f46e5;
+  }
 
   /* ── FINAL CTA ── */
   .cta-section {

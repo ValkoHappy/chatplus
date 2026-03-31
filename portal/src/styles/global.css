@@ -13,7 +13,7 @@
   --brand-dark: #4f46e5;
   --shadow-soft: 0 14px 36px rgba(15, 23, 42, .06);
   --shadow-brand: 0 12px 28px rgba(99, 102, 241, .18);
-  --container: 1060px;
+  --container: 1240px;
 }
 
 /* ── Reset ── */
@@ -55,11 +55,24 @@ body {
 }
 
 .section {
-  padding: clamp(2rem, 4.5vw, 4rem) 0;
+  padding: clamp(2.5rem, 5.5vw, 5rem) 0;
 }
 
 .section-tinted {
   background: var(--bg-subtle);
+}
+
+.section-dark {
+  background: var(--text-main);
+  color: #fff;
+}
+
+.section-dark .section-title {
+  color: #fff;
+}
+
+.section-dark .section-intro {
+  color: #94a3b8;
 }
 
 .two-col {

@@ -1,0 +1,414 @@
+{
+  "id": 1,
+  "documentId": "nsl4xuk67i62uzj5xno39rbw",
+  "site_name": "Chat Plus",
+  "site_url": "https://chatplus.ru",
+  "default_description": "Омниканальная платформа для бизнеса: WhatsApp, Telegram и другие каналы в одном окне с AI и автоматизацией.",
+  "organization_description": "Chat Plus объединяет каналы коммуникации, автоматизацию и AI-слои в единой платформе для бизнеса.",
+  "header_links": [
+    {
+      "label": "??????",
+      "href": "/channels"
+    },
+    {
+      "label": "???????",
+      "href": "/industries"
+    },
+    {
+      "label": "??????????",
+      "href": "/integrations"
+    },
+    {
+      "label": "???????",
+      "href": "/solutions"
+    },
+    {
+      "label": "???????????",
+      "href": "/features"
+    },
+    {
+      "label": "??? ???????",
+      "href": "/for"
+    },
+    {
+      "label": "????",
+      "href": "/pricing"
+    },
+    {
+      "label": "?????????",
+      "href": "/partnership"
+    }
+  ],
+  "header_cta_label": "Попробовать",
+  "header_cta_url": "/demo",
+  "footer_tagline": "Мы продаём не чаты — мы продаём то, что чаты делают возможным.",
+  "footer_columns": [
+    {
+      "title": "???????",
+      "links": [
+        {
+          "label": "????",
+          "href": "/pricing"
+        },
+        {
+          "label": "Demo",
+          "href": "/demo"
+        },
+        {
+          "label": "?????????",
+          "href": "/partnership"
+        },
+        {
+          "label": "??? ???????",
+          "href": "/for"
+        }
+      ]
+    },
+    {
+      "title": "????????",
+      "links": [
+        {
+          "label": "??????",
+          "href": "/channels"
+        },
+        {
+          "label": "???????",
+          "href": "/industries"
+        },
+        {
+          "label": "??????????",
+          "href": "/integrations"
+        },
+        {
+          "label": "???????",
+          "href": "/solutions"
+        },
+        {
+          "label": "???????????",
+          "href": "/features"
+        }
+      ]
+    },
+    {
+      "title": "???????",
+      "links": [
+        {
+          "label": "Docs",
+          "href": "/docs"
+        },
+        {
+          "label": "Help",
+          "href": "/help"
+        },
+        {
+          "label": "Academy",
+          "href": "/academy"
+        },
+        {
+          "label": "????",
+          "href": "/blog"
+        },
+        {
+          "label": "??????",
+          "href": "/status"
+        }
+      ]
+    },
+    {
+      "title": "????????",
+      "links": [
+        {
+          "label": "Media",
+          "href": "/media"
+        },
+        {
+          "label": "Team",
+          "href": "/team"
+        },
+        {
+          "label": "Conversation",
+          "href": "/conversation"
+        },
+        {
+          "label": "TV",
+          "href": "/tv"
+        }
+      ]
+    },
+    {
+      "title": "???????????",
+      "links": [
+        {
+          "label": "Promo",
+          "href": "/promo"
+        },
+        {
+          "label": "Prozorro",
+          "href": "/prozorro"
+        },
+        {
+          "label": "?????????",
+          "href": "/compare"
+        },
+        {
+          "label": "????? ?????",
+          "href": "/site-map"
+        }
+      ]
+    }
+  ],
+  "footer_copyright": "© 2026 Chat Plus. Все права защищены.",
+  "sticky_cta_text": "Попробуйте Chat Plus бесплатно и соберите рабочий сценарий под ваш бизнес.",
+  "sticky_cta_label": "Записаться на демо",
+  "sticky_cta_url": "/demo",
+  "createdAt": "2026-03-29T17:49:56.011Z",
+  "updatedAt": "2026-03-30T18:42:21.512Z",
+  "publishedAt": "2026-03-30T18:42:21.510Z",
+  "page_templates": {
+    "shared": {
+      "structured_page": {
+        "roi_without_title": "Без Chat Plus",
+        "roi_with_title": "С Chat Plus",
+        "comparison_header_parameter": "Параметр",
+        "comparison_header_one": "Подход 1",
+        "comparison_header_two": "Подход 2",
+        "comparison_header_chat_plus": "Chat Plus"
+      }
+    },
+    "directories": {
+      "channels": {
+        "meta_title": "Каналы Chat Plus — WhatsApp, Telegram, Instagram и другие",
+        "meta_description": "Подключите WhatsApp Business API, Telegram, Instagram Direct, Viber, SMS и Email в единый омниканальный инбокс. Все сообщения в одном окне с AI и CRM.",
+        "h1": "Все каналы коммуникации в одном окне",
+        "subtitle": "WhatsApp, Telegram, Instagram, Viber, SMS, Email и VoIP — подключайте любые каналы и управляйте всеми диалогами в единой платформе с AI и автоматизацией.",
+        "hero_cta_primary_label": "Попробовать бесплатно",
+        "hero_cta_primary_url": "/demo",
+        "card_cta_label": "Подключить",
+        "base_path": "/channels",
+        "sticky_cta_title": "Подключите все каналы в одном окне",
+        "sticky_cta_text": "Перестаньте терять заявки из-за разрозненных мессенджеров. Один интерфейс, единая история клиента, AI 24/7.",
+        "sticky_cta_primary_label": "Записаться на демо",
+        "sticky_cta_primary_url": "/demo"
+      },
+      "industries": {
+        "meta_title": "Chat Plus по отраслям — Beauty, Медицина, Фитнес, Недвижимость",
+        "meta_description": "Готовые сценарии автоматизации коммуникации для каждой отрасли. Beauty, медицина, фитнес, недвижимость, HoReCa, образование и другие.",
+        "h1": "Готовые сценарии Chat Plus для вашей отрасли",
+        "subtitle": "Автоматизация коммуникации с учётом специфики бизнеса: готовые шаблоны, сценарии и настройки для beauty, медицины, фитнеса, недвижимости и других отраслей.",
+        "hero_cta_primary_label": "Попробовать бесплатно",
+        "hero_cta_primary_url": "/demo",
+        "card_cta_label": "Посмотреть сценарий",
+        "base_path": "/industries",
+        "sticky_cta_title": "Найдите готовый сценарий для вашей отрасли",
+        "sticky_cta_text": "За 30 минут подключаем каналы и запускаем автоответы под специфику вашего бизнеса.",
+        "sticky_cta_primary_label": "Записаться на демо",
+        "sticky_cta_primary_url": "/demo"
+      },
+      "integrations": {
+        "meta_title": "Интеграции Chat Plus — AmoCRM, Bitrix24, HubSpot и другие",
+        "meta_description": "Chat Plus интегрируется с AmoCRM, Bitrix24, HubSpot, Salesforce, Zapier и сотнями других инструментов. Синхронизируйте каналы с вашим стеком без потери данных.",
+        "h1": "Chat Plus работает с вашими инструментами",
+        "subtitle": "AmoCRM, Bitrix24, HubSpot, Salesforce и сотни других интеграций. Ваши инструменты работают вместе с Chat Plus — без потери данных и привычных процессов.",
+        "hero_cta_primary_label": "Попробовать бесплатно",
+        "hero_cta_primary_url": "/demo",
+        "card_cta_label": "Подключить",
+        "base_path": "/integrations",
+        "sticky_cta_title": "Подключите ваш стек без дублирования данных",
+        "sticky_cta_text": "Chat Plus встраивается в текущий процесс и не требует отказа от привычных инструментов.",
+        "sticky_cta_primary_label": "Записаться на демо",
+        "sticky_cta_primary_url": "/demo"
+      },
+      "features": {
+        "meta_title": "Возможности Chat Plus — AI, автоматизация, рассылки, аналитика",
+        "meta_description": "AI-агенты, чат-боты, массовые рассылки, no-code автоматизация, аналитика и API. Все инструменты для роста продаж и автоматизации коммуникации.",
+        "h1": "Возможности Chat Plus для вашего бизнеса",
+        "subtitle": "AI-агенты, чат-боты, рассылки, автоматизация, аналитика и API — всё для роста продаж, скорости обработки обращений и масштабирования без новых менеджеров.",
+        "hero_cta_primary_label": "Попробовать бесплатно",
+        "hero_cta_primary_url": "/demo",
+        "card_cta_label": "Подробнее",
+        "base_path": "/features",
+        "sticky_cta_title": "Попробуйте все возможности Chat Plus",
+        "sticky_cta_text": "Запустите пилот и проверьте какие функции решают вашу задачу на реальных обращениях.",
+        "sticky_cta_primary_label": "Записаться на демо",
+        "sticky_cta_primary_url": "/demo"
+      },
+      "solutions": {
+        "meta_title": "Решения Chat Plus — продажи, поддержка, AI-автоматизация",
+        "meta_description": "Омниканальная поддержка, AI-воронки продаж, тендеры, рассылки — готовые бизнес-решения Chat Plus для роста конверсии и снижения операционной нагрузки.",
+        "h1": "Бизнес-решения Chat Plus",
+        "subtitle": "Омниканальная поддержка, воронки продаж, AI-обработка лидов, тендеры — готовые бизнес-сценарии для роста конверсии и снижения операционной нагрузки на команду.",
+        "hero_cta_primary_label": "Попробовать бесплатно",
+        "hero_cta_primary_url": "/demo",
+        "card_cta_label": "Открыть решение",
+        "base_path": "/solutions",
+        "sticky_cta_title": "Найдите решение под вашу задачу",
+        "sticky_cta_text": "Каждый сценарий настраивается под специфику бизнеса и запускается за один рабочий день.",
+        "sticky_cta_primary_label": "Записаться на демо",
+        "sticky_cta_primary_url": "/demo"
+      },
+      "business_types": {
+        "meta_title": "Chat Plus для вашего типа бизнеса — B2B, B2C, SMB, Enterprise",
+        "meta_description": "Chat Plus адаптируется под любую модель бизнеса: малый бизнес, B2B, enterprise, агентства, маркетплейсы. Готовые сценарии под ваш сегмент.",
+        "h1": "Chat Plus под ваш тип бизнеса",
+        "subtitle": "Малый бизнес, B2B, enterprise, агентства, маркетплейсы — Chat Plus адаптируется под модель и масштаб вашего бизнеса с готовыми сценариями и шаблонами.",
+        "hero_cta_primary_label": "Попробовать бесплатно",
+        "hero_cta_primary_url": "/demo",
+        "card_cta_label": "Смотреть сценарий",
+        "base_path": "/for",
+        "sticky_cta_title": "Запустите сценарий под ваш тип бизнеса",
+        "sticky_cta_text": "Подключение занимает день, а основные сценарии автоматизации настраиваются без программиста.",
+        "sticky_cta_primary_label": "Записаться на демо",
+        "sticky_cta_primary_url": "/demo"
+      }
+    },
+    "details": {
+      "channels": {
+        "meta_title": "Chat Plus {name}",
+        "h1": "Chat Plus {name}",
+        "hero_cta_secondary_label": "Как это работает",
+        "hero_cta_secondary_url": "#solution",
+        "problem_title": "Почему {name} без платформы тормозит команду",
+        "problem_intro": "{name} сам по себе не решает проблему скорости ответа, прозрачности процессов и передачи данных в CRM.",
+        "problem_points": [
+          {
+            "title": "Разрозненные диалоги",
+            "text": "Команда переключается между окнами, теряет контекст и скорость реакции."
+          },
+          {
+            "title": "Нет единой истории клиента",
+            "text": "Данные живут в канале и не попадают в воронку без ручной работы."
+          },
+          {
+            "title": "Сложно масштабировать",
+            "text": "Рост обращений быстро превращается в рост хаоса и операционных затрат."
+          }
+        ],
+        "problem_summary": "Нужен не просто канал, а связка канала, автоматизации и CRM-слоя.",
+        "solution_title": "Как Chat Plus усиливает {name}",
+        "solution_intro": "Chat Plus превращает канал в управляемый бизнес-процесс с AI, CRM и автоматизацией.",
+        "features_title": "Что уже есть в сценарии",
+        "integrations_title": "{name} + CRM и сервисы команды",
+        "roi_title": "Результат после подключения {name}",
+        "roi_intro": "Эти блоки дальше можно заменить на финальные коммерческие цифры через Strapi.",
+        "faq_title": "Частые вопросы",
+        "internal_links_title": "Смежные страницы",
+        "pricing_label": "Цены Chat Plus",
+        "pricing_description": "Посмотреть общую коммерческую модель",
+        "sticky_cta_title": "Подключите {name} через Chat Plus",
+        "sticky_cta_text": "Попробуйте Chat Plus и убедитесь, как {name} в единой платформе ускоряет команду и снижает нагрузку.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      },
+      "industries": {
+        "meta_title": "Chat Plus для {name}",
+        "h1": "Chat Plus для {name}",
+        "hero_cta_secondary_label": "Посмотреть демо",
+        "hero_cta_secondary_url": "/demo",
+        "problem_title": "Типичные проблемы коммуникации в {name}",
+        "problem_point_title": "Ключевая операционная проблема",
+        "solution_title": "Как Chat Plus решает задачи {name}",
+        "features_title": "Что можно автоматизировать",
+        "integrations_title": "С какими каналами и системами это работает",
+        "use_cases_title": "Сценарии применения в {name}",
+        "internal_links_title": "Смежные страницы",
+        "sticky_cta_title": "Запустите Chat Plus в вашем {name}-бизнесе",
+        "sticky_cta_text": "Запустите пилот под сегмент {name} и проверьте результат на реальных обращениях.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      },
+      "integrations": {
+        "meta_title": "Интеграция Chat Plus + {name}",
+        "h1": "Интеграция Chat Plus + {name}",
+        "problem_title": "Зачем нужна интеграция Chat Plus с {name}",
+        "problem_intro": "Без единой платформы данные из мессенджеров и {name} живут раздельно, и команда теряет контекст при каждом переключении.",
+        "solution_title": "Как Chat Plus работает с {name}",
+        "solution_intro": "Chat Plus синхронизирует все каналы коммуникации с {name} — история переписки, статусы и контакты обновляются автоматически.",
+        "features_title": "Что входит в интеграцию",
+        "use_cases_title": "Где это применяется",
+        "internal_links_title": "Смежные страницы",
+        "sticky_cta_title": "Подключите {name} к Chat Plus",
+        "sticky_cta_text": "Подключите {name} к Chat Plus без потери данных и привычного рабочего процесса.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      },
+      "features": {
+        "meta_title": "{name} в Chat Plus — возможности и настройка",
+        "h1": "{name} РІ Chat Plus",
+        "problem_title": "Зачем нужен модуль {name}",
+        "problem_intro": "Без централизованного управления {name} превращается в точечный инструмент, который не интегрируется с остальным процессом.",
+        "solution_title": "Как работает {name} в Chat Plus",
+        "solution_intro": "Модуль {name} встроен в единую платформу — он работает в связке с каналами, CRM и другими инструментами без дополнительных настроек.",
+        "features_title": "Что включает модуль",
+        "integrations_title": "С какими сервисами работает {name}",
+        "use_cases_title": "Где {name} приносит результат",
+        "internal_links_title": "Смежные страницы",
+        "docs_label": "Документация",
+        "docs_description": "Технические материалы и следующая детализация",
+        "sticky_cta_title": "Подключите {name} в вашем процессе",
+        "sticky_cta_text": "Включите модуль {name} и посмотрите, как он работает на вашем потоке обращений.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      },
+      "solutions": {
+        "meta_title": "Chat Plus: {name} — готовое решение для бизнеса",
+        "h1": "{name} на базе Chat Plus",
+        "problem_title": "Почему нужен отдельный сценарий {name}",
+        "problem_intro": "Типовые инструменты не учитывают специфику задачи {name}. Chat Plus предлагает готовый сценарий с каналами, AI и автоматизацией.",
+        "solution_title": "Как Chat Plus реализует сценарий {name}",
+        "solution_intro": "Chat Plus собирает полный workflow под задачу {name}: каналы, автоответы, CRM-интеграция и аналитика в одном месте.",
+        "features_title": "Что входит в решение",
+        "integrations_title": "Что можно подключить",
+        "use_cases_title": "Для кого это подходит",
+        "internal_links_title": "Смежные страницы",
+        "sticky_cta_title": "Запустите сценарий {name}",
+        "sticky_cta_text": "Запустите сценарий {name} и проверьте ROI на реальных задачах вашей команды.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      },
+      "compare": {
+        "meta_title": "Chat Plus vs {name} — сравнение платформ",
+        "h1": "Chat Plus vs {name}",
+        "problem_title": "Что ограничивает {name}",
+        "solution_title": "Чем Chat Plus лучше {name}",
+        "features_title": "Преимущества Chat Plus",
+        "comparison_title": "Подробное сравнение",
+        "price_parameter_label": "Цена",
+        "model_parameter_label": "Модель",
+        "model_option_one": "Текущий стек",
+        "model_option_two": "Дополнительные ограничения",
+        "model_chat_plus": "Единая платформа",
+        "internal_links_title": "Другие сравнения",
+        "sticky_cta_title": "Переходите с {name} на Chat Plus",
+        "sticky_cta_text": "Помогаем перенести процессы и собрать рабочий пилот без затяжного внедрения.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      },
+      "vs": {
+        "meta_title": "{name} или Chat Plus — что выбрать?",
+        "h1": "{name} или Chat Plus",
+        "problem_title": "Что ограничивает {name}",
+        "solution_title": "Почему выбирают Chat Plus",
+        "features_title": "Преимущества Chat Plus",
+        "comparison_title": "Ключевое сравнение",
+        "price_parameter_label": "Цена",
+        "model_parameter_label": "Модель",
+        "model_option_one": "Текущий стек",
+        "model_option_two": "Дополнительные ограничения",
+        "model_chat_plus": "Единая платформа",
+        "internal_links_title": "Другие сравнения",
+        "sticky_cta_title": "Убедитесь сами — попробуйте Chat Plus",
+        "sticky_cta_text": "Сравните Chat Plus с {name} на реальных задачах вашего бизнеса.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      },
+      "channel_industry": {
+        "meta_title": "Chat Plus {channel} для {industry}",
+        "meta_description": "Автоматизация коммуникации в {channel} для бизнеса в {industry}. Подключите {channel} через Chat Plus и управляйте всеми диалогами в единой платформе.",
+        "h1": "Chat Plus {channel} для {industry}",
+        "subtitle": "Готовый сценарий автоматизации {channel} под специфику {industry}. Подключайтесь и управляйте всеми обращениями в одном окне.",
+        "hero_cta_primary_label": "Попробовать бесплатно",
+        "problem_title": "Почему {channel} в {industry} требует отдельного сценария",
+        "solution_title": "Как Chat Plus настраивает {channel} для {industry}",
+        "features_title": "Что входит в готовый сценарий",
+        "integrations_title": "Связанные интеграции",
+        "internal_links_title": "Смежные страницы",
+        "sticky_cta_title": "Запустите {channel} для {industry}",
+        "sticky_cta_text": "Готовый сценарий {channel} для {industry} запускается за 30 минут без участия разработчика.",
+        "sticky_cta_primary_label": "Записаться на демо"
+      }
+    }
+  }
+}

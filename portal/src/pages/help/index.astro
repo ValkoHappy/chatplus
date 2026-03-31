@@ -2,17 +2,7 @@
 import StructuredLandingPage from '../../components/StructuredLandingPage.astro';
 import { getLandingPage } from '../../lib/strapi';
 
-let page;
-try {
-  page = await getLandingPage('help');
-} catch (e) {
-  page = {
-    meta_title: 'Помощь | Chat Plus',
-    meta_description: 'База знаний и поддержка.',
-    h1: 'Помощь и поддержка',
-    subtitle: 'База знаний скоро будет доступна.'
-  };
-}
+const page = await getLandingPage('help');
 ---
 
 <StructuredLandingPage page={page} />

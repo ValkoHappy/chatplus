@@ -13,7 +13,8 @@ export async function getStaticPaths() {
 
 const { competitor } = Astro.props;
 const [settings, competitors] = await Promise.all([getSiteSettings(), getCompetitors()]);
-const page = adaptCompetitorPage(competitor, { settings, competitors }, 'compare');
+const currentCompetitor = competitors.find((item) => item.slug === competitor.slug) || competitor;
+const page = adaptCompetitorPage(currentCompetitor, { settings, competitors }, 'compare');
 ---
 
 <StructuredLandingPage page={page} />

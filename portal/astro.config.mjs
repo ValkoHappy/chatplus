@@ -3,9 +3,13 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
 
+const site = process.env.PUBLIC_SITE_URL || 'https://chatplus.ru';
+const base = process.env.PUBLIC_BASE_PATH || undefined;
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://chatplus.ru',
+  site,
+  base,
   trailingSlash: 'never',
   vite: {
     server: {

@@ -7,7 +7,11 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/check-internal-links.mjs && node scripts/check-encoding.mjs",
+    "build:github-demo": "node scripts/build-github-demo.mjs",
+    "export:github-demo": "node scripts/publish-github-demo.mjs",
+    "snapshot:github-demo": "npm run build:github-demo && npm run export:github-demo",
+    "check:encoding": "node scripts/check-encoding.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

@@ -1,4 +1,6 @@
-const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
+import { inferLandingPageLinkSectionProps } from './link-sections';
+
+const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://127.0.0.1:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
 
 let siteSettingsPromise: Promise<any> | undefined;
@@ -67,7 +69,10 @@ function enrich(items: any[]) {
   }));
 }
 
-function normalizeLandingPage(data: any) {
+function normalizeLandingPage(data: any, slugHint?: string) {
+  const slug = data.slug || slugHint || '';
+  const inferredLinkSections = inferLandingPageLinkSectionProps(slug);
+
   return {
     ...data,
     hero_trust_facts: Array.isArray(data.hero_trust_facts) ? data.hero_trust_facts : [],
@@ -109,6 +114,29 @@ function normalizeLandingPage(data: any) {
           description: item.description || '',
         }))
       : [],
+    navigation_groups: Array.isArray(data.navigation_groups)
+      ? data.navigation_groups.map((group: any) => ({
+          ...group,
+          title: group.title || '',
+          items: Array.isArray(group.items)
+            ? group.items.map((item: any) => ({
+                ...item,
+                label: item.label || item.title || '',
+                href: item.href || item.url || '',
+                description: item.description || '',
+              }))
+            : [],
+        }))
+      : [],
+    navigation_groups_title: data.navigation_groups_title || '',
+    navigation_groups_intro: data.navigation_groups_intro || '',
+    internal_links_title: data.internal_links_title || '',
+    internal_links_intro: data.internal_links_intro || '',
+    internal_links_variant: data.internal_links_variant || inferredLinkSections.internal_links_variant,
+    internal_links_context: data.internal_links_context || {
+      ...inferredLinkSections.internal_links_context,
+      pageSlug: data.slug || inferredLinkSections.internal_links_context?.pageSlug,
+    },
     software_schema: data.software_schema || null,
     faq_schema: data.faq_schema || null,
   };
@@ -193,12 +221,22 @@ export async function getCompetitors() {
 }
 
 export async function getTendersPage() {
-  return normalizeLandingPage(await fetchSingle('/tenders-page'));
+  return normalizeLandingPage(
+    {
+      ...(await fetchSingle('/tenders-page')),
+      internal_links_variant: 'next_steps',
+      internal_links_context: {
+        entityType: 'generic',
+        pageSlug: 'tenders',
+      },
+    },
+    'tenders',
+  );
 }
 
 export async function getLandingPage(slug: string) {
   const data = await fetchCollection(`/landing-pages?filters[slug][$eq]=${encodeURIComponent(slug)}`);
-  return normalizeLandingPage(data[0]);
+  return normalizeLandingPage(data[0], slug);
 }
 
 export async function getSiteSettings() {

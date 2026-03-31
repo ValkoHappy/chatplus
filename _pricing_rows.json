@@ -1,0 +1,38 @@
+[
+  {
+    "mobile_aggregator": "$159 / мес",
+    "email_aggregator": "$425–850 / мес",
+    "chatplus": "от 4 900 ₽ / мес",
+    "parameter": "Тариф среднего уровня"
+  },
+  {
+    "mobile_aggregator": "Active contacts",
+    "email_aggregator": "Per seat + add-ons",
+    "chatplus": "Под сценарий команды и объём",
+    "parameter": "Модель оплаты"
+  },
+  {
+    "mobile_aggregator": "Ограниченные функции",
+    "email_aggregator": "Оплачивается отдельно",
+    "chatplus": "Встраивается в рабочий процесс",
+    "parameter": "AI"
+  },
+  {
+    "mobile_aggregator": "Зависит от поставщика",
+    "email_aggregator": "Часто есть допы",
+    "chatplus": "Без собственной наценки на сообщения",
+    "parameter": "Наценка за каналы"
+  },
+  {
+    "mobile_aggregator": "Упирается в контактные лимиты",
+    "email_aggregator": "Быстро растёт с ролями",
+    "chatplus": "Считается заранее и прозрачно",
+    "parameter": "Стоимость для 10 агентов"
+  },
+  {
+    "mobile_aggregator": "Есть ограничения по функциям",
+    "email_aggregator": "Встречаются",
+    "chatplus": "Коммерческая модель понятна сразу",
+    "parameter": "Скрытые платежи"
+  }
+]
