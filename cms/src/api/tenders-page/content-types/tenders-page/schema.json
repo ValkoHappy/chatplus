@@ -11,6 +11,14 @@
     "draftAndPublish": false
   },
   "attributes": {
+    "content_origin": {
+      "type": "enumeration",
+      "enum": [
+        "generated",
+        "managed"
+      ],
+      "default": "managed"
+    },
     "meta_title": {
       "type": "string",
       "required": true
@@ -25,6 +33,9 @@
     },
     "subtitle": {
       "type": "text"
+    },
+    "hero_eyebrow": {
+      "type": "string"
     },
     "canonical": {
       "type": "string"
@@ -120,6 +131,12 @@
     },
     "roi_quote": {
       "type": "text"
+    },
+    "hero_panel_items": {
+      "type": "json"
+    },
+    "section_labels": {
+      "type": "json"
     },
     "use_cases_title": {
       "type": "string"

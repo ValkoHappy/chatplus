@@ -28,7 +28,7 @@ async function request(path: string) {
 async function fetchCollection(path: string) {
   const json = await request(`${path}${path.includes('?') ? '&' : '?'}pagination[pageSize]=100`);
 
-  if (!json.data || json.data.length === 0) {
+  if (!json || !json.data || json.data.length === 0) {
     throw new Error(`Strapi returned no data for ${path}`);
   }
 
@@ -38,7 +38,7 @@ async function fetchCollection(path: string) {
 async function fetchSingle(path: string) {
   const json = await request(path);
 
-  if (!json.data) {
+  if (!json || !json.data) {
     throw new Error(`Strapi returned no data for ${path}`);
   }
 
@@ -74,10 +74,32 @@ function normalizeLandingPage(data: any, slugHint?: string) {
   const slug = data.slug || slugHint || '';
   const inferredLinkSections = inferLandingPageLinkSectionProps(slug);
   const override = getLandingPageOverride(slug) || {};
+  const pickValue = (primary: any, fallback: any) => (primary !== undefined && primary !== null && primary !== '' ? primary : fallback);
+  const pickArray = (primary: any, fallback: any) => (Array.isArray(primary) && primary.length > 0 ? primary : Array.isArray(fallback) ? fallback : []);
+  const pickObject = (primary: any, fallback: any) => {
+    if (primary && typeof primary === 'object' && !Array.isArray(primary) && Object.keys(primary).length > 0) {
+      return primary;
+    }
+
+    if (fallback && typeof fallback === 'object' && !Array.isArray(fallback)) {
+      return fallback;
+    }
+
+    return {};
+  };
 
   const normalized = {
     ...data,
+    template_kind: data.template_kind || '',
+    content_origin: data.content_origin || '',
+    hero_eyebrow: data.hero_eyebrow || '',
+    hero_variant: data.hero_variant || '',
+    hero_highlights_label: data.hero_highlights_label || '',
+    hero_highlights: Array.isArray(data.hero_highlights) ? data.hero_highlights : [],
     hero_trust_facts: Array.isArray(data.hero_trust_facts) ? data.hero_trust_facts : [],
+    hero_panel_items: Array.isArray(data.hero_panel_items) ? data.hero_panel_items : [],
+    pricing_tiers: Array.isArray(data.pricing_tiers) ? data.pricing_tiers : [],
+    proof_cards: Array.isArray(data.proof_cards) ? data.proof_cards : [],
     target_keywords: Array.isArray(data.target_keywords) ? data.target_keywords : [],
     breadcrumb: Array.isArray(data.breadcrumb) ? data.breadcrumb : [],
     problems: Array.isArray(data.problems) ? data.problems : [],
@@ -135,6 +157,12 @@ function normalizeLandingPage(data: any, slugHint?: string) {
     internal_links_title: data.internal_links_title || '',
     internal_links_intro: data.internal_links_intro || '',
     internal_links_variant: data.internal_links_variant || inferredLinkSections.internal_links_variant,
+    proof_facts: Array.isArray(data.proof_facts) ? data.proof_facts : [],
+    section_labels: data.section_labels || {},
+    quote_title: data.quote_title || '',
+    quote_text: data.quote_text || '',
+    quote_author: data.quote_author || '',
+    presentation_flags: data.presentation_flags || {},
     internal_links_context: data.internal_links_context || {
       ...inferredLinkSections.internal_links_context,
       pageSlug: data.slug || inferredLinkSections.internal_links_context?.pageSlug,
@@ -144,19 +172,34 @@ function normalizeLandingPage(data: any, slugHint?: string) {
   };
 
   return {
-    ...normalized,
     ...override,
-    hero_trust_facts: Array.isArray(override.hero_trust_facts) ? override.hero_trust_facts : normalized.hero_trust_facts,
-    problems: Array.isArray(override.problems) ? override.problems : normalized.problems,
-    solution_steps: Array.isArray(override.solution_steps) ? override.solution_steps : normalized.solution_steps,
-    features: Array.isArray(override.features) ? override.features : normalized.features,
-    roi_without_items: Array.isArray(override.roi_without_items) ? override.roi_without_items : normalized.roi_without_items,
-    roi_with_items: Array.isArray(override.roi_with_items) ? override.roi_with_items : normalized.roi_with_items,
-    use_cases: Array.isArray(override.use_cases) ? override.use_cases : normalized.use_cases,
-    faqs: Array.isArray(override.faqs) ? override.faqs : normalized.faqs,
+    ...normalized,
+    template_kind: pickValue(normalized.template_kind, (override as any).template_kind),
+    content_origin: pickValue(normalized.content_origin, (override as any).content_origin),
+    hero_eyebrow: pickValue(normalized.hero_eyebrow, (override as any).hero_eyebrow),
+    hero_variant: pickValue(normalized.hero_variant, (override as any).hero_variant),
+    hero_highlights_label: pickValue(normalized.hero_highlights_label, (override as any).hero_highlights_label),
+    hero_highlights: pickArray(normalized.hero_highlights, (override as any).hero_highlights),
+    hero_trust_facts: pickArray(normalized.hero_trust_facts, (override as any).hero_trust_facts),
+    hero_panel_items: pickArray(normalized.hero_panel_items, (override as any).hero_panel_items),
+    pricing_tiers: pickArray(normalized.pricing_tiers, (override as any).pricing_tiers),
+    proof_cards: pickArray(normalized.proof_cards, (override as any).proof_cards),
+    problems: pickArray(normalized.problems, (override as any).problems),
+    solution_steps: pickArray(normalized.solution_steps, (override as any).solution_steps),
+    features: pickArray(normalized.features, (override as any).features),
+    roi_without_items: pickArray(normalized.roi_without_items, (override as any).roi_without_items),
+    roi_with_items: pickArray(normalized.roi_with_items, (override as any).roi_with_items),
+    use_cases: pickArray(normalized.use_cases, (override as any).use_cases),
+    faqs: pickArray(normalized.faqs, (override as any).faqs),
+    proof_facts: pickArray(normalized.proof_facts, (override as any).proof_facts),
+    section_labels: pickObject(normalized.section_labels, (override as any).section_labels),
+    quote_title: pickValue(normalized.quote_title, (override as any).quote_title),
+    quote_text: pickValue(normalized.quote_text, (override as any).quote_text),
+    quote_author: pickValue(normalized.quote_author, (override as any).quote_author),
+    presentation_flags: pickObject(normalized.presentation_flags, (override as any).presentation_flags),
     internal_links_context: {
-      ...(normalized.internal_links_context || {}),
       ...(override as any).internal_links_context,
+      ...(normalized.internal_links_context || {}),
     },
   };
 }
@@ -223,16 +266,26 @@ export async function getCompetitors() {
   const data = await fetchCollection('/competitors');
   return enrich(data).map((item) => ({
     ...item,
+    content_origin: item.content_origin || 'generated',
     our_price: item.our_price || '',
     eyebrow: item.eyebrow || '',
+    hero_eyebrow: item.hero_eyebrow || item.eyebrow || '',
     hero_title: item.hero_title || '',
     hero_description: item.hero_description || '',
+    compare_summary: item.compare_summary || '',
+    compare_points: Array.isArray(item.compare_points) ? item.compare_points : [],
     pricing_title: item.pricing_title || '',
     our_price_label: item.our_price_label || '',
     our_price_caption: item.our_price_caption || '',
     competitor_price_caption: item.competitor_price_caption || '',
     strengths_title: item.strengths_title || '',
+    advantages_title: item.advantages_title || '',
+    advantages_intro: item.advantages_intro || '',
     weaknesses_title: item.weaknesses_title || '',
+    faq_title: item.faq_title || '',
+    sticky_cta_title: item.sticky_cta_title || '',
+    sticky_cta_text: item.sticky_cta_text || '',
+    section_labels: item.section_labels || {},
     final_cta_title: item.final_cta_title || '',
     final_cta_text: item.final_cta_text || '',
     final_cta_label: item.final_cta_label || '',
@@ -266,16 +319,29 @@ export async function getSiteSettings() {
       header_links: Array.isArray(data.header_links) ? data.header_links : [],
       footer_columns: Array.isArray(data.footer_columns) ? data.footer_columns : [],
       page_templates: data.page_templates || {},
+      template_defaults: data.template_defaults || {},
+      special_page_defaults: data.special_page_defaults || {},
+      global_labels: data.global_labels || {},
+      generator_defaults: data.generator_defaults || {},
     };
   }
 
   if (!siteSettingsPromise) {
-    siteSettingsPromise = fetchSingle('/site-setting').then((data) => ({
-      ...data,
-      header_links: Array.isArray(data.header_links) ? data.header_links : [],
-      footer_columns: Array.isArray(data.footer_columns) ? data.footer_columns : [],
-      page_templates: data.page_templates || {},
-    }));
+    siteSettingsPromise = fetchSingle('/site-setting')
+      .then((data) => ({
+        ...data,
+        header_links: Array.isArray(data.header_links) ? data.header_links : [],
+        footer_columns: Array.isArray(data.footer_columns) ? data.footer_columns : [],
+        page_templates: data.page_templates || {},
+        template_defaults: data.template_defaults || {},
+        special_page_defaults: data.special_page_defaults || {},
+        global_labels: data.global_labels || {},
+        generator_defaults: data.generator_defaults || {},
+      }))
+      .catch((err) => {
+        siteSettingsPromise = undefined;
+        throw err;
+      });
   }
 
   return siteSettingsPromise;

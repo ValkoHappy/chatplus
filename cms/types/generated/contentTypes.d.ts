@@ -599,15 +599,23 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    advantages_intro: Schema.Attribute.Text;
+    advantages_title: Schema.Attribute.String;
+    compare_points: Schema.Attribute.JSON;
+    compare_summary: Schema.Attribute.Text;
     competitor_price_caption: Schema.Attribute.String;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     eyebrow: Schema.Attribute.String;
+    faq_title: Schema.Attribute.String;
     final_cta_label: Schema.Attribute.String;
     final_cta_text: Schema.Attribute.Text;
     final_cta_title: Schema.Attribute.String;
     hero_description: Schema.Attribute.Text;
+    hero_eyebrow: Schema.Attribute.String;
     hero_title: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -623,9 +631,12 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.String & Schema.Attribute.Required;
     pricing_title: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    section_labels: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    sticky_cta_text: Schema.Attribute.Text;
+    sticky_cta_title: Schema.Attribute.String;
     strengths_title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -820,6 +831,8 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     canonical: Schema.Attribute.String;
     comparison_rows: Schema.Attribute.Component<'tenders.compare-row', true>;
     comparison_title: Schema.Attribute.String;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.DefaultTo<'managed'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -833,7 +846,12 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     hero_cta_primary_url: Schema.Attribute.String;
     hero_cta_secondary_label: Schema.Attribute.String;
     hero_cta_secondary_url: Schema.Attribute.String;
+    hero_eyebrow: Schema.Attribute.String;
+    hero_highlights: Schema.Attribute.JSON;
+    hero_highlights_label: Schema.Attribute.String;
+    hero_panel_items: Schema.Attribute.JSON;
     hero_trust_facts: Schema.Attribute.JSON;
+    hero_variant: Schema.Attribute.String;
     hreflang_en: Schema.Attribute.String;
     hreflang_ru: Schema.Attribute.String;
     hreflang_uk: Schema.Attribute.String;
@@ -852,17 +870,25 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     meta_description: Schema.Attribute.Text & Schema.Attribute.Required;
     meta_title: Schema.Attribute.String & Schema.Attribute.Required;
+    presentation_flags: Schema.Attribute.JSON;
+    pricing_tiers: Schema.Attribute.JSON;
     problem_intro: Schema.Attribute.Text;
     problem_summary: Schema.Attribute.Text;
     problem_title: Schema.Attribute.String;
     problems: Schema.Attribute.Component<'tenders.problem-item', true>;
+    proof_cards: Schema.Attribute.JSON;
+    proof_facts: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    quote_author: Schema.Attribute.String;
+    quote_text: Schema.Attribute.Text;
+    quote_title: Schema.Attribute.String;
     roi_intro: Schema.Attribute.Text;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
     roi_with_items: Schema.Attribute.JSON;
     roi_without_items: Schema.Attribute.JSON;
     schema_type: Schema.Attribute.String;
+    section_labels: Schema.Attribute.JSON;
     slug: Schema.Attribute.UID<'h1'> &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
@@ -878,6 +904,17 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
     target_keywords: Schema.Attribute.JSON;
+    template_kind: Schema.Attribute.Enumeration<
+      [
+        'home',
+        'structured',
+        'resource_hub',
+        'brand_content',
+        'campaign',
+        'generic',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'generic'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -906,6 +943,8 @@ export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
     footer_columns: Schema.Attribute.JSON;
     footer_copyright: Schema.Attribute.String;
     footer_tagline: Schema.Attribute.Text;
+    generator_defaults: Schema.Attribute.JSON;
+    global_labels: Schema.Attribute.JSON;
     header_cta_label: Schema.Attribute.String;
     header_cta_url: Schema.Attribute.String;
     header_links: Schema.Attribute.JSON;
@@ -920,9 +959,11 @@ export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     site_name: Schema.Attribute.String & Schema.Attribute.Required;
     site_url: Schema.Attribute.String & Schema.Attribute.Required;
+    special_page_defaults: Schema.Attribute.JSON;
     sticky_cta_label: Schema.Attribute.String;
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_url: Schema.Attribute.String;
+    template_defaults: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1004,6 +1045,8 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     canonical: Schema.Attribute.String;
     comparison_rows: Schema.Attribute.Component<'tenders.compare-row', true>;
     comparison_title: Schema.Attribute.String;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.DefaultTo<'managed'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1017,6 +1060,8 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     hero_cta_primary_url: Schema.Attribute.String;
     hero_cta_secondary_label: Schema.Attribute.String;
     hero_cta_secondary_url: Schema.Attribute.String;
+    hero_eyebrow: Schema.Attribute.String;
+    hero_panel_items: Schema.Attribute.JSON;
     hero_trust_facts: Schema.Attribute.JSON;
     hreflang_en: Schema.Attribute.String;
     hreflang_ru: Schema.Attribute.String;
@@ -1047,6 +1092,7 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     roi_with_items: Schema.Attribute.JSON;
     roi_without_items: Schema.Attribute.JSON;
     schema_type: Schema.Attribute.String;
+    section_labels: Schema.Attribute.JSON;
     software_schema: Schema.Attribute.JSON;
     solution_intro: Schema.Attribute.Text;
     solution_steps: Schema.Attribute.Component<'tenders.step-item', true>;

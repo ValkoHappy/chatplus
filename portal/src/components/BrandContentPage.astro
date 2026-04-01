@@ -1,0 +1,224 @@
+---
+import Base from '../layouts/Base.astro';
+import { Icon } from 'astro-icon/components';
+import FaqSection from './FaqSection.astro';
+import InternalLinksSection from './InternalLinksSection.astro';
+import type { InternalLinksContext, InternalLinksVariant } from '../lib/link-sections';
+import { withBasePath } from '../lib/urls';
+
+interface LinkItem {
+  label?: string;
+  href?: string;
+  description?: string;
+}
+
+interface PageData {
+  meta_title: string;
+  meta_description: string;
+  h1: string;
+  subtitle?: string;
+  canonical?: string;
+  hero_eyebrow?: string;
+  hero_cta_primary_label?: string;
+  hero_cta_primary_url?: string;
+  hero_cta_secondary_label?: string;
+  hero_cta_secondary_url?: string;
+  hero_trust_facts?: string[];
+  problem_title?: string;
+  problem_intro?: string;
+  problems?: { title?: string; text?: string }[];
+  solution_title?: string;
+  solution_intro?: string;
+  solution_steps?: { title?: string; text?: string }[];
+  features_title?: string;
+  features?: { title?: string; text?: string }[];
+  use_cases_title?: string;
+  use_cases?: { title?: string; audience?: string; text?: string }[];
+  faq_title?: string;
+  faqs?: { question?: string; answer?: string }[];
+  internal_links_title?: string;
+  internal_links_intro?: string;
+  internal_links?: LinkItem[];
+  internal_links_variant?: InternalLinksVariant;
+  internal_links_context?: InternalLinksContext;
+  sticky_cta_title?: string;
+  sticky_cta_text?: string;
+  sticky_cta_primary_label?: string;
+  sticky_cta_primary_url?: string;
+  quote_title?: string;
+  quote_text?: string;
+  section_labels?: Record<string, string>;
+}
+
+const { page } = Astro.props as { page: PageData };
+const toHref = (href?: string) => withBasePath(href);
+const sectionLabels = page.section_labels || {};
+---
+
+<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
+  <section class="brand-hero">
+    <div class="container brand-hero-inner">
+      <div class="brand-copy">
+        <span class="brand-kicker">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Компания и контент'}</span>
+        <h1>{page.h1}</h1>
+        {page.subtitle && <p>{page.subtitle}</p>}
+        <div class="brand-actions">
+          {page.hero_cta_primary_label && page.hero_cta_primary_url && (
+            <a href={toHref(page.hero_cta_primary_url)} class="btn-primary">{page.hero_cta_primary_label}</a>
+          )}
+          {page.hero_cta_secondary_label && page.hero_cta_secondary_url && (
+            <a href={toHref(page.hero_cta_secondary_url)} class="btn-outline">{page.hero_cta_secondary_label}</a>
+          )}
+        </div>
+      </div>
+      <aside class="brand-side">
+        <div class="brand-note">
+          <span>{page.quote_title || sectionLabels.context_title || 'Контекст'}</span>
+          <p>{page.quote_text || sectionLabels.context_text || 'Эти страницы не должны выглядеть как SEO-лендинги. Это брендовый и редакционный слой вокруг Chat Plus.'}</p>
+        </div>
+        {(page.hero_trust_facts || []).slice(0, 3).map((fact, index) => (
+          <article class="brand-fact">
+            <Icon name={['lucide:mic-2', 'lucide:users-round', 'lucide:radio'][index % 3]} />
+            <span>{fact}</span>
+          </article>
+        ))}
+      </aside>
+    </div>
+  </section>
+
+  {page.features_title && page.features && page.features.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.features_title}</h2>
+        </div>
+        <div class="editorial-grid">
+          {page.features.map((item, index) => (
+            <article class="editorial-card">
+              <div class="editorial-top">
+                <span class="editorial-index">{String(index + 1).padStart(2, '0')}</span>
+                <h3>{item.title}</h3>
+              </div>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {(page.problem_title && page.problems?.length) || (page.solution_title && page.solution_steps?.length) ? (
+    <section class="section section-tonal">
+      <div class="container editorial-grid editorial-grid--split">
+        {page.problem_title && page.problems && page.problems.length > 0 && (
+          <div>
+            <div class="section-header compact">
+              <h2>{page.problem_title}</h2>
+              {page.problem_intro && <p>{page.problem_intro}</p>}
+            </div>
+            <div class="editorial-stack">
+              {page.problems.map((item) => (
+                <article class="editorial-card editorial-card--light">
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+        {page.solution_title && page.solution_steps && page.solution_steps.length > 0 && (
+          <div>
+            <div class="section-header compact">
+              <h2>{page.solution_title}</h2>
+              {page.solution_intro && <p>{page.solution_intro}</p>}
+            </div>
+            <div class="editorial-stack">
+              {page.solution_steps.map((item, index) => (
+                <article class="editorial-card editorial-card--light">
+                  <div class="editorial-step">{index + 1}</div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null}
+
+  {page.use_cases_title && page.use_cases && page.use_cases.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.use_cases_title}</h2>
+        </div>
+        <div class="editorial-grid">
+          {page.use_cases.map((item, index) => (
+            <article class="editorial-card">
+              <div class="editorial-top">
+                <div class="editorial-icon">
+                  <Icon name={['lucide:newspaper', 'lucide:camera', 'lucide:video', 'lucide:message-square-quote'][index % 4]} />
+                </div>
+                <h3>{item.title || item.audience}</h3>
+              </div>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section section-tonal" containerClass="container container-narrow" />
+  <InternalLinksSection page={page} />
+
+  {(page.sticky_cta_title || page.sticky_cta_text) && (
+    <section class="brand-cta">
+      <div class="container brand-cta-inner">
+        <div>
+          {page.sticky_cta_title && <h2>{page.sticky_cta_title}</h2>}
+          {page.sticky_cta_text && <p>{page.sticky_cta_text}</p>}
+        </div>
+        {page.sticky_cta_primary_label && page.sticky_cta_primary_url && (
+          <a href={toHref(page.sticky_cta_primary_url)} class="btn-primary">{page.sticky_cta_primary_label}</a>
+        )}
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .brand-hero { padding: clamp(3.8rem, 6vw, 5.4rem) 0; background:linear-gradient(135deg,#0f172a 0%,#1f2557 56%,#312e81 100%); color:#fff; }
+  .brand-hero-inner { display:grid; grid-template-columns:minmax(0, 1.1fr) minmax(320px, .78fr); gap:1.2rem; align-items:start; }
+  .brand-kicker { display:inline-flex; padding:.4rem .82rem; border-radius:999px; background:rgba(255,255,255,.12); color:#c7d2fe; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .brand-copy h1, .brand-cta h2, .section-header h2 { margin:.95rem 0 0; color:#0f172a; font-size:clamp(2.2rem, 4.2vw, 3.7rem); line-height:1; letter-spacing:-.05em; }
+  .brand-copy h1 { color:#fff; }
+  .brand-copy p, .brand-cta p, .section-header p { margin:1rem 0 0; color:#475569; line-height:1.8; max-width:60ch; }
+  .brand-copy p { color:#dbe4ff; }
+  .brand-actions { display:flex; gap:.85rem; flex-wrap:wrap; margin-top:1.45rem; }
+  .brand-actions :global(.btn-outline) { border-color:rgba(255,255,255,.28); background:transparent; color:#fff; }
+  .brand-side { display:grid; gap:.8rem; }
+  .brand-note, .brand-fact, .editorial-card { border-radius:24px; border:1px solid rgba(148,163,184,.14); background:linear-gradient(180deg, rgba(248,250,252,.98), rgba(241,245,249,.96)); color:#0f172a; box-shadow:0 18px 36px rgba(2,6,23,.12); }
+  .brand-note { padding:1.15rem; }
+  .brand-note span { color:#6366f1; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .brand-note p { margin:.55rem 0 0; color:#475569; }
+  .brand-fact { display:flex; gap:.72rem; align-items:flex-start; padding:1rem 1.05rem; font-weight:700; }
+  .brand-fact :global(svg) { width:1rem; height:1rem; color:#4f46e5; margin-top:.18rem; flex-shrink:0; }
+  .section-tonal { background:linear-gradient(180deg, rgba(241,245,249,.88), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); border-bottom:1px solid rgba(148,163,184,.08); }
+  .section-header { max-width:760px; margin-bottom:1.4rem; }
+  .editorial-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1rem; }
+  .editorial-grid--split { align-items:start; }
+  .editorial-stack { display:grid; gap:1rem; }
+  .editorial-card { padding:1.15rem; }
+  .editorial-card--light { background:rgba(248,250,252,.98); }
+  .editorial-top { display:flex; align-items:center; gap:.8rem; }
+  .editorial-index, .editorial-step { display:inline-flex; width:2rem; height:2rem; align-items:center; justify-content:center; border-radius:999px; background:linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-size:.8rem; font-weight:800; flex-shrink:0; }
+  .editorial-icon { width:2.45rem; height:2.45rem; border-radius:16px; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #eef2ff, #ddd6fe); color:#4f46e5; flex-shrink:0; }
+  .editorial-card h3 { margin:0; color:#0f172a; font-size:1.04rem; line-height:1.28; }
+  .editorial-card p { margin:.7rem 0 0; color:#475569; line-height:1.7; }
+  .brand-cta { padding:clamp(2.8rem, 6vw, 4rem) 0; background:linear-gradient(135deg, rgba(238,242,255,.92), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); }
+  .brand-cta-inner { display:flex; align-items:center; justify-content:space-between; gap:1.2rem; }
+  @media (max-width: 980px) { .brand-hero-inner, .editorial-grid, .editorial-grid--split { grid-template-columns:1fr; } .brand-cta-inner { flex-direction:column; align-items:flex-start; } }
+  @media (max-width: 768px) { .brand-actions { flex-direction:column; } .brand-actions :global(a) { width:100%; } }
+</style>

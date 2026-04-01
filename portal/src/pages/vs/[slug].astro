@@ -1,5 +1,5 @@
 ---
-import StructuredLandingPage from '../../components/StructuredLandingPage.astro';
+import ComparisonPage from '../../components/ComparisonPage.astro';
 import { adaptCompetitorPage } from '../../lib/page-adapters';
 import { getCompetitors, getSiteSettings } from '../../lib/strapi';
 
@@ -17,4 +17,4 @@ const currentCompetitor = competitors.find((item) => item.slug === competitor.sl
 const page = adaptCompetitorPage(currentCompetitor, { settings, competitors }, 'vs');
 ---
 
-<StructuredLandingPage page={page} />
+<ComparisonPage page={page} />

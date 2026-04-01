@@ -34,7 +34,18 @@
     "seo_description": {
       "type": "text"
     },
+    "content_origin": {
+      "type": "enumeration",
+      "enum": [
+        "generated",
+        "managed"
+      ],
+      "default": "generated"
+    },
     "eyebrow": {
+      "type": "string"
+    },
+    "hero_eyebrow": {
       "type": "string"
     },
     "hero_title": {
@@ -42,6 +53,12 @@
     },
     "hero_description": {
       "type": "text"
+    },
+    "compare_summary": {
+      "type": "text"
+    },
+    "compare_points": {
+      "type": "json"
     },
     "pricing_title": {
       "type": "string"
@@ -57,6 +74,12 @@
     },
     "strengths_title": {
       "type": "string"
+    },
+    "advantages_title": {
+      "type": "string"
+    },
+    "advantages_intro": {
+      "type": "text"
     },
     "weaknesses_title": {
       "type": "string"
@@ -75,6 +98,18 @@
     },
     "final_cta_label": {
       "type": "string"
+    },
+    "faq_title": {
+      "type": "string"
+    },
+    "sticky_cta_title": {
+      "type": "string"
+    },
+    "sticky_cta_text": {
+      "type": "text"
+    },
+    "section_labels": {
+      "type": "json"
     }
   }
 }

@@ -63,16 +63,16 @@ body {
 }
 
 .section-dark {
-  background: var(--text-main);
-  color: #fff;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  color: var(--text-main);
 }
 
 .section-dark .section-title {
-  color: #fff;
+  color: var(--text-main);
 }
 
 .section-dark .section-intro {
-  color: #94a3b8;
+  color: #475569;
 }
 
 .two-col {
@@ -137,13 +137,13 @@ body {
 
 .btn-ghost {
   background: transparent;
-  color: rgba(255, 255, 255, .85);
-  border: 1.5px solid rgba(255, 255, 255, .25);
+  color: var(--text-main);
+  border: 1.5px solid #cbd5e1;
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, .1);
-  border-color: rgba(255, 255, 255, .45);
+  background: #f5f3ff;
+  border-color: var(--brand);
 }
 
 /* ── Section Header ── */

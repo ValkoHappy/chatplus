@@ -55,6 +55,18 @@
     },
     "page_templates": {
       "type": "json"
+    },
+    "template_defaults": {
+      "type": "json"
+    },
+    "special_page_defaults": {
+      "type": "json"
+    },
+    "global_labels": {
+      "type": "json"
+    },
+    "generator_defaults": {
+      "type": "json"
     }
   }
 }

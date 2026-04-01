@@ -1,0 +1,235 @@
+---
+import Base from '../layouts/Base.astro';
+import { Icon } from 'astro-icon/components';
+import FaqSection from './FaqSection.astro';
+import InternalLinksSection from './InternalLinksSection.astro';
+import type { InternalLinksContext, InternalLinksVariant } from '../lib/link-sections';
+import { withBasePath } from '../lib/urls';
+
+interface LinkItem {
+  label?: string;
+  href?: string;
+  description?: string;
+}
+
+interface ComparisonRow {
+  parameter?: string;
+  option_one?: string;
+  option_two?: string;
+  chat_plus?: string;
+}
+
+interface PageData {
+  meta_title: string;
+  meta_description: string;
+  h1: string;
+  subtitle?: string;
+  canonical?: string;
+  breadcrumbs?: { label?: string; href?: string }[];
+  hero_eyebrow?: string;
+  hero_cta_primary_label?: string;
+  hero_cta_primary_url?: string;
+  problem_title?: string;
+  problem_intro?: string;
+  problems?: { title?: string; text?: string }[];
+  solution_title?: string;
+  solution_intro?: string;
+  solution_steps?: { title?: string; text?: string }[];
+  comparison_title?: string;
+  comparison_rows?: ComparisonRow[];
+  compare_summary?: string;
+  compare_points?: string[];
+  section_labels?: Record<string, string>;
+  faq_title?: string;
+  faqs?: { question?: string; answer?: string }[];
+  internal_links_title?: string;
+  internal_links_intro?: string;
+  internal_links?: LinkItem[];
+  internal_links_variant?: InternalLinksVariant;
+  internal_links_context?: InternalLinksContext;
+  sticky_cta_title?: string;
+  sticky_cta_text?: string;
+  sticky_cta_primary_label?: string;
+  sticky_cta_primary_url?: string;
+}
+
+const { page } = Astro.props as { page: PageData };
+const toHref = (href?: string) => withBasePath(href);
+const sectionLabels = page.section_labels || {};
+const compareBadge = sectionLabels.compare_badge || 'Сравнение';
+const compareSummary =
+  page.compare_summary || 'Не просто "канал или цена", а скорость запуска, экономика и управляемость процесса.';
+const comparePoints =
+  Array.isArray(page.compare_points) && page.compare_points.length > 0
+    ? page.compare_points
+    : [
+        'Быстрый старт без тяжелого enterprise-стека',
+        'Омниканал, CRM и AI в одной модели',
+        'Предсказуемый контур владения и роста команды',
+      ];
+const comparisonHeadParameter = sectionLabels.comparison_parameter || 'Параметр';
+const comparisonHeadOptionOne = sectionLabels.comparison_option_one || 'Вариант 1';
+const comparisonHeadOptionTwo = sectionLabels.comparison_option_two || 'Вариант 2';
+const comparisonHeadChatPlus = sectionLabels.comparison_chat_plus || 'Chat Plus';
+---
+
+<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
+  <section class="compare-hero">
+    <div class="container compare-hero-inner">
+      <div class="compare-copy">
+        {page.breadcrumbs && page.breadcrumbs.length > 0 && (
+          <nav class="compare-breadcrumbs" aria-label="Хлебные крошки">
+            {page.breadcrumbs.map((item, index) => (
+              <>
+                {index > 0 && <span>/</span>}
+                {item.href ? <a href={toHref(item.href)}>{item.label}</a> : <span class="is-current">{item.label}</span>}
+              </>
+            ))}
+          </nav>
+        )}
+        {page.hero_eyebrow && <span class="compare-kicker">{page.hero_eyebrow}</span>}
+        <h1>{page.h1}</h1>
+        {page.subtitle && <p>{page.subtitle}</p>}
+        {page.hero_cta_primary_label && page.hero_cta_primary_url && (
+          <a href={toHref(page.hero_cta_primary_url)} class="btn-primary compare-cta">{page.hero_cta_primary_label}</a>
+        )}
+      </div>
+      <div class="compare-snapshot">
+        <div class="compare-badge">{compareBadge}</div>
+        <strong>{compareSummary}</strong>
+        <ul>
+          {comparePoints.map((item) => (
+            <li><Icon name="lucide:circle-check-big" /> {item}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {(page.problem_title && page.problems?.length) || (page.solution_title && page.solution_steps?.length) ? (
+    <section class="section">
+      <div class="container compare-sides">
+        {page.problem_title && page.problems && page.problems.length > 0 && (
+          <div class="compare-column">
+            <div class="section-header compact">
+              <h2>{page.problem_title}</h2>
+              {page.problem_intro && <p>{page.problem_intro}</p>}
+            </div>
+            <div class="compare-stack">
+              {page.problems.map((item) => (
+                <article class="compare-card">
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+        {page.solution_title && page.solution_steps && page.solution_steps.length > 0 && (
+          <div class="compare-column">
+            <div class="section-header compact">
+              <h2>{page.solution_title}</h2>
+              {page.solution_intro && <p>{page.solution_intro}</p>}
+            </div>
+            <div class="compare-stack">
+              {page.solution_steps.map((item, index) => (
+                <article class="compare-card compare-card--accent">
+                  <span class="compare-step">{index + 1}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null}
+
+  {page.comparison_title && page.comparison_rows && page.comparison_rows.length > 0 && (
+    <section class="section section-tonal">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.comparison_title}</h2>
+        </div>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>{comparisonHeadParameter}</th>
+                <th>{comparisonHeadOptionOne}</th>
+                <th>{comparisonHeadOptionTwo}</th>
+                <th class="accent-head">{comparisonHeadChatPlus}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {page.comparison_rows.map((row) => (
+                <tr>
+                  <td class="table-param">{row.parameter}</td>
+                  <td>{row.option_one}</td>
+                  <td>{row.option_two}</td>
+                  <td class="accent-cell">{row.chat_plus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section" containerClass="container container-narrow" />
+  <InternalLinksSection page={page} />
+
+  {(page.sticky_cta_title || page.sticky_cta_text) && (
+    <section class="compare-final">
+      <div class="container compare-final-inner">
+        <div>
+          {page.sticky_cta_title && <h2>{page.sticky_cta_title}</h2>}
+          {page.sticky_cta_text && <p>{page.sticky_cta_text}</p>}
+        </div>
+        {page.sticky_cta_primary_label && page.sticky_cta_primary_url && (
+          <a href={toHref(page.sticky_cta_primary_url)} class="btn-primary">{page.sticky_cta_primary_label}</a>
+        )}
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .compare-hero { padding: clamp(3.8rem, 6vw, 5.4rem) 0; background:linear-gradient(135deg,#0f172a 0%,#1f2557 55%,#312e81 100%); color:#fff; }
+  .compare-hero-inner, .compare-sides { display:grid; grid-template-columns:minmax(0, 1fr) minmax(320px, .82fr); gap:1.2rem; align-items:start; }
+  .compare-breadcrumbs { display:flex; gap:.42rem; flex-wrap:wrap; color:#cbd5e1; font-size:.84rem; }
+  .compare-breadcrumbs a { color:#e2e8f0; text-decoration:none; }
+  .compare-breadcrumbs .is-current { color:#94a3b8; }
+  .compare-kicker { display:inline-flex; margin-top:1rem; padding:.4rem .82rem; border-radius:999px; background:rgba(255,255,255,.12); color:#bbf7d0; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .compare-copy h1, .compare-final h2, .section-header h2 { margin:.95rem 0 0; color:#0f172a; font-size:clamp(2.2rem, 4.1vw, 3.7rem); line-height:1; letter-spacing:-.05em; }
+  .compare-copy h1 { color:#fff; }
+  .compare-copy p, .compare-final p, .section-header p { margin:1rem 0 0; color:#475569; line-height:1.8; }
+  .compare-copy p { color:#dbe4ff; }
+  .compare-cta { margin-top:1.45rem; }
+  .compare-snapshot { padding:1.15rem; border-radius:28px; border:1px solid rgba(148,163,184,.16); background:linear-gradient(180deg, rgba(248,250,252,.98), rgba(241,245,249,.96)); box-shadow:0 18px 36px rgba(15,23,42,.08); }
+  .compare-badge { display:inline-flex; padding:.38rem .72rem; border-radius:999px; background:rgba(99,102,241,.16); color:#4f46e5; font-size:.74rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .compare-snapshot strong { display:block; margin-top:.8rem; color:#0f172a; line-height:1.45; }
+  .compare-snapshot ul { list-style:none; padding:0; margin:1rem 0 0; display:grid; gap:.72rem; }
+  .compare-snapshot li { display:flex; gap:.65rem; color:#475569; font-weight:600; }
+  .compare-snapshot :global(svg) { width:1rem; height:1rem; color:#818cf8; margin-top:.2rem; flex-shrink:0; }
+  .section-tonal { background:linear-gradient(180deg, rgba(241,245,249,.88), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); border-bottom:1px solid rgba(148,163,184,.08); }
+  .section-header { max-width:760px; margin-bottom:1.4rem; }
+  .compare-column { display:grid; gap:1rem; }
+  .compare-stack { display:grid; gap:1rem; }
+  .compare-card { padding:1.15rem; border-radius:22px; border:1px solid rgba(148,163,184,.14); background:linear-gradient(180deg, rgba(248,250,252,.98), rgba(241,245,249,.96)); color:#0f172a; box-shadow:0 18px 36px rgba(2,6,23,.12); }
+  .compare-card--accent { position:relative; }
+  .compare-step { display:inline-flex; width:2rem; height:2rem; align-items:center; justify-content:center; border-radius:999px; background:linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-size:.8rem; font-weight:800; margin-bottom:.7rem; }
+  .compare-card h3 { margin:0 0 .45rem; color:#0f172a; font-size:1.05rem; line-height:1.3; }
+  .compare-card p { margin:0; color:#475569; line-height:1.72; }
+  .compare-table-wrap { overflow:auto; border-radius:26px; border:1px solid rgba(148,163,184,.14); background:rgba(248,250,252,.98); box-shadow:0 18px 36px rgba(2,6,23,.12); }
+  .compare-table { width:100%; border-collapse:collapse; min-width:720px; color:#0f172a; }
+  .compare-table th, .compare-table td { padding:1rem 1.05rem; text-align:left; border-bottom:1px solid rgba(226,232,240,.9); vertical-align:top; }
+  .compare-table th { color:#334155; font-size:.78rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; background:rgba(241,245,249,.96); }
+  .table-param { font-weight:700; color:#0f172a; width:24%; }
+  .accent-head, .accent-cell { color:#4338ca; font-weight:800; }
+  .compare-final { padding:clamp(2.8rem, 6vw, 4rem) 0; background:linear-gradient(135deg, rgba(240,253,244,.94), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); }
+  .compare-final-inner { display:flex; align-items:center; justify-content:space-between; gap:1.2rem; }
+  @media (max-width: 980px) { .compare-hero-inner, .compare-sides { grid-template-columns:1fr; } .compare-final-inner { flex-direction:column; align-items:flex-start; } }
+</style>

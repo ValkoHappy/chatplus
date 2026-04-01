@@ -1,0 +1,245 @@
+---
+import Base from '../layouts/Base.astro';
+import { Icon } from 'astro-icon/components';
+import FaqSection from './FaqSection.astro';
+import InternalLinksSection from './InternalLinksSection.astro';
+import type { InternalLinksContext, InternalLinksVariant } from '../lib/link-sections';
+import { withBasePath } from '../lib/urls';
+
+interface LinkItem {
+  label?: string;
+  href?: string;
+  description?: string;
+}
+
+interface PageData {
+  meta_title: string;
+  meta_description: string;
+  h1: string;
+  subtitle?: string;
+  canonical?: string;
+  hero_eyebrow?: string;
+  hero_cta_primary_label?: string;
+  hero_cta_primary_url?: string;
+  hero_cta_secondary_label?: string;
+  hero_cta_secondary_url?: string;
+  hero_trust_facts?: string[];
+  problem_title?: string;
+  problem_intro?: string;
+  problems?: { title?: string; text?: string }[];
+  solution_title?: string;
+  solution_intro?: string;
+  solution_steps?: { title?: string; text?: string }[];
+  features_title?: string;
+  features?: { title?: string; text?: string }[];
+  use_cases_title?: string;
+  use_cases?: { title?: string; audience?: string; text?: string }[];
+  faq_title?: string;
+  faqs?: { question?: string; answer?: string }[];
+  internal_links_title?: string;
+  internal_links_intro?: string;
+  internal_links?: LinkItem[];
+  internal_links_variant?: InternalLinksVariant;
+  internal_links_context?: InternalLinksContext;
+  sticky_cta_title?: string;
+  sticky_cta_text?: string;
+  sticky_cta_primary_label?: string;
+  sticky_cta_primary_url?: string;
+  quote_title?: string;
+  section_labels?: Record<string, string>;
+}
+
+const { page } = Astro.props as { page: PageData };
+const toHref = (href?: string) => withBasePath(href);
+const sectionLabels = page.section_labels || {};
+---
+
+<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
+  <section class="hub-hero">
+    <div class="container hub-hero-inner">
+      <div class="hub-copy">
+        <span class="hub-kicker">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Ресурсы Chat Plus'}</span>
+        <h1>{page.h1}</h1>
+        {page.subtitle && <p>{page.subtitle}</p>}
+        <div class="hub-actions">
+          {page.hero_cta_primary_label && page.hero_cta_primary_url && (
+            <a href={toHref(page.hero_cta_primary_url)} class="btn-primary">{page.hero_cta_primary_label}</a>
+          )}
+          {page.hero_cta_secondary_label && page.hero_cta_secondary_url && (
+            <a href={toHref(page.hero_cta_secondary_url)} class="btn-outline">{page.hero_cta_secondary_label}</a>
+          )}
+        </div>
+      </div>
+      <div class="hub-panel">
+        <div class="hub-panel-title">{page.quote_title || sectionLabels.panel_title || 'Что внутри'}</div>
+        <div class="hub-panel-grid">
+          {(page.hero_trust_facts || page.features?.map((item) => item.title || '') || []).slice(0, 4).map((item, index) => (
+            <article class="hub-chip">
+              <Icon name={['lucide:file-text', 'lucide:circle-help', 'lucide:book-open-text', 'lucide:cpu'][index % 4]} />
+              <span>{item}</span>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {(page.problem_title && page.problems?.length) || (page.solution_title && page.solution_steps?.length) ? (
+    <section class="section">
+      <div class="container hub-story-grid">
+        {page.problem_title && page.problems && page.problems.length > 0 && (
+          <div class="story-block">
+            <div class="section-header compact">
+              <h2>{page.problem_title}</h2>
+              {page.problem_intro && <p>{page.problem_intro}</p>}
+            </div>
+            <div class="story-list">
+              {page.problems.map((item) => (
+                <article class="story-card">
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+        {page.solution_title && page.solution_steps && page.solution_steps.length > 0 && (
+          <div class="story-block">
+            <div class="section-header compact">
+              <h2>{page.solution_title}</h2>
+              {page.solution_intro && <p>{page.solution_intro}</p>}
+            </div>
+            <div class="story-list">
+              {page.solution_steps.map((item, index) => (
+                <article class="story-card">
+                  <div class="story-step">{index + 1}</div>
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null}
+
+  {page.features_title && page.features && page.features.length > 0 && (
+    <section class="section section-tonal">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.features_title}</h2>
+        </div>
+        <div class="hub-feature-grid">
+          {page.features.map((item, index) => (
+            <article class="hub-feature-card">
+              <div class="hub-feature-icon">
+                <Icon name={['lucide:file-code-2', 'lucide:circle-help', 'lucide:graduation-cap', 'lucide:radio'][index % 4]} />
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {page.use_cases_title && page.use_cases && page.use_cases.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.use_cases_title}</h2>
+        </div>
+        <div class="hub-feature-grid">
+          {page.use_cases.map((item, index) => (
+            <article class="hub-feature-card">
+              <div class="hub-feature-icon">
+                <Icon name={['lucide:users-round', 'lucide:briefcase-business', 'lucide:network', 'lucide:files'][index % 4]} />
+              </div>
+              <h3>{item.title || item.audience}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section section-tonal" containerClass="container container-narrow" />
+  <InternalLinksSection page={page} />
+
+  {(page.sticky_cta_title || page.sticky_cta_text) && (
+    <section class="hub-cta">
+      <div class="container hub-cta-inner">
+        <div>
+          {page.sticky_cta_title && <h2>{page.sticky_cta_title}</h2>}
+          {page.sticky_cta_text && <p>{page.sticky_cta_text}</p>}
+        </div>
+        {page.sticky_cta_primary_label && page.sticky_cta_primary_url && (
+          <a href={toHref(page.sticky_cta_primary_url)} class="btn-primary">{page.sticky_cta_primary_label}</a>
+        )}
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .hub-hero { padding: clamp(3.6rem, 6vw, 5rem) 0; background:linear-gradient(135deg,#0f172a 0%,#1f2557 55%,#312e81 100%); color:#fff; }
+  .hub-hero-inner, .hub-story-grid, .hub-cta-inner { display:grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap:1.25rem; align-items:start; }
+  .hub-kicker { display:inline-flex; padding:.4rem .82rem; border-radius:999px; background:rgba(255,255,255,.12); color:#c7d2fe; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .hub-copy h1, .hub-cta h2, .section-header h2 { margin:.9rem 0 0; color:#0f172a; font-size:clamp(2.3rem, 4.2vw, 3.8rem); line-height:1; letter-spacing:-.05em; }
+  .hub-copy h1 { color:#fff; }
+  .hub-copy p, .hub-cta p, .section-header p { margin:1rem 0 0; color:#475569; line-height:1.8; max-width:60ch; }
+  .hub-copy p { color:#dbe4ff; }
+  .hub-actions { display:flex; gap:.85rem; flex-wrap:wrap; margin-top:1.45rem; }
+  .hub-actions :global(.btn-outline) { border-color:rgba(255,255,255,.28); background:transparent; color:#fff; }
+  .hub-panel { padding:1.2rem; border-radius:28px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); box-shadow:0 18px 36px rgba(15,23,42,.18); backdrop-filter:blur(10px); }
+  .hub-panel-title { color:#4f46e5; font-size:.78rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .hub-panel-grid { display:grid; gap:.72rem; margin-top:.9rem; }
+  .hub-chip {
+    display:flex;
+    gap:.7rem;
+    align-items:center;
+    padding:.85rem .95rem;
+    border-radius:18px;
+    background:rgba(248,250,252,.98);
+    color:#0f172a;
+    font-weight:700;
+    box-shadow:0 14px 30px rgba(15,23,42,.08);
+  }
+  .hub-chip :global(svg) { width:1rem; height:1rem; color:#4f46e5; }
+  .section-tonal { background:linear-gradient(180deg, rgba(241,245,249,.88), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); border-bottom:1px solid rgba(148,163,184,.08); }
+  .section-header { max-width:760px; margin-bottom:1.4rem; }
+  .section-header.compact h2 { font-size:clamp(1.6rem, 2.8vw, 2.2rem); }
+  .story-list, .hub-feature-grid { display:grid; gap:1rem; }
+  .story-card, .hub-feature-card {
+    padding:1.15rem;
+    border-radius:22px;
+    border:1px solid rgba(148,163,184,.14);
+    background:linear-gradient(180deg, rgba(248,250,252,.98), rgba(241,245,249,.96));
+    color:#0f172a;
+    box-shadow:0 18px 36px rgba(15,23,42,.08);
+  }
+  .story-card h3, .hub-feature-card h3 { margin:0 0 .45rem; color:#0f172a; font-size:1.05rem; line-height:1.3; }
+  .story-card p, .hub-feature-card p { margin:0; color:#475569; line-height:1.7; }
+  .story-step { display:inline-flex; width:2rem; height:2rem; align-items:center; justify-content:center; border-radius:999px; background:linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-weight:800; margin-bottom:.7rem; }
+  .hub-feature-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  .hub-feature-icon {
+    width:2.65rem;
+    height:2.65rem;
+    border-radius:16px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg, #eef2ff, #ddd6fe);
+    color:#4f46e5;
+    margin-bottom:.8rem;
+  }
+  .hub-cta { padding:clamp(2.8rem, 6vw, 4rem) 0; background:linear-gradient(135deg, rgba(238,242,255,.92), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); }
+  .hub-cta-inner { grid-template-columns:minmax(0,1fr) auto; align-items:center; }
+  @media (max-width: 980px) { .hub-hero-inner, .hub-story-grid, .hub-cta-inner { grid-template-columns:1fr; } .hub-feature-grid { grid-template-columns:1fr; } }
+  @media (max-width: 768px) { .hub-actions { flex-direction:column; } .hub-actions :global(a) { width:100%; } .hub-copy h1 { max-width:none; } }
+</style>

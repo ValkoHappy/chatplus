@@ -1,0 +1,212 @@
+---
+import Base from '../layouts/Base.astro';
+import { Icon } from 'astro-icon/components';
+import FaqSection from './FaqSection.astro';
+import InternalLinksSection from './InternalLinksSection.astro';
+import type { InternalLinksContext, InternalLinksVariant } from '../lib/link-sections';
+import { withBasePath } from '../lib/urls';
+
+interface LinkItem {
+  label?: string;
+  href?: string;
+  description?: string;
+}
+
+interface PageData {
+  meta_title: string;
+  meta_description: string;
+  h1: string;
+  subtitle?: string;
+  canonical?: string;
+  hero_eyebrow?: string;
+  hero_cta_primary_label?: string;
+  hero_cta_primary_url?: string;
+  hero_cta_secondary_label?: string;
+  hero_cta_secondary_url?: string;
+  hero_trust_facts?: string[];
+  problem_title?: string;
+  problem_intro?: string;
+  problems?: { title?: string; text?: string }[];
+  solution_title?: string;
+  solution_intro?: string;
+  solution_steps?: { title?: string; text?: string }[];
+  features_title?: string;
+  features?: { title?: string; text?: string }[];
+  use_cases_title?: string;
+  use_cases?: { title?: string; audience?: string; text?: string }[];
+  faq_title?: string;
+  faqs?: { question?: string; answer?: string }[];
+  internal_links_title?: string;
+  internal_links_intro?: string;
+  internal_links?: LinkItem[];
+  internal_links_variant?: InternalLinksVariant;
+  internal_links_context?: InternalLinksContext;
+  sticky_cta_title?: string;
+  sticky_cta_text?: string;
+  sticky_cta_primary_label?: string;
+  sticky_cta_primary_url?: string;
+  section_labels?: Record<string, string>;
+}
+
+const { page } = Astro.props as { page: PageData };
+const toHref = (href?: string) => withBasePath(href);
+const sectionLabels = page.section_labels || {};
+---
+
+<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
+  <section class="campaign-hero">
+    <div class="campaign-orb campaign-orb--left"></div>
+    <div class="campaign-orb campaign-orb--right"></div>
+    <div class="container campaign-hero-inner">
+      <div class="campaign-copy">
+        <span class="campaign-kicker">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Спецсценарий'}</span>
+        <h1>{page.h1}</h1>
+        {page.subtitle && <p>{page.subtitle}</p>}
+        <div class="campaign-actions">
+          {page.hero_cta_primary_label && page.hero_cta_primary_url && (
+            <a href={toHref(page.hero_cta_primary_url)} class="btn-primary">{page.hero_cta_primary_label}</a>
+          )}
+          {page.hero_cta_secondary_label && page.hero_cta_secondary_url && (
+            <a href={toHref(page.hero_cta_secondary_url)} class="btn-outline">{page.hero_cta_secondary_label}</a>
+          )}
+        </div>
+      </div>
+      <div class="campaign-proof">
+        {(page.hero_trust_facts || []).slice(0, 4).map((fact, index) => (
+          <article class="campaign-proof-card">
+            <div class="campaign-proof-icon">
+              <Icon name={['lucide:sparkles', 'lucide:megaphone', 'lucide:files', 'lucide:workflow'][index % 4]} />
+            </div>
+            <p>{fact}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {page.features_title && page.features && page.features.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.features_title}</h2>
+        </div>
+        <div class="campaign-grid">
+          {page.features.map((item, index) => (
+            <article class="campaign-card">
+              <span class="campaign-card-index">{String(index + 1).padStart(2, '0')}</span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {(page.problem_title && page.problems?.length) || (page.solution_title && page.solution_steps?.length) ? (
+    <section class="section section-tonal">
+      <div class="container campaign-story">
+        {page.problem_title && page.problems && page.problems.length > 0 && (
+          <div>
+            <div class="section-header compact">
+              <h2>{page.problem_title}</h2>
+              {page.problem_intro && <p>{page.problem_intro}</p>}
+            </div>
+            <div class="campaign-grid">
+              {page.problems.map((item) => (
+                <article class="campaign-card campaign-card--light">
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+        {page.solution_title && page.solution_steps && page.solution_steps.length > 0 && (
+          <div>
+            <div class="section-header compact">
+              <h2>{page.solution_title}</h2>
+              {page.solution_intro && <p>{page.solution_intro}</p>}
+            </div>
+            <div class="campaign-grid">
+              {page.solution_steps.map((item, index) => (
+                <article class="campaign-card campaign-card--light">
+                  <span class="campaign-card-index">{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null}
+
+  {page.use_cases_title && page.use_cases && page.use_cases.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.use_cases_title}</h2>
+        </div>
+        <div class="campaign-grid">
+          {page.use_cases.map((item, index) => (
+            <article class="campaign-card">
+              <div class="campaign-proof-icon">
+                <Icon name={['lucide:target', 'lucide:landmark', 'lucide:users-round', 'lucide:messages-square'][index % 4]} />
+              </div>
+              <h3>{item.title || item.audience}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section section-tonal" containerClass="container container-narrow" />
+  <InternalLinksSection page={page} />
+
+  {(page.sticky_cta_title || page.sticky_cta_text) && (
+    <section class="campaign-final">
+      <div class="container campaign-final-inner">
+        <div>
+          {page.sticky_cta_title && <h2>{page.sticky_cta_title}</h2>}
+          {page.sticky_cta_text && <p>{page.sticky_cta_text}</p>}
+        </div>
+        {page.sticky_cta_primary_label && page.sticky_cta_primary_url && (
+          <a href={toHref(page.sticky_cta_primary_url)} class="btn-primary">{page.sticky_cta_primary_label}</a>
+        )}
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .campaign-hero { position:relative; overflow:hidden; padding:clamp(4rem, 7vw, 5.8rem) 0; background:linear-gradient(135deg,#0f172a 0%,#1f2557 50%,#312e81 100%); color:#fff; }
+  .campaign-orb { position:absolute; border-radius:999px; filter:blur(42px); opacity:.42; pointer-events:none; }
+  .campaign-orb--left { width:320px; height:320px; top:-60px; left:-70px; background:rgba(99,102,241,.38); }
+  .campaign-orb--right { width:300px; height:300px; right:-70px; top:40px; background:rgba(236,72,153,.28); }
+  .campaign-hero-inner, .campaign-story { display:grid; grid-template-columns:minmax(0, 1.1fr) minmax(320px, .86fr); gap:1.2rem; align-items:start; }
+  .campaign-kicker { display:inline-flex; padding:.4rem .82rem; border-radius:999px; background:rgba(255,255,255,.12); color:#fbcfe8; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .campaign-copy h1, .campaign-final h2, .section-header h2 { margin:.95rem 0 0; color:#0f172a; font-size:clamp(2.2rem, 4.2vw, 3.9rem); line-height:1; letter-spacing:-.05em; }
+  .campaign-copy h1 { color:#fff; }
+  .campaign-copy p, .campaign-final p, .section-header p { margin:1rem 0 0; color:#475569; line-height:1.8; max-width:60ch; }
+  .campaign-copy p { color:#dbe4ff; }
+  .campaign-actions { display:flex; gap:.85rem; flex-wrap:wrap; margin-top:1.45rem; }
+  .campaign-actions :global(.btn-outline) { border-color:rgba(255,255,255,.28); background:transparent; color:#fff; }
+  .campaign-proof { display:grid; gap:.85rem; }
+  .campaign-proof-card, .campaign-card { padding:1.15rem; border-radius:24px; border:1px solid rgba(148,163,184,.14); background:linear-gradient(180deg, rgba(248,250,252,.98), rgba(241,245,249,.96)); color:#0f172a; box-shadow:0 18px 36px rgba(2,6,23,.12); }
+  .campaign-proof-card p, .campaign-card p { margin:.6rem 0 0; color:#475569; line-height:1.7; }
+  .campaign-proof-icon { width:2.55rem; height:2.55rem; border-radius:16px; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #fdf2f8, #ede9fe); color:#7c3aed; }
+  .section-tonal { background:linear-gradient(180deg, rgba(241,245,249,.88), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); border-bottom:1px solid rgba(148,163,184,.08); }
+  .section-header { max-width:760px; margin-bottom:1.4rem; }
+  .campaign-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1rem; }
+  .campaign-card--light { background:rgba(248,250,252,.98); }
+  .campaign-card-index { display:inline-flex; color:#7c3aed; font-size:.78rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .campaign-card h3 { margin:.55rem 0 0; color:#0f172a; font-size:1.05rem; line-height:1.3; }
+  .campaign-final { padding:clamp(2.8rem, 6vw, 4rem) 0; background:linear-gradient(135deg, rgba(253,242,248,.92), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); }
+  .campaign-final-inner { display:flex; align-items:center; justify-content:space-between; gap:1.2rem; }
+  @media (max-width: 980px) { .campaign-hero-inner, .campaign-story, .campaign-grid { grid-template-columns:1fr; } .campaign-final-inner { flex-direction:column; align-items:flex-start; } }
+  @media (max-width: 768px) { .campaign-actions { flex-direction:column; } .campaign-actions :global(a) { width:100%; } }
+</style>

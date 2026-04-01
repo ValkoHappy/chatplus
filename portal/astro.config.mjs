@@ -11,13 +11,7 @@ export default defineConfig({
   site,
   base,
   trailingSlash: 'never',
-  vite: {
-    server: {
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-      },
-    },
-  },
+
   integrations: [
     sitemap({
       changefreq: 'weekly',

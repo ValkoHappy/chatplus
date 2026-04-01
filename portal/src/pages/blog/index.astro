@@ -1,8 +1,8 @@
 ---
-import StructuredLandingPage from '../../components/StructuredLandingPage.astro';
+import ResourceHubPage from '../../components/ResourceHubPage.astro';
 import { getLandingPage } from '../../lib/strapi';
 
 const page = await getLandingPage('blog');
 ---
 
-<StructuredLandingPage page={page} />
+<ResourceHubPage page={page} />

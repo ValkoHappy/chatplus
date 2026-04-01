@@ -39,6 +39,164 @@ function loadJsonIfExists(relativePath) {
   return JSON.parse(readFileSync(resolve(relativePath), 'utf-8'));
 }
 
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function stripReservedKeysDeep(value) {
+  if (Array.isArray(value)) {
+    return value.map(stripReservedKeysDeep);
+  }
+
+  if (isPlainObject(value)) {
+    const {
+      id,
+      documentId,
+      createdAt,
+      updatedAt,
+      publishedAt,
+      ...rest
+    } = value;
+
+    return Object.fromEntries(
+      Object.entries(rest).map(([key, nested]) => [key, stripReservedKeysDeep(nested)])
+    );
+  }
+
+  return value;
+}
+
+function mergeSourceOwnedContent(sourceValue, managedValue) {
+  if (Array.isArray(sourceValue)) {
+    return sourceValue.length > 0 ? sourceValue : Array.isArray(managedValue) ? managedValue : [];
+  }
+
+  if (isPlainObject(sourceValue)) {
+    return {
+      ...(isPlainObject(managedValue) ? managedValue : {}),
+      ...Object.fromEntries(
+        Object.entries(sourceValue).map(([key, value]) => [
+          key,
+          mergeSourceOwnedContent(value, isPlainObject(managedValue) ? managedValue[key] : undefined),
+        ]),
+      ),
+    };
+  }
+
+  if (hasMeaningfulValue(sourceValue)) {
+    return sourceValue;
+  }
+
+  return managedValue;
+}
+
+function hydrateMissingManagedContent(sourceValue, existingValue) {
+  if (Array.isArray(sourceValue)) {
+    return Array.isArray(existingValue) && existingValue.length > 0 ? existingValue : sourceValue;
+  }
+
+  if (isPlainObject(sourceValue)) {
+    const existingObject = isPlainObject(existingValue) ? existingValue : {};
+    return Object.fromEntries(
+      Object.entries(sourceValue).map(([key, value]) => [
+        key,
+        hydrateMissingManagedContent(value, existingObject[key]),
+      ]).concat(
+        Object.entries(existingObject).filter(([key]) => !(key in sourceValue))
+      )
+    );
+  }
+
+  return hasMeaningfulValue(existingValue) ? existingValue : sourceValue;
+}
+
+const LANDING_PAGE_TEMPLATE_KINDS = new Set([
+  'home',
+  'structured',
+  'resource_hub',
+  'brand_content',
+  'campaign',
+  'generic',
+]);
+
+const CONTENT_ORIGINS = new Set(['generated', 'managed']);
+
+const GENERATED_SINGLETON_SLUGS = new Set([]);
+const MANAGED_SINGLETON_SLUGS = new Set([
+  'home',
+  'docs',
+  'help',
+  'academy',
+  'blog',
+  'status',
+  'media',
+  'team',
+  'conversation',
+  'tv',
+  'promo',
+  'prozorro',
+  'demo',
+  'pricing',
+  'partnership',
+]);
+
+function inferLandingPageTemplateKind(slug = '') {
+  if (slug === 'home') {
+    return 'home';
+  }
+
+  if (['docs', 'help', 'academy', 'blog', 'status'].includes(slug)) {
+    return 'resource_hub';
+  }
+
+  if (['media', 'team', 'conversation', 'tv'].includes(slug)) {
+    return 'brand_content';
+  }
+
+  if (['promo', 'prozorro'].includes(slug)) {
+    return 'campaign';
+  }
+
+  if (slug === 'demo') {
+    return 'structured';
+  }
+
+  return 'generic';
+}
+
+function inferLandingPageContentOrigin(slug = '') {
+  if (GENERATED_SINGLETON_SLUGS.has(slug)) {
+    return 'generated';
+  }
+
+  if (MANAGED_SINGLETON_SLUGS.has(slug)) {
+    return 'managed';
+  }
+
+  return 'managed';
+}
+
+function hasMeaningfulValue(value) {
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.keys(value).length > 0;
+  }
+
+  return value !== undefined && value !== null && String(value).trim() !== '';
+}
+
+const LANDING_PAGE_REQUIRED_FIELDS_BY_TEMPLATE = {
+  home: ['subtitle', 'sticky_cta_title', 'sticky_cta_text'],
+  structured: ['subtitle', 'problem_title', 'solution_title', 'sticky_cta_title'],
+  resource_hub: ['subtitle'],
+  brand_content: ['subtitle'],
+  campaign: ['subtitle', 'sticky_cta_title'],
+  generic: ['subtitle'],
+};
+
 function hasStructuredSeoFields(item = {}) {
   return Boolean(
     item.h1 ||
@@ -209,29 +367,6 @@ function prepareStructuredSeedItem(endpoint, item) {
 }
 
 function prepareCollectionItem(endpoint, item) {
-  const stripReservedKeys = value => {
-    if (Array.isArray(value)) {
-      return value.map(stripReservedKeys);
-    }
-
-    if (value && typeof value === 'object') {
-      const {
-        id,
-        documentId,
-        createdAt,
-        updatedAt,
-        publishedAt,
-        ...rest
-      } = value;
-
-      return Object.fromEntries(
-        Object.entries(rest).map(([key, nested]) => [key, stripReservedKeys(nested)])
-      );
-    }
-
-    return value;
-  };
-
   if (
     endpoint === 'channels' ||
     endpoint === 'industries' ||
@@ -244,10 +379,106 @@ function prepareCollectionItem(endpoint, item) {
 
   if (endpoint === 'business-types') {
     const { sticky_cta_title, sticky_cta_text, ...rest } = item;
-    return stripReservedKeys(rest);
+    return stripReservedKeysDeep(rest);
   }
 
-  return stripReservedKeys(item);
+  return stripReservedKeysDeep(item);
+}
+
+function validateEnumValue(name, value, allowedValues, context) {
+  if (!value) {
+    return;
+  }
+
+  if (!allowedValues.has(value)) {
+    throw new Error(`${context}: invalid ${name} "${value}"`);
+  }
+}
+
+function validateUniqueSlugs(endpoint, items) {
+  const seen = new Set();
+  for (const item of items) {
+    const slug = item?.slug;
+    if (!slug) {
+      throw new Error(`${endpoint}: item without slug`);
+    }
+
+    if (seen.has(slug)) {
+      throw new Error(`${endpoint}: duplicate slug "${slug}"`);
+    }
+
+    seen.add(slug);
+  }
+}
+
+function validateLandingPage(item) {
+  const templateKind = item.template_kind || inferLandingPageTemplateKind(item.slug);
+  const contentOrigin = item.content_origin || inferLandingPageContentOrigin(item.slug);
+
+  validateEnumValue('template_kind', templateKind, LANDING_PAGE_TEMPLATE_KINDS, `landing-pages/${item.slug}`);
+  validateEnumValue('content_origin', contentOrigin, CONTENT_ORIGINS, `landing-pages/${item.slug}`);
+
+  const requiredFields = ['slug', 'meta_title', 'meta_description', 'h1'];
+  for (const field of requiredFields) {
+    if (!hasMeaningfulValue(item[field])) {
+      throw new Error(`landing-pages/${item.slug || 'unknown'}: missing required field "${field}"`);
+    }
+  }
+
+  const templateRequiredFields = LANDING_PAGE_REQUIRED_FIELDS_BY_TEMPLATE[templateKind] || [];
+  for (const field of templateRequiredFields) {
+    if (!hasMeaningfulValue(item[field])) {
+      throw new Error(`landing-pages/${item.slug || 'unknown'}: missing template field "${field}" for "${templateKind}"`);
+    }
+  }
+
+  if (MANAGED_SINGLETON_SLUGS.has(item.slug) && contentOrigin !== 'managed') {
+    throw new Error(`landing-pages/${item.slug}: expected content_origin "managed"`);
+  }
+
+  if (GENERATED_SINGLETON_SLUGS.has(item.slug) && contentOrigin !== 'generated') {
+    throw new Error(`landing-pages/${item.slug}: expected content_origin "generated"`);
+  }
+}
+
+function validateCompetitor(item) {
+  validateEnumValue('content_origin', item.content_origin || 'generated', CONTENT_ORIGINS, `competitors/${item.slug}`);
+
+  const requiredFields = ['slug', 'name', 'price', 'our_price'];
+  for (const field of requiredFields) {
+    if (!hasMeaningfulValue(item[field])) {
+      throw new Error(`competitors/${item.slug || 'unknown'}: missing required field "${field}"`);
+    }
+  }
+}
+
+function validateTendersPage(item) {
+  validateEnumValue('content_origin', item.content_origin || 'managed', CONTENT_ORIGINS, 'tenders-page');
+}
+
+function validateSiteSetting(item) {
+  const requiredFields = ['site_name', 'site_url', 'default_description'];
+  for (const field of requiredFields) {
+    if (!hasMeaningfulValue(item[field])) {
+      throw new Error(`site-setting: missing required field "${field}"`);
+    }
+  }
+}
+
+function validateSeedData() {
+  validateUniqueSlugs('channels', channels);
+  validateUniqueSlugs('industries', industries);
+  validateUniqueSlugs('integrations', integrations);
+  validateUniqueSlugs('features', features);
+  validateUniqueSlugs('solutions', solutions);
+  validateUniqueSlugs('business-types', businessTypes);
+  validateUniqueSlugs('competitors', competitors);
+  validateUniqueSlugs('landing-pages', resolvedLandingPages);
+
+  resolvedLandingPages.forEach(validateLandingPage);
+  competitors.forEach(validateCompetitor);
+  validateTendersPage(resolvedTendersPage);
+  validateSiteSetting(managedSiteSetting || siteSetting);
 }
 
 const env = loadEnv();
@@ -277,12 +508,48 @@ async function request(path, init = {}) {
   return json;
 }
 
+function getItemContentOrigin(item, fallback = 'generated') {
+  return item?.content_origin || fallback;
+}
+
+function shouldSkipManagedUpdate(existingAttributes, fallback = 'generated') {
+  const existingOrigin = getItemContentOrigin(existingAttributes, fallback);
+  return existingOrigin === 'managed';
+}
+
+function getCollectionFallbackOrigin(endpoint) {
+  if (endpoint === 'landing-pages') {
+    return 'managed';
+  }
+
+  if (endpoint === 'competitors') {
+    return 'generated';
+  }
+
+  return 'generated';
+}
+
 async function upsertCollection(endpoint, item) {
   const preparedItem = prepareCollectionItem(endpoint, item);
   const found = await request(`/api/${endpoint}?filters[slug][$eq]=${encodeURIComponent(preparedItem.slug)}`);
   const existing = found.data?.[0];
   const data = { ...preparedItem, publishedAt: now };
   if (existing) {
+    if (shouldSkipManagedUpdate(existing.attributes, getCollectionFallbackOrigin(endpoint))) {
+      const hydratedData = hydrateMissingManagedContent(data, stripReservedKeysDeep(existing.attributes));
+      const currentData = stripReservedKeysDeep(existing.attributes);
+      if (JSON.stringify(hydratedData) === JSON.stringify(currentData)) {
+        return 'skipped-managed';
+      }
+
+      const key = existing.documentId || existing.id;
+      await request(`/api/${endpoint}/${key}`, {
+        method: 'PUT',
+        body: JSON.stringify({ data: { ...hydratedData, publishedAt: now } }),
+      });
+      return 'hydrated-managed';
+    }
+
     const key = existing.documentId || existing.id;
     await request(`/api/${endpoint}/${key}`, {
       method: 'PUT',
@@ -298,33 +565,33 @@ async function upsertCollection(endpoint, item) {
 }
 
 async function upsertSingle(endpoint, data) {
-  const stripReservedKeys = value => {
-    if (Array.isArray(value)) {
-      return value.map(stripReservedKeys);
+  const preparedData = stripReservedKeysDeep(data);
+  const fallbackOrigin = endpoint === 'tenders-page' ? 'managed' : 'generated';
+
+  if ('content_origin' in preparedData) {
+    const existing = await request(`/api/${endpoint}`);
+    if (existing?.data?.attributes && shouldSkipManagedUpdate(existing.data.attributes, fallbackOrigin)) {
+      const hydratedData = hydrateMissingManagedContent(preparedData, stripReservedKeysDeep(existing.data.attributes));
+      const currentData = stripReservedKeysDeep(existing.data.attributes);
+      if (JSON.stringify(hydratedData) === JSON.stringify(currentData)) {
+        return 'skipped-managed';
+      }
+
+      await request(`/api/${endpoint}`, {
+        method: 'PUT',
+        body: JSON.stringify({ data: { ...hydratedData, publishedAt: now } }),
+      });
+
+      return 'hydrated-managed';
     }
-
-    if (value && typeof value === 'object') {
-      const {
-        id,
-        documentId,
-        createdAt,
-        updatedAt,
-        publishedAt,
-        ...rest
-      } = value;
-
-      return Object.fromEntries(
-        Object.entries(rest).map(([key, nested]) => [key, stripReservedKeys(nested)])
-      );
-    }
-
-    return value;
-  };
+  }
 
   await request(`/api/${endpoint}`, {
     method: 'PUT',
-    body: JSON.stringify({ data: { ...stripReservedKeys(data), publishedAt: now } }),
+    body: JSON.stringify({ data: { ...preparedData, publishedAt: now } }),
   });
+
+  return 'updated';
 }
 
 async function seedCollection(endpoint, items) {
@@ -337,7 +604,7 @@ async function seedCollection(endpoint, items) {
 
 const channelEmoji = {
   whatsapp: '💬',
-  telegram: 'вњ€пёЏ',
+  telegram: '✈️',
   viber: '📳',
   instagram: '📸',
   sms: '📱',
@@ -354,9 +621,9 @@ const industryEmoji = {
   hr: '👥',
   education: '🎓',
   auto: '🚗',
-  travel: 'вњ€пёЏ',
+  travel: '✈️',
   insurance: '🛡️',
-  legal: 'вљ–пёЏ',
+  legal: '⚖️',
   logistics: '🚚',
   retail: '🛍️',
 };
@@ -443,19 +710,42 @@ const competitors = loadArrayFromJson('cms/seed/competitors.json').map(item => (
   name: item.name,
   price: item.price,
   our_price: item.our_price || item.ourPrice,
+  content_origin: item.content_origin || 'generated',
   seo_title: item.seo_title || `Chat Plus vs ${item.name} — сравнение`,
   seo_description: `Сравнение Chat Plus и ${item.name}: цены, функции, различия и итоговый вывод.`,
   eyebrow: item.eyebrow || 'Сравнение',
+  hero_eyebrow: item.hero_eyebrow || item.eyebrow || 'Сравнение',
   hero_title: item.hero_title || `Chat Plus vs ${item.name}`,
   hero_description: item.hero_description || item.verdict,
+  compare_summary: item.compare_summary || `Сравнение Chat Plus и ${item.name} по скорости запуска, экономике владения и управляемости омниканального процесса.`,
+  compare_points: Array.isArray(item.compare_points) && item.compare_points.length
+    ? item.compare_points
+    : [
+        `Быстрый запуск без тяжелого enterprise-стека ${item.name}.`,
+        'Омниканал, CRM и AI в одном рабочем контуре.',
+        'Понятная модель владения без ручной сборки из разрозненных сервисов.',
+      ],
   pricing_title: item.pricing_title || 'Сравнение цен',
   our_price_label: item.our_price_label || 'Chat Plus',
   our_price_caption: item.our_price_caption || 'Фиксированная цена',
   competitor_price_caption: item.competitor_price_caption || '+ скрытые платежи',
   strengths_title: item.strengths_title || '✓ Преимущества Chat Plus',
+  advantages_title: item.advantages_title || item.strengths_title || '✓ Преимущества Chat Plus',
+  advantages_intro: item.advantages_intro || 'Ниже — сильные стороны Chat Plus в тех сценариях, где особенно важны скорость запуска, управляемый процесс и прозрачная экономика.',
   weaknesses_title: `✕ Слабые стороны ${item.name}`,
   our_strengths: item.our_strengths || item.ourStrengths,
   weaknesses: item.weaknesses,
+  faq_title: item.faq_title || 'Частые вопросы',
+  sticky_cta_title: item.sticky_cta_title || item.final_cta_title || `Переходите с ${item.name} на Chat Plus`,
+  sticky_cta_text: item.sticky_cta_text || item.final_cta_text || 'Поможем перенести процессы и собрать рабочий пилот без затяжного внедрения.',
+  section_labels: item.section_labels || {
+    compare_badge: 'Сравнение',
+    pricing_table_title: 'Ключевые параметры',
+    comparison_header_parameter: 'Параметр',
+    comparison_header_one: 'Вариант 1',
+    comparison_header_two: 'Вариант 2',
+    comparison_header_chat_plus: 'Chat Plus',
+  },
   final_cta_title: item.final_cta_title || `Переходите с ${item.name} на Chat Plus`,
   final_cta_text: item.final_cta_text || 'Поможем перенести процессы и собрать рабочий пилот без затяжного внедрения.',
   final_cta_label: item.final_cta_label || 'Попробовать бесплатно'
@@ -470,10 +760,12 @@ const businessTypesPage = {
 };
 
 const tendersPage = {
+  content_origin: 'managed',
   meta_title: 'Chat Plus Tenders — AI-уведомления о тендерах в мессенджерах',
   meta_description: 'Мгновенные уведомления о тендерах по 44-ФЗ и 223-ФЗ прямо в WhatsApp, Telegram и CRM. AI анализирует документацию, напоминает о дедлайнах и помогает не пропустить закупки.',
   h1: 'Chat Plus Tenders — превращаем тендеры из рутины в конвейер побед',
   subtitle: 'Ваши конкуренты проиграли не потому, что предложили цену выше. Они просто не увидели тендер вовремя. Chat Plus доставляет уведомления о релевантных закупках прямо в WhatsApp, Telegram или CRM вашей команды — за секунды после публикации.',
+  hero_eyebrow: 'Tenders',
   canonical: 'https://chatplus.com/solutions/tenders',
   hreflang_ru: 'https://chatplus.com/ru/solutions/tenders',
   hreflang_uk: 'https://chatplus.com/uk/solutions/tenders',
@@ -496,6 +788,23 @@ const tendersPage = {
     '20 000+ новых закупок ежедневно на площадках РФ и СНГ',
     '70% проигрышей в тендерах — из-за пропущенных сроков, а не из-за цены',
     '327 000 торгов в 2025 году остались вообще без заявок'
+  ],
+  hero_panel_items: [
+    {
+      source: '44-ФЗ · Медицинское оборудование',
+      deadline: '2 дня до дедлайна',
+      text: 'Заказчик изменил документацию. AI выделил критичные пункты и поставил дедлайн в календарь.',
+    },
+    {
+      source: '223-ФЗ · IT-инфраструктура',
+      deadline: 'Новая закупка',
+      text: 'Тендер доставлен в Telegram отдела, карточка в CRM создана автоматически.',
+    },
+    {
+      accent: true,
+      icon: 'lucide:sparkles',
+      label: 'AI отсек нерелевантные закупки и показал только нужные кейсы',
+    },
   ],
   problem_title: 'Почему тендерные отделы теряют деньги',
   problem_intro: 'Рынок государственных и коммерческих закупок в России — это десятки тысяч новых торгов каждый день, разбросанных по сотням площадок. Именно поэтому ручной мониторинг перестал работать.',
@@ -595,6 +904,18 @@ const tendersPage = {
   sticky_cta_primary_url: '/demo',
   sticky_cta_secondary_label: 'Заказать демо для тендерного отдела',
   sticky_cta_secondary_url: '/demo',
+  section_labels: {
+    hero_eyebrow: 'Tenders',
+    hero_panel_title: 'Тендерный поток',
+    hero_panel_summary: 'Релевантные закупки за секунды',
+    comparison_intro: 'Сравнение здесь про скорость реакции, управление дедлайнами и контроль тендерного процесса, а не только про уведомления.',
+    comparison_parameter: 'Параметр',
+    comparison_option_one: 'Email / агрегатор',
+    comparison_option_two: 'Мобильное приложение',
+    comparison_chat_plus: 'Chat Plus Tenders',
+    roi_without_title: 'Без Chat Plus',
+    roi_with_title: 'С Chat Plus',
+  },
   software_schema: {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -718,6 +1039,27 @@ const siteSetting = {
   sticky_cta_text: 'Попробуйте Chat Plus бесплатно и соберите рабочий сценарий под ваш бизнес.',
   sticky_cta_label: 'Записаться на демо',
   sticky_cta_url: '/demo',
+  template_defaults: {
+    faq_title: 'Частые вопросы',
+    compare_badge: 'Сравнение',
+    resource_panel_title: 'Что внутри',
+    resource_story_label: 'Контекст',
+  },
+  special_page_defaults: {
+    hero_highlights_label: 'Что внутри',
+    sticky_cta_secondary_label: 'Посмотреть цены',
+    compare_summary_label: 'Ключевые различия',
+  },
+  global_labels: {
+    generator_owned: 'Страница управляется генератором',
+    manual_owned: 'Страница управляется в Strapi',
+    next_steps_title: 'Куда перейти дальше',
+  },
+  generator_defaults: {
+    source_of_truth: 'seed-runtime-content',
+    programmatic_origin: 'generated',
+    singleton_origin: 'managed',
+  },
   page_templates: {
     shared: {
       structured_page: {
@@ -875,7 +1217,7 @@ const siteSetting = {
       },
       features: {
         meta_title: '{name} в Chat Plus — возможности и настройка',
-        h1: '{name} РІ Chat Plus',
+        h1: '{name} в Chat Plus',
         problem_title: 'Зачем нужен модуль {name}',
         problem_intro: 'Без централизованного управления {name} превращается в точечный инструмент, который не интегрируется с остальным процессом.',
         solution_title: 'Как работает {name} в Chat Plus',
@@ -964,6 +1306,16 @@ function makeLandingPage({
   metaDescription,
   h1,
   subtitle,
+  templateKind,
+  contentOrigin,
+  heroEyebrow = '',
+  heroVariant = '',
+  heroHighlightsLabel = '',
+  heroHighlights,
+  heroPanelItems,
+  proofFacts,
+  pricingTiers,
+  proofCards,
   primaryLabel = 'Попробовать бесплатно',
   primaryUrl = '/demo',
   secondaryLabel = 'Записаться на демо',
@@ -989,13 +1341,27 @@ function makeLandingPage({
   comparisonRows,
   stickyTitle,
   stickyText,
+  sectionLabels,
+  quoteTitle,
+  quoteText,
+  quoteAuthor,
+  presentationFlags,
 }) {
+  const resolvedTemplateKind = templateKind || inferLandingPageTemplateKind(slug);
+  const resolvedContentOrigin = contentOrigin || inferLandingPageContentOrigin(slug);
+
   return {
     slug,
+    template_kind: resolvedTemplateKind,
+    content_origin: resolvedContentOrigin,
     meta_title: metaTitle,
     meta_description: metaDescription,
     h1,
     subtitle,
+    hero_eyebrow: heroEyebrow,
+    hero_variant: heroVariant,
+    hero_highlights_label: heroHighlightsLabel,
+    hero_highlights: heroHighlights || [],
     canonical: `https://chatplus.ru${slug === 'home' ? '/' : `/${slug}`}`,
     schema_type: 'SoftwareApplication',
     target_keywords: [slug, 'chat plus', 'omnichannel', 'automation'],
@@ -1049,6 +1415,15 @@ function makeLandingPage({
       'CRM всегда актуальна — аналитика работает'
     ],
     roi_quote: roiQuote || 'Chat Plus позволяет обрабатывать в 3 раза больше обращений той же командой.',
+    quote_title: quoteTitle || '',
+    quote_text: quoteText || '',
+    quote_author: quoteAuthor || '',
+    hero_panel_items: heroPanelItems || [],
+    proof_facts: proofFacts || [],
+    pricing_tiers: pricingTiers || [],
+    proof_cards: proofCards || [],
+    section_labels: sectionLabels || {},
+    presentation_flags: presentationFlags || {},
     use_cases_title: 'Кому подходит Chat Plus',
     use_cases: useCases || [
       { audience: 'Отделы продаж', text: useCaseContext },
@@ -1124,10 +1499,16 @@ function makeLandingPage({
 const landingPages = [
   {
     slug: 'home',
+    template_kind: 'home',
+    content_origin: 'managed',
     meta_title: 'Chat Plus — омниканальная платформа для бизнеса',
     meta_description: 'Chat Plus объединяет WhatsApp, Telegram, Instagram и другие каналы в одном окне. AI-агенты, автоматизация и CRM-интеграции для роста продаж и снижения нагрузки на команду.',
     h1: 'Все каналы клиентов в одном окне — WhatsApp, Telegram и другие',
     subtitle: 'Chat Plus собирает сообщения из всех мессенджеров, автоматизирует ответы с AI и синхронизирует данные с вашей CRM. Ни одна заявка не теряется.',
+    hero_eyebrow: 'Chat Plus',
+    hero_variant: 'home',
+    hero_highlights_label: 'Что внутри',
+    hero_highlights: ['Омниканал', 'AI-агенты 24/7', 'CRM и автоматизация'],
     canonical: 'https://chatplus.ru/',
     schema_type: 'SoftwareApplication',
     target_keywords: [
@@ -1195,6 +1576,24 @@ const landingPages = [
       'Автоматизация масштабирует процесс без роста операционных затрат'
     ],
     roi_quote: 'За первый месяц работы с Chat Plus мы закрыли на 40% больше сделок при той же команде менеджеров.',
+    quote_title: 'Результат после запуска',
+    quote_text: 'За первый месяц работы с Chat Plus мы закрыли на 40% больше сделок при той же команде менеджеров.',
+    quote_author: 'Команда клиента Chat Plus',
+    proof_facts: [
+      { value: '15 мин', label: 'до первого запуска' },
+      { value: 'AI 24/7', label: 'отвечает без участия команды' },
+      { value: '1 окно', label: 'для всех каналов и CRM-событий' },
+      { value: '2-5x', label: 'выгоднее тяжелых enterprise-стеков' },
+    ],
+    section_labels: {
+      pricing_teaser_title: 'Тарифы',
+      pricing_teaser_intro: 'Компактный обзор тарифов для первого запуска.',
+      faq_title: 'Частые вопросы',
+    },
+    presentation_flags: {
+      show_pricing_teaser: true,
+      show_home_proof_bar: true,
+    },
     use_cases_title: 'Где Chat Plus даёт результат',
     use_cases: [
       { audience: 'Отделы продаж', text: 'Ускоряет первый ответ, квалифицирует лидов и передаёт горячие обращения в CRM.' },
@@ -1288,6 +1687,96 @@ const landingPages = [
       'Без платы за каждое сообщение',
       'Пилот с командой Chat Plus'
     ],
+    heroPanelItems: [
+      {
+        label: 'Ценовой диапазон',
+        value: '$49-$99 / мес',
+        text: 'Входной и рабочий контур без искусственного раздувания счета.',
+        icon: 'lucide:badge-dollar-sign',
+      },
+      {
+        label: 'Рабочий контур',
+        value: '5-10 агентов',
+        text: 'Нормальная команда продаж или поддержки без пересборки стека.',
+        icon: 'lucide:users',
+      },
+      {
+        label: 'Скрытые доплаты',
+        value: '0',
+        text: 'Без наценки на сообщения, роли и AI-нагрузку поверх сценария.',
+        icon: 'lucide:shield-check',
+      },
+    ],
+    pricingTiers: [
+      {
+        name: 'Pilot',
+        label: 'Pilot',
+        price: '$49',
+        period: '/ мес',
+        note: 'Входной контур для запуска первой команды и первого рабочего сценария.',
+        text: 'Быстрый старт для одной команды, чтобы проверить каналы, AI и первую автоматизацию на реальном потоке.',
+        cta: 'Запустить пилот',
+        icon: 'lucide:rocket',
+        kicker: 'Для запуска',
+        accent: false,
+        features: [
+          '1 команда и базовый контур запуска',
+          'Каналы, AI и первая автоматизация',
+          'Подходит для пилота и первых 1-3 операторов',
+        ],
+      },
+      {
+        name: 'Growth',
+        label: 'Growth',
+        price: '$99',
+        period: '/ мес',
+        note: 'Рабочий тариф для команды 5-10 агентов с CRM, AI и омниканалом.',
+        text: 'Основной тариф для бизнеса, где уже нужны CRM, омниканал и несколько ролей без пересборки стека.',
+        cta: 'Рассчитать Growth',
+        icon: 'lucide:layers-3',
+        kicker: '',
+        accent: true,
+        features: [
+          'Команда 5-10 агентов в одном контуре',
+          'CRM, омниканал, AI и автоматизация без допов',
+          'Прозрачная модель владения без скрытых доплат',
+        ],
+      },
+      {
+        name: 'Enterprise',
+        label: 'Enterprise',
+        price: 'индивидуально',
+        period: '',
+        note: 'Индивидуальный расчет под SLA, безопасность и кастомную архитектуру.',
+        text: 'Контур с SLA, приоритетной поддержкой, расширенной безопасностью и кастомной архитектурой интеграций.',
+        cta: 'Обсудить Enterprise',
+        icon: 'lucide:shield-check',
+        kicker: 'Для сложных контуров',
+        accent: false,
+        features: [
+          'SLA и приоритетная поддержка',
+          'Расширенная безопасность и управление доступами',
+          'Кастомные интеграции и архитектурный контур',
+        ],
+      },
+    ],
+    proofCards: [
+      {
+        title: 'Без скрытых платежей',
+        text: 'Фиксируем сценарий, роли и каналы до запуска, а не после первого счета.',
+        icon: 'lucide:badge-check',
+      },
+      {
+        title: 'Без наценки на сообщения',
+        text: 'Коммерческая модель строится вокруг платформы и процесса, а не штрафов за рост трафика.',
+        icon: 'lucide:message-circle-more',
+      },
+      {
+        title: 'Переход без пересборки стека',
+        text: 'Можно начать с пилота и вырасти в полноценный контур без новой миграции.',
+        icon: 'lucide:arrow-up-right',
+      },
+    ],
     problemItems: [
       { title: 'Цена растёт вместе с объёмом сообщений', text: 'Счёт становится непредсказуемым уже на первом росте входящего потока.' },
       { title: 'Нужные функции продаются как допы', text: 'CRM, автоматизация и AI часто оплачиваются отдельно и раздувают бюджет.' },
@@ -1332,6 +1821,25 @@ const landingPages = [
     ],
     stickyTitle: 'Посмотрите реальную модель стоимости Chat Plus',
     stickyText: 'На демо разложим цену по вашему сценарию: каналы, команда, AI, CRM и этапы запуска.',
+    sectionLabels: {
+      hero_eyebrow: 'Pricing',
+      hero_panel_title: 'Модель цены',
+      hero_panel_summary: 'Прозрачный контур без скрытых доплат и искусственных add-on-модулей.',
+      pricing_title: 'Тарифные контуры Chat Plus',
+      pricing_intro: 'Три уровня входа: быстрый пилот, рабочий growth-контур и enterprise-модель для сложной архитектуры.',
+      tier_popular: 'Основной выбор',
+      bottom_cta_title: 'Не знаете, какой контур нужен именно вам?',
+      bottom_cta_text: 'На демо соберем модель цены под вашу команду, каналы, AI-нагрузку и CRM-связки.',
+      bottom_cta_primary: 'Рассчитать стоимость',
+      bottom_cta_secondary: 'Получить демо',
+      comparison_intro: 'Сравнение не про “дешевле любой ценой”, а про управляемую стоимость владения платформой.',
+      comparison_parameter: 'Параметр',
+      comparison_option_one: 'Seat / add-on платформа',
+      comparison_option_two: 'Контактная платформа',
+      comparison_chat_plus: 'Chat Plus',
+      roi_without_title: 'Без Chat Plus',
+      roi_with_title: 'С Chat Plus',
+    },
     internalLinks: [
       { label: 'Главная', href: '/', description: 'Возможности платформы' },
       { label: 'Demo', href: '/demo', description: 'Записаться на демо и обсудить условия' }
@@ -1420,6 +1928,16 @@ const landingPages = [
       'Совместные сделки и демо',
       'Материалы и поддержка на запуске'
     ],
+    sectionLabels: {
+      hero_eyebrow: 'Partners',
+      comparison_intro: 'Здесь важно не просто наличие affiliate-программы, а то, создает ли она повторяемый доход и помогает доводить сделки до запуска.',
+      comparison_parameter: 'Параметр',
+      comparison_option_one: 'Рынок',
+      comparison_option_two: 'Referral',
+      comparison_chat_plus: 'Chat Plus',
+      roi_without_title: 'Без Chat Plus',
+      roi_with_title: 'С Chat Plus',
+    },
     problemItems: [
       { title: 'После внедрения у агентства заканчивается выручка', text: 'Проект закрыт — и доход обрывается вместе с этапом настройки.' },
       { title: 'Клиентам нужен понятный продукт, а не конструктор из сервисов', text: 'Собирать стек из нескольких подрядчиков дольше и дороже.' },
@@ -1561,8 +2079,22 @@ const managedTendersPage = loadJsonIfExists('cms/seed/generated/tendersPage.json
 const managedSiteSetting = loadJsonIfExists('cms/seed/generated/siteSetting.json');
 const managedBusinessTypesPage = loadJsonIfExists('cms/seed/generated/businessTypesPage.json');
 
+const sourceLandingPageMap = new Map(landingPages.map((item) => [item.slug, item]));
+
+const resolvedLandingPages = Array.isArray(managedLandingPages)
+  ? managedLandingPages.map((item) => {
+      const sourceItem = sourceLandingPageMap.get(item.slug);
+      return sourceItem ? mergeSourceOwnedContent(sourceItem, item) : item;
+    })
+  : landingPages;
+
+const resolvedTendersPage = managedTendersPage
+  ? mergeSourceOwnedContent(tendersPage, managedTendersPage)
+  : tendersPage;
+
 async function main() {
   console.log(`Seeding ${STRAPI_URL}`);
+  validateSeedData();
   await seedCollection('channels', channels);
   await seedCollection('industries', industries);
   await seedCollection('integrations', integrations);
@@ -1572,11 +2104,11 @@ async function main() {
   await seedCollection('competitors', competitors);
   await upsertSingle('site-setting', managedSiteSetting || siteSetting);
   console.log('\n- upserted site-setting');
-  await seedCollection('landing-pages', managedLandingPages || landingPages);
+  await seedCollection('landing-pages', resolvedLandingPages);
   await upsertSingle('business-types-page', managedBusinessTypesPage || businessTypesPage);
   console.log('\n- upserted business-types-page');
-  await upsertSingle('tenders-page', managedTendersPage || tendersPage);
-  console.log('- upserted tenders-page');
+  const tendersAction = await upsertSingle('tenders-page', resolvedTendersPage);
+  console.log(`- ${tendersAction} tenders-page`);
   console.log('\nDone');
 }
 

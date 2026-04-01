@@ -1,87 +1,142 @@
-# Deploy
+# Деплой CHATPLUS
 
-## Сценарий 1. Обновить Pages-демо сейчас
+## 1. Текущий режим: demo-mode
 
-Текущий режим: GitHub Pages demo snapshot.
+Сейчас проект публикуется не из hosted Strapi, а через локальный снапшот:
 
-Этот режим используется сейчас, пока нет внешнего сервера со `Strapi`.
+`local Strapi -> Astro build -> pages-preview -> GitHub Pages`
 
-### 1. Поднять локальный CMS
+## 2. Что именно делает оператор перед публикацией
+
+### Шаг 1. Запустить локальный Strapi
 
 ```powershell
-cd E:\Проекты\НоваяГлава\CHATPLUS
 npm.cmd --prefix cms run develop
 ```
 
-Дождитесь строки `Strapi started successfully`.
-
-### 2. Собрать и обновить демо-снимок
-
-Во втором окне PowerShell:
+### Шаг 2. Если менялся generated content — обновить Strapi
 
 ```powershell
-cd E:\Проекты\НоваяГлава\CHATPLUS
+npm.cmd run seed-content
+```
+
+### Шаг 3. Собрать demo snapshot
+
+Во втором окне:
+
+```powershell
 npm.cmd --prefix portal run snapshot:github-demo
 ```
 
-Что делает команда:
-- собирает `Astro` из локального `Strapi`
-- прогоняет QA-проверки
-- обновляет папку `pages-preview`
+### Шаг 4. Commit + push
 
-### 3. Отправить снимок в GitHub
-
-Если `git` не добавлен в `PATH`, используйте полный путь:
+Если `git` не в `PATH`, можно использовать:
 
 ```powershell
 & "C:\Program Files\Git\cmd\git.exe" add .
-& "C:\Program Files\Git\cmd\git.exe" commit -m "Update GitHub Pages demo snapshot"
+& "C:\Program Files\Git\cmd\git.exe" commit -m "Update demo snapshot"
 & "C:\Program Files\Git\cmd\git.exe" push origin main
 ```
 
-### 4. Проверить деплой
+### Шаг 5. Проверить деплой
 
-- Откройте `GitHub -> Actions`
-- Дождитесь зеленого workflow `Deploy Demo Snapshot`
-- Откройте опубликованную версию:
+Проверить workflow:
 
-```text
-https://valkohappy.github.io/chatplus
+- `Deploy Demo Snapshot`
+
+## 3. Что обязательно должно быть зеленым
+
+```powershell
+npm.cmd --prefix portal run build
 ```
 
-Если стили выглядят устаревшими, сделайте `Ctrl+F5`.
+Это включает:
 
-## Сценарий 2. Будущий production flow
+- Astro build
+- content quality check
+- internal links check
+- encoding check
 
-Модель: live Strapi -> build -> deploy.
+## 4. Что generator overwrites, а что нет
 
-Когда появится внешний сервер со `Strapi`, можно перейти на обычную схему:
+### Generator может обновлять
 
-1. Хостинг `Strapi` на публичном URL, например `https://cms.chatplus.ru`
-2. GitHub Secrets:
-   - `STRAPI_URL`
-   - `STRAPI_TOKEN`
-3. GitHub Actions собирает `portal/dist` напрямую из CMS
-4. Публикация идет без snapshot-папки, сразу из build-артефакта
+- `generated` records
+- generator-owned page families
+- materialized programmatic content
 
-### Что потребуется заранее
+### Generator не должен silently overwrite
 
-- публичный `STRAPI_URL`, доступный из GitHub Actions
-- read-only `STRAPI_TOKEN`
-- `Pages -> Source -> GitHub Actions`
-- если будет custom domain:
-  - `CNAME`
-  - DNS на GitHub Pages
-  - включенный HTTPS
+- `managed` singleton pages
+- контент, который редактор ведет вручную в Strapi
 
-### Что не нужно делать сейчас
+## 5. Кто владеет чем
 
-- не переключать основной workflow на live-`Strapi`, пока сервера нет
-- не указывать `localhost` или `127.0.0.1` в GitHub Secrets
+### Контентщик / оператор
 
-## Быстрый чек перед публикацией
+- Strapi content
+- запуск `seed-content`
+- публикация demo snapshot
 
-- `npm.cmd --prefix portal run build` проходит локально
-- `pages-preview/index.html` обновился
-- `Actions` завершился без ошибок
-- `compare`, `site-map`, `pricing`, `channels`, `industries`, `integrations`, `for` открываются на опубликованной версии
+### Разработчик
+
+- шаблоны
+- layout
+- стили
+- адаптив
+- adapters/normalization
+
+### DevOps / техлид
+
+- секреты
+- GitHub Actions
+- будущий production deploy
+- внешний Strapi, когда он появится
+
+## 6. Demo-mode и production-mode — это разные контуры
+
+### Сейчас: demo-mode
+
+- локальный Strapi
+- локальный build
+- `pages-preview`
+- GitHub Pages
+
+### Потом: production-mode
+
+- hosted Strapi
+- GitHub Actions build from live CMS
+- deploy artifact
+
+Нельзя использовать в CI:
+
+- `localhost`
+- `127.0.0.1`
+
+## 7. Troubleshooting
+
+### Demo не обновился
+
+Проверить:
+
+1. обновился ли `pages-preview/`
+2. попал ли snapshot в commit
+3. прошел ли workflow
+4. сделать `Ctrl+F5`
+
+### Build падает
+
+Проверить:
+
+1. запущен ли Strapi
+2. не забыли ли `seed-content`
+3. не сломаны ли seeds/generator inputs
+
+### Новая generated page не появилась
+
+Проверить:
+
+1. была ли запись добавлена в source seed
+2. запускался ли `seed-content`
+3. появилась ли запись в Strapi
+4. поддерживает ли frontend нужный route

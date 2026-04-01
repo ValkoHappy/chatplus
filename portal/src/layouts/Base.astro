@@ -1,4 +1,4 @@
----
+﻿---
 import '../styles/global.css';
 import { getSiteSettings } from '../lib/strapi';
 import { getFooterColumns, getHeaderLinks, getMobileNavSections, isPathActive } from '../lib/navigation';
@@ -15,7 +15,7 @@ export interface Props {
 const {
   title,
   description,
-  image = '/og-image.svg',
+  image = '/og-image.png',
   canonical,
   hideGlobalStickyCta = false,
 } = Astro.props;
@@ -27,6 +27,15 @@ const isDemoPreview = site.includes('github.io/chatplus');
 const finalDescription = description || settings.default_description;
 const canonicalURL = (isDemoPreview ? null : canonical) || new URL(Astro.url.pathname, `${site}/`).toString();
 const ogImage = /^https?:\/\//.test(image) ? image : `${site}${image.startsWith('/') ? image : `/${image}`}`;
+const ogImageType = ogImage.toLowerCase().endsWith('.png')
+  ? 'image/png'
+  : ogImage.toLowerCase().endsWith('.jpg') || ogImage.toLowerCase().endsWith('.jpeg')
+    ? 'image/jpeg'
+    : ogImage.toLowerCase().endsWith('.webp')
+      ? 'image/webp'
+      : ogImage.toLowerCase().endsWith('.svg')
+        ? 'image/svg+xml'
+        : undefined;
 const siteName = settings.site_name?.trim() || 'Chat Plus';
 const headerLinks = getHeaderLinks(settings.header_links);
 const footerColumns = getFooterColumns(settings.footer_columns);
@@ -88,6 +97,9 @@ const websiteSchema = JSON.stringify({
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={finalDescription} />
   <meta property="og:image" content={ogImage} />
+  {ogImageType && <meta property="og:image:type" content={ogImageType} />}
+  <meta property="og:image:secure_url" content={ogImage} />
+  <meta property="og:image:alt" content={fullTitle} />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="ru_RU" />
@@ -96,6 +108,7 @@ const websiteSchema = JSON.stringify({
   <meta name="twitter:title" content={fullTitle} />
   <meta name="twitter:description" content={finalDescription} />
   <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:image:alt" content={fullTitle} />
 
   <link rel="icon" type="image/svg+xml" href={toHref('/favicon.svg')} />
   <link rel="icon" type="image/x-icon" href={toHref('/favicon.ico')} />
@@ -120,6 +133,7 @@ const websiteSchema = JSON.stringify({
       position: sticky;
       top: 0;
       z-index: 100;
+      overflow: visible;
       padding: 0 clamp(1rem, 3vw, 1.6rem);
       border-bottom: 1px solid rgba(226, 232, 240, .94);
       background: rgba(255,255,255,.88);
@@ -208,6 +222,7 @@ const websiteSchema = JSON.stringify({
       align-items: center;
       gap: .75rem;
       flex-shrink: 0;
+      justify-self: end;
     }
 
     .header-cta,
@@ -311,6 +326,7 @@ const websiteSchema = JSON.stringify({
       padding: .25rem 0 0;
       align-content: start;
       border-top: none;
+      min-width: 0;
     }
 
     .footer-brand {
@@ -385,6 +401,7 @@ const websiteSchema = JSON.stringify({
       color: inherit;
       font-weight: 700;
       line-height: 1.35;
+      overflow-wrap: anywhere;
     }
 
     .footer-bottom {
@@ -515,8 +532,30 @@ const websiteSchema = JSON.stringify({
     }
 
     @media (max-width: 1024px) {
+      .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.1rem 1rem;
+      }
+
+      .footer-brand-block {
+        grid-column: 1 / -1;
+        padding: 0 0 1rem;
+        border-bottom: 1px solid rgba(148, 163, 184, .12);
+      }
+
+      .footer-column-card {
+        padding-top: .35rem;
+      }
+    }
+
+    @media (max-width: 1140px) {
       .site-nav {
         grid-template-columns: auto 1fr auto;
+      }
+
+      .nav-actions {
+        margin-left: auto;
+        justify-content: flex-end;
       }
 
       .nav-links-wrap {
@@ -534,29 +573,46 @@ const websiteSchema = JSON.stringify({
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1140px) {
       .nav-links-wrap {
         display: none;
       }
 
       .nav-toggle {
         display: inline-flex;
+        order: 2;
+      }
+
+      .header-cta {
+        order: 1;
       }
 
       .mobile-nav-panel {
-        display: none;
-        margin: 0 auto .85rem;
-        max-width: var(--container);
-        padding: .9rem;
+        position: absolute;
+        top: calc(100% + .55rem);
+        left: .95rem;
+        right: .95rem;
+        z-index: 120;
+        display: grid;
+        gap: 1rem;
+        padding: 1rem;
         border: 1px solid var(--border-main);
-        border-radius: 20px;
+        border-radius: 22px;
         background: rgba(255,255,255,.98);
-        box-shadow: 0 18px 40px rgba(15, 23, 42, .10);
+        box-shadow: 0 24px 52px rgba(15, 23, 42, .14);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-8px);
+        transition: opacity .22s ease, transform .22s ease, visibility .22s ease;
       }
 
       .mobile-nav-panel.open {
-        display: grid;
-        gap: 1rem;
+        display: grid !important;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
       }
 
       .mobile-nav-cta {
@@ -575,12 +631,17 @@ const websiteSchema = JSON.stringify({
 
       .mobile-nav-sections {
         display: grid;
-        gap: 1rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .9rem;
       }
 
       .mobile-nav-section {
         display: grid;
         gap: .45rem;
+        padding: .8rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #f8fafc;
       }
 
       .mobile-nav-title {
@@ -641,6 +702,16 @@ const websiteSchema = JSON.stringify({
         gap: 1rem;
       }
 
+      .mobile-nav-panel {
+        left: .7rem;
+        right: .7rem;
+        padding: .85rem;
+      }
+
+      .mobile-nav-sections {
+        grid-template-columns: 1fr;
+      }
+
       .footer-brand-block {
         padding-right: 0;
       }
@@ -667,7 +738,7 @@ const websiteSchema = JSON.stringify({
       </div>
       <div class="nav-actions">
         <a href={toHref(settings.header_cta_url)} class="header-cta">{settings.header_cta_label}</a>
-        <button id="nav-toggle" class="nav-toggle" aria-label="Меню" aria-expanded="false">
+        <button id="nav-toggle" type="button" class="nav-toggle" aria-label="Меню" aria-controls="mobile-nav" aria-expanded="false">
           <svg id="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           <svg id="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -741,7 +812,7 @@ const websiteSchema = JSON.stringify({
     </div>
   )}
 
-  <script>
+  <script is:inline>
     (function () {
       const toggle = document.getElementById('nav-toggle');
       const menu = document.getElementById('mobile-nav');
@@ -785,7 +856,7 @@ const websiteSchema = JSON.stringify({
       });
 
       window.addEventListener('resize', function () {
-        if (window.innerWidth > 768) closeMenu();
+        if (window.innerWidth > 1140) closeMenu();
       }, { passive: true });
     })();
 
@@ -859,3 +930,5 @@ const websiteSchema = JSON.stringify({
   </script>
 </body>
 </html>
+
+

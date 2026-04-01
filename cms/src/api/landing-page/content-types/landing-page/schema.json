@@ -25,12 +25,44 @@
       "type": "text",
       "required": true
     },
+    "template_kind": {
+      "type": "enumeration",
+      "enum": [
+        "home",
+        "structured",
+        "resource_hub",
+        "brand_content",
+        "campaign",
+        "generic"
+      ],
+      "default": "generic"
+    },
+    "content_origin": {
+      "type": "enumeration",
+      "enum": [
+        "generated",
+        "managed"
+      ],
+      "default": "managed"
+    },
     "h1": {
       "type": "string",
       "required": true
     },
     "subtitle": {
       "type": "text"
+    },
+    "hero_eyebrow": {
+      "type": "string"
+    },
+    "hero_variant": {
+      "type": "string"
+    },
+    "hero_highlights_label": {
+      "type": "string"
+    },
+    "hero_highlights": {
+      "type": "json"
     },
     "canonical": {
       "type": "string"
@@ -126,6 +158,33 @@
     },
     "roi_quote": {
       "type": "text"
+    },
+    "quote_title": {
+      "type": "string"
+    },
+    "quote_text": {
+      "type": "text"
+    },
+    "quote_author": {
+      "type": "string"
+    },
+    "proof_facts": {
+      "type": "json"
+    },
+    "hero_panel_items": {
+      "type": "json"
+    },
+    "pricing_tiers": {
+      "type": "json"
+    },
+    "proof_cards": {
+      "type": "json"
+    },
+    "section_labels": {
+      "type": "json"
+    },
+    "presentation_flags": {
+      "type": "json"
     },
     "use_cases_title": {
       "type": "string"
