@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from 'fs';
+﻿import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
 function loadEnv() {
@@ -337,7 +337,7 @@ async function seedCollection(endpoint, items) {
 
 const channelEmoji = {
   whatsapp: '💬',
-  telegram: '✈️',
+  telegram: 'вњ€пёЏ',
   viber: '📳',
   instagram: '📸',
   sms: '📱',
@@ -354,9 +354,9 @@ const industryEmoji = {
   hr: '👥',
   education: '🎓',
   auto: '🚗',
-  travel: '✈️',
+  travel: 'вњ€пёЏ',
   insurance: '🛡️',
-  legal: '⚖️',
+  legal: 'вљ–пёЏ',
   logistics: '🚚',
   retail: '🛍️',
 };
@@ -653,64 +653,64 @@ const siteSetting = {
   default_description: 'Омниканальная платформа для бизнеса: WhatsApp, Telegram и другие каналы в одном окне с AI и автоматизацией.',
   organization_description: 'Chat Plus объединяет каналы коммуникации, автоматизацию и AI-слои в единой платформе для бизнеса.',
   header_links: [
-    { label: '??????', href: '/channels' },
-    { label: '???????', href: '/industries' },
-    { label: '??????????', href: '/integrations' },
-    { label: '???????', href: '/solutions' },
-    { label: '???????????', href: '/features' },
-    { label: '??? ???????', href: '/for' },
-    { label: '????', href: '/pricing' },
-    { label: '?????????', href: '/partnership' }
+    { label: 'Каналы', href: '/channels' },
+    { label: 'Отрасли', href: '/industries' },
+    { label: 'Интеграции', href: '/integrations' },
+    { label: 'Решения', href: '/solutions' },
+    { label: 'Возможности', href: '/features' },
+    { label: 'Для бизнеса', href: '/for' },
+    { label: 'Цены', href: '/pricing' },
+    { label: 'Партнёрам', href: '/partnership' }
   ],
   header_cta_label: 'Попробовать',
   header_cta_url: '/demo',
   footer_tagline: 'Мы продаём не чаты — мы продаём то, что чаты делают возможным.',
   footer_columns: [
     {
-      title: '???????',
+      title: 'Продукт',
       links: [
-        { label: '????', href: '/pricing' },
-        { label: 'Demo', href: '/demo' },
-        { label: '?????????', href: '/partnership' },
-        { label: '??? ???????', href: '/for' }
+        { label: 'Цены', href: '/pricing' },
+        { label: 'Демо', href: '/demo' },
+        { label: 'Партнёрам', href: '/partnership' },
+        { label: 'Для бизнеса', href: '/for' }
       ]
     },
     {
-      title: '????????',
+      title: 'Каталоги',
       links: [
-        { label: '??????', href: '/channels' },
-        { label: '???????', href: '/industries' },
-        { label: '??????????', href: '/integrations' },
-        { label: '???????', href: '/solutions' },
-        { label: '???????????', href: '/features' }
+        { label: 'Каналы', href: '/channels' },
+        { label: 'Отрасли', href: '/industries' },
+        { label: 'Интеграции', href: '/integrations' },
+        { label: 'Решения', href: '/solutions' },
+        { label: 'Возможности', href: '/features' }
       ]
     },
     {
-      title: '???????',
+      title: 'Ресурсы',
       links: [
-        { label: 'Docs', href: '/docs' },
-        { label: 'Help', href: '/help' },
-        { label: 'Academy', href: '/academy' },
-        { label: '????', href: '/blog' },
-        { label: '??????', href: '/status' }
+        { label: 'Документация', href: '/docs' },
+        { label: 'Помощь', href: '/help' },
+        { label: 'Академия', href: '/academy' },
+        { label: 'Блог', href: '/blog' },
+        { label: 'Статус', href: '/status' }
       ]
     },
     {
-      title: '????????',
+      title: 'Компания',
       links: [
-        { label: 'Media', href: '/media' },
-        { label: 'Team', href: '/team' },
-        { label: 'Conversation', href: '/conversation' },
-        { label: 'TV', href: '/tv' }
+        { label: 'Медиа', href: '/media' },
+        { label: 'Команда', href: '/team' },
+        { label: 'Диалоги', href: '/conversation' },
+        { label: 'Видео', href: '/tv' }
       ]
     },
     {
-      title: '???????????',
+      title: 'Спецразделы',
       links: [
-        { label: 'Promo', href: '/promo' },
+        { label: 'Промо', href: '/promo' },
         { label: 'Prozorro', href: '/prozorro' },
-        { label: '?????????', href: '/compare' },
-        { label: '????? ?????', href: '/site-map' }
+        { label: 'Сравнения', href: '/compare' },
+        { label: 'Карта сайта', href: '/site-map' }
       ]
     }
   ],
@@ -1471,19 +1471,19 @@ const landingPages = [
   }),
   makeLandingPage({
     slug: 'academy',
-    metaTitle: 'Academy Chat Plus',
-    metaDescription: 'Образовательный раздел на единой CMS-структуре.',
-    h1: 'Academy Chat Plus',
-    subtitle: 'Даже вспомогательные разделы можно держать в единой управляемой модели.',
-    problemContext: 'Контентные разделы часто превращаются в набор разрозненных шаблонов.',
-    solutionContext: 'Единый шаблон даёт базовую предсказуемость даже для обучающих страниц.',
-    featureContext: 'Потом сюда можно добавить отдельные модели статей и материалов.',
-    integrationContext: 'На этом этапе задача — стабилизировать каркас раздела.',
-    roiContext: 'Лучше иметь единый работающий контур, чем поддерживать исключения.',
-    useCaseContext: 'Academy может стать хабом для методичек, гайдов и материалов по продукту.',
+    metaTitle: 'Академия Chat Plus',
+    metaDescription: 'Гайды, разборы и рабочие материалы для команд, которые внедряют Chat Plus и запускают омниканальные сценарии без хаоса.',
+    h1: 'Академия Chat Plus',
+    subtitle: 'Практический раздел для onboarding, обучения команды и запуска первых сценариев без лишней ручной расшифровки.',
+    problemContext: 'Обучающие разделы быстро теряют ценность, когда превращаются в архив заметок без маршрута и связи с продуктом.',
+    solutionContext: 'Академия Chat Plus помогает быстрее переводить знания в рабочие действия: от понимания логики платформы до запуска конкретного сценария.',
+    featureContext: 'Гайды, разборы, методички и материалы, которые удобно использовать и внутри команды, и в клиентском показе.',
+    integrationContext: 'Раздел связывает знания с docs, демо и соседними сценариями, а не живет отдельным информационным островом.',
+    roiContext: 'Сильная академия сокращает время на onboarding и делает запуск Chat Plus для команды намного предсказуемее.',
+    useCaseContext: 'Подходит для onboarding, presale, клиентских презентаций и быстрого погружения новых специалистов в продукт.',
     internalLinks: [
-      { label: 'Docs', href: '/docs', description: 'Техническая документация' },
-      { label: 'Blog', href: '/blog', description: 'Статьи и кейсы' }
+      { label: 'Документация', href: '/docs', description: 'Технический слой по API, интеграциям и архитектуре.' },
+      { label: 'Блог', href: '/blog', description: 'Кейсы, заметки и практические материалы по автоматизации.' }
     ]
   }),
   makeLandingPage({
@@ -1499,59 +1499,59 @@ const landingPages = [
     roiContext: 'Читатели блога внедряют решения быстрее — они уже знают что работает.',
     useCaseContext: 'Подходит для маркетологов, владельцев бизнеса и руководителей отделов продаж.',
     internalLinks: [
-      { label: 'Academy', href: '/academy', description: 'Обучающие материалы и видеокурсы' },
+      { label: 'Академия', href: '/academy', description: 'Обучающие материалы и видеокурсы' },
       { label: 'Документация', href: '/docs', description: 'Техническая документация' }
     ]
   }),
   makeLandingPage({
     slug: 'docs',
     metaTitle: 'Документация Chat Plus',
-    metaDescription: 'Раздел документации на новой CMS-архитектуре.',
+    metaDescription: 'API, интеграции, ограничения и технические материалы, которые помогают быстрее запускать Chat Plus в реальном проекте.',
     h1: 'Документация Chat Plus',
-    subtitle: 'Документация сейчас заведена в единую структуру и позже может быть вынесена в отдельную модель.',
-    problemContext: 'Технические разделы тоже должны быть управляемыми и не ломать сборку.',
-    solutionContext: 'Единый structured page сейчас закрывает маршрут и интеграцию со Strapi.',
-    featureContext: 'Дальше сюда можно добавить навигацию, статьи и API-reference.',
-    integrationContext: 'Каркас уже совместим с дальнейшим разделением на nested content types.',
-    roiContext: 'Главное — убрать ручную статическую разрозненность.',
-    useCaseContext: 'Документация нужна как для клиентов, так и для внутренних команд.',
+    subtitle: 'Единый технический слой по API, интеграциям и ограничениям платформы, который помогает быстрее перейти от интереса к рабочему запуску.',
+    problemContext: 'Техническая документация не должна выглядеть как случайный набор статей без маршрута, контекста и понятного перехода дальше.',
+    solutionContext: 'Документация Chat Plus помогает быстро найти технический ответ и связывает его с реальным сценарием внедрения.',
+    featureContext: 'Материалы по API, интеграциям, ограничениям, логике платформы и следующему шагу для команды внедрения.',
+    integrationContext: 'Раздел связан со справкой, демо и продуктовыми страницами, поэтому не выпадает из общей логики сайта.',
+    roiContext: 'Чем понятнее технический слой, тем меньше ручных объяснений и тем быстрее команда переходит к рабочему пилоту.',
+    useCaseContext: 'Документация нужна клиентским техлидам, интеграторам, presale и внутренним командам запуска.',
     internalLinks: [
-      { label: 'Help', href: '/help', description: 'Справочный раздел' },
-      { label: 'Status', href: '/status', description: 'Состояние системы' }
+      { label: 'Помощь', href: '/help', description: 'Справочный маршрут для быстрых ответов на частые вопросы.' },
+      { label: 'Статус', href: '/status', description: 'Прозрачная картина по доступности сервисов и изменениям.' }
     ]
   }),
   makeLandingPage({
     slug: 'help',
     metaTitle: 'Справка Chat Plus',
-    metaDescription: 'Справочный раздел на новой архитектуре сайта.',
+    metaDescription: 'Справочный слой Chat Plus для onboarding, частых вопросов и понятной навигации по следующему шагу.',
     h1: 'Справка Chat Plus',
-    subtitle: 'Help-страница заведена как обычная CMS-страница без special-case логики.',
-    problemContext: 'Справочные страницы часто расползаются по коду и перестают быть управляемыми.',
-    solutionContext: 'Единый шаблон даёт работающий маршрут уже сейчас.',
-    featureContext: 'FAQ, перелинковка и CTA управляются из Strapi.',
-    integrationContext: 'Потом раздел можно разложить на отдельные help-статьи и категории.',
-    roiContext: 'Это позволяет сначала стабилизировать платформу, а потом детализировать контент.',
-    useCaseContext: 'Справка покрывает onboarding, ответы на вопросы и навигацию по продукту.',
+    subtitle: 'Понятный справочный слой, который помогает быстро снять вопрос, не потерять контекст и перейти к следующему осмысленному шагу.',
+    problemContext: 'Справочные страницы быстро теряют ценность, если расползаются по коду, звучат сухо и не ведут пользователя дальше.',
+    solutionContext: 'Справка Chat Plus работает как быстрый маршрут: закрывает типовой вопрос и сразу предлагает логичное продолжение.',
+    featureContext: 'FAQ, перелинковка, связка с docs и CTA позволяют использовать страницу и как help-слой, и как presale-ресурс.',
+    integrationContext: 'Раздел не живет отдельно: он связан с документацией, демо и соседними сценариями сайта.',
+    roiContext: 'Хорошая справка снижает количество ручных объяснений и ускоряет переход от вопроса к действию.',
+    useCaseContext: 'Подходит для onboarding, клиентской поддержки, presale и навигации по продукту после первого интереса.',
     internalLinks: [
-      { label: 'Docs', href: '/docs', description: 'Техническая документация' },
-      { label: 'Demo', href: '/demo', description: 'Связаться с командой' }
+      { label: 'Документация', href: '/docs', description: 'Технический слой по API, интеграциям и архитектуре.' },
+      { label: 'Демо', href: '/demo', description: 'Связаться с командой и разобрать ваш сценарий.' }
     ]
   }),
   makeLandingPage({
     slug: 'status',
     metaTitle: 'Статус Chat Plus',
-    metaDescription: 'Страница статуса системы на новой общей модели.',
+    metaDescription: 'Прозрачный служебный слой Chat Plus о доступности сервисов, изменениях и рабочем состоянии платформы.',
     h1: 'Статус Chat Plus',
-    subtitle: 'Даже status-страница сейчас живёт на общем шаблоне, чтобы не ломать архитектуру.',
-    problemContext: 'Служебные страницы тоже не должны выпадать из общего контура данных.',
-    solutionContext: 'Сейчас маршрут стабилен и управляется из Strapi, а потом можно подключить реальный status-feed.',
-    featureContext: 'FAQ и ссылки дают понятный переход к справке и поддержке.',
-    integrationContext: 'Следующим этапом сюда можно добавить API статусов и инцидентов.',
-    roiContext: 'Сначала единый рабочий контур, затем интеграция live-данных.',
-    useCaseContext: 'Страница статуса нужна для доверия, прозрачности и поддержки клиентов.',
+    subtitle: 'Служебная страница для прозрачной картины по доступности сервисов, изменениям и рабочему ритму команды.',
+    problemContext: 'Даже сильный продукт теряет доверие, если в момент инцидента или обновления пользователь не понимает, что происходит и где искать статус.',
+    solutionContext: 'Статус Chat Plus должен быстро показывать текущую картину по сервисам и не смешивать служебную коммуникацию с маркетинговыми сообщениями.',
+    featureContext: 'Раздел поддерживает доверие, снимает часть вопросов у клиентов и помогает быстрее сориентироваться команде.',
+    integrationContext: 'Статус связан со справкой, docs и support-маршрутом, поэтому остается частью общей логики продукта.',
+    roiContext: 'Чем прозрачнее служебный слой, тем спокойнее клиентский контур и тем меньше ручной нагрузки на команду поддержки.',
+    useCaseContext: 'Страница статуса нужна для доверия, прозрачности и быстрого объяснения текущего состояния платформы клиентам и партнерам.',
     internalLinks: [
-      { label: 'Help', href: '/help', description: 'Получить справку и инструкции' },
-      { label: 'Docs', href: '/docs', description: 'Технические материалы' }
+      { label: 'Помощь', href: '/help', description: 'Получить справку и инструкции по следующему шагу.' },
+      { label: 'Документация', href: '/docs', description: 'Технические материалы по API, интеграциям и ограничениям.' }
     ]
   })
 ];
@@ -1584,4 +1584,8 @@ main().catch(error => {
   console.error(error.message);
   process.exit(1);
 });
+
+
+
+
 

@@ -30,7 +30,7 @@ const page = Astro.props as Props;
 const toHref = (href?: string) => withBasePath(href);
 ---
 
-<Base title={page.metaTitle} description={page.metaDescription}>
+<Base title={page.metaTitle} description={page.metaDescription} hideGlobalStickyCta={Boolean(page.stickyTitle || page.stickyText)}>
   <section class="dir-hero">
     <div class="hero-dots"></div>
     <div class="hero-glow"></div>

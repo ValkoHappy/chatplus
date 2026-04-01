@@ -26,6 +26,10 @@ interface PageData {
   hero_cta_primary_url?: string;
   hero_cta_secondary_label?: string;
   hero_cta_secondary_url?: string;
+  hero_eyebrow?: string;
+  hero_variant?: 'resource' | 'company' | 'campaign';
+  hero_highlights_label?: string;
+  hero_highlights?: string[];
   hero_trust_facts?: string[];
   problem_title?: string;
   problem_intro?: string;
@@ -76,7 +80,7 @@ const faqSchema = page.faq_schema ? JSON.stringify(page.faq_schema) : '';
 const toHref = (href?: string) => withBasePath(href);
 ---
 
-<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical}>
+<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
   {page.hreflang_ru && <link slot="head" rel="alternate" hreflang="ru" href={page.hreflang_ru} />}
   {page.hreflang_uk && <link slot="head" rel="alternate" hreflang="uk" href={page.hreflang_uk} />}
   {page.hreflang_en && <link slot="head" rel="alternate" hreflang="en" href={page.hreflang_en} />}
@@ -86,7 +90,7 @@ const toHref = (href?: string) => withBasePath(href);
   <!-- HERO -->
   <section class="hero-section">
     <div class="hero-bg-dots"></div>
-    <div class="container hero-grid">
+    <div class:list={['container', 'hero-grid', page.hero_variant && `hero-grid--${page.hero_variant}`]}>
       <div class="hero-inner">
         {page.breadcrumbs && page.breadcrumbs.length > 0 && (
           <nav class="breadcrumbs reveal" aria-label="Хлебные крошки">
@@ -102,6 +106,7 @@ const toHref = (href?: string) => withBasePath(href);
             ))}
           </nav>
         )}
+        {page.hero_eyebrow && <span class="hero-eyebrow reveal">{page.hero_eyebrow}</span>}
         <h1 class="hero-h1 text-gradient reveal">{page.h1}</h1>
         {page.subtitle && <p class="hero-subtitle reveal delay-1">{page.subtitle}</p>}
         {(page.hero_cta_primary_label || page.hero_cta_secondary_label) && (
@@ -129,6 +134,19 @@ const toHref = (href?: string) => withBasePath(href);
       </div>
       <div class="hero-visual animate-float reveal delay-3">
         <ChatIllustration />
+        {page.hero_highlights && page.hero_highlights.length > 0 && (
+          <aside class="hero-highlight-card">
+            {page.hero_highlights_label && <span class="hero-highlight-label">{page.hero_highlights_label}</span>}
+            <ul class="hero-highlight-list">
+              {page.hero_highlights.map((item) => (
+                <li class="hero-highlight-item">
+                  <span class="hero-highlight-bullet"></span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
       </div>
     </div>
   </section>
@@ -148,7 +166,7 @@ const toHref = (href?: string) => withBasePath(href);
                 <div class="problem-num">{String(i + 1).padStart(2, '0')}</div>
                 <div class="problem-content">
                   <h3 class="card-title text-white">{item.title}</h3>
-                  <p class="card-text text-soft">{item.text}</p>
+                  {item.text && <p class="card-text text-soft">{item.text}</p>}
                 </div>
               </article>
             ))}
@@ -162,7 +180,7 @@ const toHref = (href?: string) => withBasePath(href);
   )}
 
   <!-- SOLUTION STEPS -->
-  {page.solution_title && (
+  {page.solution_title && page.solution_steps && page.solution_steps.length > 0 && (
     <section class="section section-tinted" id="solution">
       <div class="container steps-container">
         <div class="steps-left-sticky">
@@ -172,22 +190,20 @@ const toHref = (href?: string) => withBasePath(href);
           </div>
         </div>
         <div class="steps-right-scroll">
-          {page.solution_steps && page.solution_steps.length > 0 && (
-            <div class="steps-list">
-              {page.solution_steps.map((item, i) => (
-                <article class="step-item reveal">
-                  <div class="step-num-wrap">
-                    <div class="step-num">{i + 1}</div>
-                    {i < (page.solution_steps?.length ?? 0) - 1 && <div class="step-line"></div>}
-                  </div>
-                  <div class="step-body">
-                    <h3 class="step-title">{item.title}</h3>
-                    <p class="card-text">{item.text}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
+          <div class="steps-list">
+            {page.solution_steps.map((item, i) => (
+              <article class="step-item reveal">
+                <div class="step-num-wrap">
+                  <div class="step-num">{i + 1}</div>
+                  {i < (page.solution_steps?.length ?? 0) - 1 && <div class="step-line"></div>}
+                </div>
+                <div class="step-body">
+                  <h3 class="step-title">{item.title}</h3>
+                  <p class="card-text">{item.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -496,6 +512,19 @@ const toHref = (href?: string) => withBasePath(href);
     align-items: flex-start;
     gap: 1.5rem;
   }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: .35rem .8rem;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.16);
+    color: #c7d2fe;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
   .breadcrumbs {
     display: flex;
     align-items: center;
@@ -584,6 +613,52 @@ const toHref = (href?: string) => withBasePath(href);
     color: white;
     flex-shrink: 0;
     box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+  }
+  .hero-highlight-card {
+    position: absolute;
+    right: 0;
+    bottom: 4%;
+    width: min(280px, 78%);
+    display: grid;
+    gap: .9rem;
+    padding: 1.1rem 1.1rem 1rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.54));
+    box-shadow: 0 20px 46px rgba(15, 23, 42, 0.28);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .hero-highlight-label {
+    color: #c7d2fe;
+    font-size: .73rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .hero-highlight-list {
+    display: grid;
+    gap: .55rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .hero-highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    color: #e2e8f0;
+    font-size: .9rem;
+    line-height: 1.55;
+  }
+  .hero-highlight-bullet {
+    display: inline-flex;
+    width: 8px;
+    height: 8px;
+    margin-top: .45rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #818cf8, #a78bfa);
+    flex-shrink: 0;
   }
 
   /* ── PROBLEMS (DARK MODE) ── */
@@ -1189,6 +1264,7 @@ const toHref = (href?: string) => withBasePath(href);
   @media (max-width: 960px) {
     .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
     .hero-visual { justify-content: center; padding-right: 0; }
+    .hero-highlight-card { position: static; width: 100%; margin-top: 1rem; }
   }
   @media (max-width: 768px) {
     .hero-inner { align-items: stretch; }

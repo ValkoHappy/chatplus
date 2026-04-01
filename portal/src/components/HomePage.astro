@@ -70,7 +70,7 @@ const useCases = (page.use_cases || []).map((item) => ({
 const toHref = (href?: string) => withBasePath(href);
 ---
 
-<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical}>
+<Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
   {page.hreflang_ru && <link slot="head" rel="alternate" hreflang="ru" href={page.hreflang_ru} />}
   {page.hreflang_uk && <link slot="head" rel="alternate" hreflang="uk" href={page.hreflang_uk} />}
   {page.hreflang_en && <link slot="head" rel="alternate" hreflang="en" href={page.hreflang_en} />}

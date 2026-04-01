@@ -138,6 +138,74 @@ function compactDescription(text: string, limit = 72) {
   return `${firstSentence.slice(0, limit).trimEnd()}…`;
 }
 
+function normalizeKeywordSource(text: string) {
+  return text.toLowerCase().replace(/ё/g, 'е');
+}
+
+function describeCompetitorWeakness(title: string, competitorName: string) {
+  const normalized = normalizeKeywordSource(title);
+
+  if (/(дорог|цена|стоим|нацен|порог|оплат)/.test(normalized)) {
+    return `У ${competitorName} это ограничение напрямую бьет по стоимости владения и делает рост команды менее предсказуемым.`;
+  }
+
+  if (/(ai|агент|резолюц|автомат)/.test(normalized)) {
+    return `Из-за этого сложнее масштабировать автоматизацию без отдельных доплат, ручных компромиссов и потери скорости.`;
+  }
+
+  if (/(whatsapp|telegram|канал|омниканал)/.test(normalized)) {
+    return `В реальном процессе это ограничивает омниканальный контур и вынуждает собирать коммуникации из нескольких сервисов.`;
+  }
+
+  if (/(crm|интеграц|calendar|календар)/.test(normalized)) {
+    return 'Команде приходится дольше связывать данные и переносить контекст между внешними системами вручную.';
+  }
+
+  if (/(внедр|настрой|запуск|слож)/.test(normalized)) {
+    return 'Из-за этого запуск затягивается, а стоимость внедрения растет еще до первых измеримых результатов.';
+  }
+
+  if (/(white-label|агентств|партнер)/.test(normalized)) {
+    return 'Для агентств и интеграторов это усложняет упаковку сервиса под собственную модель продаж и сопровождения.';
+  }
+
+  return 'В рабочем процессе это создает лишние ограничения для команды, которой нужен быстрый запуск и понятная экономика.';
+}
+
+function describeChatPlusStrength(title: string) {
+  const normalized = normalizeKeywordSource(title);
+
+  if (/(дешев|цена|стоим|нацен|фиксир)/.test(normalized)) {
+    return 'Chat Plus закрывает этот сценарий в более предсказуемой модели без скрытых доплат и резкого роста счета.';
+  }
+
+  if (/(ai|агент|календар|автозапис)/.test(normalized)) {
+    return 'Команда получает готовую автоматизацию из коробки и быстрее доводит лид до следующего шага без ручных связок.';
+  }
+
+  if (/(whatsapp|telegram|канал|омниканал)/.test(normalized)) {
+    return 'Это позволяет держать каналы в одном контуре и не собирать стек из нескольких разрозненных инструментов.';
+  }
+
+  if (/(crm|интеграц|amo|bitrix|altegio|outlook|google)/.test(normalized)) {
+    return 'Данные и коммуникации остаются связанными, а запуск не упирается в кастомную разработку и ручные переносы.';
+  }
+
+  if (/(быстр|запуск|15 минут|внедр)/.test(normalized)) {
+    return 'За счет этого внедрение занимает меньше времени и быстрее превращается в рабочий сценарий для команды.';
+  }
+
+  if (/(поддерж|русск|снг|локаль)/.test(normalized)) {
+    return 'Это снижает операционные риски на старте и упрощает внедрение для локальной команды и партнеров.';
+  }
+
+  if (/(white-label|агентств|партнер)/.test(normalized)) {
+    return 'Партнер может упаковать готовый сценарий под своим брендом без лишней надстройки поверх продукта.';
+  }
+
+  return 'Это дает более практичную B2B-конфигурацию под быстрый запуск, омниканал и работу команды в одном контуре.';
+}
+
 export function getPageTemplate(settings: any, group: string, key: string) {
   const template = settings?.page_templates?.[group]?.[key];
 
@@ -523,19 +591,32 @@ export function adaptBusinessTypePage(bt: any, context: any) {
 
 export function adaptCompetitorPage(competitor: any, context: any, mode: 'compare' | 'vs') {
   const template = getPageTemplate(context.settings, 'details', mode);
+  const competitorName = competitor.name || 'конкурента';
+  const strengths = Array.isArray(competitor.our_strengths) ? competitor.our_strengths : [];
+  const weaknesses = Array.isArray(competitor.weaknesses) ? competitor.weaknesses : [];
 
   return {
     meta_title: competitor.seo_title || fill(template.meta_title, { name: competitor.name }),
     meta_description: competitor.seo_description || competitor.hero_description,
     h1: fill(template.h1, { name: competitor.name }),
+    hero_eyebrow: competitor.eyebrow || template.hero_eyebrow,
     subtitle: competitor.hero_description,
     hero_cta_primary_label: competitor.final_cta_label,
     hero_cta_primary_url: '/demo',
     problem_title: competitor.weaknesses_title || template.problem_title,
-    problems: (competitor.weaknesses || []).map((item: string) => ({ title: item, text: '' })),
+    problem_intro: `Слабые места ${competitorName} обычно проявляются, когда команде нужен быстрый запуск, прозрачная экономика и единый омниканальный процесс.`,
+    problems: weaknesses.map((item: string) => ({
+      title: item,
+      text: describeCompetitorWeakness(item, competitorName),
+    })),
     solution_title: competitor.strengths_title || template.solution_title,
-    features_title: template.features_title,
-    features: makeFeatureItems(competitor.our_strengths),
+    solution_intro: `Ниже — сильные стороны Chat Plus в тех сценариях, где важно быстро внедрить систему и не раздувать стоимость владения.`,
+    solution_steps: strengths.map((item: string, index: number) => ({
+      title: item || `Преимущество ${index + 1}`,
+      text: describeChatPlusStrength(item || ''),
+    })),
+    features_title: undefined,
+    features: [],
     comparison_title: competitor.pricing_title || template.comparison_title,
     comparison_rows: [
       {
@@ -551,6 +632,11 @@ export function adaptCompetitorPage(competitor: any, context: any, mode: 'compar
         chat_plus: template.model_chat_plus,
       },
     ],
+    breadcrumbs: makeBreadcrumbs([
+      { label: 'Главная', href: '/' },
+      { label: 'Сравнения', href: '/compare' },
+      { label: competitor.name },
+    ]),
     internal_links_title: template.internal_links_title,
     internal_links_variant: 'comparisons',
     internal_links_context: {

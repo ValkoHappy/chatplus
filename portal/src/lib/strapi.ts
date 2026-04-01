@@ -1,4 +1,5 @@
 import { inferLandingPageLinkSectionProps } from './link-sections';
+import { getLandingPageOverride } from './special-pages';
 
 const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://127.0.0.1:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
@@ -72,8 +73,9 @@ function enrich(items: any[]) {
 function normalizeLandingPage(data: any, slugHint?: string) {
   const slug = data.slug || slugHint || '';
   const inferredLinkSections = inferLandingPageLinkSectionProps(slug);
+  const override = getLandingPageOverride(slug) || {};
 
-  return {
+  const normalized = {
     ...data,
     hero_trust_facts: Array.isArray(data.hero_trust_facts) ? data.hero_trust_facts : [],
     target_keywords: Array.isArray(data.target_keywords) ? data.target_keywords : [],
@@ -139,6 +141,23 @@ function normalizeLandingPage(data: any, slugHint?: string) {
     },
     software_schema: data.software_schema || null,
     faq_schema: data.faq_schema || null,
+  };
+
+  return {
+    ...normalized,
+    ...override,
+    hero_trust_facts: Array.isArray(override.hero_trust_facts) ? override.hero_trust_facts : normalized.hero_trust_facts,
+    problems: Array.isArray(override.problems) ? override.problems : normalized.problems,
+    solution_steps: Array.isArray(override.solution_steps) ? override.solution_steps : normalized.solution_steps,
+    features: Array.isArray(override.features) ? override.features : normalized.features,
+    roi_without_items: Array.isArray(override.roi_without_items) ? override.roi_without_items : normalized.roi_without_items,
+    roi_with_items: Array.isArray(override.roi_with_items) ? override.roi_with_items : normalized.roi_with_items,
+    use_cases: Array.isArray(override.use_cases) ? override.use_cases : normalized.use_cases,
+    faqs: Array.isArray(override.faqs) ? override.faqs : normalized.faqs,
+    internal_links_context: {
+      ...(normalized.internal_links_context || {}),
+      ...(override as any).internal_links_context,
+    },
   };
 }
 

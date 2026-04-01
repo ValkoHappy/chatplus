@@ -1,4 +1,5 @@
 import { stripBasePath } from './urls';
+import { getSpecialPageLinkMeta } from './special-pages';
 
 export interface NavLink {
   label: string;
@@ -9,6 +10,15 @@ export interface NavLink {
 export interface NavColumn {
   title: string;
   links: NavLink[];
+}
+
+function specialLink(href: string, fallbackLabel: string, fallbackDescription: string): NavLink {
+  const meta = getSpecialPageLinkMeta(href.replace(/^\//, ''));
+  return {
+    label: meta?.label || fallbackLabel,
+    href,
+    description: meta?.description || fallbackDescription,
+  };
 }
 
 const HEADER_LINKS: NavLink[] = [
@@ -57,15 +67,15 @@ const FOOTER_COLUMNS: NavColumn[] = [
     links: [
       { label: 'Медиа', href: '/media', description: 'Медиа-материалы, презентации и публичные ресурсы.' },
       { label: 'Команда', href: '/team', description: 'Кто стоит за Chat Plus и как с нами связаться.' },
-      { label: 'Conversation', href: '/conversation', description: 'Отдельный продуктовый сценарий и витрина.' },
-      { label: 'TV', href: '/tv', description: 'Видео- и демонстрационный формат Chat Plus.' },
+      specialLink('/conversation', 'Диалоги', 'Подход Chat Plus к клиентским диалогам как к системе.'),
+      specialLink('/tv', 'Видео', 'Демо, разборы интерфейса и визуальный слой продукта.'),
     ],
   },
   {
     title: 'Спецразделы',
     links: [
-      { label: 'Promo', href: '/promo', description: 'Промо-страница для спецпредложений и кампаний.' },
-      { label: 'Prozorro', href: '/prozorro', description: 'Отдельный сценарий под государственные закупки.' },
+      specialLink('/promo', 'Промо', 'Офферы, упаковка и материалы для маркетинга и продаж.'),
+      specialLink('/prozorro', 'Prozorro', 'Сценарий мониторинга закупок и реакции команды в одном контуре.'),
       { label: 'Сравнения', href: '/compare', description: 'Сравнения Chat Plus с другими платформами.' },
       { label: 'Карта сайта', href: '/site-map', description: 'HTML-карта сайта по всем ключевым разделам.' },
     ],

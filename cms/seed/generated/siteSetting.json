@@ -7,36 +7,36 @@
   "organization_description": "Chat Plus объединяет каналы коммуникации, автоматизацию и AI-слои в единой платформе для бизнеса.",
   "header_links": [
     {
-      "label": "??????",
-      "href": "/channels"
+      "href": "/channels",
+      "label": "Каналы"
     },
     {
-      "label": "???????",
-      "href": "/industries"
+      "href": "/industries",
+      "label": "Отрасли"
     },
     {
-      "label": "??????????",
-      "href": "/integrations"
+      "href": "/integrations",
+      "label": "Интеграции"
     },
     {
-      "label": "???????",
-      "href": "/solutions"
+      "href": "/solutions",
+      "label": "Решения"
     },
     {
-      "label": "???????????",
-      "href": "/features"
+      "href": "/features",
+      "label": "Возможности"
     },
     {
-      "label": "??? ???????",
-      "href": "/for"
+      "href": "/for",
+      "label": "Для бизнеса"
     },
     {
-      "label": "????",
-      "href": "/pricing"
+      "href": "/pricing",
+      "label": "Цены"
     },
     {
-      "label": "?????????",
-      "href": "/partnership"
+      "href": "/partnership",
+      "label": "Партнёрам"
     }
   ],
   "header_cta_label": "Попробовать",
@@ -44,117 +44,117 @@
   "footer_tagline": "Мы продаём не чаты — мы продаём то, что чаты делают возможным.",
   "footer_columns": [
     {
-      "title": "???????",
       "links": [
         {
-          "label": "????",
-          "href": "/pricing"
+          "href": "/pricing",
+          "label": "Цены"
         },
         {
-          "label": "Demo",
-          "href": "/demo"
+          "href": "/demo",
+          "label": "Демо"
         },
         {
-          "label": "?????????",
-          "href": "/partnership"
+          "href": "/partnership",
+          "label": "Партнёрам"
         },
         {
-          "label": "??? ???????",
-          "href": "/for"
+          "href": "/for",
+          "label": "Для бизнеса"
         }
-      ]
+      ],
+      "title": "Продукт"
     },
     {
-      "title": "????????",
       "links": [
         {
-          "label": "??????",
-          "href": "/channels"
+          "href": "/channels",
+          "label": "Каналы"
         },
         {
-          "label": "???????",
-          "href": "/industries"
+          "href": "/industries",
+          "label": "Отрасли"
         },
         {
-          "label": "??????????",
-          "href": "/integrations"
+          "href": "/integrations",
+          "label": "Интеграции"
         },
         {
-          "label": "???????",
-          "href": "/solutions"
+          "href": "/solutions",
+          "label": "Решения"
         },
         {
-          "label": "???????????",
-          "href": "/features"
+          "href": "/features",
+          "label": "Возможности"
         }
-      ]
+      ],
+      "title": "Каталоги"
     },
     {
-      "title": "???????",
       "links": [
         {
-          "label": "Docs",
-          "href": "/docs"
+          "href": "/docs",
+          "label": "Документация"
         },
         {
-          "label": "Help",
-          "href": "/help"
+          "href": "/help",
+          "label": "Помощь"
         },
         {
-          "label": "Academy",
-          "href": "/academy"
+          "href": "/academy",
+          "label": "Академия"
         },
         {
-          "label": "????",
-          "href": "/blog"
+          "href": "/blog",
+          "label": "Блог"
         },
         {
-          "label": "??????",
-          "href": "/status"
+          "href": "/status",
+          "label": "Статус"
         }
-      ]
+      ],
+      "title": "Ресурсы"
     },
     {
-      "title": "????????",
       "links": [
         {
-          "label": "Media",
-          "href": "/media"
+          "href": "/media",
+          "label": "Медиа"
         },
         {
-          "label": "Team",
-          "href": "/team"
+          "href": "/team",
+          "label": "Команда"
         },
         {
-          "label": "Conversation",
-          "href": "/conversation"
+          "href": "/conversation",
+          "label": "Диалоги"
         },
         {
-          "label": "TV",
-          "href": "/tv"
+          "href": "/tv",
+          "label": "Видео"
         }
-      ]
+      ],
+      "title": "Компания"
     },
     {
-      "title": "???????????",
       "links": [
         {
-          "label": "Promo",
-          "href": "/promo"
+          "href": "/promo",
+          "label": "Промо"
         },
         {
-          "label": "Prozorro",
-          "href": "/prozorro"
+          "href": "/prozorro",
+          "label": "Prozorro"
         },
         {
-          "label": "?????????",
-          "href": "/compare"
+          "href": "/compare",
+          "label": "Сравнения"
         },
         {
-          "label": "????? ?????",
-          "href": "/site-map"
+          "href": "/site-map",
+          "label": "Карта сайта"
         }
-      ]
+      ],
+      "title": "Спецразделы"
     }
   ],
   "footer_copyright": "© 2026 Chat Plus. Все права защищены.",
@@ -291,7 +291,7 @@
         "roi_title": "Результат после подключения {name}",
         "roi_intro": "Эти блоки дальше можно заменить на финальные коммерческие цифры через Strapi.",
         "faq_title": "Частые вопросы",
-        "internal_links_title": "Смежные страницы",
+        "internal_links_title": "Что еще посмотреть",
         "pricing_label": "Цены Chat Plus",
         "pricing_description": "Посмотреть общую коммерческую модель",
         "sticky_cta_title": "Подключите {name} через Chat Plus",
@@ -309,7 +309,7 @@
         "features_title": "Что можно автоматизировать",
         "integrations_title": "С какими каналами и системами это работает",
         "use_cases_title": "Сценарии применения в {name}",
-        "internal_links_title": "Смежные страницы",
+        "internal_links_title": "Что еще посмотреть",
         "sticky_cta_title": "Запустите Chat Plus в вашем {name}-бизнесе",
         "sticky_cta_text": "Запустите пилот под сегмент {name} и проверьте результат на реальных обращениях.",
         "sticky_cta_primary_label": "Записаться на демо"
@@ -323,14 +323,14 @@
         "solution_intro": "Chat Plus синхронизирует все каналы коммуникации с {name} — история переписки, статусы и контакты обновляются автоматически.",
         "features_title": "Что входит в интеграцию",
         "use_cases_title": "Где это применяется",
-        "internal_links_title": "Смежные страницы",
+        "internal_links_title": "Что еще посмотреть",
         "sticky_cta_title": "Подключите {name} к Chat Plus",
         "sticky_cta_text": "Подключите {name} к Chat Plus без потери данных и привычного рабочего процесса.",
         "sticky_cta_primary_label": "Записаться на демо"
       },
       "features": {
         "meta_title": "{name} в Chat Plus — возможности и настройка",
-        "h1": "{name} РІ Chat Plus",
+        "h1": "{name} Р Р† Chat Plus",
         "problem_title": "Зачем нужен модуль {name}",
         "problem_intro": "Без централизованного управления {name} превращается в точечный инструмент, который не интегрируется с остальным процессом.",
         "solution_title": "Как работает {name} в Chat Plus",
@@ -338,7 +338,7 @@
         "features_title": "Что включает модуль",
         "integrations_title": "С какими сервисами работает {name}",
         "use_cases_title": "Где {name} приносит результат",
-        "internal_links_title": "Смежные страницы",
+        "internal_links_title": "Что еще посмотреть",
         "docs_label": "Документация",
         "docs_description": "Технические материалы и следующая детализация",
         "sticky_cta_title": "Подключите {name} в вашем процессе",
@@ -355,7 +355,7 @@
         "features_title": "Что входит в решение",
         "integrations_title": "Что можно подключить",
         "use_cases_title": "Для кого это подходит",
-        "internal_links_title": "Смежные страницы",
+        "internal_links_title": "Что еще посмотреть",
         "sticky_cta_title": "Запустите сценарий {name}",
         "sticky_cta_text": "Запустите сценарий {name} и проверьте ROI на реальных задачах вашей команды.",
         "sticky_cta_primary_label": "Записаться на демо"
@@ -404,7 +404,7 @@
         "solution_title": "Как Chat Plus настраивает {channel} для {industry}",
         "features_title": "Что входит в готовый сценарий",
         "integrations_title": "Связанные интеграции",
-        "internal_links_title": "Смежные страницы",
+        "internal_links_title": "Что еще посмотреть",
         "sticky_cta_title": "Запустите {channel} для {industry}",
         "sticky_cta_text": "Готовый сценарий {channel} для {industry} запускается за 30 минут без участия разработчика.",
         "sticky_cta_primary_label": "Записаться на демо"
