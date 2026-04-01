@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { Icon } from 'astro-icon/components';
 import InternalLinksSection from './InternalLinksSection.astro';
+import FaqSection from './FaqSection.astro';
 import type { InternalLinksContext, InternalLinksVariant } from '../lib/link-sections';
 import { withBasePath } from '../lib/urls';
 
@@ -303,23 +304,7 @@ const toHref = (href?: string) => withBasePath(href);
     </section>
   )}
 
-  {page.faq_title && page.faqs && page.faqs.length > 0 && (
-    <section class="section">
-      <div class="container faq-container">
-        <div class="section-header">
-          <h2>{page.faq_title}</h2>
-        </div>
-        <div class="faq-list">
-          {page.faqs.map((item) => (
-            <details class="faq-item">
-              <summary>{item.question}</summary>
-              <p>{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
+  <FaqSection title={page.faq_title} faqs={page.faqs} />
 
   <InternalLinksSection page={page} />
 
