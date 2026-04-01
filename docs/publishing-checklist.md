@@ -43,7 +43,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 - нет лишних временных файлов в коммите
 - закоммичены нужные изменения
-- `pages-preview/` попал в коммит, если обновлялся demo
+- `pages-preview/` попал в commit, если обновлялся demo
 
 ## 6. После push
 

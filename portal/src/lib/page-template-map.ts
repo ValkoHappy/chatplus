@@ -53,7 +53,7 @@ export const PAGE_TEMPLATE_MAP: PageTemplateMapping[] = [
   {
     template: 'partnership',
     routes: ['/partnership'],
-    purpose: 'Партнёрская программа и resell/agency слой.',
+    purpose: 'Партнерская программа и resell/agency слой.',
   },
   {
     template: 'tenders',

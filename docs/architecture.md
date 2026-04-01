@@ -4,8 +4,8 @@
 
 Проект состоит из трех рабочих слоев:
 
-1. `cms/` — `Strapi`, где хранится контент
-2. `portal/` — `Astro`, где живут шаблоны, стили и рендер
+1. `cms/` — Strapi, где хранится контент
+2. `portal/` — Astro, где живут шаблоны, стили и рендер
 3. `scripts/` + `cms/seed/` — генерационный слой для programmatic-контента
 
 Текущий публичный demo-контур:
@@ -35,7 +35,7 @@ CHATPLUS/
 portal/src/
 |- components/   # шаблоны страниц и shared sections
 |- layouts/      # глобальный shell
-|- lib/          # fetchers, adapters, registry, navigation, helper logic
+|- lib/          # fetchers, adapters, registry, navigation, helpers
 |- pages/        # Astro routes
 `- styles/       # глобальные стили и design tokens
 ```
@@ -62,7 +62,7 @@ portal/src/
 
 Главный operational script:
 
-- `scripts/seed-runtime-content.mjs`
+- [scripts/seed-runtime-content.mjs](../scripts/seed-runtime-content.mjs)
 
 ## 3. Архитектура фронтенда
 
@@ -74,10 +74,10 @@ portal/src/
 
 Он отвечает за:
 
-- `<head>` и мета
+- `<head>` и мета-теги
 - header
 - desktop navigation
-- mobile navigation / burger
+- burger/mobile navigation
 - footer
 - sticky CTA
 - легкий client-side UI behavior
@@ -91,7 +91,7 @@ portal/src/
 Он отвечает за:
 
 - запросы к Strapi
-- нормализацию массивов и nullable полей
+- нормализацию массивов и nullable-полей
 - нормализацию `template_kind`
 - нормализацию `content_origin`
 - нормализацию FAQ, compare rows, section labels, proof facts и похожих structured blocks
@@ -102,9 +102,9 @@ Route-to-template registry:
 
 - [page-template-map.ts](../portal/src/lib/page-template-map.ts)
 
-Это источник правды для того, какой шаблон должен обслуживать какой тип маршрута.
+Это источник правды для того, какой шаблон обслуживает какой тип маршрута.
 
-## 4. Шаблонная система
+## 4. Активная шаблонная система
 
 В проекте 10 активных шаблонов:
 
@@ -179,7 +179,7 @@ Route-to-template registry:
 - campaign pages
 - pricing
 - partnership
-- другие singleton pages, если они переведены в managed режим
+- другие singleton pages, если они переведены в managed-режим
 
 ### Ownership flags
 
@@ -195,13 +195,8 @@ Route-to-template registry:
 
 Смысл:
 
-- `generated` может безопасно обновляться генератором
-- `managed` не должен перезаписываться генератором после bootstrap-этапа
-
-Подробно:
-
-- [cms-model.md](cms-model.md)
-- [content-workflow.md](content-workflow.md)
+- `generated` можно безопасно обновлять генератором
+- `managed` нельзя перезаписывать генератором после bootstrap-этапа
 
 ## 7. Маршрутный слой
 

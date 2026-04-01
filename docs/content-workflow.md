@@ -89,7 +89,7 @@
 
 - страница managed
 - правка точечная и относится к одной singleton page
-- контентом должен управлять редактор/маркетолог
+- контентом должен управлять редактор или маркетолог
 
 ### Править frontend, если:
 
@@ -108,7 +108,6 @@ Operational entry point:
 Он отвечает за:
 
 - чтение source seeds
-- использование generated snapshots при их наличии
 - materialization данных для Strapi
 - validation content contracts
 - upsert/import в Strapi
@@ -158,7 +157,7 @@ Operational entry point:
 
 Дополнительная важная логика:
 
-- когда появляются новые source-owned template fields, импорт может безопасно дозаполнить их в существующие managed-записи без полного overwrite
+- когда появляются новые source-owned template fields, импорт может безопасно дозаполнить ими существующие managed-записи без полного overwrite
 
 ## 7. Минимальные правила валидации
 
@@ -179,7 +178,7 @@ Operational entry point:
 npm.cmd run seed-content
 ```
 
-3. Проверить, что запись появилась/обновилась в Strapi.
+3. Проверить, что запись появилась или обновилась в Strapi.
 4. Собрать фронтенд:
 
 ```powershell
@@ -194,7 +193,7 @@ npm.cmd --prefix portal run build
 2. Выставить:
    - `template_kind`
    - `content_origin = managed`
-3. Заполнить hero, section labels, FAQ, CTA, metadata.
+3. Заполнить hero, section labels, FAQ, CTA и metadata.
 4. Проверить, что slug реально поддерживается route/template mapping.
 5. Прогнать build.
 6. Проверить страницу локально.

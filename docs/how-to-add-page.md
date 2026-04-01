@@ -1,9 +1,10 @@
 # Как добавить страницу
 
-Этот документ разделяет два сценария:
+Этот документ разделяет три сценария:
 
 - добавить новую generated page
 - добавить новую managed singleton page
+- добавить новый template kind
 
 ## Сценарий 1. Новая generated page
 
@@ -50,7 +51,7 @@ npm.cmd --prefix portal run build
    - `template_kind`
    - `content_origin = managed`
 3. Заполнить контент.
-4. Убедиться, что frontend знает, какой шаблон рендерить для такого slug/template.
+4. Убедиться, что frontend знает, какой шаблон рендерить для такого slug и template.
 5. Собрать frontend:
 
 ```powershell
@@ -59,7 +60,7 @@ npm.cmd --prefix portal run build
 
 6. Проверить страницу локально.
 
-## Сценарий 3. Новый template kind
+## Сценарий 3. Новый `template_kind`
 
 Это уже инженерная задача.
 
@@ -71,3 +72,10 @@ npm.cmd --prefix portal run build
 4. Обновить route-template mapping.
 5. Обновить документацию.
 6. Только потом внедрять шаблон.
+
+## Что проверить после добавления страницы
+
+- страница открывается локально
+- прошел `npm.cmd --prefix portal run build`
+- новый маршрут соответствует ownership-модели
+- страница не нарушает `generated` / `managed` contract

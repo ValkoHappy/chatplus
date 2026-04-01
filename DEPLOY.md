@@ -2,11 +2,13 @@
 
 ## 1. Текущий режим: demo-mode
 
-Сейчас проект публикуется не из hosted Strapi, а через локальный снапшот:
+Сейчас проект публикуется не из hosted Strapi, а через локальный snapshot:
 
 `local Strapi -> Astro build -> pages-preview -> GitHub Pages`
 
-## 2. Что именно делает оператор перед публикацией
+Это рабочий demo-контур, а не полноценный production DevOps.
+
+## 2. Что делает оператор перед публикацией
 
 ### Шаг 1. Запустить локальный Strapi
 
@@ -28,7 +30,7 @@ npm.cmd run seed-content
 npm.cmd --prefix portal run snapshot:github-demo
 ```
 
-### Шаг 4. Commit + push
+### Шаг 4. Commit и push
 
 Если `git` не в `PATH`, можно использовать:
 
@@ -72,7 +74,7 @@ npm.cmd --prefix portal run build
 
 ## 5. Кто владеет чем
 
-### Контентщик / оператор
+### Контентщик или оператор
 
 - Strapi content
 - запуск `seed-content`
@@ -84,16 +86,16 @@ npm.cmd --prefix portal run build
 - layout
 - стили
 - адаптив
-- adapters/normalization
+- adapters и normalization
 
-### DevOps / техлид
+### DevOps или техлид
 
-- секреты
+- secrets
 - GitHub Actions
 - будущий production deploy
 - внешний Strapi, когда он появится
 
-## 6. Demo-mode и production-mode — это разные контуры
+## 6. Demo-mode и production-mode — разные контуры
 
 ### Сейчас: demo-mode
 
@@ -113,7 +115,17 @@ npm.cmd --prefix portal run build
 - `localhost`
 - `127.0.0.1`
 
-## 7. Troubleshooting
+## 7. Что нужно для production-mode
+
+Следующий этап, если проект переводится в полноценную эксплуатацию:
+
+- поднять внешний Strapi
+- завести секреты `STRAPI_URL` и `STRAPI_TOKEN`
+- настроить CI/CD build from live CMS
+- настроить бэкапы Strapi
+- определить роли и права доступа
+
+## 8. Troubleshooting
 
 ### Demo не обновился
 
@@ -140,3 +152,11 @@ npm.cmd --prefix portal run build
 2. запускался ли `seed-content`
 3. появилась ли запись в Strapi
 4. поддерживает ли frontend нужный route
+
+### В Telegram не обновилось превью
+
+Проверить:
+
+1. live HTML уже отдает новый `og:image`
+2. сам `og-image` доступен по URL
+3. если сайт уже обновился, почистить кэш Telegram через `@WebpageBot`

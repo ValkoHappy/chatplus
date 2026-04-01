@@ -4,26 +4,26 @@
 
 ## Что это
 
-`CHATPLUS` — это публичный сайт на `Astro` и CMS на `Strapi`, связанные через CMS-first контур:
+`CHATPLUS` — это публичный сайт на `Astro` и контентный слой на `Strapi`.
 
-- `portal/` — публичный фронтенд
-- `cms/` — Strapi с контентом
-- `scripts/` — генерация и импорт programmatic-контента
-- `pages-preview/` — статический снапшот для GitHub Pages demo
+Проект состоит из четырех основных частей:
 
-Проект сочетает:
+- `portal/` — фронтенд, шаблоны, стили, маршруты, сборка
+- `cms/` — Strapi, content types, админка и CMS-данные
+- `scripts/` — генерация и импорт generator-owned контента
+- `pages-preview/` — статический snapshot для GitHub Pages demo
 
-- singleton-страницы верхнего уровня
-- каталоги и detail-страницы
-- programmatic SEO-маршруты
-- compare/vs страницы
-- resource-hub страницы
-- brand/content страницы
-- campaign страницы
+Контентная модель гибридная:
+
+- `generated`-страницы создаются через `cms/seed/*.json -> scripts/seed-runtime-content.mjs -> Strapi`
+- `managed`-страницы редактируются напрямую в Strapi
+- фронтенд отвечает за верстку, адаптив, шаблоны и render-логику
 
 ## С чего читать
 
-Если вы инженер или агентная модель:
+### Если вы инженер или следующая нейронка
+
+Читайте в таком порядке:
 
 1. [Главная карта документации](docs/index.md)
 2. [Архитектура](docs/architecture.md)
@@ -31,19 +31,21 @@
 4. [Контентный workflow](docs/content-workflow.md)
 5. [Контракты шаблонов](docs/template-contracts.md)
 6. [Контракт безопасных изменений](docs/change-safety.md)
-7. [Деплой](DEPLOY.md)
+7. [Деплой и публикация](DEPLOY.md)
 
-Если вы оператор/контент-менеджер:
+### Если вы оператор, контент-менеджер или владелец проекта
+
+Читайте в таком порядке:
 
 1. [Главная карта документации](docs/index.md)
 2. [Гайд оператора](docs/operator-guide.md)
 3. [Как добавить страницу](docs/how-to-add-page.md)
 4. [Чеклист публикации](docs/publishing-checklist.md)
-5. [Деплой](DEPLOY.md)
+5. [Деплой и публикация](DEPLOY.md)
 
 ## Быстрый запуск
 
-Из корня репозитория:
+Из корня репозитория.
 
 ### Strapi
 
@@ -65,21 +67,21 @@ npm.cmd --prefix portal run dev -- --host 127.0.0.1
 http://127.0.0.1:4321/
 ```
 
-## Быстрые команды
+## Основные команды
 
-### Полная проверка фронтенда
-
-```powershell
-npm.cmd --prefix portal run build
-```
-
-### Обновить generator-owned контент в Strapi
+### Обновить generator-owned контент
 
 ```powershell
 npm.cmd run seed-content
 ```
 
-### Собрать demo snapshot для GitHub Pages
+### Полная сборка с QA
+
+```powershell
+npm.cmd --prefix portal run build
+```
+
+### Собрать snapshot для GitHub Pages demo
 
 ```powershell
 npm.cmd --prefix portal run snapshot:github-demo
@@ -87,16 +89,17 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 ## Главные правила проекта
 
-- `generated`-страницы не создают вручную в Strapi.
-- `managed`-страницы редактируют в Strapi и не должны затираться генератором.
-- Пользовательский текст должен жить в Strapi/seeds, а не размазываться по шаблонам.
-- Перед публикацией обязательно должен проходить `npm.cmd --prefix portal run build`.
+- Не создавайте `generated`-страницы вручную в Strapi.
+- Не меняйте `content_origin`, если не понимаете ownership-последствия.
+- Не хардкодьте новый пользовательский текст в шаблон, если блок должен редактироваться через CMS.
+- Любой новый CMS-owned блок требует обновления схемы, адаптеров и документации.
+- Перед публикацией всегда должен проходить `npm.cmd --prefix portal run build`.
 
-## Где истина
+## Где источник истины
 
-- Для programmatic family: `cms/seed/*.json` + генератор/import pipeline
+- Для programmatic family: `cms/seed/*.json` и `scripts/seed-runtime-content.mjs`
 - Для managed singleton pages: Strapi admin
-- Для шаблонов, стилей, адаптивного поведения и render-логики: Astro frontend
+- Для шаблонов, стилей, адаптива, shared UI behavior: `portal/`
 
 ## Активные шаблоны
 
@@ -113,13 +116,15 @@ npm.cmd --prefix portal run snapshot:github-demo
 - `comparison`
 - `campaign`
 
-Подробно:
+Подробнее:
 
 - [Контракты шаблонов](docs/template-contracts.md)
 - [Route-to-template registry](portal/src/lib/page-template-map.ts)
 
-## Legacy-документы
+## Важные ссылки
 
-В корне есть старые документы и handoff-артефакты. Они не являются главным operational-источником, пока это явно не указано в самом файле. Основной документационный пакет теперь живет в:
-
-- [docs/index.md](docs/index.md)
+- [Главная карта документации](docs/index.md)
+- [Гайд оператора](docs/operator-guide.md)
+- [Контракты шаблонов](docs/template-contracts.md)
+- [Контракт безопасных изменений](docs/change-safety.md)
+- [Деплой](DEPLOY.md)

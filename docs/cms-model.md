@@ -5,7 +5,7 @@
 CMS-модель нужна для того, чтобы:
 
 - контент редактировался в предсказуемом месте
-- generator-owned и managed-контент не конфликтовали
+- `generated` и `managed`-контент не конфликтовали
 - frontend не становился вторым источником истины
 - новые страницы можно было добавлять без ручной путаницы
 
@@ -35,8 +35,8 @@ Frontend владеет только:
 - resource pages
 - brand/content pages
 - campaign pages
-- часть специальных singleton pages
-- часть generated landing pages
+- части специальных singleton pages
+- части generated landing pages
 
 Ключевые поля:
 
@@ -147,7 +147,7 @@ Frontend владеет только:
 В Strapi должны жить:
 
 - hero text
-- eyebrow / labels
+- eyebrow и labels
 - section titles и intros
 - CTA text
 - FAQ title и items
@@ -162,7 +162,7 @@ Frontend владеет только:
 - отступы
 - тени
 - визуальные токены
-- микроварианты UI, которые относятся к верстке, а не к контенту
+- микро-варианты UI, которые относятся к верстке, а не к контенту
 
 ## 7. Что считается frontend-owned
 
@@ -180,7 +180,7 @@ Frontend владеет только:
 
 ## 8. Правила импорта
 
-Текущая operational логика импорта живет в:
+Текущая operational-логика импорта живет в:
 
 - [seed-runtime-content.mjs](../scripts/seed-runtime-content.mjs)
 
@@ -197,7 +197,7 @@ Frontend владеет только:
 
 Schema расширяется только если:
 
-- появился новый CMS-owned block
+- появился новый CMS-owned блок
 - появился новый `template_kind`
 - существующему шаблону нужны новые редактируемые поля
 - новый data contract нельзя выразить через уже существующие поля

@@ -1,43 +1,44 @@
-# Astro Starter Kit: Minimal
+# Portal
 
-```sh
-npm create astro@latest -- --template minimal
+Это фронтенд CHATPLUS на `Astro`.
+
+Основная документация по проекту находится не здесь, а в корне репозитория:
+
+- [Главный README](../README.md)
+- [Карта документации](../docs/index.md)
+
+## Что лежит в `portal/`
+
+- `src/components/` — шаблоны страниц и shared sections
+- `src/layouts/` — глобальный shell
+- `src/lib/` — загрузка данных, adapters, registry и helper-логика
+- `src/pages/` — Astro-маршруты
+- `src/styles/` — глобальные стили
+- `public/` — статические ассеты
+- `scripts/` — build/check/export-утилиты фронтенда
+
+## Команды
+
+Из папки `portal/`:
+
+```powershell
+npm.cmd run dev -- --host 127.0.0.1
+npm.cmd run build
+npm.cmd run snapshot:github-demo
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Из корня репозитория:
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```powershell
+npm.cmd --prefix portal run dev -- --host 127.0.0.1
+npm.cmd --prefix portal run build
+npm.cmd --prefix portal run snapshot:github-demo
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Важно
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Не используйте этот файл как главный источник истины по архитектуре проекта. Для этого есть:
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- [Архитектура](../docs/architecture.md)
+- [Контракты шаблонов](../docs/template-contracts.md)
+- [Контракт безопасных изменений](../docs/change-safety.md)

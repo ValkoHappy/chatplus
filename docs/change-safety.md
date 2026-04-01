@@ -4,13 +4,15 @@
 
 ## 1. Базовый принцип
 
-Нельзя менять систему “в одном месте”. В CHATPLUS почти любое изменение живет сразу в одном из трех слоев:
+Нельзя менять систему только в одном месте. В CHATPLUS почти любое изменение живет сразу в одном из трех слоев:
 
 - frontend
 - CMS schema/content
 - generator/import pipeline
 
-## 2. Что можно менять безопасно без schema changes
+Если вы меняете CMS-owned блок, почти наверняка придется затронуть не только шаблон, но и schema, adapter или импорт.
+
+## 2. Что можно менять без schema changes
 
 Можно менять без изменения Strapi schema и generator/import contract:
 
@@ -34,7 +36,7 @@
 Любая из этих правок требует обновления CMS/model layer:
 
 - новый `template_kind`
-- новый CMS-owned block
+- новый CMS-owned блок
 - новый тип hero/panel/proof structure
 - новый тип cards, которые редактор должен наполнять из Strapi
 - новый compare block contract
@@ -42,7 +44,7 @@
 ## 4. Что нельзя делать
 
 - Хардкодить user-facing copy в шаблон, если блок уже CMS-owned.
-- Создавать generator-owned страницы руками в Strapi.
+- Создавать generator-owned страницы вручную в Strapi.
 - Менять `content_origin` без понимания ownership-последствий.
 - Добавлять новый блок в верстку без описанного контракта в docs и adapters.
 
@@ -60,17 +62,17 @@ npm.cmd --prefix portal run build
 
 6. Проверить representative routes вручную.
 
-## 6. Как безопасно вводить новый block
+## 6. Как безопасно вводить новый блок
 
 1. Описать block contract.
 2. Зафиксировать allowed templates.
-3. Зафиксировать required/optional fields.
+3. Зафиксировать required и optional fields.
 4. Обновить schema, если блок CMS-owned.
 5. Обновить `strapi.ts` и/или import/generator layer.
 6. Обновить документацию.
 7. Только потом рендерить блок во frontend.
 
-## 7. Обязательный self-check перед merge/publish
+## 7. Self-check перед merge или publish
 
 - Понятно, кто владеет изменяемым блоком: frontend или CMS.
 - Если блок CMS-owned, его поля описаны и валидируются.

@@ -1,26 +1,28 @@
 # Документация CHATPLUS
 
-Главная карта проекта. Этот файл должен быть первой точкой входа и для человека, и для другой нейросети.
+Главная карта проекта. Это первый файл, который должен открыть человек или другая нейросеть перед работой с репозиторием.
 
-## Что за проект
+## Что это за проект
 
-`CHATPLUS` состоит из двух приложений и одного публикационного контура:
+`CHATPLUS` — это публичный сайт на `Astro`, который берет контент из `Strapi` и частично из generator-owned seed-пайплайна.
 
-- `portal/` — публичный сайт на `Astro`
-- `cms/` — `Strapi` как контентный слой
-- `pages-preview/` — demo snapshot для GitHub Pages
+Проект состоит из:
 
-Контентный принцип проекта:
+- `portal/` — фронтенд
+- `cms/` — Strapi и content types
+- `scripts/` — генерация и импорт контента
+- `pages-preview/` — демо-снапшот для GitHub Pages
 
-- `generated`-страницы создаются из `seeds + generator`
-- `managed`-страницы редактируются в Strapi
-- фронтенд отвечает за шаблоны, стили, адаптив и render-логику
+## Главный принцип
 
-## Куда идти дальше
+В проекте есть два ownership-режима:
 
-### Если вы инженер или агентная модель
+- `generated` — контентом владеет `seed/generator`-контур
+- `managed` — контентом владеет Strapi admin
 
-Читайте в этом порядке:
+Фронтенд не должен становиться вторым источником истины для пользовательского текста.
+
+## Порядок чтения для инженера или следующей нейронки
 
 1. [Архитектура](architecture.md)
 2. [CMS-модель](cms-model.md)
@@ -30,9 +32,7 @@
 6. [Гайд оператора](operator-guide.md)
 7. [Деплой](../DEPLOY.md)
 
-### Если вы оператор или контент-менеджер
-
-Читайте в этом порядке:
+## Порядок чтения для оператора или контент-менеджера
 
 1. [Гайд оператора](operator-guide.md)
 2. [Как добавить страницу](how-to-add-page.md)
@@ -40,21 +40,21 @@
 4. [Контентный workflow](content-workflow.md)
 5. [Деплой](../DEPLOY.md)
 
-## Из чего состоит репозиторий
+## Где что лежит
 
 ```text
 CHATPLUS/
 |- portal/          # Astro frontend
 |- cms/             # Strapi CMS
-|- scripts/         # генерация, импорт, repair/util scripts
+|- scripts/         # generator/import scripts
 |- docs/            # актуальная документация
-|- pages-preview/   # снапшот для GitHub Pages demo
+|- pages-preview/   # snapshot для GitHub Pages demo
 |- .github/         # workflows
-|- DEPLOY.md        # runbook по публикации
-`- README.md        # быстрый вход в проект
+|- DEPLOY.md        # deploy runbook
+`- README.md        # главный вход в проект
 ```
 
-## Где истина
+## Где источник истины
 
 ### Programmatic pages
 
@@ -69,20 +69,20 @@ CHATPLUS/
 
 - Strapi admin
 
-### Фронтенд
+### Frontend
 
 Во frontend должны жить:
 
 - шаблоны
 - стили
 - layout
-- адаптив
+- responsive behavior
 - shared UI behavior
-- normalization/fallback layer
+- adapters и fallback-логика
 
 ## Активные шаблоны
 
-В системе 10 шаблонов:
+В системе сейчас 10 шаблонов:
 
 - `home`
 - `structured`
@@ -95,59 +95,13 @@ CHATPLUS/
 - `comparison`
 - `campaign`
 
-Подробный контракт по каждому шаблону:
+Подробный контракт по каждому:
 
 - [Контракты шаблонов](template-contracts.md)
 
-## Что запускать
+## Быстрый маршрут по типу задачи
 
-### Локально
-
-Strapi:
-
-```powershell
-npm.cmd --prefix cms run develop
-```
-
-Astro:
-
-```powershell
-npm.cmd --prefix portal run dev -- --host 127.0.0.1
-```
-
-### Обновить generator-owned контент
-
-```powershell
-npm.cmd run seed-content
-```
-
-### Полный build + QA
-
-```powershell
-npm.cmd --prefix portal run build
-```
-
-### Demo snapshot
-
-```powershell
-npm.cmd --prefix portal run snapshot:github-demo
-```
-
-## Главные правила безопасности
-
-- Не создавайте generator-owned страницы вручную в Strapi.
-- Не меняйте `content_origin` без понимания последствий.
-- Не хардкодьте новый user-facing copy в шаблон, если его должны редактировать через CMS.
-- Не добавляйте новый CMS-owned block без описанного контракта и обновления adapters/import pipeline.
-- Не публикуйте demo, пока не прошел `portal build`.
-
-Подробно:
-
-- [Контракт безопасных изменений](change-safety.md)
-
-## Что делать, если нужно изменить проект
-
-### Если меняется только верстка
+### Если нужно поправить только верстку
 
 Читайте:
 
@@ -155,23 +109,33 @@ npm.cmd --prefix portal run snapshot:github-demo
 - [Контракты шаблонов](template-contracts.md)
 - [Контракт безопасных изменений](change-safety.md)
 
-### Если добавляется новый block / новый template contract
-
-Читайте:
-
-- [CMS-модель](cms-model.md)
-- [Контентный workflow](content-workflow.md)
-- [Контракт безопасных изменений](change-safety.md)
-
-### Если нужно добавить страницу
+### Если нужно добавить новую страницу
 
 Читайте:
 
 - [Как добавить страницу](how-to-add-page.md)
+- [Контентный workflow](content-workflow.md)
+
+### Если нужно добавить новый CMS-owned блок
+
+Читайте:
+
+- [CMS-модель](cms-model.md)
+- [Контракт безопасных изменений](change-safety.md)
+- [Контентный workflow](content-workflow.md)
 
 ### Если нужно выпустить demo
 
 Читайте:
 
+- [Гайд оператора](operator-guide.md)
 - [Чеклист публикации](publishing-checklist.md)
 - [Деплой](../DEPLOY.md)
+
+## Zero-Ambiguity правила
+
+- Не создавайте `generated`-страницы руками в Strapi.
+- Не меняйте `content_origin`, если не понимаете последствия.
+- Не хардкодьте user-facing copy в шаблон, если его должен менять редактор.
+- Не добавляйте новый CMS-owned блок без обновления схемы, адаптеров и документации.
+- Не публикуйте demo, пока не прошел `npm.cmd --prefix portal run build`.
