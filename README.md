@@ -34,10 +34,11 @@
 7. [Контракты шаблонов](docs/template-contracts.md)
 8. [Карта файлов](docs/file-map.md)
 9. [Контракт безопасных изменений](docs/change-safety.md)
-10. [Troubleshooting](docs/troubleshooting.md)
-11. [Release Flow](docs/release-flow.md)
-12. [Known Risks](docs/known-risks.md)
-13. [Деплой и публикация](DEPLOY.md)
+10. [AI Generation для блоков](docs/ai-block-generation.md)
+11. [Troubleshooting](docs/troubleshooting.md)
+12. [Release Flow](docs/release-flow.md)
+13. [Known Risks](docs/known-risks.md)
+14. [Деплой и публикация](DEPLOY.md)
 
 ### Если вы оператор, контент-менеджер или владелец проекта
 
@@ -139,6 +140,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 - [Контракты шаблонов](docs/template-contracts.md)
 - [Карта файлов](docs/file-map.md)
 - [Контракт безопасных изменений](docs/change-safety.md)
+- [AI Generation для блоков](docs/ai-block-generation.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Release Flow](docs/release-flow.md)
 - [Known Risks](docs/known-risks.md)

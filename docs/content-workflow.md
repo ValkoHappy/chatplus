@@ -243,5 +243,6 @@ npm.cmd --prefix portal run dev -- --host 127.0.0.1
 - [CMS-модель](cms-model.md)
 - [Контракты шаблонов](template-contracts.md)
 - [Контракт безопасных изменений](change-safety.md)
+- [AI Generation для блоков](ai-block-generation.md)
 - [Гайд оператора](operator-guide.md)
 - [Деплой](../DEPLOY.md)

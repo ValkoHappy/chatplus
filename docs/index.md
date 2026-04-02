@@ -32,11 +32,12 @@
 6. [Контракты шаблонов](template-contracts.md)
 7. [Карта файлов](file-map.md)
 8. [Контракт безопасных изменений](change-safety.md)
-9. [Troubleshooting](troubleshooting.md)
-10. [Release Flow](release-flow.md)
-11. [Known Risks](known-risks.md)
-12. [Гайд оператора](operator-guide.md)
-13. [Деплой](../DEPLOY.md)
+9. [AI Generation для блоков](ai-block-generation.md)
+10. [Troubleshooting](troubleshooting.md)
+11. [Release Flow](release-flow.md)
+12. [Known Risks](known-risks.md)
+13. [Гайд оператора](operator-guide.md)
+14. [Деплой](../DEPLOY.md)
 
 ## Порядок чтения для оператора или контент-менеджера
 
@@ -144,6 +145,14 @@ CHATPLUS/
 - [Контракт безопасных изменений](change-safety.md)
 - [Контентный workflow](content-workflow.md)
 - [Карта файлов](file-map.md)
+
+### Если нужно генерировать тексты для блоков через ИИ
+
+Читайте:
+
+- [AI Generation для блоков](ai-block-generation.md)
+- [Контентный workflow](content-workflow.md)
+- [Контракты шаблонов](template-contracts.md)
 
 ### Если нужно выпустить demo
 
