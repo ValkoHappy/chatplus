@@ -40,6 +40,7 @@
 - новый тип hero/panel/proof structure
 - новый тип cards, которые редактор должен наполнять из Strapi
 - новый compare block contract
+- замена шаблона на другой `template_kind`, если меняется ожидаемый набор полей
 
 ## 4. Что нельзя делать
 
@@ -61,6 +62,50 @@ npm.cmd --prefix portal run build
 ```
 
 6. Проверить representative routes вручную.
+
+Если меняется только:
+
+- spacing
+- карточная сетка
+- типографика
+- порядок декоративных блоков
+- responsive behavior
+
+это обычно safe frontend-only change.
+
+Если меняется:
+
+- набор CMS-owned секций
+- структура hero/proof/CTA блока
+- route-template mapping
+- expected fields у шаблона
+
+это уже contract-level change, а не просто правка верстки.
+
+## 5a. Как безопасно изменить существующий шаблон
+
+1. Открыть контракт шаблона в `docs/template-contracts.md`.
+2. Зафиксировать, меняется ли только визуал или меняется data contract.
+3. Если меняется только визуал:
+   - править frontend
+   - прогнать build
+   - проверить representative routes
+4. Если меняется contract:
+   - сначала обновить docs
+   - потом schema/import/adapters
+   - и только потом рендер
+
+## 5b. Как безопасно заменить один шаблон другим
+
+1. Проверить, какой `template_kind` у маршрута сейчас и какой будет после замены.
+2. Сверить required fields старого и нового шаблона.
+3. Если новый шаблон требует другие поля, это schema-level change.
+4. Обновить:
+   - route-template mapping
+   - docs
+   - adapters
+   - validation/import contract
+5. Не менять шаблон маршрута “втихую” без обновления ownership и template docs.
 
 ## 6. Как безопасно вводить новый блок
 

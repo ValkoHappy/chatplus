@@ -26,13 +26,18 @@
 Читайте в таком порядке:
 
 1. [Главная карта документации](docs/index.md)
-2. [Архитектура](docs/architecture.md)
-3. [CMS-модель](docs/cms-model.md)
-4. [Контентный workflow](docs/content-workflow.md)
-5. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
-6. [Контракты шаблонов](docs/template-contracts.md)
-7. [Контракт безопасных изменений](docs/change-safety.md)
-8. [Деплой и публикация](DEPLOY.md)
+2. [Глоссарий](docs/glossary.md)
+3. [Архитектура](docs/architecture.md)
+4. [CMS-модель](docs/cms-model.md)
+5. [Контентный workflow](docs/content-workflow.md)
+6. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
+7. [Контракты шаблонов](docs/template-contracts.md)
+8. [Карта файлов](docs/file-map.md)
+9. [Контракт безопасных изменений](docs/change-safety.md)
+10. [Troubleshooting](docs/troubleshooting.md)
+11. [Release Flow](docs/release-flow.md)
+12. [Known Risks](docs/known-risks.md)
+13. [Деплой и публикация](DEPLOY.md)
 
 ### Если вы оператор, контент-менеджер или владелец проекта
 
@@ -40,9 +45,11 @@
 
 1. [Главная карта документации](docs/index.md)
 2. [Гайд оператора](docs/operator-guide.md)
-3. [Как добавить страницу](docs/how-to-add-page.md)
-4. [Чеклист публикации](docs/publishing-checklist.md)
-5. [Деплой и публикация](DEPLOY.md)
+3. [Release Flow](docs/release-flow.md)
+4. [Как добавить страницу](docs/how-to-add-page.md)
+5. [Чеклист публикации](docs/publishing-checklist.md)
+6. [Troubleshooting](docs/troubleshooting.md)
+7. [Деплой и публикация](DEPLOY.md)
 
 ## Быстрый запуск
 
@@ -126,8 +133,13 @@ npm.cmd --prefix portal run snapshot:github-demo
 ## Важные ссылки
 
 - [Главная карта документации](docs/index.md)
+- [Глоссарий](docs/glossary.md)
 - [Гайд оператора](docs/operator-guide.md)
 - [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
 - [Контракты шаблонов](docs/template-contracts.md)
+- [Карта файлов](docs/file-map.md)
 - [Контракт безопасных изменений](docs/change-safety.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Release Flow](docs/release-flow.md)
+- [Known Risks](docs/known-risks.md)
 - [Деплой](DEPLOY.md)

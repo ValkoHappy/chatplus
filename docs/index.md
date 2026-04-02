@@ -25,21 +25,28 @@
 ## Порядок чтения для инженера или следующей нейронки
 
 1. [Архитектура](architecture.md)
-2. [CMS-модель](cms-model.md)
-3. [Контентный workflow](content-workflow.md)
-4. [Матрица маршрутов и ownership](route-ownership-matrix.md)
-5. [Контракты шаблонов](template-contracts.md)
-6. [Контракт безопасных изменений](change-safety.md)
-7. [Гайд оператора](operator-guide.md)
-8. [Деплой](../DEPLOY.md)
+2. [Глоссарий](glossary.md)
+3. [CMS-модель](cms-model.md)
+4. [Контентный workflow](content-workflow.md)
+5. [Матрица маршрутов и ownership](route-ownership-matrix.md)
+6. [Контракты шаблонов](template-contracts.md)
+7. [Карта файлов](file-map.md)
+8. [Контракт безопасных изменений](change-safety.md)
+9. [Troubleshooting](troubleshooting.md)
+10. [Release Flow](release-flow.md)
+11. [Known Risks](known-risks.md)
+12. [Гайд оператора](operator-guide.md)
+13. [Деплой](../DEPLOY.md)
 
 ## Порядок чтения для оператора или контент-менеджера
 
 1. [Гайд оператора](operator-guide.md)
-2. [Как добавить страницу](how-to-add-page.md)
-3. [Чеклист публикации](publishing-checklist.md)
-4. [Контентный workflow](content-workflow.md)
-5. [Деплой](../DEPLOY.md)
+2. [Release Flow](release-flow.md)
+3. [Как добавить страницу](how-to-add-page.md)
+4. [Чеклист публикации](publishing-checklist.md)
+5. [Troubleshooting](troubleshooting.md)
+6. [Контентный workflow](content-workflow.md)
+7. [Деплой](../DEPLOY.md)
 
 ## Где что лежит
 
@@ -109,6 +116,7 @@ CHATPLUS/
 
 - [Архитектура](architecture.md)
 - [Контракты шаблонов](template-contracts.md)
+- [Карта файлов](file-map.md)
 - [Контракт безопасных изменений](change-safety.md)
 
 ### Если нужно добавить новую страницу
@@ -117,6 +125,16 @@ CHATPLUS/
 
 - [Как добавить страницу](how-to-add-page.md)
 - [Контентный workflow](content-workflow.md)
+- [Troubleshooting](troubleshooting.md)
+
+### Если нужно изменить существующий шаблон или заменить его
+
+Читайте:
+
+- [Как добавить страницу](how-to-add-page.md)
+- [Контракт безопасных изменений](change-safety.md)
+- [Контракты шаблонов](template-contracts.md)
+- [Карта файлов](file-map.md)
 
 ### Если нужно добавить новый CMS-owned блок
 
@@ -125,11 +143,13 @@ CHATPLUS/
 - [CMS-модель](cms-model.md)
 - [Контракт безопасных изменений](change-safety.md)
 - [Контентный workflow](content-workflow.md)
+- [Карта файлов](file-map.md)
 
 ### Если нужно выпустить demo
 
 Читайте:
 
+- [Release Flow](release-flow.md)
 - [Гайд оператора](operator-guide.md)
 - [Чеклист публикации](publishing-checklist.md)
 - [Деплой](../DEPLOY.md)
