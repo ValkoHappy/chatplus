@@ -11,6 +11,13 @@
 ## 2. Обязательная локальная проверка
 
 ```powershell
+npm.cmd run test:contracts
+npm.cmd run check:docs-consistency
+```
+
+И только потом:
+
+```powershell
 npm.cmd --prefix portal run build
 ```
 
@@ -69,6 +76,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 - нет лишних временных файлов в коммите
 - закоммичены нужные изменения
 - `pages-preview/` попал в commit, если обновлялся demo
+- если изменения шли через PR, workflow `CI` должен быть зеленым или осознанно skipped на fork PR без secrets
 
 ## 7. После push
 
@@ -79,3 +87,29 @@ npm.cmd --prefix portal run snapshot:github-demo
 - нет старых стилей или старого контента
 
 Если стили выглядят старыми, сделать `Ctrl+F5`.
+
+## 8. Что проверяет PR CI
+
+Workflow `CI` на `pull_request` проверяет:
+
+- install в корне и в `portal/`
+- `npm run test:contracts`
+- `npm run check:docs-consistency`
+- `npm --prefix portal run build`
+- `content-check`
+- `link-graph`
+- `encoding-check`
+- `npm run seed-content` как runtime-smoke, если в CI доступны `STRAPI_URL` и `STRAPI_TOKEN`
+
+Это не deploy и не замена ручного QA. Это защитный gate до merge.
+
+## 9. Contract guardrails
+
+Перед publish желательно и локально, и на PR иметь зелеными:
+
+```powershell
+npm.cmd run test:contracts
+npm.cmd run check:docs-consistency
+```
+
+Если они красные, публиковать изменение не надо даже при зеленом build.

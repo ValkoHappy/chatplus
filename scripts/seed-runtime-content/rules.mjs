@@ -1,13 +1,11 @@
-export const LANDING_PAGE_TEMPLATE_KINDS = new Set([
-  'home',
-  'structured',
-  'pricing',
-  'partnership',
-  'resource_hub',
-  'brand_content',
-  'campaign',
-  'generic',
-]);
+import {
+  ACTIVE_CANONICAL_TEMPLATE_KINDS,
+  toCanonicalTemplateKind,
+} from '../../config/template-kinds.mjs';
+
+export const LANDING_PAGE_TEMPLATE_KINDS = new Set(
+  ACTIVE_CANONICAL_TEMPLATE_KINDS.filter((kind) => kind !== 'directory' && kind !== 'tenders' && kind !== 'comparison').concat('generic'),
+);
 
 export const CONTENT_ORIGINS = new Set(['generated', 'managed']);
 
@@ -47,6 +45,10 @@ export const MANAGED_SINGLETON_TEMPLATE_KINDS = {
   pricing: 'pricing',
   partnership: 'partnership',
 };
+
+export function normalizeLandingPageTemplateKind(value = '') {
+  return toCanonicalTemplateKind(value) || value;
+}
 
 export function inferLandingPageTemplateKind(slug = '') {
   if (slug === 'home') {

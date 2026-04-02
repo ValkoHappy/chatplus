@@ -3,6 +3,7 @@ import { mergeSourceOwnedContent } from './seed-runtime-content/ownership.mjs';
 import {
   inferLandingPageContentOrigin,
   inferLandingPageTemplateKind,
+  normalizeLandingPageTemplateKind,
 } from './seed-runtime-content/rules.mjs';
 import { validateSeedData } from './seed-runtime-content/validators.mjs';
 import { createStrapiClient } from './seed-runtime-content/strapi-client.mjs';
@@ -784,7 +785,7 @@ function makeLandingPage({
   quoteAuthor,
   presentationFlags,
 }) {
-  const resolvedTemplateKind = templateKind || inferLandingPageTemplateKind(slug);
+  const resolvedTemplateKind = normalizeLandingPageTemplateKind(templateKind || inferLandingPageTemplateKind(slug));
   const resolvedContentOrigin = contentOrigin || inferLandingPageContentOrigin(slug);
   const baseSectionLabels = {
     roi_without_title: 'Без Chat Plus',

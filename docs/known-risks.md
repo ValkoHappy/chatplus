@@ -119,3 +119,30 @@ Docs уже покрывают проект хорошо, но только по
 - CI/CD from live CMS
 - production deploy contour
 - operational ownership и backup strategy
+
+## 11. Первый CI gate уже есть, но он не убирает secret dependency
+
+PR workflow `CI` улучшает защиту до merge, но не снимает текущее ограничение:
+
+- contract tests и docs/code consistency уже ловят часть regressions без live Strapi
+- frontend build и `seed-content` smoke зависят от `STRAPI_URL` и `STRAPI_TOKEN`
+- для fork PR GitHub Secrets недоступны
+
+Риск:
+
+- внешние PR не получают полноценный runtime-check
+- текущий CI по-прежнему частично зависит от live CMS access
+
+## 12. Canonical `template_kind` vs public names
+
+Внутренний контракт теперь унифицирован на canonical values:
+
+- `resource_hub`
+- `brand_content`
+
+При этом docs и route registry по-прежнему используют public names:
+
+- `resource-hub`
+- `brand-content`
+
+Это безопасно только пока mapping централизован в `config/template-kinds.mjs`.

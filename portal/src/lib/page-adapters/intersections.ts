@@ -7,7 +7,7 @@ import {
   makeLinks,
   makeSteps,
   pickFirstMeaningfulString,
-} from './shared';
+} from './shared.ts';
 
 export function adaptChannelIndustryPage(channel: any, industry: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channel_industry');

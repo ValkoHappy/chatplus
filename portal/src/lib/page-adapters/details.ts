@@ -1,4 +1,4 @@
-import { getNavigationGroupTitle } from '../link-sections';
+import { getNavigationGroupTitle } from '../link-sections.ts';
 import {
   fill,
   getPageTemplate,
@@ -11,7 +11,7 @@ import {
   makeRoiItems,
   makeSteps,
   makeUseCaseItems,
-} from './shared';
+} from './shared.ts';
 
 export function adaptChannelPage(channel: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channels');

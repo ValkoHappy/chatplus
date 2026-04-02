@@ -1,17 +1,10 @@
-export type PageTemplateKind =
-  | 'home'
-  | 'structured'
-  | 'directory'
-  | 'pricing'
-  | 'partnership'
-  | 'tenders'
-  | 'resource-hub'
-  | 'brand-content'
-  | 'comparison'
-  | 'campaign';
+import type { ActivePublicTemplateKind } from './template-kinds';
+
+export type PageTemplateKind = ActivePublicTemplateKind;
 
 export interface PageTemplateMapping {
   template: PageTemplateKind;
+  canonicalTemplate: string;
   routes: string[];
   purpose: string;
 }
@@ -19,11 +12,13 @@ export interface PageTemplateMapping {
 export const PAGE_TEMPLATE_MAP: PageTemplateMapping[] = [
   {
     template: 'home',
+    canonicalTemplate: 'home',
     routes: ['/'],
-    purpose: 'Главная продуктовая страница с отдельной home-композицией.',
+    purpose: 'Main product landing page with dedicated home composition.',
   },
   {
     template: 'structured',
+    canonicalTemplate: 'structured',
     routes: [
       '/channels/[slug]',
       '/industries/[slug]',
@@ -38,46 +33,54 @@ export const PAGE_TEMPLATE_MAP: PageTemplateMapping[] = [
       '/for/[businessType]/[industry]',
       '/demo',
     ],
-    purpose: 'Detail/SEO-страницы и страницы пересечений.',
+    purpose: 'Detail SEO pages and intersection pages.',
   },
   {
     template: 'directory',
+    canonicalTemplate: 'directory',
     routes: ['/channels', '/industries', '/integrations', '/solutions', '/features', '/for'],
-    purpose: 'Каталоги верхнего уровня.',
+    purpose: 'Top-level catalog pages.',
   },
   {
     template: 'pricing',
+    canonicalTemplate: 'pricing',
     routes: ['/pricing'],
-    purpose: 'Цены и коммерческая модель.',
+    purpose: 'Pricing and commercial model.',
   },
   {
     template: 'partnership',
+    canonicalTemplate: 'partnership',
     routes: ['/partnership'],
-    purpose: 'Партнерская программа и resell/agency слой.',
+    purpose: 'Partner program and reseller/agency layer.',
   },
   {
     template: 'tenders',
+    canonicalTemplate: 'tenders',
     routes: ['/solutions/tenders'],
-    purpose: 'Специализированный вертикальный шаблон под тендерный сценарий.',
+    purpose: 'Specialized vertical template for the tenders scenario.',
   },
   {
     template: 'resource-hub',
+    canonicalTemplate: 'resource_hub',
     routes: ['/docs', '/help', '/academy', '/blog', '/status'],
-    purpose: 'Ресурсные и knowledge-страницы.',
+    purpose: 'Resource and knowledge pages.',
   },
   {
     template: 'brand-content',
+    canonicalTemplate: 'brand_content',
     routes: ['/media', '/team', '/conversation', '/tv'],
-    purpose: 'Брендовый и company/content слой.',
+    purpose: 'Brand and company content layer.',
   },
   {
     template: 'comparison',
+    canonicalTemplate: 'comparison',
     routes: ['/compare/[slug]', '/vs/[slug]'],
-    purpose: 'Страницы сравнения Chat Plus с альтернативами.',
+    purpose: 'Comparison pages against alternatives.',
   },
   {
     template: 'campaign',
+    canonicalTemplate: 'campaign',
     routes: ['/promo', '/prozorro'],
-    purpose: 'Спецстраницы и vertical/campaign сценарии.',
+    purpose: 'Special campaign and vertical pages.',
   },
 ];

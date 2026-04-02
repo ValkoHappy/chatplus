@@ -1,7 +1,10 @@
 {
+  "type": "module",
   "scripts": {
     "generate-content": "node --env-file=.env scripts/generate-seo-content.mjs",
-    "seed-content": "node --env-file=.env scripts/seed-runtime-content.mjs"
+    "seed-content": "node --env-file=.env scripts/seed-runtime-content.mjs",
+    "check:docs-consistency": "node scripts/check-docs-consistency.mjs",
+    "test:contracts": "node --test --experimental-strip-types --experimental-specifier-resolution=node tests/seed-runtime-content.test.mjs tests/page-adapters.test.ts tests/strapi-schemas.test.ts"
   },
   "dependencies": {
     "dotenv": "^17.3.1"

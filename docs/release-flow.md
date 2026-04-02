@@ -50,6 +50,15 @@ node scripts/export-from-strapi.mjs
 
 ## 5. Обязательная локальная сборка
 
+Сначала прогоните легкий contract guardrail:
+
+```powershell
+npm.cmd run test:contracts
+npm.cmd run check:docs-consistency
+```
+
+После этого прогоняйте полную frontend-сборку:
+
 ```powershell
 npm.cmd --prefix portal run build
 ```
@@ -96,6 +105,25 @@ git commit -m "Describe your change"
 git push origin main
 ```
 
+## 8a. Что происходит на PR
+
+До merge GitHub Actions запускает workflow `CI`.
+
+Он проверяет:
+
+- `npm run test:contracts`
+- `npm run check:docs-consistency`
+- `npm --prefix portal run build`
+- `content-check`
+- `link-graph`
+- `encoding-check`
+- `npm run seed-content` как runtime-smoke, если доступны `STRAPI_URL` и `STRAPI_TOKEN`
+
+Ограничение текущей архитектуры:
+
+- для fork PR workflow может пропустить build/smoke, потому что проекту нужны live Strapi secrets
+- это не заменяет локальную проверку, особенно для крупных contract-level изменений
+
 ## 9. После push
 
 1. Проверить GitHub Pages.
@@ -107,6 +135,9 @@ git push origin main
 Изменение считается не просто “собирается”, а реально готово, когда:
 
 - build зеленый
+- contract tests зеленые
+- docs/code consistency checker зеленый
+- PR CI зеленый или осознанно skipped на fork из-за secrets
 - docs не противоречат коду
 - ownership не сломан
 - representative routes проверены руками

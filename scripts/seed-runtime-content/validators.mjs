@@ -11,6 +11,7 @@ import {
   LANDING_PAGE_TEMPLATE_KINDS,
   MANAGED_SINGLETON_SLUGS,
   MANAGED_SINGLETON_TEMPLATE_KINDS,
+  normalizeLandingPageTemplateKind,
   TENDERS_REQUIRED_SECTION_LABELS,
 } from './rules.mjs';
 
@@ -90,7 +91,7 @@ function validateUniqueSlugs(endpoint, items) {
 }
 
 function validateLandingPage(item) {
-  const templateKind = item.template_kind || inferLandingPageTemplateKind(item.slug);
+  const templateKind = normalizeLandingPageTemplateKind(item.template_kind || inferLandingPageTemplateKind(item.slug));
   const contentOrigin = item.content_origin || inferLandingPageContentOrigin(item.slug);
   const context = `landing-pages/${item.slug || 'unknown'}`;
 

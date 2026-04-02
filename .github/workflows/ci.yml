@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    outputs:
+      can_run_seed: ${{ steps.context.outputs.can_run_seed }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            portal/package-lock.json
+
+      - name: Resolve CI context
+        id: context
+        shell: bash
+        env:
+          STRAPI_URL: ${{ secrets.STRAPI_URL }}
+          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+        run: |
+          is_fork="false"
+          if [[ "$EVENT_NAME" == "pull_request" && "$PR_IS_FORK" == "true" ]]; then
+            is_fork="true"
+          fi
+
+          if [[ "$is_fork" == "true" ]]; then
+            echo "can_build=false" >> "$GITHUB_OUTPUT"
+            echo "can_run_seed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=CI limitation::Fork PR detected. Build and seed runtime smoke are skipped because STRAPI_URL and STRAPI_TOKEN are not available to forks in the current architecture."
+            exit 0
+          fi
+
+          if [[ -z "$STRAPI_URL" || -z "$STRAPI_TOKEN" ]]; then
+            echo "::error title=Missing CI secrets::STRAPI_URL and STRAPI_TOKEN are required for internal PR and manual CI runs."
+            exit 1
+          fi
+
+          echo "can_build=true" >> "$GITHUB_OUTPUT"
+          echo "can_run_seed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install portal dependencies
+        working-directory: portal
+        run: npm ci
+
+      - name: Run contract tests
+        run: npm run test:contracts
+
+      - name: Run docs/code consistency check
+        run: npm run check:docs-consistency
+
+      - name: Build portal and run checks
+        if: steps.context.outputs.can_build == 'true'
+        env:
+          STRAPI_URL: ${{ secrets.STRAPI_URL }}
+          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+        run: npm --prefix portal run build
+
+      - name: Skip build for fork PR
+        if: steps.context.outputs.can_build != 'true'
+        run: echo "Build is intentionally skipped for fork PR because live Strapi secrets are unavailable in GitHub Actions."
+
+  seed-runtime-smoke:
+    needs: build-and-check
+    if: needs.build-and-check.outputs.can_run_seed == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Run seed runtime smoke
+        env:
+          STRAPI_URL: ${{ secrets.STRAPI_URL }}
+          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+        run: npm run seed-content

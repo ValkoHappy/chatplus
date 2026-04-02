@@ -21,6 +21,7 @@
     "@iconify-json/lucide": "^1.2.99",
     "@iconify-json/simple-icons": "^1.2.75",
     "astro": "^6.0.8",
-    "astro-icon": "^1.1.5"
+    "astro-icon": "^1.1.5",
+    "zod": "^4.1.12"
   }
 }

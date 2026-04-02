@@ -4,7 +4,7 @@ import {
   getPageTemplate,
   makeBreadcrumbs,
   makeLinks,
-} from './shared';
+} from './shared.ts';
 
 function inferDirectoryCtaLabel(key: string, item: any) {
   const name = item?.name || '';

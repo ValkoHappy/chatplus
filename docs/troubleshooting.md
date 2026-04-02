@@ -209,3 +209,50 @@ npm.cmd --prefix portal run snapshot:github-demo
 - CMS schema
 - import/generator
 - deploy/publish
+
+## 12. PR workflow `CI` красный или skipped
+
+Что означает красный `CI`:
+
+- сломался `portal build`
+- не прошли `content-check`, `link-graph` или `encoding-check`
+- для внутреннего PR отсутствуют `STRAPI_URL` / `STRAPI_TOKEN`
+- не прошел `seed-content` runtime-smoke
+
+Что означает skipped:
+
+- это fork PR и GitHub не дал secrets
+- в текущей архитектуре build/smoke могут быть пропущены, потому что проект зависит от live Strapi secrets
+
+Что делать:
+
+1. Для internal PR проверить secrets в GitHub Actions.
+2. Повторить локально:
+
+```powershell
+npm.cmd run test:contracts
+npm.cmd run check:docs-consistency
+npm.cmd --prefix portal run build
+npm.cmd run seed-content
+```
+
+3. Если локально все ок, смотреть логи конкретного job:
+- `build-and-check`
+- `seed-runtime-smoke`
+
+## 13. Упали contract tests или docs/code consistency
+
+Если краснеет `npm run test:contracts`, смотрите по типу поломки:
+
+- rules и enum drift -> `scripts/seed-runtime-content/rules.mjs`
+- ownership merge/hydration -> `scripts/seed-runtime-content/ownership.mjs`
+- landing-page validation -> `scripts/seed-runtime-content/validators.mjs`
+- adapter output shape -> `portal/src/lib/page-adapters.ts` и `portal/src/lib/page-adapters/*`
+- Strapi boundary normalization -> `portal/src/lib/strapi.ts` и `portal/src/lib/strapi-schemas.ts`
+
+Если краснеет `npm run check:docs-consistency`, проверяйте:
+
+- `docs/template-contracts.md`
+- `docs/route-ownership-matrix.md`
+- `portal/src/lib/page-template-map.ts`
+- `config/template-kinds.mjs`

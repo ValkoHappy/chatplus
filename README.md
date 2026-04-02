@@ -96,6 +96,31 @@ npm.cmd run seed-content
 npm.cmd --prefix portal run build
 ```
 
+### PR CI
+
+На каждый `pull_request` в `main` запускается workflow `CI`:
+
+- `npm run test:contracts`
+- `npm run check:docs-consistency`
+- `portal build`
+- `content-check`
+- `link-graph`
+- `encoding-check`
+- условный `seed-content` smoke при доступных secrets
+
+Важно:
+
+- deploy workflows не заменены, это отдельный защитный PR gate
+- для fork PR build/smoke могут быть skipped, потому что текущая архитектура требует `STRAPI_URL` и `STRAPI_TOKEN`
+
+Локально тот же защитный набор проверок:
+
+```powershell
+npm.cmd run test:contracts
+npm.cmd run check:docs-consistency
+npm.cmd --prefix portal run build
+```
+
 ### Собрать snapshot для GitHub Pages demo
 
 ```powershell
@@ -109,6 +134,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 - Не хардкодьте новый пользовательский текст в шаблон, если блок должен редактироваться через CMS.
 - Любой новый CMS-owned блок требует обновления схемы, адаптеров и документации.
 - Перед публикацией всегда должен проходить `npm.cmd --prefix portal run build`.
+- Перед merge в `main` должен быть зеленый PR workflow `CI`, если PR не ограничен отсутствием secrets.
 
 ## Где источник истины
 
