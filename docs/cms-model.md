@@ -184,6 +184,14 @@ Frontend владеет только:
 
 - [seed-runtime-content.mjs](../scripts/seed-runtime-content.mjs)
 
+Это public CLI entrypoint. После декомпозиции внутренняя логика разнесена по:
+
+- `scripts/seed-runtime-content/ownership.mjs`
+- `scripts/seed-runtime-content/rules.mjs`
+- `scripts/seed-runtime-content/normalizers.mjs`
+- `scripts/seed-runtime-content/validators.mjs`
+- `scripts/seed-runtime-content/strapi-client.mjs`
+
 Правила:
 
 - upsert по slug

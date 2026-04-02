@@ -19,6 +19,12 @@
 - `managed`-страницы редактируются напрямую в Strapi
 - фронтенд отвечает за верстку, адаптив, шаблоны и render-логику
 
+После декомпозиции внутренней логики:
+
+- `portal/src/lib/page-adapters.ts` остается публичным entrypoint для фронтенда
+- `scripts/seed-runtime-content.mjs` остается CLI entrypoint для `seed-content`
+- внутренняя логика теперь разложена по отдельным internal modules, но внешний контракт не менялся
+
 ## С чего читать
 
 ### Если вы инженер или следующая нейронка
@@ -106,7 +112,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 ## Где источник истины
 
-- Для programmatic family: `cms/seed/*.json` и `scripts/seed-runtime-content.mjs`
+- Для programmatic family: `cms/seed/*.json` и `scripts/seed-runtime-content.mjs` как orchestration entrypoint
 - Для managed singleton pages: Strapi admin
 - Для шаблонов, стилей, адаптива, shared UI behavior: `portal/`
 

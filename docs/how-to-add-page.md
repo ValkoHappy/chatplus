@@ -106,14 +106,19 @@ npm.cmd --prefix portal run build
    - required fields
    - ownership блока
 2. Проверить контракт шаблона в `docs/template-contracts.md`.
-3. Если меняется только визуал, работать можно во frontend без schema changes.
-4. Если меняется CMS-owned блок или набор его полей:
+3. Определить internal module, где живет нужная логика:
+   - общие helpers/fallbacks -> `portal/src/lib/page-adapters/shared.ts`
+   - detail adapters -> `portal/src/lib/page-adapters/details.ts`
+   - intersection adapters -> `portal/src/lib/page-adapters/intersections.ts`
+   - specialized adapters -> `portal/src/lib/page-adapters/specialized.ts`
+4. Если меняется только визуал, работать можно во frontend без schema changes.
+5. Если меняется CMS-owned блок или набор его полей:
    - обновить docs
    - обновить schema при необходимости
    - обновить generator/import validation
    - обновить adapter layer
-5. Проверить representative routes этого template family.
-6. Прогнать build:
+6. Проверить representative routes этого template family.
+7. Прогнать build:
 
 ```powershell
 npm.cmd --prefix portal run build
@@ -124,6 +129,7 @@ npm.cmd --prefix portal run build
 - Нельзя хардкодить новый пользовательский текст в шаблон, если этот текст должен редактироваться в CMS.
 - Нельзя менять template-owned блок так, чтобы он начинал ждать CMS-поля без обновления контракта.
 - Если правка затрагивает секции, CTA, FAQ, hero или side-panels, нужно проверить desktop, tablet и mobile.
+- `portal/src/lib/page-adapters.ts` остается public facade; внутренние изменения обычно вносятся в `page-adapters/*`, а не в фасад.
 
 ## Сценарий 6. Заменить один шаблон другим
 
@@ -157,6 +163,14 @@ npm.cmd --prefix portal run build
    - `route-ownership-matrix.md`
    - при необходимости `docs/index.md`
 8. Прогнать build и representative routes.
+
+Если при замене шаблона меняется seed/import/runtime contract, сначала определите зону изменения:
+
+- `rules.mjs`
+- `validators.mjs`
+- `ownership.mjs`
+- `normalizers.mjs`
+- `strapi-client.mjs`
 
 ### Важно
 

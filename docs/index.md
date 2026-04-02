@@ -13,6 +13,12 @@
 - `scripts/` — генерация и импорт контента
 - `pages-preview/` — демо-снапшот для GitHub Pages
 
+После декомпозиции внутренних слоев:
+
+- `portal/src/lib/page-adapters.ts` остается публичным фасадом для adapters
+- `scripts/seed-runtime-content.mjs` остается CLI orchestrator для `seed-content`
+- внутренняя логика теперь живет в отдельных модулях, но import paths и команды не менялись
+
 ## Главный принцип
 
 В проекте есть два ownership-режима:
@@ -70,7 +76,7 @@ CHATPLUS/
 Источник истины:
 
 - `cms/seed/*.json`
-- `scripts/seed-runtime-content.mjs`
+- `scripts/seed-runtime-content.mjs` как orchestration entrypoint
 
 ### Managed singleton pages
 
@@ -88,6 +94,10 @@ CHATPLUS/
 - responsive behavior
 - shared UI behavior
 - adapters и fallback-логика
+
+Публичная точка входа adapters:
+
+- `portal/src/lib/page-adapters.ts`
 
 ## Активные шаблоны
 
@@ -136,6 +146,11 @@ CHATPLUS/
 - [Контракт безопасных изменений](change-safety.md)
 - [Контракты шаблонов](template-contracts.md)
 - [Карта файлов](file-map.md)
+
+Сначала определите, в каком internal module лежит нужная логика:
+
+- page adaptation/fallbacks -> `portal/src/lib/page-adapters/*`
+- ownership/import rules -> `scripts/seed-runtime-content/*.mjs`
 
 ### Если нужно добавить новый CMS-owned блок
 

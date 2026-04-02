@@ -64,6 +64,15 @@ portal/src/
 
 - [scripts/seed-runtime-content.mjs](../scripts/seed-runtime-content.mjs)
 
+После декомпозиции он остается CLI orchestrator, а внутренняя логика разнесена по:
+
+- `scripts/seed-runtime-content/env.mjs`
+- `scripts/seed-runtime-content/ownership.mjs`
+- `scripts/seed-runtime-content/rules.mjs`
+- `scripts/seed-runtime-content/normalizers.mjs`
+- `scripts/seed-runtime-content/validators.mjs`
+- `scripts/seed-runtime-content/strapi-client.mjs`
+
 ## 3. Архитектура фронтенда
 
 ### Layout layer
@@ -95,6 +104,17 @@ portal/src/
 - нормализацию `template_kind`
 - нормализацию `content_origin`
 - нормализацию FAQ, compare rows, section labels, proof facts и похожих structured blocks
+
+Page adaptation layer:
+
+- [page-adapters.ts](../portal/src/lib/page-adapters.ts)
+
+Этот файл теперь остается public facade, а внутренняя логика разложена по:
+
+- `portal/src/lib/page-adapters/shared.ts`
+- `portal/src/lib/page-adapters/details.ts`
+- `portal/src/lib/page-adapters/intersections.ts`
+- `portal/src/lib/page-adapters/specialized.ts`
 
 ### Registry layer
 
@@ -152,7 +172,7 @@ Route-to-template registry:
 Источник истины:
 
 - `cms/seed/*.json`
-- `scripts/seed-runtime-content.mjs`
+- `scripts/seed-runtime-content.mjs` как orchestration entrypoint
 
 Используется для:
 

@@ -113,6 +113,19 @@ Operational entry point:
 - upsert/import в Strapi
 - соблюдение правил `generated` / `managed`
 
+После декомпозиции внутренняя ответственность разделена так:
+
+- `ownership.mjs` — merge и ownership rules
+- `rules.mjs` — singleton maps, required fields и helper inferrers
+- `normalizers.mjs` — preparers и normalizers
+- `validators.mjs` — validation contracts
+- `strapi-client.mjs` — request/upsert logic
+
+При этом команда и entrypoint не изменились:
+
+- `npm.cmd run seed-content`
+- `scripts/seed-runtime-content.mjs`
+
 ## 5. Source-level и generated-level файлы
 
 ### Source-level

@@ -47,6 +47,12 @@ Invoke-WebRequest 'http://127.0.0.1:1337/api/channels?pagination[pageSize]=1'
 
 - `scripts/seed-runtime-content.mjs`
 
+После декомпозиции чаще всего смотреть сюда:
+
+- `scripts/seed-runtime-content/validators.mjs`
+- `scripts/seed-runtime-content/rules.mjs`
+- `scripts/seed-runtime-content/ownership.mjs`
+
 ## 3. `astro build` падает на fetch
 
 Признаки:
@@ -112,6 +118,13 @@ node scripts/export-from-strapi.mjs
 
 - `portal/src/lib/page-template-map.ts`
 
+Если shape данных кажется “почти правильной, но секция собралась не так”, дополнительно смотрите:
+
+- `portal/src/lib/page-adapters/shared.ts`
+- `portal/src/lib/page-adapters/details.ts`
+- `portal/src/lib/page-adapters/intersections.ts`
+- `portal/src/lib/page-adapters/specialized.ts`
+
 ## 7. Контент обновился в Strapi, но на сайте старый
 
 Возможные причины:
@@ -170,6 +183,16 @@ npm.cmd --prefix portal run snapshot:github-demo
 - `docs/change-safety.md`
 - `docs/how-to-add-page.md`
 - `docs/template-contracts.md`
+
+## 10a. После декомпозиции непонятно, где искать проблему
+
+Ориентир по типу поломки:
+
+- page shape, fallback, assembled sections -> `portal/src/lib/page-adapters/*`
+- import, ownership, required fields -> `scripts/seed-runtime-content/ownership.mjs`, `rules.mjs`, `validators.mjs`
+- normalizers/preparers -> `scripts/seed-runtime-content/normalizers.mjs`
+- Strapi request/upsert -> `scripts/seed-runtime-content/strapi-client.mjs`
+- public orchestration/entrypoint -> `scripts/seed-runtime-content.mjs`
 
 ## 11. Если непонятно, куда идти
 

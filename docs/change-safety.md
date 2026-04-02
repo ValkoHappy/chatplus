@@ -86,14 +86,21 @@ npm.cmd --prefix portal run build
 
 1. Открыть контракт шаблона в `docs/template-contracts.md`.
 2. Зафиксировать, меняется ли только визуал или меняется data contract.
-3. Если меняется только визуал:
+3. Определить, в каком internal adapter module лежит нужная логика:
+   - shared helpers -> `portal/src/lib/page-adapters/shared.ts`
+   - detail pages -> `portal/src/lib/page-adapters/details.ts`
+   - intersections -> `portal/src/lib/page-adapters/intersections.ts`
+   - specialized pages -> `portal/src/lib/page-adapters/specialized.ts`
+4. Если меняется только визуал:
    - править frontend
    - прогнать build
    - проверить representative routes
-4. Если меняется contract:
+5. Если меняется contract:
    - сначала обновить docs
    - потом schema/import/adapters
    - и только потом рендер
+
+Фасад `portal/src/lib/page-adapters.ts` трогайте только если меняется public contract exports, а не внутренняя реализация.
 
 ## 5b. Как безопасно заменить один шаблон другим
 
@@ -135,6 +142,16 @@ npm.cmd --prefix portal run build
    - обновить adapter layer
 3. Если блок не описан в docs и не валидируется, его нельзя рендерить во frontend.
 4. После этого прогнать build и representative routes.
+
+Если меняется seed/import/runtime contract, сначала определите, где именно это живет:
+
+- `rules.mjs` — константы, карты, required fields и inferrers
+- `validators.mjs` — runtime validation
+- `ownership.mjs` — merge/ownership behavior
+- `normalizers.mjs` — preparers/normalizers
+- `strapi-client.mjs` — request/upsert в Strapi
+
+Фасад `scripts/seed-runtime-content.mjs` трогайте только если меняется CLI/public orchestration contract.
 
 ## 7. Self-check перед merge или publish
 

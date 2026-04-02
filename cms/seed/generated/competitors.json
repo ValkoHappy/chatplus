@@ -1,6 +1,6 @@
 [
   {
-    "id": 281,
+    "id": 291,
     "documentId": "v9z4n19ds9u94xyjfl7t2kfl",
     "slug": "intercom",
     "name": "Intercom",
@@ -35,8 +35,8 @@
     "final_cta_text": "На демо покажем, где Chat Plus даёт больше контроля над каналами, AI и локальными интеграциями без лишней сложности.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.392Z",
-    "updatedAt": "2026-04-02T00:41:23.971Z",
-    "publishedAt": "2026-04-02T00:41:23.973Z",
+    "updatedAt": "2026-04-02T13:56:40.814Z",
+    "publishedAt": "2026-04-02T13:56:40.817Z",
     "content_origin": "generated",
     "hero_eyebrow": "Сравнение платформ",
     "compare_summary": "Сравнение Chat Plus и Intercom по скорости запуска, экономике владения и управляемости омниканального процесса.",
@@ -64,7 +64,7 @@
     }
   },
   {
-    "id": 282,
+    "id": 292,
     "documentId": "zsq7a4x44f0vaxa8uei6n39w",
     "slug": "respond-io",
     "name": "Respond.io",
@@ -99,8 +99,8 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Respond.io по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.412Z",
-    "updatedAt": "2026-04-02T00:41:23.989Z",
-    "publishedAt": "2026-04-02T00:41:23.992Z",
+    "updatedAt": "2026-04-02T13:56:40.834Z",
+    "publishedAt": "2026-04-02T13:56:40.836Z",
     "content_origin": "generated",
     "hero_eyebrow": "Сравнение платформ",
     "compare_summary": "Сравнение Chat Plus и Respond.io по скорости запуска, экономике владения и управляемости омниканального процесса.",
@@ -128,7 +128,7 @@
     }
   },
   {
-    "id": 283,
+    "id": 293,
     "documentId": "xousrca92g6cfgmp990vdtd0",
     "slug": "wati",
     "name": "Wati",
@@ -163,8 +163,8 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Wati по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.431Z",
-    "updatedAt": "2026-04-02T00:41:24.007Z",
-    "publishedAt": "2026-04-02T00:41:24.009Z",
+    "updatedAt": "2026-04-02T13:56:40.855Z",
+    "publishedAt": "2026-04-02T13:56:40.858Z",
     "content_origin": "generated",
     "hero_eyebrow": "Сравнение платформ",
     "compare_summary": "Сравнение Chat Plus и Wati по скорости запуска, экономике владения и управляемости омниканального процесса.",
@@ -192,7 +192,7 @@
     }
   },
   {
-    "id": 284,
+    "id": 294,
     "documentId": "op6qmb7dnqilwijobs6awt7i",
     "slug": "zendesk",
     "name": "Zendesk",
@@ -227,8 +227,8 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Zendesk по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.448Z",
-    "updatedAt": "2026-04-02T00:41:24.026Z",
-    "publishedAt": "2026-04-02T00:41:24.029Z",
+    "updatedAt": "2026-04-02T13:56:40.873Z",
+    "publishedAt": "2026-04-02T13:56:40.874Z",
     "content_origin": "generated",
     "hero_eyebrow": "Сравнение платформ",
     "compare_summary": "Сравнение Chat Plus и Zendesk по скорости запуска, экономике владения и управляемости омниканального процесса.",
@@ -256,7 +256,7 @@
     }
   },
   {
-    "id": 285,
+    "id": 295,
     "documentId": "octxsy38c9dnoih89rpke6an",
     "slug": "tidio",
     "name": "Tidio",
@@ -291,8 +291,8 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Tidio по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.463Z",
-    "updatedAt": "2026-04-02T00:41:24.046Z",
-    "publishedAt": "2026-04-02T00:41:24.048Z",
+    "updatedAt": "2026-04-02T13:56:40.887Z",
+    "publishedAt": "2026-04-02T13:56:40.889Z",
     "content_origin": "generated",
     "hero_eyebrow": "Сравнение платформ",
     "compare_summary": "Сравнение Chat Plus и Tidio по скорости запуска, экономике владения и управляемости омниканального процесса.",

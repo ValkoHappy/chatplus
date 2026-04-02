@@ -40,7 +40,11 @@
 ### Data access и adapters
 
 - `portal/src/lib/strapi.ts` — fetch и нормализация данных из Strapi
-- `portal/src/lib/page-adapters.ts` — приведение сущностей к template-friendly форме
+- `portal/src/lib/page-adapters.ts` — public facade для adapters; старый import path сохранен
+- `portal/src/lib/page-adapters/shared.ts` — shared adapter utils и helper builders
+- `portal/src/lib/page-adapters/details.ts` — detail adapters для channel/industry/integration/feature/solution/business type
+- `portal/src/lib/page-adapters/intersections.ts` — adapters для intersection-страниц
+- `portal/src/lib/page-adapters/specialized.ts` — specialized adapters для comparison/directory и похожих кейсов
 - `portal/src/lib/page-template-map.ts` — route/template registry
 - `portal/src/lib/special-pages.ts` — compatibility/meta-layer для special pages
 - `portal/src/lib/navigation.ts` — навигация
@@ -72,6 +76,8 @@
 
 ### Generated-level snapshots
 
+Materialized snapshot-слой, а не ручной рабочий источник истины:
+
 - `cms/seed/generated/channels.json`
 - `cms/seed/generated/industries.json`
 - `cms/seed/generated/integrations.json`
@@ -87,7 +93,13 @@
 
 ### Generator/import/export
 
-- `scripts/seed-runtime-content.mjs` — главный generator/import контракт
+- `scripts/seed-runtime-content.mjs` — CLI orchestrator и public entrypoint для `seed-content`
+- `scripts/seed-runtime-content/env.mjs` — загрузка `.env` и JSON source-файлов
+- `scripts/seed-runtime-content/ownership.mjs` — merge/ownership rules для `generated` и `managed`
+- `scripts/seed-runtime-content/rules.mjs` — константы, singleton maps и helper inferrers
+- `scripts/seed-runtime-content/normalizers.mjs` — normalizers и preparers для seed/runtime контента
+- `scripts/seed-runtime-content/validators.mjs` — validation слоя и top-level contract checks
+- `scripts/seed-runtime-content/strapi-client.mjs` — Strapi request/upsert logic
 - `scripts/export-from-strapi.mjs` — export materialized data обратно в `cms/seed/generated`
 
 ### Frontend QA
@@ -121,12 +133,17 @@
 
 ### Где меняется ownership-логика
 
-- `scripts/seed-runtime-content.mjs`
+- `scripts/seed-runtime-content/ownership.mjs`
+- `scripts/seed-runtime-content/rules.mjs`
 - `docs/route-ownership-matrix.md`
 
 ### Где меняются fallback-и и адаптация данных
 
-- `portal/src/lib/page-adapters.ts`
+- `portal/src/lib/page-adapters.ts` как facade
+- `portal/src/lib/page-adapters/shared.ts`
+- `portal/src/lib/page-adapters/details.ts`
+- `portal/src/lib/page-adapters/intersections.ts`
+- `portal/src/lib/page-adapters/specialized.ts`
 
 ### Где менять Open Graph / global SEO shell
 
@@ -136,6 +153,13 @@
 
 - `docs/template-contracts.md`
 - `docs/change-safety.md`
+- `scripts/seed-runtime-content/validators.mjs`
+- `scripts/seed-runtime-content/rules.mjs`
+
+### Где искать, почему Strapi import/upsert ведет себя не так
+
+- `scripts/seed-runtime-content/strapi-client.mjs`
+- `scripts/seed-runtime-content/ownership.mjs`
 - `scripts/seed-runtime-content.mjs`
 
 ### Где смотреть publish flow
