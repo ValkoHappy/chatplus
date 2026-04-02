@@ -138,72 +138,14 @@ function compactDescription(text: string, limit = 72) {
   return `${firstSentence.slice(0, limit).trimEnd()}…`;
 }
 
-function normalizeKeywordSource(text: string) {
-  return text.toLowerCase().replace(/ё/g, 'е');
-}
-
-function describeCompetitorWeakness(title: string, competitorName: string) {
-  const normalized = normalizeKeywordSource(title);
-
-  if (/(дорог|цена|стоим|нацен|порог|оплат)/.test(normalized)) {
-    return `У ${competitorName} это ограничение напрямую бьет по стоимости владения и делает рост команды менее предсказуемым.`;
+function pickFirstMeaningfulString(...values: any[]) {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) {
+      return value;
+    }
   }
 
-  if (/(ai|агент|резолюц|автомат)/.test(normalized)) {
-    return `Из-за этого сложнее масштабировать автоматизацию без отдельных доплат, ручных компромиссов и потери скорости.`;
-  }
-
-  if (/(whatsapp|telegram|канал|омниканал)/.test(normalized)) {
-    return `В реальном процессе это ограничивает омниканальный контур и вынуждает собирать коммуникации из нескольких сервисов.`;
-  }
-
-  if (/(crm|интеграц|calendar|календар)/.test(normalized)) {
-    return 'Команде приходится дольше связывать данные и переносить контекст между внешними системами вручную.';
-  }
-
-  if (/(внедр|настрой|запуск|слож)/.test(normalized)) {
-    return 'Из-за этого запуск затягивается, а стоимость внедрения растет еще до первых измеримых результатов.';
-  }
-
-  if (/(white-label|агентств|партнер)/.test(normalized)) {
-    return 'Для агентств и интеграторов это усложняет упаковку сервиса под собственную модель продаж и сопровождения.';
-  }
-
-  return 'В рабочем процессе это создает лишние ограничения для команды, которой нужен быстрый запуск и понятная экономика.';
-}
-
-function describeChatPlusStrength(title: string) {
-  const normalized = normalizeKeywordSource(title);
-
-  if (/(дешев|цена|стоим|нацен|фиксир)/.test(normalized)) {
-    return 'Chat Plus закрывает этот сценарий в более предсказуемой модели без скрытых доплат и резкого роста счета.';
-  }
-
-  if (/(ai|агент|календар|автозапис)/.test(normalized)) {
-    return 'Команда получает готовую автоматизацию из коробки и быстрее доводит лид до следующего шага без ручных связок.';
-  }
-
-  if (/(whatsapp|telegram|канал|омниканал)/.test(normalized)) {
-    return 'Это позволяет держать каналы в одном контуре и не собирать стек из нескольких разрозненных инструментов.';
-  }
-
-  if (/(crm|интеграц|amo|bitrix|altegio|outlook|google)/.test(normalized)) {
-    return 'Данные и коммуникации остаются связанными, а запуск не упирается в кастомную разработку и ручные переносы.';
-  }
-
-  if (/(быстр|запуск|15 минут|внедр)/.test(normalized)) {
-    return 'За счет этого внедрение занимает меньше времени и быстрее превращается в рабочий сценарий для команды.';
-  }
-
-  if (/(поддерж|русск|снг|локаль)/.test(normalized)) {
-    return 'Это снижает операционные риски на старте и упрощает внедрение для локальной команды и партнеров.';
-  }
-
-  if (/(white-label|агентств|партнер)/.test(normalized)) {
-    return 'Партнер может упаковать готовый сценарий под своим брендом без лишней надстройки поверх продукта.';
-  }
-
-  return 'Это дает более практичную B2B-конфигурацию под быстрый запуск, омниканал и работу команды в одном контуре.';
+  return '';
 }
 
 export function getPageTemplate(settings: any, group: string, key: string) {
@@ -589,13 +531,13 @@ export function adaptBusinessTypePage(bt: any, context: any) {
   };
 }
 
-function withCompetitorCmsFields(page: any, competitor: any, template: any, competitorName: string) {
+function withCompetitorCmsFields(page: any, competitor: any, template: any) {
   return {
     ...page,
     hero_eyebrow: competitor.hero_eyebrow || competitor.eyebrow || page.hero_eyebrow || template.hero_eyebrow,
-    problem_intro: competitor.compare_summary || page.problem_intro || `Слабые места ${competitorName} обычно проявляются, когда команде нужен быстрый запуск, прозрачная экономика и единый омниканальный процесс.`,
+    problem_intro: competitor.compare_summary || page.problem_intro,
     solution_title: competitor.advantages_title || competitor.strengths_title || page.solution_title || template.solution_title,
-    solution_intro: competitor.advantages_intro || page.solution_intro || 'Ниже — сильные стороны Chat Plus в тех сценариях, где важны скорость запуска, управляемый процесс и прозрачная экономика.',
+    solution_intro: competitor.advantages_intro || page.solution_intro,
     faq_title: competitor.faq_title || page.faq_title || template.faq_title,
     compare_summary: competitor.compare_summary || '',
     compare_points: Array.isArray(competitor.compare_points) ? competitor.compare_points : [],
@@ -607,7 +549,6 @@ function withCompetitorCmsFields(page: any, competitor: any, template: any, comp
 
 export function adaptCompetitorPage(competitor: any, context: any, mode: 'compare' | 'vs') {
   const template = getPageTemplate(context.settings, 'details', mode);
-  const competitorName = competitor.name || 'конкурента';
   const strengths = Array.isArray(competitor.our_strengths) ? competitor.our_strengths : [];
   const weaknesses = Array.isArray(competitor.weaknesses) ? competitor.weaknesses : [];
 
@@ -620,16 +561,16 @@ export function adaptCompetitorPage(competitor: any, context: any, mode: 'compar
     hero_cta_primary_label: competitor.final_cta_label,
     hero_cta_primary_url: '/demo',
     problem_title: competitor.weaknesses_title || template.problem_title,
-    problem_intro: `Слабые места ${competitorName} обычно проявляются, когда команде нужен быстрый запуск, прозрачная экономика и единый омниканальный процесс.`,
+    problem_intro: competitor.compare_summary || '',
     problems: weaknesses.map((item: string) => ({
       title: item,
-      text: describeCompetitorWeakness(item, competitorName),
+      text: '',
     })),
     solution_title: competitor.strengths_title || template.solution_title,
-    solution_intro: `Ниже — сильные стороны Chat Plus в тех сценариях, где важно быстро внедрить систему и не раздувать стоимость владения.`,
+    solution_intro: competitor.advantages_intro || '',
     solution_steps: strengths.map((item: string, index: number) => ({
       title: item || `Преимущество ${index + 1}`,
-      text: describeChatPlusStrength(item || ''),
+      text: '',
     })),
     features_title: undefined,
     features: [],
@@ -670,7 +611,7 @@ export function adaptCompetitorPage(competitor: any, context: any, mode: 'compar
     sticky_cta_text: competitor.final_cta_text,
     sticky_cta_primary_label: competitor.final_cta_label,
     sticky_cta_primary_url: '/demo',
-  }, competitor, template, competitorName);
+  }, competitor, template);
 }
 
 export function adaptChannelIndustryPage(channel: any, industry: any, context: any) {
@@ -745,19 +686,27 @@ export function adaptDirectoryPage(key: string, settings: any, items: any[]) {
 
 export function adaptChannelIntegrationPage(channel: any, integration: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channel_industry');
+  const pairName = `${channel.name} × ${integration.name}`;
+  const pairSubtitle = pickFirstMeaningfulString(
+    integration.subtitle,
+    integration.description,
+    channel.subtitle,
+    channel.description,
+  );
+
   return {
-    meta_title: `Интеграция ${channel.name} и ${integration.name} | Chat Plus`,
-    meta_description: `Настройте связку ${channel.name} и ${integration.name} за 5 минут. Автоматизация продаж и поддержка клиентов без программирования.`,
-    h1: `Связка ${channel.name} и ${integration.name}`,
-    subtitle: `Объедините всю силу мессенджера ${channel.name} и решения ${integration.name}.`,
+    meta_title: `${pairName} | Chat Plus`,
+    meta_description: pickFirstMeaningfulString(integration.seo_description, integration.description, channel.seo_description, channel.description),
+    h1: pairName,
+    subtitle: pairSubtitle,
     hero_cta_primary_label: template.hero_cta_primary_label,
     hero_cta_primary_url: '/demo',
-    problem_title: `Почему бизнесу не хватает просто ${channel.name}`,
-    problem_intro: `Добавление ${integration.name} решает главную проблему масштабирования.`,
-    solution_title: `Мощь ${channel.name} внутри ${integration.name}`,
-    solution_intro: `Вся переписка, автоматизация и аналитика теперь в едином рабочем окне.`,
+    problem_title: fill(template.problem_title, { channel: channel.name, industry: integration.name, integration: integration.name }) || pairName,
+    problem_intro: pickFirstMeaningfulString(integration.problem_intro, integration.description, channel.problem_intro, channel.description),
+    solution_title: fill(template.solution_title, { channel: channel.name, industry: integration.name, integration: integration.name }) || pairName,
+    solution_intro: pickFirstMeaningfulString(integration.solution_intro, integration.description, channel.solution_intro, channel.description),
     solution_steps: makeSteps((Array.isArray(channel.solution_steps) && channel.solution_steps.length > 0) ? channel.solution_steps : channel.steps),
-    features_title: `Ключевые возможности`,
+    features_title: template.features_title,
     features: makeFeatureItems([...(channel.features || []), ...(integration.features || [])].slice(0, 6)),
     integrations_title: template.integrations_title,
     integration_blocks: makeIntegrationBlocks(context.integrations),
@@ -779,8 +728,8 @@ export function adaptChannelIntegrationPage(channel: any, integration: any, cont
       { label: integration.name, href: `/integrations/${integration.slug}`, description: integration.description },
       ...context.solutions.slice(0, 3).map((item: any) => ({ label: item.name, href: `/solutions/${item.slug}`, description: item.description })),
     ]),
-    sticky_cta_title: `Запустите интеграцию ${channel.name} + ${integration.name}`,
-    sticky_cta_text: `Оставьте заявку, и мы покажем, как это работает на практике.`,
+    sticky_cta_title: fill(template.sticky_cta_title, { channel: channel.name, industry: integration.name, integration: integration.name }) || pairName,
+    sticky_cta_text: fill(template.sticky_cta_text, { channel: channel.name, industry: integration.name, integration: integration.name }) || pairSubtitle,
     sticky_cta_primary_label: template.sticky_cta_primary_label,
     sticky_cta_primary_url: '/demo',
   };
@@ -788,19 +737,27 @@ export function adaptChannelIntegrationPage(channel: any, integration: any, cont
 
 export function adaptIndustrySolutionPage(industry: any, solution: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channel_industry');
+  const pairName = `${industry.name} × ${solution.name}`;
+  const pairSubtitle = pickFirstMeaningfulString(
+    solution.subtitle,
+    solution.description,
+    industry.subtitle,
+    industry.description,
+  );
+
   return {
-    meta_title: `${solution.name} для отрасли: ${industry.name} | Chat Plus`,
-    meta_description: `Готовые сценарии ${solution.name} специально для ниши ${industry.name}.`,
-    h1: `${solution.name} для ниши: ${industry.name}`,
-    subtitle: `Решение, которое меняет правила игры для сектора ${industry.name}.`,
+    meta_title: `${pairName} | Chat Plus`,
+    meta_description: pickFirstMeaningfulString(solution.seo_description, solution.description, industry.seo_description, industry.description),
+    h1: pairName,
+    subtitle: pairSubtitle,
     hero_cta_primary_label: template.hero_cta_primary_label,
     hero_cta_primary_url: '/demo',
-    problem_title: `Частые ошибки в сфере ${industry.name}`,
+    problem_title: fill(template.problem_title, { channel: solution.name, industry: industry.name, solution: solution.name }) || pairName,
     problem_intro: industry.problem_intro || industry.pain || '',
-    solution_title: `Как ${solution.name} закрывает эти боли`,
+    solution_title: fill(template.solution_title, { channel: solution.name, industry: industry.name, solution: solution.name }) || pairName,
     solution_intro: industry.solution_intro || industry.solution || '',
     solution_steps: makeSteps(solution.steps || []),
-    features_title: `Специализированные функции`,
+    features_title: template.features_title,
     features: makeFeatureItems([...(solution.features || []), ...(industry.features || [])].slice(0, 6)),
     integrations_title: template.integrations_title,
     integration_blocks: makeIntegrationBlocks(context.integrations),
@@ -822,8 +779,8 @@ export function adaptIndustrySolutionPage(industry: any, solution: any, context:
       { label: solution.name, href: `/solutions/${solution.slug}`, description: solution.description },
       ...context.channels.slice(0, 3).map((item: any) => ({ label: item.name, href: `/channels/${item.slug}`, description: item.description })),
     ]),
-    sticky_cta_title: `Внедрить ${solution.name} для ${industry.name}`,
-    sticky_cta_text: `Оставьте заявку, и мы обсудим ваш проект.`,
+    sticky_cta_title: fill(template.sticky_cta_title, { channel: solution.name, industry: industry.name, solution: solution.name }) || pairName,
+    sticky_cta_text: fill(template.sticky_cta_text, { channel: solution.name, industry: industry.name, solution: solution.name }) || pairSubtitle,
     sticky_cta_primary_label: template.sticky_cta_primary_label,
     sticky_cta_primary_url: '/demo',
   };
@@ -831,19 +788,27 @@ export function adaptIndustrySolutionPage(industry: any, solution: any, context:
 
 export function adaptIntegrationSolutionPage(integration: any, solution: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channel_industry');
+  const pairName = `${integration.name} × ${solution.name}`;
+  const pairSubtitle = pickFirstMeaningfulString(
+    solution.subtitle,
+    solution.description,
+    integration.subtitle,
+    integration.description,
+  );
+
   return {
-    meta_title: `${solution.name} через связку с ${integration.name} | Chat Plus`,
-    meta_description: `Используйте ${integration.name} для максимальной эффективности процесса ${solution.name}.`,
-    h1: `${solution.name} в синергии с ${integration.name}`,
-    subtitle: `Лучшие практики автоматизации бизнес-процессов.`,
+    meta_title: `${pairName} | Chat Plus`,
+    meta_description: pickFirstMeaningfulString(solution.seo_description, solution.description, integration.seo_description, integration.description),
+    h1: pairName,
+    subtitle: pairSubtitle,
     hero_cta_primary_label: template.hero_cta_primary_label,
     hero_cta_primary_url: '/demo',
-    problem_title: `Слабые места стандартного ${solution.name}`,
-    problem_intro: `Без прозрачной интеграции с ${integration.name} процесс ломается.`,
-    solution_title: `Как Chat Plus объединяет эти решения`,
-    solution_intro: `Плавная передача данных и аналитики.`,
+    problem_title: fill(template.problem_title, { channel: solution.name, industry: integration.name, integration: integration.name, solution: solution.name }) || pairName,
+    problem_intro: pickFirstMeaningfulString(solution.problem_intro, solution.description, integration.problem_intro, integration.description),
+    solution_title: fill(template.solution_title, { channel: solution.name, industry: integration.name, integration: integration.name, solution: solution.name }) || pairName,
+    solution_intro: pickFirstMeaningfulString(solution.solution_intro, solution.description, integration.solution_intro, integration.description),
     solution_steps: makeSteps(solution.steps || []),
-    features_title: `Специализированные функции`,
+    features_title: template.features_title,
     features: makeFeatureItems([...(solution.features || []), ...(integration.features || [])].slice(0, 6)),
     integrations_title: template.integrations_title,
     integration_blocks: makeIntegrationBlocks(context.integrations),
@@ -865,8 +830,8 @@ export function adaptIntegrationSolutionPage(integration: any, solution: any, co
       { label: solution.name, href: `/solutions/${solution.slug}`, description: solution.description },
       ...context.channels.slice(0, 3).map((item: any) => ({ label: item.name, href: `/channels/${item.slug}`, description: item.description })),
     ]),
-    sticky_cta_title: `Запустить инструмент`,
-    sticky_cta_text: `Оставьте заявку, и мы обсудим ваш проект.`,
+    sticky_cta_title: fill(template.sticky_cta_title, { channel: solution.name, industry: integration.name, integration: integration.name, solution: solution.name }) || pairName,
+    sticky_cta_text: fill(template.sticky_cta_text, { channel: solution.name, industry: integration.name, integration: integration.name, solution: solution.name }) || pairSubtitle,
     sticky_cta_primary_label: template.sticky_cta_primary_label,
     sticky_cta_primary_url: '/demo',
   };
@@ -874,19 +839,27 @@ export function adaptIntegrationSolutionPage(integration: any, solution: any, co
 
 export function adaptBusinessTypeIndustryPage(businessType: any, industry: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channel_industry');
+  const pairName = `${businessType.name} × ${industry.name}`;
+  const pairSubtitle = pickFirstMeaningfulString(
+    businessType.subtitle,
+    businessType.description,
+    industry.subtitle,
+    industry.description,
+  );
+
   return {
-    meta_title: `Платформа ${businessType.name} для ниши ${industry.name} | Chat Plus`,
-    meta_description: `Специализированное решение для формата ${businessType.name} в индустрии ${industry.name}.`,
-    h1: `Решение ${businessType.name} для: ${industry.name}`,
-    subtitle: `Оптимизируем ваши процессы с учетом специфики ниши.`,
+    meta_title: `${pairName} | Chat Plus`,
+    meta_description: pickFirstMeaningfulString(businessType.description, industry.description),
+    h1: pairName,
+    subtitle: pairSubtitle,
     hero_cta_primary_label: template.hero_cta_primary_label,
     hero_cta_primary_url: '/demo',
-    problem_title: `Ограничения формата ${businessType.name}`,
+    problem_title: fill(template.problem_title, { channel: businessType.name, industry: industry.name, businessType: businessType.name }) || pairName,
     problem_intro: industry.problem_intro || industry.pain || '',
-    solution_title: `Преимущества Chat Plus`,
+    solution_title: fill(template.solution_title, { channel: businessType.name, industry: industry.name, businessType: businessType.name }) || pairName,
     solution_intro: industry.solution_intro || industry.solution || '',
     solution_steps: makeSteps(industry.steps || []),
-    features_title: `Специализированные функции`,
+    features_title: template.features_title,
     features: makeFeatureItems([...(businessType.features || []), ...(industry.features || [])].slice(0, 6)),
     integrations_title: template.integrations_title,
     integration_blocks: makeIntegrationBlocks(context.integrations),
@@ -908,8 +881,8 @@ export function adaptBusinessTypeIndustryPage(businessType: any, industry: any, 
       { label: businessType.name, href: `/for/${businessType.slug}`, description: businessType.description },
       ...context.channels.slice(0, 3).map((item: any) => ({ label: item.name, href: `/channels/${item.slug}`, description: item.description })),
     ]),
-    sticky_cta_title: `Начать работу`,
-    sticky_cta_text: `Оставьте заявку, и мы обсудим ваш проект.`,
+    sticky_cta_title: fill(template.sticky_cta_title, { channel: businessType.name, industry: industry.name, businessType: businessType.name }) || pairName,
+    sticky_cta_text: fill(template.sticky_cta_text, { channel: businessType.name, industry: industry.name, businessType: businessType.name }) || pairSubtitle,
     sticky_cta_primary_label: template.sticky_cta_primary_label,
     sticky_cta_primary_url: '/demo',
   };

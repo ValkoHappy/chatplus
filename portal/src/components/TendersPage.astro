@@ -90,26 +90,7 @@ const useCases = (page.use_cases || []).map((item) => ({
 }));
 const toHref = (href?: string) => withBasePath(href);
 const sectionLabels = page.section_labels || {};
-const heroPanelItems =
-  Array.isArray(page.hero_panel_items) && page.hero_panel_items.length > 0
-    ? page.hero_panel_items
-    : [
-        {
-          source: '44-ФЗ · Медицинское оборудование',
-          deadline: '2 дня до дедлайна',
-          text: 'Заказчик изменил документацию. AI выделил критичные пункты и поставил дедлайн в календарь.',
-        },
-        {
-          source: '223-ФЗ · IT-инфраструктура',
-          deadline: 'Новая закупка',
-          text: 'Тендер доставлен в Telegram отдела, карточка в CRM создана автоматически.',
-        },
-        {
-          accent: true,
-          icon: 'lucide:sparkles',
-          label: 'AI отсек нерелевантные закупки и показал только нужные кейсы',
-        },
-      ];
+const heroPanelItems = Array.isArray(page.hero_panel_items) ? page.hero_panel_items : [];
 ---
 
 <Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
@@ -123,7 +104,7 @@ const heroPanelItems =
     <div class="hero-glow"></div>
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Tenders'}</span>
+        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow}</span>
         <h1>{page.h1}</h1>
         {page.subtitle && <p class="subtitle">{page.subtitle}</p>}
         <div class="hero-actions">
@@ -149,8 +130,8 @@ const heroPanelItems =
       <div class="hero-panel">
         <div class="hero-window">
           <div class="window-top">
-            <span>{sectionLabels.hero_panel_title || 'Тендерный поток'}</span>
-            <strong>{sectionLabels.hero_panel_summary || 'Релевантные закупки за секунды'}</strong>
+            <span>{sectionLabels.hero_panel_title}</span>
+            <strong>{sectionLabels.hero_panel_summary}</strong>
           </div>
           <div class="window-list">
             {heroPanelItems.map((item) =>
@@ -268,11 +249,11 @@ const heroPanelItems =
         </div>
         <div class="roi-grid">
           <article class="roi-card bad">
-            <h3>{sectionLabels.roi_without_title || 'Без Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_without_title}</h3>
             <ul>{(page.roi_without_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
           <article class="roi-card good">
-            <h3>{sectionLabels.roi_with_title || 'С Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_with_title}</h3>
             <ul>{(page.roi_with_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
         </div>
@@ -307,16 +288,16 @@ const heroPanelItems =
       <div class="container">
         <div class="section-header">
           <h2>{page.comparison_title}</h2>
-          <p>{sectionLabels.comparison_intro || 'Сравнение здесь про скорость реакции, управление дедлайнами и контроль тендерного процесса, а не только про уведомления.'}</p>
+          <p>{sectionLabels.comparison_intro}</p>
         </div>
         <div class="table-wrap">
           <table class="compare-table">
             <thead>
               <tr>
-                <th>{sectionLabels.comparison_parameter || 'Параметр'}</th>
-                <th>{sectionLabels.comparison_option_one || 'Email / агрегатор'}</th>
-                <th>{sectionLabels.comparison_option_two || 'Мобильное приложение'}</th>
-                <th>{sectionLabels.comparison_chat_plus || 'Chat Plus Tenders'}</th>
+                <th>{sectionLabels.comparison_parameter}</th>
+                <th>{sectionLabels.comparison_option_one}</th>
+                <th>{sectionLabels.comparison_option_two}</th>
+                <th>{sectionLabels.comparison_chat_plus}</th>
               </tr>
             </thead>
             <tbody>

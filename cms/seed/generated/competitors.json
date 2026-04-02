@@ -1,6 +1,6 @@
 [
   {
-    "id": 186,
+    "id": 281,
     "documentId": "v9z4n19ds9u94xyjfl7t2kfl",
     "slug": "intercom",
     "name": "Intercom",
@@ -35,11 +35,36 @@
     "final_cta_text": "На демо покажем, где Chat Plus даёт больше контроля над каналами, AI и локальными интеграциями без лишней сложности.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.392Z",
-    "updatedAt": "2026-03-30T18:42:21.404Z",
-    "publishedAt": "2026-03-30T18:42:21.408Z"
+    "updatedAt": "2026-04-02T00:41:23.971Z",
+    "publishedAt": "2026-04-02T00:41:23.973Z",
+    "content_origin": "generated",
+    "hero_eyebrow": "Сравнение платформ",
+    "compare_summary": "Сравнение Chat Plus и Intercom по скорости запуска, экономике владения и управляемости омниканального процесса.",
+    "compare_points": [
+      "Быстрый запуск без тяжелого enterprise-стека Intercom.",
+      "Омниканал, CRM и AI в одном рабочем контуре.",
+      "Понятная модель владения без ручной сборки из разрозненных сервисов."
+    ],
+    "advantages_title": "Где Chat Plus сильнее",
+    "advantages_intro": "Ниже — сильные стороны Chat Plus в тех сценариях, где особенно важны скорость запуска, управляемый процесс и прозрачная экономика.",
+    "faq_title": "Частые вопросы",
+    "sticky_cta_title": "Сравните Chat Plus и Intercom на вашем сценарии",
+    "sticky_cta_text": "На демо покажем, где Chat Plus даёт больше контроля над каналами, AI и локальными интеграциями без лишней сложности.",
+    "section_labels": {
+      "compare_badge": "Сравнение",
+      "pricing_table_title": "Ключевые параметры",
+      "comparison_header_parameter": "Параметр",
+      "comparison_header_one": "Вариант 1",
+      "comparison_header_two": "Вариант 2",
+      "comparison_header_chat_plus": "Chat Plus",
+      "comparison_parameter": "Параметр",
+      "comparison_option_one": "Вариант 1",
+      "comparison_option_two": "Вариант 2",
+      "comparison_chat_plus": "Chat Plus"
+    }
   },
   {
-    "id": 187,
+    "id": 282,
     "documentId": "zsq7a4x44f0vaxa8uei6n39w",
     "slug": "respond-io",
     "name": "Respond.io",
@@ -74,11 +99,36 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Respond.io по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.412Z",
-    "updatedAt": "2026-03-30T18:42:21.429Z",
-    "publishedAt": "2026-03-30T18:42:21.432Z"
+    "updatedAt": "2026-04-02T00:41:23.989Z",
+    "publishedAt": "2026-04-02T00:41:23.992Z",
+    "content_origin": "generated",
+    "hero_eyebrow": "Сравнение платформ",
+    "compare_summary": "Сравнение Chat Plus и Respond.io по скорости запуска, экономике владения и управляемости омниканального процесса.",
+    "compare_points": [
+      "Быстрый запуск без тяжелого enterprise-стека Respond.io.",
+      "Омниканал, CRM и AI в одном рабочем контуре.",
+      "Понятная модель владения без ручной сборки из разрозненных сервисов."
+    ],
+    "advantages_title": "Где Chat Plus сильнее",
+    "advantages_intro": "Ниже — сильные стороны Chat Plus в тех сценариях, где особенно важны скорость запуска, управляемый процесс и прозрачная экономика.",
+    "faq_title": "Частые вопросы",
+    "sticky_cta_title": "Готовы сравнить Respond.io с Chat Plus на своих сценариях?",
+    "sticky_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Respond.io по стоимости, скорости запуска и практической ценности для команды.",
+    "section_labels": {
+      "compare_badge": "Сравнение",
+      "pricing_table_title": "Ключевые параметры",
+      "comparison_header_parameter": "Параметр",
+      "comparison_header_one": "Вариант 1",
+      "comparison_header_two": "Вариант 2",
+      "comparison_header_chat_plus": "Chat Plus",
+      "comparison_parameter": "Параметр",
+      "comparison_option_one": "Вариант 1",
+      "comparison_option_two": "Вариант 2",
+      "comparison_chat_plus": "Chat Plus"
+    }
   },
   {
-    "id": 188,
+    "id": 283,
     "documentId": "xousrca92g6cfgmp990vdtd0",
     "slug": "wati",
     "name": "Wati",
@@ -113,11 +163,36 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Wati по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.431Z",
-    "updatedAt": "2026-03-30T18:42:21.452Z",
-    "publishedAt": "2026-03-30T18:42:21.455Z"
+    "updatedAt": "2026-04-02T00:41:24.007Z",
+    "publishedAt": "2026-04-02T00:41:24.009Z",
+    "content_origin": "generated",
+    "hero_eyebrow": "Сравнение платформ",
+    "compare_summary": "Сравнение Chat Plus и Wati по скорости запуска, экономике владения и управляемости омниканального процесса.",
+    "compare_points": [
+      "Быстрый запуск без тяжелого enterprise-стека Wati.",
+      "Омниканал, CRM и AI в одном рабочем контуре.",
+      "Понятная модель владения без ручной сборки из разрозненных сервисов."
+    ],
+    "advantages_title": "Где Chat Plus сильнее",
+    "advantages_intro": "Ниже — сильные стороны Chat Plus в тех сценариях, где особенно важны скорость запуска, управляемый процесс и прозрачная экономика.",
+    "faq_title": "Частые вопросы",
+    "sticky_cta_title": "Готовы сравнить Wati с Chat Plus на своих сценариях?",
+    "sticky_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Wati по стоимости, скорости запуска и практической ценности для команды.",
+    "section_labels": {
+      "compare_badge": "Сравнение",
+      "pricing_table_title": "Ключевые параметры",
+      "comparison_header_parameter": "Параметр",
+      "comparison_header_one": "Вариант 1",
+      "comparison_header_two": "Вариант 2",
+      "comparison_header_chat_plus": "Chat Plus",
+      "comparison_parameter": "Параметр",
+      "comparison_option_one": "Вариант 1",
+      "comparison_option_two": "Вариант 2",
+      "comparison_chat_plus": "Chat Plus"
+    }
   },
   {
-    "id": 189,
+    "id": 284,
     "documentId": "op6qmb7dnqilwijobs6awt7i",
     "slug": "zendesk",
     "name": "Zendesk",
@@ -152,11 +227,36 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Zendesk по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.448Z",
-    "updatedAt": "2026-03-30T18:42:21.477Z",
-    "publishedAt": "2026-03-30T18:42:21.480Z"
+    "updatedAt": "2026-04-02T00:41:24.026Z",
+    "publishedAt": "2026-04-02T00:41:24.029Z",
+    "content_origin": "generated",
+    "hero_eyebrow": "Сравнение платформ",
+    "compare_summary": "Сравнение Chat Plus и Zendesk по скорости запуска, экономике владения и управляемости омниканального процесса.",
+    "compare_points": [
+      "Быстрый запуск без тяжелого enterprise-стека Zendesk.",
+      "Омниканал, CRM и AI в одном рабочем контуре.",
+      "Понятная модель владения без ручной сборки из разрозненных сервисов."
+    ],
+    "advantages_title": "Где Chat Plus сильнее",
+    "advantages_intro": "Ниже — сильные стороны Chat Plus в тех сценариях, где особенно важны скорость запуска, управляемый процесс и прозрачная экономика.",
+    "faq_title": "Частые вопросы",
+    "sticky_cta_title": "Готовы сравнить Zendesk с Chat Plus на своих сценариях?",
+    "sticky_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Zendesk по стоимости, скорости запуска и практической ценности для команды.",
+    "section_labels": {
+      "compare_badge": "Сравнение",
+      "pricing_table_title": "Ключевые параметры",
+      "comparison_header_parameter": "Параметр",
+      "comparison_header_one": "Вариант 1",
+      "comparison_header_two": "Вариант 2",
+      "comparison_header_chat_plus": "Chat Plus",
+      "comparison_parameter": "Параметр",
+      "comparison_option_one": "Вариант 1",
+      "comparison_option_two": "Вариант 2",
+      "comparison_chat_plus": "Chat Plus"
+    }
   },
   {
-    "id": 190,
+    "id": 285,
     "documentId": "octxsy38c9dnoih89rpke6an",
     "slug": "tidio",
     "name": "Tidio",
@@ -191,7 +291,32 @@
     "final_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Tidio по стоимости, скорости запуска и практической ценности для команды.",
     "final_cta_label": "Запросить сравнение",
     "createdAt": "2026-03-29T16:55:47.463Z",
-    "updatedAt": "2026-03-30T18:42:21.496Z",
-    "publishedAt": "2026-03-30T18:42:21.498Z"
+    "updatedAt": "2026-04-02T00:41:24.046Z",
+    "publishedAt": "2026-04-02T00:41:24.048Z",
+    "content_origin": "generated",
+    "hero_eyebrow": "Сравнение платформ",
+    "compare_summary": "Сравнение Chat Plus и Tidio по скорости запуска, экономике владения и управляемости омниканального процесса.",
+    "compare_points": [
+      "Быстрый запуск без тяжелого enterprise-стека Tidio.",
+      "Омниканал, CRM и AI в одном рабочем контуре.",
+      "Понятная модель владения без ручной сборки из разрозненных сервисов."
+    ],
+    "advantages_title": "Где Chat Plus сильнее",
+    "advantages_intro": "Ниже — сильные стороны Chat Plus в тех сценариях, где особенно важны скорость запуска, управляемый процесс и прозрачная экономика.",
+    "faq_title": "Частые вопросы",
+    "sticky_cta_title": "Готовы сравнить Tidio с Chat Plus на своих сценариях?",
+    "sticky_cta_text": "Покажем на реальном демо, где Chat Plus выигрывает у Tidio по стоимости, скорости запуска и практической ценности для команды.",
+    "section_labels": {
+      "compare_badge": "Сравнение",
+      "pricing_table_title": "Ключевые параметры",
+      "comparison_header_parameter": "Параметр",
+      "comparison_header_one": "Вариант 1",
+      "comparison_header_two": "Вариант 2",
+      "comparison_header_chat_plus": "Chat Plus",
+      "comparison_parameter": "Параметр",
+      "comparison_option_one": "Вариант 1",
+      "comparison_option_two": "Вариант 2",
+      "comparison_chat_plus": "Chat Plus"
+    }
   }
 ]

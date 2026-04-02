@@ -29,9 +29,10 @@
 2. [Архитектура](docs/architecture.md)
 3. [CMS-модель](docs/cms-model.md)
 4. [Контентный workflow](docs/content-workflow.md)
-5. [Контракты шаблонов](docs/template-contracts.md)
-6. [Контракт безопасных изменений](docs/change-safety.md)
-7. [Деплой и публикация](DEPLOY.md)
+5. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
+6. [Контракты шаблонов](docs/template-contracts.md)
+7. [Контракт безопасных изменений](docs/change-safety.md)
+8. [Деплой и публикация](DEPLOY.md)
 
 ### Если вы оператор, контент-менеджер или владелец проекта
 
@@ -119,12 +120,14 @@ npm.cmd --prefix portal run snapshot:github-demo
 Подробнее:
 
 - [Контракты шаблонов](docs/template-contracts.md)
+- [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
 - [Route-to-template registry](portal/src/lib/page-template-map.ts)
 
 ## Важные ссылки
 
 - [Главная карта документации](docs/index.md)
 - [Гайд оператора](docs/operator-guide.md)
+- [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
 - [Контракты шаблонов](docs/template-contracts.md)
 - [Контракт безопасных изменений](docs/change-safety.md)
 - [Деплой](DEPLOY.md)

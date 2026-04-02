@@ -113,6 +113,8 @@ function hydrateMissingManagedContent(sourceValue, existingValue) {
 const LANDING_PAGE_TEMPLATE_KINDS = new Set([
   'home',
   'structured',
+  'pricing',
+  'partnership',
   'resource_hub',
   'brand_content',
   'campaign',
@@ -140,9 +142,35 @@ const MANAGED_SINGLETON_SLUGS = new Set([
   'partnership',
 ]);
 
+const MANAGED_SINGLETON_TEMPLATE_KINDS = {
+  home: 'home',
+  docs: 'resource_hub',
+  help: 'resource_hub',
+  academy: 'resource_hub',
+  blog: 'resource_hub',
+  status: 'resource_hub',
+  media: 'brand_content',
+  team: 'brand_content',
+  conversation: 'brand_content',
+  tv: 'brand_content',
+  promo: 'campaign',
+  prozorro: 'campaign',
+  demo: 'structured',
+  pricing: 'pricing',
+  partnership: 'partnership',
+};
+
 function inferLandingPageTemplateKind(slug = '') {
   if (slug === 'home') {
     return 'home';
+  }
+
+  if (slug === 'pricing') {
+    return 'pricing';
+  }
+
+  if (slug === 'partnership') {
+    return 'partnership';
   }
 
   if (['docs', 'help', 'academy', 'blog', 'status'].includes(slug)) {
@@ -189,13 +217,120 @@ function hasMeaningfulValue(value) {
 }
 
 const LANDING_PAGE_REQUIRED_FIELDS_BY_TEMPLATE = {
-  home: ['subtitle', 'sticky_cta_title', 'sticky_cta_text'],
+  home: ['subtitle', 'hero_eyebrow', 'sticky_cta_title', 'sticky_cta_text'],
   structured: ['subtitle', 'problem_title', 'solution_title', 'sticky_cta_title'],
+  pricing: ['subtitle', 'hero_eyebrow', 'sticky_cta_title', 'sticky_cta_text'],
+  partnership: ['subtitle', 'hero_eyebrow', 'sticky_cta_title', 'sticky_cta_text'],
   resource_hub: ['subtitle'],
   brand_content: ['subtitle'],
   campaign: ['subtitle', 'sticky_cta_title'],
   generic: ['subtitle'],
 };
+
+const LANDING_PAGE_REQUIRED_SECTION_LABELS = {
+  home: ['roi_without_title', 'roi_with_title', 'pricing_teaser_title', 'pricing_teaser_intro', 'faq_title'],
+  structured: ['roi_without_title', 'roi_with_title', 'comparison_header_parameter', 'comparison_header_one', 'comparison_header_two', 'comparison_header_chat_plus'],
+  pricing: [
+    'hero_panel_title',
+    'hero_panel_summary',
+    'pricing_title',
+    'pricing_intro',
+    'tier_popular',
+    'bottom_cta_title',
+    'bottom_cta_text',
+    'bottom_cta_primary',
+    'bottom_cta_secondary',
+    'comparison_intro',
+    'comparison_parameter',
+    'comparison_option_one',
+    'comparison_option_two',
+    'comparison_chat_plus',
+    'roi_without_title',
+    'roi_with_title',
+  ],
+  partnership: [
+    'comparison_intro',
+    'comparison_parameter',
+    'comparison_option_one',
+    'comparison_option_two',
+    'comparison_chat_plus',
+    'roi_without_title',
+    'roi_with_title',
+  ],
+  resource_hub: ['hero_eyebrow', 'panel_title'],
+  brand_content: ['hero_eyebrow', 'context_title', 'context_text'],
+  campaign: ['hero_eyebrow'],
+};
+
+const TENDERS_REQUIRED_SECTION_LABELS = [
+  'hero_eyebrow',
+  'hero_panel_title',
+  'hero_panel_summary',
+  'comparison_intro',
+  'comparison_parameter',
+  'comparison_option_one',
+  'comparison_option_two',
+  'comparison_chat_plus',
+  'roi_without_title',
+  'roi_with_title',
+];
+
+const COMPETITOR_REQUIRED_SECTION_LABELS = [
+  'compare_badge',
+  'comparison_parameter',
+  'comparison_option_one',
+  'comparison_option_two',
+  'comparison_chat_plus',
+];
+
+function ensureObject(value, context, field) {
+  if (!isPlainObject(value)) {
+    throw new Error(`${context}: field "${field}" must be an object`);
+  }
+}
+
+function ensureArray(value, context, field) {
+  if (!Array.isArray(value)) {
+    throw new Error(`${context}: field "${field}" must be an array`);
+  }
+}
+
+function validateSectionLabelKeys(sectionLabels, requiredKeys, context) {
+  if (!requiredKeys || requiredKeys.length === 0) {
+    return;
+  }
+
+  ensureObject(sectionLabels, context, 'section_labels');
+  for (const key of requiredKeys) {
+    if (!hasMeaningfulValue(sectionLabels[key])) {
+      throw new Error(`${context}: missing section_labels.${key}`);
+    }
+  }
+}
+
+function validateObjectArray(items, requiredKeys, context, field) {
+  ensureArray(items, context, field);
+  for (const [index, item] of items.entries()) {
+    if (!isPlainObject(item)) {
+      throw new Error(`${context}: ${field}[${index}] must be an object`);
+    }
+
+    for (const key of requiredKeys) {
+      if (!hasMeaningfulValue(item[key])) {
+        throw new Error(`${context}: missing ${field}[${index}].${key}`);
+      }
+    }
+  }
+}
+
+function validateStringArray(items, context, field) {
+  ensureArray(items, context, field);
+  for (const [index, item] of items.entries()) {
+    if (!hasMeaningfulValue(item)) {
+      throw new Error(`${context}: ${field}[${index}] must be a non-empty string`);
+    }
+  }
+}
 
 function hasStructuredSeoFields(item = {}) {
   return Boolean(
@@ -414,46 +549,116 @@ function validateUniqueSlugs(endpoint, items) {
 function validateLandingPage(item) {
   const templateKind = item.template_kind || inferLandingPageTemplateKind(item.slug);
   const contentOrigin = item.content_origin || inferLandingPageContentOrigin(item.slug);
+  const context = `landing-pages/${item.slug || 'unknown'}`;
 
-  validateEnumValue('template_kind', templateKind, LANDING_PAGE_TEMPLATE_KINDS, `landing-pages/${item.slug}`);
-  validateEnumValue('content_origin', contentOrigin, CONTENT_ORIGINS, `landing-pages/${item.slug}`);
+  validateEnumValue('template_kind', templateKind, LANDING_PAGE_TEMPLATE_KINDS, context);
+  validateEnumValue('content_origin', contentOrigin, CONTENT_ORIGINS, context);
 
   const requiredFields = ['slug', 'meta_title', 'meta_description', 'h1'];
   for (const field of requiredFields) {
     if (!hasMeaningfulValue(item[field])) {
-      throw new Error(`landing-pages/${item.slug || 'unknown'}: missing required field "${field}"`);
+      throw new Error(`${context}: missing required field "${field}"`);
     }
   }
 
   const templateRequiredFields = LANDING_PAGE_REQUIRED_FIELDS_BY_TEMPLATE[templateKind] || [];
   for (const field of templateRequiredFields) {
     if (!hasMeaningfulValue(item[field])) {
-      throw new Error(`landing-pages/${item.slug || 'unknown'}: missing template field "${field}" for "${templateKind}"`);
+      throw new Error(`${context}: missing template field "${field}" for "${templateKind}"`);
     }
   }
 
+  const expectedTemplateKind = MANAGED_SINGLETON_TEMPLATE_KINDS[item.slug];
+  if (expectedTemplateKind && templateKind !== expectedTemplateKind) {
+    throw new Error(`${context}: expected template_kind "${expectedTemplateKind}", got "${templateKind}"`);
+  }
+
   if (MANAGED_SINGLETON_SLUGS.has(item.slug) && contentOrigin !== 'managed') {
-    throw new Error(`landing-pages/${item.slug}: expected content_origin "managed"`);
+    throw new Error(`${context}: expected content_origin "managed"`);
   }
 
   if (GENERATED_SINGLETON_SLUGS.has(item.slug) && contentOrigin !== 'generated') {
-    throw new Error(`landing-pages/${item.slug}: expected content_origin "generated"`);
+    throw new Error(`${context}: expected content_origin "generated"`);
+  }
+
+  validateSectionLabelKeys(item.section_labels || {}, LANDING_PAGE_REQUIRED_SECTION_LABELS[templateKind], context);
+
+  if (templateKind === 'home') {
+    validateObjectArray(item.proof_facts || [], ['value', 'label'], context, 'proof_facts');
+  }
+
+  if (templateKind === 'pricing') {
+    validateObjectArray(item.hero_panel_items || [], ['label', 'value', 'text'], context, 'hero_panel_items');
+    validateObjectArray(item.pricing_tiers || [], ['label', 'price', 'note', 'cta'], context, 'pricing_tiers');
+    validateObjectArray(item.proof_cards || [], ['title', 'text'], context, 'proof_cards');
+  }
+
+  if (templateKind === 'partnership') {
+    validateStringArray(item.hero_trust_facts || [], context, 'hero_trust_facts');
+  }
+
+  if (templateKind === 'resource_hub' || templateKind === 'brand_content' || templateKind === 'campaign') {
+    validateStringArray(item.hero_trust_facts || [], context, 'hero_trust_facts');
   }
 }
 
 function validateCompetitor(item) {
-  validateEnumValue('content_origin', item.content_origin || 'generated', CONTENT_ORIGINS, `competitors/${item.slug}`);
+  const context = `competitors/${item.slug || 'unknown'}`;
+  validateEnumValue('content_origin', item.content_origin || 'generated', CONTENT_ORIGINS, context);
 
   const requiredFields = ['slug', 'name', 'price', 'our_price'];
   for (const field of requiredFields) {
     if (!hasMeaningfulValue(item[field])) {
-      throw new Error(`competitors/${item.slug || 'unknown'}: missing required field "${field}"`);
+      throw new Error(`${context}: missing required field "${field}"`);
     }
   }
+
+  if ((item.content_origin || 'generated') !== 'generated') {
+    throw new Error(`${context}: competitors must remain content_origin "generated"`);
+  }
+
+  if (!hasMeaningfulValue(item.compare_summary)) {
+    throw new Error(`${context}: missing required field "compare_summary"`);
+  }
+
+  validateStringArray(item.compare_points || [], context, 'compare_points');
+  validateSectionLabelKeys(item.section_labels || {}, COMPETITOR_REQUIRED_SECTION_LABELS, context);
 }
 
 function validateTendersPage(item) {
-  validateEnumValue('content_origin', item.content_origin || 'managed', CONTENT_ORIGINS, 'tenders-page');
+  const context = 'tenders-page';
+  const contentOrigin = item.content_origin || 'managed';
+  validateEnumValue('content_origin', contentOrigin, CONTENT_ORIGINS, context);
+
+  if (contentOrigin !== 'managed') {
+    throw new Error(`${context}: expected content_origin "managed"`);
+  }
+
+  const requiredFields = ['meta_title', 'meta_description', 'h1', 'subtitle', 'hero_eyebrow', 'sticky_cta_title', 'sticky_cta_text'];
+  for (const field of requiredFields) {
+    if (!hasMeaningfulValue(item[field])) {
+      throw new Error(`${context}: missing required field "${field}"`);
+    }
+  }
+
+  ensureArray(item.hero_panel_items || [], context, 'hero_panel_items');
+  (item.hero_panel_items || []).forEach((panelItem, index) => {
+    ensureObject(panelItem, context, `hero_panel_items[${index}]`);
+
+    if (panelItem.accent) {
+      if (!hasMeaningfulValue(panelItem.label)) {
+        throw new Error(`${context}: missing hero_panel_items[${index}].label`);
+      }
+      return;
+    }
+
+    ['source', 'deadline', 'text'].forEach((field) => {
+      if (!hasMeaningfulValue(panelItem[field])) {
+        throw new Error(`${context}: missing hero_panel_items[${index}].${field}`);
+      }
+    });
+  });
+  validateSectionLabelKeys(item.section_labels || {}, TENDERS_REQUIRED_SECTION_LABELS, context);
 }
 
 function validateSiteSetting(item) {
@@ -738,13 +943,26 @@ const competitors = loadArrayFromJson('cms/seed/competitors.json').map(item => (
   faq_title: item.faq_title || 'Частые вопросы',
   sticky_cta_title: item.sticky_cta_title || item.final_cta_title || `Переходите с ${item.name} на Chat Plus`,
   sticky_cta_text: item.sticky_cta_text || item.final_cta_text || 'Поможем перенести процессы и собрать рабочий пилот без затяжного внедрения.',
-  section_labels: item.section_labels || {
-    compare_badge: 'Сравнение',
-    pricing_table_title: 'Ключевые параметры',
-    comparison_header_parameter: 'Параметр',
-    comparison_header_one: 'Вариант 1',
-    comparison_header_two: 'Вариант 2',
-    comparison_header_chat_plus: 'Chat Plus',
+  section_labels: {
+    ...(item.section_labels || {}),
+    compare_badge: item.section_labels?.compare_badge || 'Сравнение',
+    pricing_table_title: item.section_labels?.pricing_table_title || 'Ключевые параметры',
+    comparison_parameter:
+      item.section_labels?.comparison_parameter
+      || item.section_labels?.comparison_header_parameter
+      || 'Параметр',
+    comparison_option_one:
+      item.section_labels?.comparison_option_one
+      || item.section_labels?.comparison_header_one
+      || 'Вариант 1',
+    comparison_option_two:
+      item.section_labels?.comparison_option_two
+      || item.section_labels?.comparison_header_two
+      || 'Вариант 2',
+    comparison_chat_plus:
+      item.section_labels?.comparison_chat_plus
+      || item.section_labels?.comparison_header_chat_plus
+      || 'Chat Plus',
   },
   final_cta_title: item.final_cta_title || `Переходите с ${item.name} на Chat Plus`,
   final_cta_text: item.final_cta_text || 'Поможем перенести процессы и собрать рабочий пилот без затяжного внедрения.',
@@ -1349,6 +1567,68 @@ function makeLandingPage({
 }) {
   const resolvedTemplateKind = templateKind || inferLandingPageTemplateKind(slug);
   const resolvedContentOrigin = contentOrigin || inferLandingPageContentOrigin(slug);
+  const baseSectionLabels = {
+    roi_without_title: 'Без Chat Plus',
+    roi_with_title: 'С Chat Plus',
+    comparison_header_parameter: 'Параметр',
+    comparison_header_one: 'Вариант 1',
+    comparison_header_two: 'Вариант 2',
+    comparison_header_chat_plus: 'Chat Plus',
+  };
+  const templateSectionLabelDefaults = {
+    home: {
+      hero_eyebrow: 'Chat Plus',
+      pricing_teaser_title: 'Тарифы',
+      pricing_teaser_intro: 'Компактный обзор тарифов для первого запуска.',
+      faq_title: 'Частые вопросы',
+    },
+    structured: {
+      hero_eyebrow: 'Chat Plus',
+    },
+    pricing: {
+      hero_eyebrow: 'Pricing',
+      hero_panel_title: 'Модель цены',
+      hero_panel_summary: 'Прозрачный контур без скрытых доплат и искусственных add-on-модулей.',
+      pricing_title: 'Тарифные контуры Chat Plus',
+      pricing_intro: 'Три уровня входа: быстрый пилот, рабочий growth-контур и enterprise-модель для сложной архитектуры.',
+      tier_popular: 'Основной выбор',
+      bottom_cta_title: 'Не знаете, какой контур нужен именно вам?',
+      bottom_cta_text: 'На демо соберем модель цены под вашу команду, каналы, AI-нагрузку и CRM-связки.',
+      bottom_cta_primary: 'Рассчитать стоимость',
+      bottom_cta_secondary: 'Получить демо',
+      comparison_intro: 'Сравнение не про “дешевле любой ценой”, а про управляемую стоимость владения платформой.',
+      comparison_parameter: 'Параметр',
+      comparison_option_one: 'Seat / add-on платформа',
+      comparison_option_two: 'Контактная платформа',
+      comparison_chat_plus: 'Chat Plus',
+    },
+    partnership: {
+      hero_eyebrow: 'Partners',
+      comparison_intro: 'Здесь важно не просто наличие affiliate-программы, а то, создает ли она повторяемый доход и помогает доводить сделки до запуска.',
+      comparison_parameter: 'Параметр',
+      comparison_option_one: 'Рынок',
+      comparison_option_two: 'Referral',
+      comparison_chat_plus: 'Chat Plus',
+    },
+    resource_hub: {
+      hero_eyebrow: 'Ресурсы Chat Plus',
+      panel_title: 'Что внутри',
+    },
+    brand_content: {
+      hero_eyebrow: 'Компания и контент',
+      context_title: 'Контекст',
+      context_text: 'Эти страницы не должны выглядеть как SEO-лендинги. Это брендовый и редакционный слой вокруг Chat Plus.',
+    },
+    campaign: {
+      hero_eyebrow: 'Спецсценарий',
+    },
+    generic: {},
+  };
+  const resolvedSectionLabels = {
+    ...baseSectionLabels,
+    ...(templateSectionLabelDefaults[resolvedTemplateKind] || {}),
+    ...(sectionLabels || {}),
+  };
 
   return {
     slug,
@@ -1358,7 +1638,7 @@ function makeLandingPage({
     meta_description: metaDescription,
     h1,
     subtitle,
-    hero_eyebrow: heroEyebrow,
+    hero_eyebrow: heroEyebrow || resolvedSectionLabels.hero_eyebrow || '',
     hero_variant: heroVariant,
     hero_highlights_label: heroHighlightsLabel,
     hero_highlights: heroHighlights || [],
@@ -1422,7 +1702,7 @@ function makeLandingPage({
     proof_facts: proofFacts || [],
     pricing_tiers: pricingTiers || [],
     proof_cards: proofCards || [],
-    section_labels: sectionLabels || {},
+    section_labels: resolvedSectionLabels,
     presentation_flags: presentationFlags || {},
     use_cases_title: 'Кому подходит Chat Plus',
     use_cases: useCases || [
@@ -1586,6 +1866,8 @@ const landingPages = [
       { value: '2-5x', label: 'выгоднее тяжелых enterprise-стеков' },
     ],
     section_labels: {
+      roi_without_title: 'Без Chat Plus',
+      roi_with_title: 'С Chat Plus',
       pricing_teaser_title: 'Тарифы',
       pricing_teaser_intro: 'Компактный обзор тарифов для первого запуска.',
       faq_title: 'Частые вопросы',
@@ -2070,6 +2352,108 @@ const landingPages = [
     internalLinks: [
       { label: 'Помощь', href: '/help', description: 'Получить справку и инструкции по следующему шагу.' },
       { label: 'Документация', href: '/docs', description: 'Технические материалы по API, интеграциям и ограничениям.' }
+    ]
+  }),
+  makeLandingPage({
+    slug: 'media',
+    metaTitle: 'Медиа Chat Plus',
+    metaDescription: 'Материалы для публикаций, внешней упаковки и согласованной публичной коммуникации вокруг Chat Plus.',
+    h1: 'Медиа Chat Plus',
+    subtitle: 'Публичный слой бренда: короткие формулировки, материалы для публикаций и понятная внешняя упаковка продукта.',
+    problemContext: 'Когда публичные материалы разбросаны по чатам и заметкам, маркетинг, пресейл и партнеры говорят о продукте по-разному.',
+    solutionContext: 'Медиа-слой Chat Plus собирает внешнюю подачу в одном месте и делает бренд-коммуникацию предсказуемой.',
+    featureContext: 'Здесь должны жить материалы, которые помогают быстро объяснить продукт, показать его зрелость и не терять единый тон.',
+    integrationContext: 'Раздел связан с командой, промо-страницами и демо, поэтому работает как часть общего маршрута, а не как отдельный лендинг.',
+    useCaseContext: 'Подходит для прессы, партнеров, пресейла и любого сценария, где нужно быстро упаковать Chat Plus для внешней аудитории.',
+    internalLinks: [
+      { label: 'Команда', href: '/team', description: 'Кто стоит за продуктом и как мы думаем о развитии Chat Plus.' },
+      { label: 'Промо', href: '/promo', description: 'Офферы и упаковка для маркетинга, продаж и партнеров.' }
+    ]
+  }),
+  makeLandingPage({
+    slug: 'team',
+    metaTitle: 'Команда Chat Plus',
+    metaDescription: 'Страница о людях и подходе Chat Plus: кто делает продукт и как мы думаем о клиентском результате.',
+    h1: 'Команда Chat Plus',
+    subtitle: 'Страница о людях и подходе Chat Plus: кто делает продукт и как мы думаем о клиентском результате.',
+    problemContext: 'Когда раздел о команде пустой или формальный, продукт выглядит обезличенно и теряет часть доверия в B2B-коммуникации.',
+    solutionContext: 'Раздел «Команда» помогает показать, что за Chat Plus стоят люди с понятной логикой продукта, внедрения и клиентского результата.',
+    featureContext: 'Здесь важны не биографии ради галочки, а контекст: как мы думаем о продукте, клиентах и развитии платформы.',
+    integrationContext: 'Страница связывается с медиа, партнерским контуром и демо-маршрутом, поэтому усиливает не только бренд, но и продуктовый сценарий.',
+    useCaseContext: 'Подходит для доверительного пресейла, внешней упаковки продукта и любых сценариев, где важно показать человеческую сторону Chat Plus.',
+    internalLinks: [
+      { label: 'Медиа', href: '/media', description: 'Материалы для внешней упаковки и публичной коммуникации.' },
+      { label: 'Партнерам', href: '/partnership', description: 'Как мы строим совместные сценарии с агентствами и интеграторами.' }
+    ]
+  }),
+  makeLandingPage({
+    slug: 'conversation',
+    metaTitle: 'Диалоги Chat Plus',
+    metaDescription: 'Раздел о подходе Chat Plus к клиентскому разговору как к управляемой системе, а не набору случайных сообщений.',
+    h1: 'Диалоги Chat Plus',
+    subtitle: 'Контентный слой о том, как Chat Plus превращает хаотичную переписку в управляемый процесс с контекстом, CRM и AI.',
+    problemContext: 'Если разговор с клиентом остается просто набором сообщений, бизнес теряет контекст, скорость реакции и управляемость процесса.',
+    solutionContext: 'Chat Plus рассматривает диалог как рабочую систему: с единым маршрутом, AI-слоем, автоматизацией и следующими действиями для команды.',
+    featureContext: 'Раздел нужен, чтобы показать подход к коммуникации не как “еще один чат”, а как к целостному операционному контуру.',
+    integrationContext: 'Здесь важна связка с каналами, CRM, AI и автоматизацией, иначе разговор снова распадается на отдельные инструменты.',
+    useCaseContext: 'Подходит для объяснения продуктовой логики Chat Plus клиентам, партнерам и внутренним командам запуска.',
+    internalLinks: [
+      { label: 'Каналы', href: '/channels', description: 'Как Chat Plus собирает каналы и контекст в одном окне.' },
+      { label: 'Интеграции', href: '/integrations', description: 'Как диалоговый слой связывается с CRM и остальным стеком.' }
+    ]
+  }),
+  makeLandingPage({
+    slug: 'tv',
+    metaTitle: 'Видео Chat Plus',
+    metaDescription: 'Видео-слой Chat Plus: демо, разборы интерфейса и наглядные объяснения продукта в движении.',
+    h1: 'Видео Chat Plus',
+    subtitle: 'Видеоматериалы, разборы интерфейса и демонстрации продукта, которые помогают быстрее показать Chat Plus без лишних расшифровок.',
+    problemContext: 'Сложный B2B-продукт хуже воспринимается, когда его показывают только текстом и статичными скриншотами без живого контекста.',
+    solutionContext: 'Видео-слой помогает быстрее донести сценарий продукта и сократить путь от первого интереса до осмысленного следующего шага.',
+    featureContext: 'Демо в движении, интерфейсные разборы и визуальные объяснения усиливают и пресейл, и обучение команды.',
+    integrationContext: 'Страница должна связываться с демо, промо и редакционным контентом, чтобы видео работало как часть общего маршрута.',
+    useCaseContext: 'Подходит для пресейла, онбординга, маркетинга и любых сценариев, где продукт нужно показать быстрее, чем объяснить словами.',
+    internalLinks: [
+      { label: 'Демо', href: '/demo', description: 'Разобрать ваш сценарий вместе с командой Chat Plus.' },
+      { label: 'Промо', href: '/promo', description: 'Офферы и упаковка для маркетинга, пресейла и партнеров.' }
+    ]
+  }),
+  makeLandingPage({
+    slug: 'promo',
+    metaTitle: 'Промо Chat Plus',
+    metaDescription: 'Промо-слой Chat Plus: офферы, упаковка и материалы, которые помогают маркетингу, продажам и партнерам говорить точнее.',
+    h1: 'Промо Chat Plus',
+    subtitle: 'Промо-слой Chat Plus: офферы, продуктовая упаковка и материалы, которые помогают маркетингу и продажам говорить точнее.',
+    problemContext: 'Промо-страницы быстро превращаются в набор разрозненных офферов, если не связаны с продуктовой логикой и следующим шагом.',
+    solutionContext: 'Промо-слой Chat Plus собирает офферы, упаковку и переходы так, чтобы маркетинг, продажи и партнеры работали в одном контуре.',
+    featureContext: 'Это не просто витрина: здесь должны быть понятные формулировки, связка с продуктом и аккуратный маршрут к демо или следующему сценарию.',
+    integrationContext: 'Страница должна быть связана с медиа, видео, решениями и демо-маршрутом, а не жить отдельным рекламным островом.',
+    roiContext: 'Хорошая промо-страница снижает трение между интересом и разговором с командой, а не просто собирает случайный трафик.',
+    useCaseContext: 'Подходит для маркетинга, пресейла, партнерских запусков и спецкампаний вокруг продукта.',
+    stickyTitle: 'Покажем, как упаковать ваш сценарий в промо-контур',
+    stickyText: 'Разберем оффер, CTA, переходы и следующий рабочий шаг так, чтобы промо-страница реально помогала продажам.',
+    internalLinks: [
+      { label: 'Медиа', href: '/media', description: 'Внешняя упаковка и материалы для публикаций.' },
+      { label: 'Видео', href: '/tv', description: 'Демо и визуальные объяснения продукта в движении.' }
+    ]
+  }),
+  makeLandingPage({
+    slug: 'prozorro',
+    metaTitle: 'Prozorro Chat Plus',
+    metaDescription: 'Специальный сценарий Chat Plus для мониторинга закупок, реакции команды и контроля следующего шага в одном контуре.',
+    h1: 'Prozorro Chat Plus',
+    subtitle: 'Специальный сценарий Chat Plus для мониторинга закупок, реакции команды и контроля следующего шага в одном контуре.',
+    problemContext: 'В закупочных сценариях команда часто узнает о новом тендере поздно, теряет дедлайны и разрывает процесс между чатами, таблицами и CRM.',
+    solutionContext: 'Prozorro-сценарий в Chat Plus собирает сигналы, уведомления и следующие действия в один управляемый маршрут для команды.',
+    featureContext: 'Здесь важны скорость реакции, прозрачность дедлайнов и связка с CRM, а не просто еще один канал уведомлений.',
+    integrationContext: 'Страница должна быть связана с тендерным решением, интеграциями и демо, чтобы сценарий воспринимался как часть продукта.',
+    roiContext: 'Чем быстрее команда получает сигнал и переводит его в действие, тем выше шанс не потерять закупку на первом же этапе.',
+    useCaseContext: 'Подходит для тендерных отделов, закупочных сценариев и продуктовой упаковки вертикали под Prozorro/тендерный контур.',
+    stickyTitle: 'Покажем Prozorro-сценарий на вашем процессе',
+    stickyText: 'Разберем, как сигналы, дедлайны и следующие действия собираются в одном маршруте без хаоса между системами.',
+    internalLinks: [
+      { label: 'Тендеры', href: '/solutions/tenders', description: 'Главный сценарий по закупкам, дедлайнам и реакции команды.' },
+      { label: 'Интеграции', href: '/integrations', description: 'Связка с CRM, automation и остальным стеком.' }
     ]
   })
 ];

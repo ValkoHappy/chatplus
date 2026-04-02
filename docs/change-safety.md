@@ -72,6 +72,25 @@ npm.cmd --prefix portal run build
 6. Обновить документацию.
 7. Только потом рендерить блок во frontend.
 
+Минимум для block contract:
+
+- `block_type`
+- allowed `template_kind`
+- ownership (`generated` / `managed` / mixed-by-page)
+- required fields
+- optional fields
+- fallback behavior
+
+Короткий runbook:
+
+1. Сначала обновить docs и явно записать, для каких `template_kind` блок разрешен.
+2. Если блок хранится в CMS, это schema-level change:
+   - обновить schema/content model
+   - обновить generator/import validation
+   - обновить adapter layer
+3. Если блок не описан в docs и не валидируется, его нельзя рендерить во frontend.
+4. После этого прогнать build и representative routes.
+
 ## 7. Self-check перед merge или publish
 
 - Понятно, кто владеет изменяемым блоком: frontend или CMS.

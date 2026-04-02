@@ -29,7 +29,32 @@ Build должен пройти полностью.
 - `/promo`
 - `/compare/respond-io`
 
-## 4. Сборка demo snapshot
+На каждой из этих страниц проверить:
+
+- hero и subtitle
+- primary / secondary CTA
+- FAQ
+- internal links
+- ROI / comparison blocks
+- header и footer
+- отсутствие очевидных fallback-артефактов и битых текстов
+
+## 4. Ручной responsive QA
+
+Минимум посмотреть representative routes в трех режимах:
+
+- desktop
+- tablet
+- mobile
+
+Проверить:
+
+- перенос заголовков и CTA
+- сетки карточек
+- burger / header
+- footer
+- таблицы и длинные карточки
+## 5. Сборка demo snapshot
 
 ```powershell
 npm.cmd --prefix portal run snapshot:github-demo
@@ -37,7 +62,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 Проверить, что `pages-preview/` действительно обновился.
 
-## 5. Перед push
+## 6. Перед push
 
 Проверить:
 
@@ -45,7 +70,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 - закоммичены нужные изменения
 - `pages-preview/` попал в commit, если обновлялся demo
 
-## 6. После push
+## 7. После push
 
 Проверить:
 

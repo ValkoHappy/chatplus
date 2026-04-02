@@ -101,102 +101,9 @@ const useCases = (page.use_cases || []).map((item) => ({
 }));
 const toHref = (href?: string) => withBasePath(href);
 const sectionLabels = page.section_labels || {};
-const defaultPricingTiers = [
-  {
-    name: 'Pilot',
-    label: 'Pilot',
-    price: '$49',
-    period: '/ мес',
-    note: 'Входной контур для запуска первой команды и первого рабочего сценария.',
-    cta: 'Запустить пилот',
-    icon: 'lucide:rocket',
-    kicker: 'Для запуска',
-    accent: false,
-    features: [
-      '1 команда и базовый контур запуска',
-      'Каналы, AI и первая автоматизация',
-      'Подходит для пилота и первых 1-3 операторов',
-    ],
-  },
-  {
-    name: 'Growth',
-    label: 'Growth',
-    price: '$99',
-    period: '/ мес',
-    note: 'Рабочий тариф для команды 5-10 агентов с CRM, AI и омниканалом.',
-    cta: 'Рассчитать Growth',
-    icon: 'lucide:layers-3',
-    kicker: '',
-    accent: true,
-    features: [
-      'Команда 5-10 агентов в одном контуре',
-      'CRM, омниканал, AI и автоматизация без допов',
-      'Прозрачная модель владения без скрытых доплат',
-    ],
-  },
-  {
-    name: 'Enterprise',
-    label: 'Enterprise',
-    price: 'индивидуально',
-    period: '',
-    note: 'Индивидуальный расчет под SLA, безопасность и кастомную архитектуру.',
-    cta: 'Обсудить Enterprise',
-    icon: 'lucide:shield-check',
-    kicker: 'Для сложных контуров',
-    accent: false,
-    features: [
-      'SLA и приоритетная поддержка',
-      'Расширенная безопасность и управление доступами',
-      'Кастомные интеграции и архитектурный контур',
-    ],
-  },
-];
-
-const defaultPricingProofs = [
-  {
-    title: 'Без скрытых платежей',
-    text: 'Фиксируем сценарий, роли и каналы до запуска, а не после первого счета.',
-    icon: 'lucide:badge-check',
-  },
-  {
-    title: 'Без наценки на сообщения',
-    text: 'Коммерческая модель строится вокруг платформы и процесса, а не штрафов за рост трафика.',
-    icon: 'lucide:message-circle-more',
-  },
-  {
-    title: 'Переход без пересборки стека',
-    text: 'Можно начать с пилота и вырасти в полноценный контур без новой миграции.',
-    icon: 'lucide:arrow-up-right',
-  },
-];
-
-const defaultPricingHighlights = [
-  {
-    label: 'Ценовой диапазон',
-    value: '$49-$99 / мес',
-    text: 'Входной и рабочий контур без искусственного раздувания счета.',
-    icon: 'lucide:badge-dollar-sign',
-  },
-  {
-    label: 'Рабочий контур',
-    value: '5-10 агентов',
-    text: 'Нормальная команда продаж или поддержки без пересборки стека.',
-    icon: 'lucide:users',
-  },
-  {
-    label: 'Скрытые доплаты',
-    value: '0',
-    text: 'Без наценки на сообщения, роли и AI-нагрузку поверх сценария.',
-    icon: 'lucide:shield-check',
-  },
-];
-
-const pricingTiers =
-  Array.isArray(page.pricing_tiers) && page.pricing_tiers.length > 0 ? page.pricing_tiers : defaultPricingTiers;
-const pricingProofs =
-  Array.isArray(page.proof_cards) && page.proof_cards.length > 0 ? page.proof_cards : defaultPricingProofs;
-const pricingHighlights =
-  Array.isArray(page.hero_panel_items) && page.hero_panel_items.length > 0 ? page.hero_panel_items : defaultPricingHighlights;
+const pricingTiers = Array.isArray(page.pricing_tiers) ? page.pricing_tiers : [];
+const pricingProofs = Array.isArray(page.proof_cards) ? page.proof_cards : [];
+const pricingHighlights = Array.isArray(page.hero_panel_items) ? page.hero_panel_items : [];
 ---
 
 <Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>
@@ -209,7 +116,7 @@ const pricingHighlights =
     <div class="hero-glow"></div>
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Pricing'}</span>
+        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow}</span>
         <h1>{page.h1}</h1>
         {page.subtitle && <p class="subtitle">{page.subtitle}</p>}
         <div class="hero-actions">
@@ -234,8 +141,8 @@ const pricingHighlights =
 
       <div class="hero-panel">
         <div class="hero-panel-header">
-          <span>{sectionLabels.hero_panel_title || 'Модель цены'}</span>
-          <strong>{sectionLabels.hero_panel_summary || 'Прозрачный контур без скрытых доплат и искусственных add-on-модулей.'}</strong>
+          <span>{sectionLabels.hero_panel_title}</span>
+          <strong>{sectionLabels.hero_panel_summary}</strong>
         </div>
         <div class="hero-highlight-list">
           {pricingHighlights.map((item) => (
@@ -261,8 +168,8 @@ const pricingHighlights =
     <section class="section pricing-section">
       <div class="container">
         <div class="section-header pricing-header">
-          <h2>{sectionLabels.pricing_title || 'Тарифные контуры Chat Plus'}</h2>
-          <p>{sectionLabels.pricing_intro || 'Три уровня входа: быстрый пилот, рабочий growth-контур и enterprise-модель для сложной архитектуры.'}</p>
+          <h2>{sectionLabels.pricing_title}</h2>
+          <p>{sectionLabels.pricing_intro}</p>
         </div>
         <div class="pricing-grid">
           {pricingTiers.map((plan) => {
@@ -273,7 +180,7 @@ const pricingHighlights =
                     <Icon name={plan.icon || 'lucide:circle'} class="tier-icon" />
                     <span>{plan.label || plan.name}</span>
                   </div>
-                  {plan.accent && <span class="tier-popular">{sectionLabels.tier_popular || 'Основной выбор'}</span>}
+                  {plan.accent && <span class="tier-popular">{sectionLabels.tier_popular}</span>}
                 </div>
 
                 {plan.kicker && <p class="tier-kicker">{plan.kicker}</p>}
@@ -305,28 +212,30 @@ const pricingHighlights =
           })}
         </div>
 
-        <div class="pricing-proof-row">
-          {pricingProofs.map((item) => (
-            <article class="pricing-proof-card">
-              <div class="pricing-proof-icon">
-                <Icon name={item.icon} />
-              </div>
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+        {pricingProofs.length > 0 && (
+          <div class="pricing-proof-row">
+            {pricingProofs.map((item) => (
+              <article class="pricing-proof-card">
+                <div class="pricing-proof-icon">
+                  <Icon name={item.icon} />
+                </div>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
 
         <div class="pricing-bottom-cta">
           <div>
-            <strong>{sectionLabels.bottom_cta_title || 'Не знаете, какой контур нужен именно вам?'}</strong>
-            <p>{sectionLabels.bottom_cta_text || 'На демо соберем модель цены под вашу команду, каналы, AI-нагрузку и CRM-связки.'}</p>
+            <strong>{sectionLabels.bottom_cta_title}</strong>
+            <p>{sectionLabels.bottom_cta_text}</p>
           </div>
           <div class="pricing-bottom-actions">
-          <a href={toHref(page.hero_cta_primary_url || '/demo')} class="btn-primary">{sectionLabels.bottom_cta_primary || 'Рассчитать стоимость'}</a>
-          <a href={toHref(page.hero_cta_secondary_url || '/demo')} class="btn-secondary btn-secondary--dark">{sectionLabels.bottom_cta_secondary || 'Получить демо'}</a>
+          <a href={toHref(page.hero_cta_primary_url || '/demo')} class="btn-primary">{sectionLabels.bottom_cta_primary}</a>
+          <a href={toHref(page.hero_cta_secondary_url || '/demo')} class="btn-secondary btn-secondary--dark">{sectionLabels.bottom_cta_secondary}</a>
           </div>
         </div>
       </div>
@@ -378,16 +287,16 @@ const pricingHighlights =
       <div class="container">
         <div class="section-header">
           <h2>{page.comparison_title}</h2>
-          <p>{sectionLabels.comparison_intro || 'Сравнение не про “дешевле любой ценой”, а про управляемую стоимость владения платформой.'}</p>
+          <p>{sectionLabels.comparison_intro}</p>
         </div>
         <div class="table-wrap">
           <table class="compare-table">
             <thead>
               <tr>
-                <th>{sectionLabels.comparison_parameter || 'Параметр'}</th>
-                <th>{sectionLabels.comparison_option_one || 'Seat / add-on платформа'}</th>
-                <th>{sectionLabels.comparison_option_two || 'Контактная платформа'}</th>
-                <th>{sectionLabels.comparison_chat_plus || 'Chat Plus'}</th>
+                <th>{sectionLabels.comparison_parameter}</th>
+                <th>{sectionLabels.comparison_option_one}</th>
+                <th>{sectionLabels.comparison_option_two}</th>
+                <th>{sectionLabels.comparison_chat_plus}</th>
               </tr>
             </thead>
             <tbody>
@@ -415,11 +324,11 @@ const pricingHighlights =
         </div>
         <div class="roi-grid">
           <article class="roi-card bad">
-            <h3>{sectionLabels.roi_without_title || 'Без Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_without_title}</h3>
             <ul>{(page.roi_without_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
           <article class="roi-card good">
-            <h3>{sectionLabels.roi_with_title || 'С Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_with_title}</h3>
             <ul>{(page.roi_with_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
         </div>

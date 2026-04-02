@@ -73,9 +73,29 @@ npm.cmd --prefix portal run build
 5. Обновить документацию.
 6. Только потом внедрять шаблон.
 
+## Сценарий 4. Новый CMS-owned блок
+
+Это не “версточная мелочь”, а изменение контракта.
+
+### Шаги
+
+1. Описать block contract в docs:
+   - `block_type`
+   - allowed `template_kind`
+   - ownership
+   - required fields
+   - optional fields
+   - fallback behavior
+2. Если блок идет из CMS, обновить schema.
+3. Обновить generator/import validation.
+4. Обновить adapter layer.
+5. Только после этого рендерить блок во frontend.
+6. Прогнать build и representative routes.
+
 ## Что проверить после добавления страницы
 
 - страница открывается локально
 - прошел `npm.cmd --prefix portal run build`
 - новый маршрут соответствует ownership-модели
 - страница не нарушает `generated` / `managed` contract
+- если добавлялся новый блок, его contract описан в docs и валидируется

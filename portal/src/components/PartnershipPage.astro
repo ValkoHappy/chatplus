@@ -88,7 +88,7 @@ const sectionLabels = page.section_labels || {};
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Partners'}</span>
+        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow}</span>
         <h1>{page.h1}</h1>
         {page.subtitle && <p class="subtitle">{page.subtitle}</p>}
         <div class="hero-actions">
@@ -185,16 +185,16 @@ const sectionLabels = page.section_labels || {};
       <div class="container">
         <div class="section-header">
           <h2>{page.comparison_title}</h2>
-          <p>{sectionLabels.comparison_intro || 'Здесь важно не просто наличие affiliate-программы, а то, создает ли она повторяемый доход и помогает доводить сделки до запуска.'}</p>
+          <p>{sectionLabels.comparison_intro}</p>
         </div>
         <div class="table-wrap">
           <table class="compare-table">
             <thead>
               <tr>
-                <th>{sectionLabels.comparison_parameter || 'Параметр'}</th>
-                <th>{sectionLabels.comparison_option_one || 'Рынок'}</th>
-                <th>{sectionLabels.comparison_option_two || 'Referral'}</th>
-                <th>{sectionLabels.comparison_chat_plus || 'Chat Plus'}</th>
+                <th>{sectionLabels.comparison_parameter}</th>
+                <th>{sectionLabels.comparison_option_one}</th>
+                <th>{sectionLabels.comparison_option_two}</th>
+                <th>{sectionLabels.comparison_chat_plus}</th>
               </tr>
             </thead>
             <tbody>
@@ -243,11 +243,11 @@ const sectionLabels = page.section_labels || {};
         </div>
         <div class="roi-grid">
           <article class="roi-card bad">
-            <h3>{sectionLabels.roi_without_title || 'Без Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_without_title}</h3>
             <ul>{(page.roi_without_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
           <article class="roi-card good">
-            <h3>{sectionLabels.roi_with_title || 'С Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_with_title}</h3>
             <ul>{(page.roi_with_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
         </div>

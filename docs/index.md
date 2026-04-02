@@ -27,10 +27,11 @@
 1. [Архитектура](architecture.md)
 2. [CMS-модель](cms-model.md)
 3. [Контентный workflow](content-workflow.md)
-4. [Контракты шаблонов](template-contracts.md)
-5. [Контракт безопасных изменений](change-safety.md)
-6. [Гайд оператора](operator-guide.md)
-7. [Деплой](../DEPLOY.md)
+4. [Матрица маршрутов и ownership](route-ownership-matrix.md)
+5. [Контракты шаблонов](template-contracts.md)
+6. [Контракт безопасных изменений](change-safety.md)
+7. [Гайд оператора](operator-guide.md)
+8. [Деплой](../DEPLOY.md)
 
 ## Порядок чтения для оператора или контент-менеджера
 
@@ -98,6 +99,7 @@ CHATPLUS/
 Подробный контракт по каждому:
 
 - [Контракты шаблонов](template-contracts.md)
+- [Матрица маршрутов и ownership](route-ownership-matrix.md)
 
 ## Быстрый маршрут по типу задачи
 

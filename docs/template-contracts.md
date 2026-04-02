@@ -9,6 +9,8 @@
 - шаблон владеет версткой и поведением
 - CMS владеет пользовательским текстом и structured content
 - fallback-и допустимы только как safety layer, а не как главный источник истины
+- catalog/generated pages могут использовать безопасные data-derivation fallback-и из самих сущностей
+- managed singleton pages не должны держать hidden marketing copy в adapters или компонентах
 
 ## Быстрая матрица
 
@@ -24,6 +26,10 @@
 | `brand-content` | `/media`, `/team`, `/conversation`, `/tv` | `landing-page` | `managed` |
 | `comparison` | `/compare/[slug]`, `/vs/[slug]` | `competitor` | в основном `generated` |
 | `campaign` | `/promo`, `/prozorro` | `landing-page` | `managed` |
+
+Подробная привязка маршрутов и ownership:
+
+- [Матрица маршрутов и ownership](route-ownership-matrix.md)
 
 ## 1. `home`
 
@@ -168,7 +174,8 @@ Shared sections:
 
 Ключевые поля:
 
-- `template_kind = managed`
+- `template_kind = pricing`
+- `content_origin = managed`
 - `hero_panel_items`
 - `pricing_tiers`
 - `proof_cards`
@@ -203,6 +210,8 @@ Shared sections:
 
 Ключевые поля:
 
+- `template_kind = partnership`
+- `content_origin = managed`
 - `hero_eyebrow`
 - `section_labels`
 - ROI/comparison labels
@@ -232,7 +241,7 @@ Shared sections:
 
 Ключевые поля:
 
-- `content_origin`
+- `content_origin = managed`
 - `hero_eyebrow`
 - `hero_panel_items`
 - `section_labels`

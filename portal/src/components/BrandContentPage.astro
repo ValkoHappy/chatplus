@@ -59,7 +59,7 @@ const sectionLabels = page.section_labels || {};
   <section class="brand-hero">
     <div class="container brand-hero-inner">
       <div class="brand-copy">
-        <span class="brand-kicker">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Компания и контент'}</span>
+        <span class="brand-kicker">{page.hero_eyebrow || sectionLabels.hero_eyebrow}</span>
         <h1>{page.h1}</h1>
         {page.subtitle && <p>{page.subtitle}</p>}
         <div class="brand-actions">
@@ -73,8 +73,8 @@ const sectionLabels = page.section_labels || {};
       </div>
       <aside class="brand-side">
         <div class="brand-note">
-          <span>{page.quote_title || sectionLabels.context_title || 'Контекст'}</span>
-          <p>{page.quote_text || sectionLabels.context_text || 'Эти страницы не должны выглядеть как SEO-лендинги. Это брендовый и редакционный слой вокруг Chat Plus.'}</p>
+          <span>{page.quote_title || sectionLabels.context_title}</span>
+          <p>{page.quote_text || sectionLabels.context_text}</p>
         </div>
         {(page.hero_trust_facts || []).slice(0, 3).map((fact, index) => (
           <article class="brand-fact">

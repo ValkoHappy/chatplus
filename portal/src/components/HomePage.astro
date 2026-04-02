@@ -108,7 +108,7 @@ const proofFacts = proofFactsSource.map(normalizeProofFact);
     <div class="hero-dots"></div>
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Chat + Value'}</span>
+        <span class="eyebrow">{page.hero_eyebrow || sectionLabels.hero_eyebrow}</span>
         <h1>{page.h1}</h1>
         {page.subtitle && <p class="subtitle">{page.subtitle}</p>}
         <div class="hero-actions">
@@ -240,11 +240,11 @@ const proofFacts = proofFactsSource.map(normalizeProofFact);
         </div>
         <div class="roi-grid">
           <article class="roi-card bad">
-            <h3>{sectionLabels.roi_without_title || 'Без Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_without_title}</h3>
             <ul>{(page.roi_without_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
           <article class="roi-card good">
-            <h3>{sectionLabels.roi_with_title || 'С Chat Plus'}</h3>
+            <h3>{sectionLabels.roi_with_title}</h3>
             <ul>{(page.roi_with_items || []).map((item) => <li>{item}</li>)}</ul>
           </article>
         </div>

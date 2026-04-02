@@ -58,7 +58,7 @@ const sectionLabels = page.section_labels || {};
   <section class="hub-hero">
     <div class="container hub-hero-inner">
       <div class="hub-copy">
-        <span class="hub-kicker">{page.hero_eyebrow || sectionLabels.hero_eyebrow || 'Ресурсы Chat Plus'}</span>
+        <span class="hub-kicker">{page.hero_eyebrow || sectionLabels.hero_eyebrow}</span>
         <h1>{page.h1}</h1>
         {page.subtitle && <p>{page.subtitle}</p>}
         <div class="hub-actions">
@@ -71,7 +71,7 @@ const sectionLabels = page.section_labels || {};
         </div>
       </div>
       <div class="hub-panel">
-        <div class="hub-panel-title">{page.quote_title || sectionLabels.panel_title || 'Что внутри'}</div>
+        <div class="hub-panel-title">{page.quote_title || sectionLabels.panel_title}</div>
         <div class="hub-panel-grid">
           {(page.hero_trust_facts || page.features?.map((item) => item.title || '') || []).slice(0, 4).map((item, index) => (
             <article class="hub-chip">

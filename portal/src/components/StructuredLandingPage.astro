@@ -290,7 +290,7 @@ const toHref = (href?: string) => withBasePath(href);
               <article class="roi-card roi-card--bad">
                 <div class="roi-card-header">
                   <span class="roi-icon roi-icon--bad">✕</span>
-                  <h3 class="roi-card-title">{labels.roi_without_title || 'Без Chat Plus'}</h3>
+                  <h3 class="roi-card-title">{labels.roi_without_title}</h3>
                 </div>
                 <ul class="roi-list">
                   {page.roi_without_items.map((item) => <li class="roi-item">{item}</li>)}
@@ -301,7 +301,7 @@ const toHref = (href?: string) => withBasePath(href);
               <article class="roi-card roi-card--good">
                 <div class="roi-card-header">
                   <span class="roi-icon roi-icon--good">✓</span>
-                  <h3 class="roi-card-title">{labels.roi_with_title || 'С Chat Plus'}</h3>
+                  <h3 class="roi-card-title">{labels.roi_with_title}</h3>
                 </div>
                 <ul class="roi-list">
                   {page.roi_with_items.map((item) => <li class="roi-item">{item}</li>)}
@@ -361,10 +361,10 @@ const toHref = (href?: string) => withBasePath(href);
           <table class="compare-table">
             <thead>
               <tr>
-                <th>{labels.comparison_header_parameter || 'Параметр'}</th>
-                <th>{labels.comparison_header_one || 'Вариант 1'}</th>
-                <th>{labels.comparison_header_two || 'Вариант 2'}</th>
-                <th class="table-accent">{labels.comparison_header_chat_plus || 'Chat Plus'}</th>
+                <th>{labels.comparison_header_parameter}</th>
+                <th>{labels.comparison_header_one}</th>
+                <th>{labels.comparison_header_two}</th>
+                <th class="table-accent">{labels.comparison_header_chat_plus}</th>
               </tr>
             </thead>
             <tbody>

@@ -56,21 +56,13 @@ interface PageData {
 const { page } = Astro.props as { page: PageData };
 const toHref = (href?: string) => withBasePath(href);
 const sectionLabels = page.section_labels || {};
-const compareBadge = sectionLabels.compare_badge || 'Сравнение';
-const compareSummary =
-  page.compare_summary || 'Не просто "канал или цена", а скорость запуска, экономика и управляемость процесса.';
-const comparePoints =
-  Array.isArray(page.compare_points) && page.compare_points.length > 0
-    ? page.compare_points
-    : [
-        'Быстрый старт без тяжелого enterprise-стека',
-        'Омниканал, CRM и AI в одной модели',
-        'Предсказуемый контур владения и роста команды',
-      ];
-const comparisonHeadParameter = sectionLabels.comparison_parameter || 'Параметр';
-const comparisonHeadOptionOne = sectionLabels.comparison_option_one || 'Вариант 1';
-const comparisonHeadOptionTwo = sectionLabels.comparison_option_two || 'Вариант 2';
-const comparisonHeadChatPlus = sectionLabels.comparison_chat_plus || 'Chat Plus';
+const compareBadge = sectionLabels.compare_badge;
+const compareSummary = page.compare_summary;
+const comparePoints = Array.isArray(page.compare_points) ? page.compare_points : [];
+const comparisonHeadParameter = sectionLabels.comparison_parameter;
+const comparisonHeadOptionOne = sectionLabels.comparison_option_one;
+const comparisonHeadOptionTwo = sectionLabels.comparison_option_two;
+const comparisonHeadChatPlus = sectionLabels.comparison_chat_plus;
 ---
 
 <Base title={page.meta_title} description={page.meta_description} canonical={page.canonical} hideGlobalStickyCta={Boolean(page.sticky_cta_title || page.sticky_cta_text)}>

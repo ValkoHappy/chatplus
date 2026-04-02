@@ -908,6 +908,8 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
       [
         'home',
         'structured',
+        'pricing',
+        'partnership',
         'resource_hub',
         'brand_content',
         'campaign',
