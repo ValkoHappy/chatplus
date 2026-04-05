@@ -1,162 +1,153 @@
-# Деплой CHATPLUS
+# Deploy CHATPLUS
 
-## 1. Текущий режим: demo-mode
+`CHATPLUS` now has two deployment contours:
 
-Сейчас проект публикуется не из hosted Strapi, а через локальный snapshot:
+- `demo-mode` for the existing `pages-preview/ -> GitHub Pages` showcase flow
+- `production-mode` for a repeatable Ubuntu VPS deployment through `docker compose`
+
+## 1. Demo-mode
+
+Current demo publishing flow:
 
 `local Strapi -> Astro build -> pages-preview -> GitHub Pages`
 
-Это рабочий demo-контур, а не полноценный production DevOps.
+Use demo-mode when you need to refresh the public showcase without touching the production VPS.
 
-## 2. Что делает оператор перед публикацией
+### Demo operator flow
 
-### Шаг 1. Запустить локальный Strapi
+1. Start local Strapi:
 
 ```powershell
 npm.cmd --prefix cms run develop
 ```
 
-### Шаг 2. Если менялся generated content — обновить Strapi
+2. If generated content changed, refresh Strapi:
 
 ```powershell
 npm.cmd run seed-content
 ```
 
-### Шаг 3. Собрать demo snapshot
-
-Во втором окне:
+3. Build the GitHub Pages snapshot:
 
 ```powershell
 npm.cmd --prefix portal run snapshot:github-demo
 ```
 
-### Шаг 4. Commit и push
+4. Commit and push the updated `pages-preview/`.
 
-Если `git` не в `PATH`, можно использовать:
+## 2. Production-mode
+
+Production is no longer described as a hand-maintained SSH session.
+
+Target production contour:
+
+- `postgres` container
+- `strapi` container
+- `nginx` container for public site and CMS reverse proxy
+- one-off `portal-builder` and `tools` containers for build/import operations
+
+Production runbook lives here:
+
+- [deploy/DEPLOY_PRODUCTION.md](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/DEPLOY_PRODUCTION.md)
+
+Primary production entrypoints:
+
+- [deploy.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/deploy.sh)
+- [update.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/update.sh)
+
+## 3. Ownership stays the same in both modes
+
+- `generated` pages still come from `cms/seed/*.json -> scripts/seed-runtime-content.mjs -> Strapi`
+- `managed` pages are still edited directly in Strapi admin
+- public route structure and template ownership do not change between demo and production
+
+## 4. Supported production defaults
+
+- Ubuntu `22.04 LTS` or `24.04 LTS`
+- `docker compose`
+- `Postgres` for Strapi
+- main public domain for the site
+- `cms.` subdomain for Strapi admin/API
+
+Recommended minimum VPS:
+
+- `2 vCPU`
+- `4 GB RAM`
+- `40-60 GB SSD`
+
+## 5. What production-mode adds
+
+- reproducible deployment on a clean Ubuntu VPS
+- persistent Postgres and uploads storage
+- backup and restore scripts
+- a documented rebuild flow after managed or generated content updates
+- migration path to another VPS without rebuilding the setup from memory
+
+## 6. What production-mode does not add yet
+
+- Terraform
+- Ansible
+- multi-server orchestration
+- webhook-driven automatic rebuilds
+- hosted observability/monitoring stack
+
+This first production step is intentionally `Docker Prod`, not full IaC.
+
+## 7. Local Docker smoke mode
+
+If Docker Desktop is available on a local machine, there is a lightweight local contour.
+
+Windows-friendly local entrypoints:
+
+- [preflight-local.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/preflight-local.cmd)
+- [local-up.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.cmd)
+- [local-build-portal.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-build-portal.cmd)
+- [local-seed-content.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-seed-content.cmd)
+- [local-down.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-down.cmd)
+- [preflight-local.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/preflight-local.ps1)
+- [local-up.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.ps1)
+- [local-build-portal.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-build-portal.ps1)
+- [local-seed-content.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-seed-content.ps1)
+- [local-down.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-down.ps1)
+
+Recommended Windows quickstart:
 
 ```powershell
-& "C:\Program Files\Git\cmd\git.exe" add .
-& "C:\Program Files\Git\cmd\git.exe" commit -m "Update demo snapshot"
-& "C:\Program Files\Git\cmd\git.exe" push origin main
+Copy-Item deploy/.env.local.example deploy/.env.local
+.\deploy\scripts\local-up.cmd
 ```
 
-### Шаг 5. Проверить деплой
+Then:
 
-Проверить workflow:
+1. Open `http://127.0.0.1:1337/admin`
+2. Create the first Strapi admin user
+3. In `Settings -> API Tokens`, create a token
+4. Put the token into `deploy/.env.local` as `STRAPI_API_TOKEN`
 
-- `Deploy Demo Snapshot`
-
-## 3. Что обязательно должно быть зеленым
+If this is a clean local database, import generator-owned content first:
 
 ```powershell
-npm.cmd --prefix portal run build
+.\deploy\scripts\local-seed-content.cmd
 ```
 
-Это включает:
+After that, build the local public site:
 
-- Astro build
-- content quality check
-- internal links check
-- encoding check
+```powershell
+.\deploy\scripts\local-build-portal.cmd
+```
 
-## 4. Что generator overwrites, а что нет
+Notes:
 
-### Generator может обновлять
+- local services open on:
+  - `http://127.0.0.1:1337/admin`
+  - `http://127.0.0.1:8080`
+- `PUBLIC_SITE_URL` in `deploy/.env.local` intentionally stays `https://chatplus.ru`, so local smoke uses production-style canonical URLs and passes the same `content-check`
+- if Docker Desktop asks about WSL integration with personal `Ubuntu`, that integration is optional for this project; the local smoke flow only requires a healthy Docker engine
 
-- `generated` records
-- generator-owned page families
-- materialized programmatic content
+Supporting files:
 
-### Generator не должен silently overwrite
-
-- `managed` singleton pages
-- контент, который редактор ведет вручную в Strapi
-
-## 5. Кто владеет чем
-
-### Контентщик или оператор
-
-- Strapi content
-- запуск `seed-content`
-- публикация demo snapshot
-
-### Разработчик
-
-- шаблоны
-- layout
-- стили
-- адаптив
-- adapters и normalization
-
-### DevOps или техлид
-
-- secrets
-- GitHub Actions
-- будущий production deploy
-- внешний Strapi, когда он появится
-
-## 6. Demo-mode и production-mode — разные контуры
-
-### Сейчас: demo-mode
-
-- локальный Strapi
-- локальный build
-- `pages-preview`
-- GitHub Pages
-
-### Потом: production-mode
-
-- hosted Strapi
-- GitHub Actions build from live CMS
-- deploy artifact
-
-Нельзя использовать в CI:
-
-- `localhost`
-- `127.0.0.1`
-
-## 7. Что нужно для production-mode
-
-Следующий этап, если проект переводится в полноценную эксплуатацию:
-
-- поднять внешний Strapi
-- завести секреты `STRAPI_URL` и `STRAPI_TOKEN`
-- настроить CI/CD build from live CMS
-- настроить бэкапы Strapi
-- определить роли и права доступа
-
-## 8. Troubleshooting
-
-### Demo не обновился
-
-Проверить:
-
-1. обновился ли `pages-preview/`
-2. попал ли snapshot в commit
-3. прошел ли workflow
-4. сделать `Ctrl+F5`
-
-### Build падает
-
-Проверить:
-
-1. запущен ли Strapi
-2. не забыли ли `seed-content`
-3. не сломаны ли seeds/generator inputs
-
-### Новая generated page не появилась
-
-Проверить:
-
-1. была ли запись добавлена в source seed
-2. запускался ли `seed-content`
-3. появилась ли запись в Strapi
-4. поддерживает ли frontend нужный route
-
-### В Telegram не обновилось превью
-
-Проверить:
-
-1. live HTML уже отдает новый `og:image`
-2. сам `og-image` доступен по URL
-3. если сайт уже обновился, почистить кэш Telegram через `@WebpageBot`
+- [deploy/.env.local.example](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/.env.local.example)
+- [local-up.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.sh)
+- [local-build-portal.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-build-portal.sh)
+- [local-seed-content.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-seed-content.sh)
+- [local-down.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-down.sh)

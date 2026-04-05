@@ -8,6 +8,11 @@ node_modules
 .env.production
 **/.env
 **/.env.local
+deploy/data/*
+!deploy/data/.gitkeep
+!deploy/data/letsencrypt/.gitkeep
+!deploy/data/certbot-webroot/.gitkeep
+!deploy/data/backups/.gitkeep
 
 # Build output and caches
 dist

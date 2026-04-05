@@ -1,0 +1,13 @@
+services:
+  strapi:
+    ports:
+      - "1337:1337"
+
+  nginx:
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/local/noop-template.conf:/etc/nginx/templates/public-site.conf.template:ro
+      - ./nginx/local/noop-template.conf:/etc/nginx/templates/cms-site.conf.template:ro
+      - ./nginx/local/public-site.conf:/etc/nginx/conf.d/default.conf:ro
+      - portal_dist:/usr/share/nginx/html:ro

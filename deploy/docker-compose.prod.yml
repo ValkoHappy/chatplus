@@ -1,0 +1,131 @@
+name: ${COMPOSE_PROJECT_NAME:-chatplus}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  strapi:
+    build:
+      context: ../cms
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      PUBLIC_URL: ${CMS_PUBLIC_URL}
+      IS_PROXIED: "true"
+      APP_KEYS: ${APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USERNAME: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_SCHEMA: ${POSTGRES_SCHEMA}
+      DATABASE_SSL: "false"
+    expose:
+      - "1337"
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:1337/admin').then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    volumes:
+      - strapi_uploads:/app/public/uploads
+    networks:
+      - internal
+
+  portal-builder:
+    build:
+      context: ..
+      dockerfile: portal/Dockerfile.prod
+    depends_on:
+      strapi:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      STRAPI_URL: ${STRAPI_INTERNAL_URL}
+      STRAPI_TOKEN: ${STRAPI_API_TOKEN}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      PUBLIC_BASE_PATH: ${PUBLIC_BASE_PATH}
+    volumes:
+      - portal_dist:/portal-output
+    networks:
+      - internal
+
+  tools:
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.tools
+    depends_on:
+      strapi:
+        condition: service_healthy
+    working_dir: /workspace
+    environment:
+      NODE_ENV: production
+      STRAPI_URL: ${STRAPI_INTERNAL_URL}
+      STRAPI_TOKEN: ${STRAPI_API_TOKEN}
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      strapi:
+        condition: service_started
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/templates/public-site.conf.template:/etc/nginx/templates/public-site.conf.template:ro
+      - ./nginx/templates/cms-site.conf.template:/etc/nginx/templates/cms-site.conf.template:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      - ./data/letsencrypt:/etc/letsencrypt
+      - ./data/certbot-webroot:/var/www/certbot
+      - portal_dist:/usr/share/nginx/html:ro
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN}
+      CMS_DOMAIN: ${CMS_DOMAIN}
+    networks:
+      - internal
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./data/letsencrypt:/etc/letsencrypt
+      - ./data/certbot-webroot:/var/www/certbot
+
+volumes:
+  postgres_data:
+  strapi_uploads:
+  portal_dist:
+
+networks:
+  internal:
+    driver: bridge

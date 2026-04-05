@@ -82,6 +82,40 @@ npm.cmd --prefix portal run dev -- --host 127.0.0.1
 http://127.0.0.1:4321/
 ```
 
+## Local Docker smoke
+
+If you want to verify the production-like contour locally through Docker Desktop:
+
+```powershell
+Copy-Item deploy/.env.local.example deploy/.env.local
+.\deploy\scripts\local-up.cmd
+```
+
+Then:
+
+1. open `http://127.0.0.1:1337/admin`
+2. create a Strapi admin user
+3. create an API token
+4. write it to `deploy/.env.local` as `STRAPI_API_TOKEN`
+5. on a clean local database run:
+
+```powershell
+.\deploy\scripts\local-seed-content.cmd
+```
+
+6. build the local public site:
+
+```powershell
+.\deploy\scripts\local-build-portal.cmd
+```
+
+Result:
+
+- `Strapi`: `http://127.0.0.1:1337/admin`
+- public site: `http://127.0.0.1:8080`
+
+If Docker Desktop asks about WSL integration with `Ubuntu`, you can skip it for this project. The local smoke flow needs the Docker engine, not the Docker CLI inside your personal Ubuntu distro.
+
 ## Основные команды
 
 ### Обновить generator-owned контент
@@ -177,3 +211,10 @@ npm.cmd --prefix portal run snapshot:github-demo
 - [Release Flow](docs/release-flow.md)
 - [Known Risks](docs/known-risks.md)
 - [Деплой](DEPLOY.md)
+## Non-Technical Owner Entry
+
+If you need the shortest project explanation for an owner, partner, or manager, start here:
+
+- [Owner Quickstart](docs/owner-quickstart.md)
+- [Operator Guide](docs/operator-guide.md)
+- [Deploy](DEPLOY.md)

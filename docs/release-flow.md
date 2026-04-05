@@ -97,7 +97,89 @@ Build должен пройти вместе с:
 npm.cmd --prefix portal run snapshot:github-demo
 ```
 
-## 8. Коммит и push
+## 8. Если релиз идет в production-mode
+
+Для production VPS flow другой:
+
+### Managed content
+
+1. Редактор меняет контент в Strapi admin.
+2. Оператор на сервере запускает:
+
+```bash
+./deploy/scripts/build-portal.sh
+```
+
+### Generated content
+
+1. Обновить `cms/seed/*.json` и закоммитить изменения.
+2. На сервере подтянуть новый код.
+3. Выполнить:
+
+```bash
+./deploy/scripts/seed-content.sh
+./deploy/scripts/build-portal.sh
+```
+
+### Первичный production deploy
+
+Использовать runbook:
+
+- [deploy/DEPLOY_PRODUCTION.md](e:/Проекты/НоваяГлава/CHATPLUS/deploy/DEPLOY_PRODUCTION.md)
+- быстрый entrypoint:
+
+```bash
+./deploy/scripts/deploy.sh --with-seed
+```
+
+### Обновление production-кода
+
+Если production contour уже поднят:
+
+```bash
+./deploy/scripts/update.sh
+```
+
+Если вместе с кодом менялся generated content:
+
+```bash
+./deploy/scripts/update.sh --with-seed
+```
+
+### Локальная Docker-проверка перед VPS
+
+Если нужно быстро прогнать production-like контур на Windows-машине:
+
+```powershell
+Copy-Item deploy/.env.local.example deploy/.env.local
+.\deploy\scripts\local-up.cmd
+```
+
+Потом:
+
+1. открыть `http://127.0.0.1:1337/admin`
+2. создать Strapi admin
+3. создать API token
+4. записать его в `deploy/.env.local` как `STRAPI_API_TOKEN`
+5. на чистой локальной базе выполнить:
+
+```powershell
+.\deploy\scripts\local-seed-content.cmd
+```
+
+6. собрать локальный public site:
+
+```powershell
+.\deploy\scripts\local-build-portal.cmd
+```
+
+Проверить:
+
+- `http://127.0.0.1:8080/`
+- `http://127.0.0.1:8080/pricing/`
+- `http://127.0.0.1:8080/solutions/tenders/`
+
+## 9. Коммит и push
 
 ```powershell
 git add .
@@ -105,7 +187,7 @@ git commit -m "Describe your change"
 git push origin main
 ```
 
-## 8a. Что происходит на PR
+## 9a. Что происходит на PR
 
 До merge GitHub Actions запускает workflow `CI`.
 
@@ -124,13 +206,19 @@ git push origin main
 - для fork PR workflow может пропустить build/smoke, потому что проекту нужны live Strapi secrets
 - это не заменяет локальную проверку, особенно для крупных contract-level изменений
 
-## 9. После push
+## 10. После push
 
 1. Проверить GitHub Pages.
 2. Проверить representative routes на live.
 3. Если менялись Open Graph данные, проверить превью ссылки.
 
-## 10. Когда релиз считается готовым
+Если релиз идет в production-mode, вместо GitHub Pages проверить:
+
+- public domain
+- `cms.` subdomain
+- representative routes после rebuild
+
+## 11. Когда релиз считается готовым
 
 Изменение считается не просто “собирается”, а реально готово, когда:
 
@@ -141,4 +229,4 @@ git push origin main
 - docs не противоречат коду
 - ownership не сломан
 - representative routes проверены руками
-- published snapshot или live pages отражают изменения
+- published snapshot или production static site отражают изменения

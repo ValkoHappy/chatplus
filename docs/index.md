@@ -178,6 +178,14 @@ CHATPLUS/
 - [Чеклист публикации](publishing-checklist.md)
 - [Деплой](../DEPLOY.md)
 
+## Entry for Owner or Manager
+
+If you need the shortest non-technical entrypoint, start here:
+
+- [Owner Quickstart](owner-quickstart.md)
+- [Гайд оператора](operator-guide.md)
+- [Деплой](../DEPLOY.md)
+
 ## Zero-Ambiguity правила
 
 - Не создавайте `generated`-страницы руками в Strapi.

@@ -8,13 +8,13 @@ import {
 import { validateSeedData } from './seed-runtime-content/validators.mjs';
 import { createStrapiClient } from './seed-runtime-content/strapi-client.mjs';
 
-const env = loadEnv();
+const env = { ...loadEnv(), ...process.env };
 const STRAPI_URL = env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = env.STRAPI_TOKEN || '';
 const now = new Date().toISOString();
 
 if (!STRAPI_TOKEN) {
-  console.error('STRAPI_TOKEN not found in .env');
+  console.error('STRAPI_TOKEN not found in environment or .env');
   process.exit(1);
 }
 

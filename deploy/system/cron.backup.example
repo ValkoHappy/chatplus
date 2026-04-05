@@ -1,0 +1,1 @@
+0 3 * * * cd /srv/chatplus && ./deploy/scripts/backup.sh >> /var/log/chatplus-backup.log 2>&1

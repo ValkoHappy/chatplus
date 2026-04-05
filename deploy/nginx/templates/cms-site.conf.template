@@ -1,0 +1,34 @@
+server {
+    listen 80;
+    server_name ${CMS_DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name ${CMS_DOMAIN};
+
+    ssl_certificate /etc/letsencrypt/live/${CMS_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${CMS_DOMAIN}/privkey.pem;
+
+    include /etc/nginx/snippets/ssl-params.conf;
+    include /etc/nginx/snippets/strapi-proxy.conf;
+
+    client_max_body_size 64m;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        proxy_pass http://strapi:1337;
+    }
+}

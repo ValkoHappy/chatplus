@@ -133,6 +133,7 @@ node scripts/export-from-strapi.mjs
 - опубликован старый `pages-preview`
 - GitHub Pages держит старый артефакт
 - браузер или Telegram показывают кэш
+- production VPS не пересобрал статический сайт
 
 Что делать:
 
@@ -145,6 +146,12 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 3. Commit + push.
 4. После публикации сделать `Ctrl+F5`.
+
+Для production-mode:
+
+```bash
+./deploy/scripts/build-portal.sh
+```
 
 ## 8. На GitHub Pages старые стили
 
@@ -256,3 +263,136 @@ npm.cmd run seed-content
 - `docs/route-ownership-matrix.md`
 - `portal/src/lib/page-template-map.ts`
 - `config/template-kinds.mjs`
+
+## 14. Production: контейнер Strapi unhealthy
+
+Что проверить:
+
+1. Стартовал ли `postgres`
+2. Корректны ли переменные в `deploy/.env`
+3. Есть ли драйвер `pg` и production build image собран без ошибок
+
+Команды:
+
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml ps
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f strapi
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f postgres
+```
+
+## 15. Production: `portal-builder` не может достучаться до CMS
+
+Признаки:
+
+- `build-portal.sh` падает на fetch к Strapi
+- `Strapi returned no data for ...`
+
+Что проверить:
+
+1. Жив ли контейнер `strapi`
+2. Правилен ли `STRAPI_INTERNAL_URL` в `deploy/.env`
+3. Заполнен ли `STRAPI_API_TOKEN`
+
+Команда:
+
+```bash
+./deploy/scripts/build-portal.sh
+```
+
+## 16. Production: nginx отдает старую статику
+
+Что проверить:
+
+1. Выполнялся ли `build-portal.sh`
+2. Не упал ли one-off `portal-builder`
+3. Не смотрите ли вы старый кэш браузера/CDN
+
+Полезно повторить:
+
+```bash
+./deploy/scripts/build-portal.sh
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f nginx
+```
+
+## 17. Production: перенос на новый VPS после сбоя
+
+Правильный flow:
+
+1. Поднять новую чистую Ubuntu
+2. Повторить bootstrap и env setup
+3. Перенести backup directory
+4. Выполнить:
+
+```bash
+./deploy/scripts/restore.sh /path/to/backup-directory
+./deploy/scripts/build-portal.sh
+```
+
+Основной runbook:
+
+- [deploy/DEPLOY_PRODUCTION.md](e:/Проекты/НоваяГлава/CHATPLUS/deploy/DEPLOY_PRODUCTION.md)
+
+## 18. Локальный Docker smoke не поднимается
+
+Что нужно для локального режима:
+
+1. установлен Docker Desktop
+2. создан `deploy/.env.local`
+3. выполнен:
+
+```bash
+./deploy/scripts/local-up.sh
+```
+
+Если public site пустой, это нормально до первого:
+
+```bash
+./deploy/scripts/local-build-portal.sh
+```
+
+## 19. Local Docker smoke on Windows
+
+For the actual Windows flow use:
+
+```powershell
+.\deploy\scripts\local-up.cmd
+.\deploy\scripts\local-seed-content.cmd
+.\deploy\scripts\local-build-portal.cmd
+```
+
+Clean local smoke order:
+
+1. `local-up`
+2. create Strapi admin
+3. create API token
+4. write `STRAPI_API_TOKEN` into `deploy/.env.local`
+5. `local-seed-content`
+6. `local-build-portal`
+
+If the site looks empty before the first build, that is expected.
+
+## 20. Docker Desktop complains about WSL integration with Ubuntu
+
+If Docker Desktop shows an error specifically about WSL integration with your personal `Ubuntu` distro:
+
+- this is not a blocker for `CHATPLUS`
+- the local smoke flow only needs a healthy Docker engine
+- WSL integration with the personal `Ubuntu` distro can be skipped
+
+Safe actions:
+
+1. Click `Skip WSL distro integration` if Docker offers it.
+2. In `Docker Desktop -> Settings -> Resources -> WSL Integration`, disable integration for `Ubuntu`.
+3. Continue using the Windows local scripts.
+
+## 21. Local Docker build passes, but content-check fails on canonical
+
+For local smoke this usually means `PUBLIC_SITE_URL` in `deploy/.env.local` was changed.
+
+Expected value:
+
+```text
+PUBLIC_SITE_URL=https://chatplus.ru
+```
+
+This is intentional: local Docker smoke validates production-style canonical URLs and should pass the same `content-check` guardrails as the normal build.

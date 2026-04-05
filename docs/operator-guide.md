@@ -154,3 +154,9 @@ npm.cmd --prefix portal run snapshot:github-demo
 - шаблон или верстка -> frontend developer
 - генератор или seeds -> инженер, который ведет content pipeline
 - публикация, GitHub Pages, secrets -> devops или техлид
+## 10. Совсем короткий слой для владельца
+
+Если нужно объяснение без инженерных деталей, сначала откройте:
+
+- [Owner Quickstart](owner-quickstart.md)
+- [Деплой](../DEPLOY.md)

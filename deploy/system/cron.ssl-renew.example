@@ -1,0 +1,1 @@
+30 3 * * * cd /srv/chatplus && ./deploy/scripts/renew-ssl.sh >> /var/log/chatplus-ssl-renew.log 2>&1
