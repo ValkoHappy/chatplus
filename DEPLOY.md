@@ -48,12 +48,12 @@ Production больше не описывается как ручная SSH-се
 
 Production runbook лежит здесь:
 
-- [deploy/DEPLOY_PRODUCTION.md](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/DEPLOY_PRODUCTION.md)
+- [deploy/DEPLOY_PRODUCTION.md](deploy/DEPLOY_PRODUCTION.md)
 
 Главные production entrypoints:
 
-- [deploy.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/deploy.sh)
-- [update.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/update.sh)
+- [deploy.sh](deploy/scripts/deploy.sh)
+- [update.sh](deploy/scripts/update.sh)
 
 ## 3. Ownership в обоих режимах одинаковый
 
@@ -99,16 +99,16 @@ Production runbook лежит здесь:
 
 Windows-friendly локальные entrypoints:
 
-- [preflight-local.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/preflight-local.cmd)
-- [local-up.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.cmd)
-- [local-build-portal.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-build-portal.cmd)
-- [local-seed-content.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-seed-content.cmd)
-- [local-down.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-down.cmd)
-- [preflight-local.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/preflight-local.ps1)
-- [local-up.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.ps1)
-- [local-build-portal.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-build-portal.ps1)
-- [local-seed-content.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-seed-content.ps1)
-- [local-down.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-down.ps1)
+- [preflight-local.cmd](deploy/scripts/preflight-local.cmd)
+- [local-up.cmd](deploy/scripts/local-up.cmd)
+- [local-build-portal.cmd](deploy/scripts/local-build-portal.cmd)
+- [local-seed-content.cmd](deploy/scripts/local-seed-content.cmd)
+- [local-down.cmd](deploy/scripts/local-down.cmd)
+- [preflight-local.ps1](deploy/scripts/preflight-local.ps1)
+- [local-up.ps1](deploy/scripts/local-up.ps1)
+- [local-build-portal.ps1](deploy/scripts/local-build-portal.ps1)
+- [local-seed-content.ps1](deploy/scripts/local-seed-content.ps1)
+- [local-down.ps1](deploy/scripts/local-down.ps1)
 
 Рекомендуемый Windows quickstart:
 
@@ -146,8 +146,8 @@ Copy-Item deploy/.env.local.example deploy/.env.local
 
 Вспомогательные файлы:
 
-- [deploy/.env.local.example](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/.env.local.example)
-- [local-up.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.sh)
-- [local-build-portal.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-build-portal.sh)
-- [local-seed-content.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-seed-content.sh)
-- [local-down.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-down.sh)
+- [deploy/.env.local.example](deploy/.env.local.example)
+- [local-up.sh](deploy/scripts/local-up.sh)
+- [local-build-portal.sh](deploy/scripts/local-build-portal.sh)
+- [local-seed-content.sh](deploy/scripts/local-seed-content.sh)
+- [local-down.sh](deploy/scripts/local-down.sh)

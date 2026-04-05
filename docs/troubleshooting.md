@@ -330,7 +330,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 
 Основной runbook:
 
-- [deploy/DEPLOY_PRODUCTION.md](e:/Проекты/НоваяГлава/CHATPLUS/deploy/DEPLOY_PRODUCTION.md)
+- [deploy/DEPLOY_PRODUCTION.md](../deploy/DEPLOY_PRODUCTION.md)
 
 ## 18. Локальный Docker smoke не поднимается
 

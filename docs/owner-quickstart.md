@@ -158,9 +158,9 @@ npm.cmd --prefix portal run build
 
 Начинайте отсюда:
 
-1. [DEPLOY.md](/e:/Проекты/НоваяГлава/CHATPLUS/DEPLOY.md)
-2. [release-flow.md](/e:/Проекты/НоваяГлава/CHATPLUS/docs/release-flow.md)
-3. [operator-guide.md](/e:/Проекты/НоваяГлава/CHATPLUS/docs/operator-guide.md)
+1. [DEPLOY.md](../DEPLOY.md)
+2. [release-flow.md](release-flow.md)
+3. [operator-guide.md](operator-guide.md)
 
 ## 9. Самое короткое резюме
 

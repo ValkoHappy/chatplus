@@ -198,8 +198,8 @@ Backup не включает:
 
 Примеры cron entries:
 
-- [deploy/system/cron.backup.example](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/system/cron.backup.example)
-- [deploy/system/cron.ssl-renew.example](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/system/cron.ssl-renew.example)
+- [deploy/system/cron.backup.example](system/cron.backup.example)
+- [deploy/system/cron.ssl-renew.example](system/cron.ssl-renew.example)
 
 ## 12. Restore на другой чистой Ubuntu VPS
 

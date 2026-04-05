@@ -125,7 +125,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 Использовать runbook:
 
-- [deploy/DEPLOY_PRODUCTION.md](e:/Проекты/НоваяГлава/CHATPLUS/deploy/DEPLOY_PRODUCTION.md)
+- [deploy/DEPLOY_PRODUCTION.md](../deploy/DEPLOY_PRODUCTION.md)
 - быстрый entrypoint:
 
 ```bash
