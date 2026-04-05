@@ -1,54 +1,54 @@
-# CHATPLUS for Owner
+# CHATPLUS для владельца
 
-This is the shortest non-technical entrypoint into the project.
+Это самый короткий нетехнический вход в проект.
 
-Use it if you are:
+Используйте его, если вы:
 
-- a project owner
-- a partner
-- a manager
-- a content operator who does not want to read the full engineering docs first
+- владелец проекта
+- партнер
+- менеджер
+- контент-оператор, который не хочет сначала читать полную инженерную документацию
 
-## 1. What this project is
+## 1. Что это за проект
 
-`CHATPLUS` is a public website for the `Chat Plus` product.
+`CHATPLUS` — это публичный сайт продукта `Chat Plus`.
 
-It has two parts:
+У него есть две части:
 
-- the public site that visitors see
-- the CMS admin panel where content is edited
+- публичный сайт, который видят посетители
+- CMS-админка, где редактируется контент
 
-In this project the CMS is `Strapi`, and the public site is built with `Astro`.
+В этом проекте CMS — это `Strapi`, а публичный сайт собирается на `Astro`.
 
-Simple model:
+Простая модель:
 
-- `site` = public pages
-- `CMS` = admin panel for content
+- `site` = публичные страницы
+- `CMS` = админка для контента
 
-## 2. What is edited where
+## 2. Что и где редактируется
 
-There are two content modes.
+В проекте есть два контентных режима.
 
 ### Managed content
 
-This is edited directly in `Strapi`.
+Редактируется напрямую в `Strapi`.
 
-Typical examples:
+Типичные примеры:
 
-- home page
+- главная страница
 - pricing
 - partnership
-- docs/media/promo-like managed pages
+- docs/media/promo-подобные managed pages
 
-If you want to change text on this kind of page, the normal place is the CMS admin panel.
+Если вы хотите изменить текст на такой странице, нормальное место для этого — CMS admin panel.
 
 ### Generated content
 
-This is not edited manually in Strapi as the main source.
+Такой контент не редактируется вручную в Strapi как основной источник.
 
-It is generated from project seed files and then imported into Strapi.
+Он генерируется из seed-файлов проекта и потом импортируется в Strapi.
 
-Typical examples:
+Типичные примеры:
 
 - channels
 - industries
@@ -57,44 +57,44 @@ Typical examples:
 - solutions
 - competitors
 
-If you want to change this kind of content, the source usually lives in `cms/seed/*.json`.
+Если нужно изменить такой контент, его источник обычно находится в `cms/seed/*.json`.
 
-## 3. What a normal update looks like
+## 3. Как выглядит обычное обновление
 
-### If someone changed content in Strapi
+### Если кто-то изменил контент в Strapi
 
-The next step is to rebuild the public site.
+Следующий шаг — пересобрать публичный сайт.
 
-In Docker/VPS flow that usually means:
+В Docker/VPS flow это обычно значит:
 
 ```bash
 ./deploy/scripts/build-portal.sh
 ```
 
-In local/demo flow that usually means:
+В local/demo flow это обычно значит:
 
 ```powershell
 npm.cmd --prefix portal run build
 ```
 
-### If someone changed generated seed files
+### Если кто-то изменил generated seed files
 
-The normal order is:
+Нормальный порядок такой:
 
-1. update `cms/seed/*.json`
-2. run content import
-3. rebuild the public site
+1. обновить `cms/seed/*.json`
+2. выполнить content import
+3. пересобрать публичный сайт
 
-In Docker/VPS flow:
+В Docker/VPS flow:
 
 ```bash
 ./deploy/scripts/seed-content.sh
 ./deploy/scripts/build-portal.sh
 ```
 
-## 4. What infrastructure exists now
+## 4. Какая инфраструктура уже есть
 
-There are two deploy contours.
+Сейчас есть два deploy contour.
 
 ### Demo contour
 
@@ -103,69 +103,69 @@ There are two deploy contours.
 - `pages-preview`
 - GitHub Pages
 
-This is useful for showcase/demo publishing.
+Подходит для showcase/demo publishing.
 
 ### Production contour
 
 - `postgres`
 - `strapi`
 - `nginx`
-- one-off build/import containers
+- одноразовые build/import containers
 - `docker compose`
 
-This is the repeatable server-ready contour.
+Это уже повторяемый server-ready contour.
 
-## 5. What the server setup needs
+## 5. Что нужно от сервера
 
-Minimum recommended VPS:
+Рекомендуемый минимум для VPS:
 
 - `2 vCPU`
 - `4 GB RAM`
 - `40-60 GB SSD`
 
-What the project needs from the server side:
+Что проекту нужно со стороны сервера:
 
-- Ubuntu `22.04` or `24.04`
+- Ubuntu `22.04` или `24.04`
 - Docker / Docker Compose
-- a main domain for the public site
-- a `cms.` subdomain for Strapi
-- SSH access for setup
+- основной домен для публичного сайта
+- поддомен `cms.` для Strapi
+- SSH-доступ для настройки
 
-## 6. What is already automated
+## 6. Что уже автоматизировано
 
-The project already has:
+В проекте уже есть:
 
-- reproducible Docker-based deploy files
+- воспроизводимые Docker-based deploy files
 - build/import scripts
 - backup/restore scripts
-- CI checks for PRs
-- documentation for local, demo, and production flow
+- CI-проверки для PR
+- документация для local, demo и production flow
 
-This means the project no longer depends only on “someone remembers how it was set up”.
+Это значит, что проект больше не зависит только от сценария «кто-то помнит, как это однажды настроили».
 
-## 7. What still stays manual
+## 7. Что пока остается ручным
 
-At the current stage these things are still human-controlled:
+На текущем этапе человек все еще контролирует:
 
-- approving content changes
+- согласование контентных изменений
 - visual QA
-- deciding when to publish
-- running rebuild/update commands in the current flow
+- решение, когда публиковать изменения
+- запуск rebuild/update команд в текущем flow
 
-That is normal for the current maturity level.
+Для текущего уровня зрелости проекта это нормально.
 
-## 8. If you only need three files
+## 8. Если нужны только три файла
 
-Start here:
+Начинайте отсюда:
 
 1. [DEPLOY.md](/e:/Проекты/НоваяГлава/CHATPLUS/DEPLOY.md)
 2. [release-flow.md](/e:/Проекты/НоваяГлава/CHATPLUS/docs/release-flow.md)
 3. [operator-guide.md](/e:/Проекты/НоваяГлава/CHATPLUS/docs/operator-guide.md)
 
-## 9. Shortest possible summary
+## 9. Самое короткое резюме
 
-- the site is static for visitors
-- content is managed through Strapi
-- some content is edited in CMS, some comes from seed files
-- after content changes, the site must be rebuilt
-- the project now has a repeatable Docker-based production contour
+- сайт для посетителей статический
+- контент управляется через Strapi
+- часть контента редактируется в CMS, часть приходит из seed-файлов
+- после контентных изменений сайт нужно пересобирать
+- у проекта уже есть повторяемый Docker-based production contour

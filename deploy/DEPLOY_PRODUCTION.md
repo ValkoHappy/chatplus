@@ -1,58 +1,58 @@
 # Production Deploy CHATPLUS
 
-This runbook describes the first repeatable production contour for `CHATPLUS` on a clean Ubuntu VPS.
+Этот runbook описывает первый воспроизводимый production contour для `CHATPLUS` на чистой Ubuntu VPS.
 
-## 1. What this contour includes
+## 1. Что включает этот контур
 
-- `postgres` for production Strapi data
-- `strapi` for CMS admin and API
-- `nginx` for:
-  - the public static Astro site
-  - reverse proxying `cms.<domain>` to Strapi
-- one-off helper containers:
-  - `portal-builder` for static site rebuilds
-  - `tools` for `seed-content`
-  - `certbot` for Let's Encrypt
+- `postgres` для production Strapi data
+- `strapi` для CMS admin и API
+- `nginx` для:
+  - публичного статического Astro-сайта
+  - reverse proxy с `cms.<domain>` на Strapi
+- одноразовые helper containers:
+  - `portal-builder` для static site rebuild
+  - `tools` для `seed-content`
+  - `certbot` для Let's Encrypt
 - orchestration scripts:
   - `deploy.sh`
   - `update.sh`
 
-## 2. Prerequisites
+## 2. Предварительные условия
 
-Before the first deploy, prepare:
+Перед первым deploy подготовьте:
 
-- a clean Ubuntu `22.04 LTS` or `24.04 LTS` VPS
-- SSH access
-- one public domain for the site
-- one `cms.` subdomain for Strapi
-- DNS A records for both hosts pointed to the VPS
-- open ports `80` and `443`
+- чистую Ubuntu `22.04 LTS` или `24.04 LTS` VPS
+- SSH-доступ
+- один публичный домен для сайта
+- один поддомен `cms.` для Strapi
+- DNS A records для обоих host, направленные на VPS
+- открытые порты `80` и `443`
 
-Recommended minimum server:
+Рекомендуемый минимум для сервера:
 
 - `2 vCPU`
 - `4 GB RAM`
 - `40-60 GB SSD`
 
-## 3. Bootstrap the server
+## 3. Bootstrap сервера
 
-From the project root on the VPS:
+Из корня проекта на VPS:
 
 ```bash
 sudo ./deploy/scripts/bootstrap-ubuntu.sh
 ```
 
-Then clone or copy the repository to the server, for example into `/srv/chatplus`.
+После этого склонируйте или скопируйте репозиторий на сервер, например в `/srv/chatplus`.
 
-## 4. Create the production env file
+## 4. Создание production env-файла
 
-Copy the example:
+Скопируйте пример:
 
 ```bash
 cp deploy/.env.example deploy/.env
 ```
 
-Fill at least:
+Минимум заполните:
 
 - `PUBLIC_DOMAIN`
 - `CMS_DOMAIN`
@@ -69,109 +69,109 @@ Fill at least:
 - `JWT_SECRET`
 - `ENCRYPTION_KEY`
 
-Do not commit `deploy/.env`.
+Не коммитьте `deploy/.env`.
 
-## 5. First container start and SSL bootstrap
+## 5. Первый запуск контейнеров и SSL bootstrap
 
-Fast path:
+Быстрый путь:
 
 ```bash
 ./deploy/scripts/deploy.sh --with-seed
 ```
 
-Manual path:
+Ручной путь:
 
 ```bash
 ./deploy/scripts/issue-ssl.sh
 ```
 
-This script:
+Этот скрипт:
 
-- creates temporary self-signed certificates so `nginx` can start
-- brings up `postgres`, `strapi` and `nginx`
-- requests real Let's Encrypt certificates for:
+- создает временные self-signed сертификаты, чтобы `nginx` смог стартовать
+- поднимает `postgres`, `strapi` и `nginx`
+- запрашивает настоящие Let's Encrypt сертификаты для:
   - `${PUBLIC_DOMAIN}`
   - `${CMS_DOMAIN}`
-- reloads `nginx` after issuance
+- перезагружает `nginx` после выпуска сертификатов
 
-## 6. Create the first Strapi admin user
+## 6. Создание первого Strapi admin user
 
-Open:
+Откройте:
 
 - `https://cms.<domain>/admin`
 
-Create the admin user manually in Strapi.
+И вручную создайте admin user в Strapi.
 
-## 7. Create a Strapi API token for build/import
+## 7. Создание Strapi API token для build/import
 
-In Strapi admin:
+В Strapi admin:
 
-1. Open `Settings -> API Tokens`
-2. Create a token with enough permissions for build/import reads and updates
-3. Put the token into:
+1. Откройте `Settings -> API Tokens`
+2. Создайте token с достаточными правами для build/import read и update
+3. Запишите token в:
 
 ```bash
 STRAPI_API_TOKEN=...
 ```
 
-inside `deploy/.env`
+внутри `deploy/.env`
 
-This token is used by:
+Этот token используется в:
 
 - `deploy/scripts/seed-content.sh`
 - `deploy/scripts/build-portal.sh`
 
-## 8. Seed generator-owned content if needed
+## 8. Импорт generator-owned контента при необходимости
 
-If this environment needs the initial generated data:
+Если этому окружению нужны стартовые generated data:
 
-`deploy.sh --with-seed` already covers this. Manual path:
+`deploy.sh --with-seed` уже покрывает этот шаг. Ручной путь:
 
 ```bash
 ./deploy/scripts/seed-content.sh
 ```
 
-## 9. Build and publish the public site
+## 9. Сборка и публикация публичного сайта
 
-`deploy.sh` already covers this. Manual path:
+`deploy.sh` уже покрывает и этот шаг. Ручной путь:
 
 ```bash
 ./deploy/scripts/build-portal.sh
 ```
 
-This rebuilds the Astro site against live Strapi and places the output into the `portal_dist` volume that `nginx` serves on the public domain.
+Эта команда пересобирает Astro-сайт на основе live Strapi и складывает результат в volume `portal_dist`, который `nginx` отдает на публичном домене.
 
 ## 10. Day-2 operations
 
-### Managed content update
+### Обновление managed content
 
-1. Editor changes content in Strapi
-2. Operator runs:
+1. Редактор меняет контент в Strapi
+2. Оператор запускает:
 
 ```bash
 ./deploy/scripts/build-portal.sh
 ```
 
-### Generated content update
+### Обновление generated content
 
-1. Update `cms/seed/*.json` in the repository
-2. Pull the changes on the server
-3. Run:
+1. Обновить `cms/seed/*.json` в репозитории
+2. Забрать изменения на сервер
+3. Запустить:
 
 ```bash
 ./deploy/scripts/seed-content.sh
 ./deploy/scripts/build-portal.sh
 ```
 
-### App code update
+### Обновление кода приложения
 
-If repository code changed on the VPS:
+Если код репозитория на VPS изменился:
 
 ```bash
 ./deploy/scripts/update.sh
 ```
 
-If the update also includes new generated seed content:
+Если вместе с кодом есть и новые generated seed changes:
 
 ```bash
 ./deploy/scripts/update.sh --with-seed
@@ -179,54 +179,54 @@ If the update also includes new generated seed content:
 
 ## 11. Backup
 
-Create a backup:
+Создать backup:
 
 ```bash
 ./deploy/scripts/backup.sh
 ```
 
-Backup includes:
+Backup включает:
 
 - `postgres.sql`
 - `strapi-uploads.tar.gz`
 
-Backup does not include:
+Backup не включает:
 
 - `deploy/.env`
-- domain registrar or DNS settings
-- SSH keys
+- настройки доменного регистратора или DNS
+- SSH-ключи
 
-Example cron entries:
+Примеры cron entries:
 
 - [deploy/system/cron.backup.example](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/system/cron.backup.example)
 - [deploy/system/cron.ssl-renew.example](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/system/cron.ssl-renew.example)
 
-## 12. Restore on another clean Ubuntu VPS
+## 12. Restore на другой чистой Ubuntu VPS
 
-1. Repeat sections `2-7`
-2. Copy the backup directory to the new server
-3. Run:
+1. Повторите шаги из разделов `2-7`
+2. Скопируйте backup directory на новый сервер
+3. Запустите:
 
 ```bash
 ./deploy/scripts/restore.sh /path/to/backup-directory
 ./deploy/scripts/build-portal.sh
 ```
 
-That restores:
+Это восстановит:
 
 - Postgres data
 - Strapi uploads
-- the public static site after rebuild
+- публичный статический сайт после rebuild
 
-## 13. Useful commands
+## 13. Полезные команды
 
-Show service status:
+Показать статус сервисов:
 
 ```bash
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml ps
 ```
 
-View logs:
+Посмотреть логи:
 
 ```bash
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f strapi
@@ -234,60 +234,60 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f postgres
 ```
 
-Pull new code and rebuild:
+Забрать новый код и пересобрать:
 
 ```bash
 ./deploy/scripts/update.sh
 ```
 
-## 14. Local Docker smoke on a developer PC
+## 14. Локальный Docker smoke на ПК разработчика
 
-If you want to verify the deploy package locally before moving to the VPS:
+Если хотите проверить deploy package локально перед переносом на VPS:
 
-1. Install Docker Desktop
-2. If Docker Desktop offers WSL integration with your personal `Ubuntu` distro, it is safe to skip it for this project. The local smoke flow only needs the Docker engine itself.
-3. Create local env:
+1. Установите Docker Desktop
+2. Если Docker Desktop предлагает WSL integration с вашей личной `Ubuntu`-дистрибуцией, ее можно безопасно пропустить для этого проекта. Local smoke flow требует только сам Docker engine.
+3. Создайте локальный env:
 
 ```powershell
 Copy-Item deploy/.env.local.example deploy/.env.local
 ```
 
-4. Start local services:
+4. Поднимите локальные сервисы:
 
 ```powershell
 .\deploy\scripts\local-up.cmd
 ```
 
-5. Open:
+5. Откройте:
 
 - `http://127.0.0.1:1337/admin`
 - `http://127.0.0.1:8080`
 
-6. In Strapi admin:
+6. В Strapi admin:
 
-- create the first admin user
-- create an API token in `Settings -> API Tokens`
-- put the token into `deploy/.env.local` as `STRAPI_API_TOKEN`
+- создайте первого admin user
+- создайте API token в `Settings -> API Tokens`
+- запишите token в `deploy/.env.local` как `STRAPI_API_TOKEN`
 
-7. If this is a clean local database, import generator-owned content:
+7. Если это чистая локальная база, импортируйте generator-owned контент:
 
 ```powershell
 .\deploy\scripts\local-seed-content.cmd
 ```
 
-8. Build the public local site:
+8. Соберите локальный публичный сайт:
 
 ```powershell
 .\deploy\scripts\local-build-portal.cmd
 ```
 
-9. Stop local services when finished:
+9. После завершения остановите локальные сервисы:
 
 ```powershell
 .\deploy\scripts\local-down.cmd
 ```
 
-Notes:
+Примечания:
 
-- local public site is served at `http://127.0.0.1:8080`
-- `deploy/.env.local` keeps `PUBLIC_SITE_URL=https://chatplus.ru` on purpose, so local smoke validates production-style canonical URLs instead of local `127.0.0.1`
+- локальный публичный сайт доступен на `http://127.0.0.1:8080`
+- `deploy/.env.local` специально держит `PUBLIC_SITE_URL=https://chatplus.ru`, чтобы local smoke проверял production-style canonical URLs, а не локальный `127.0.0.1`

@@ -350,9 +350,9 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 ./deploy/scripts/local-build-portal.sh
 ```
 
-## 19. Local Docker smoke on Windows
+## 19. Local Docker smoke на Windows
 
-For the actual Windows flow use:
+Для реального Windows flow используйте:
 
 ```powershell
 .\deploy\scripts\local-up.cmd
@@ -360,34 +360,34 @@ For the actual Windows flow use:
 .\deploy\scripts\local-build-portal.cmd
 ```
 
-Clean local smoke order:
+Правильный порядок локального smoke:
 
 1. `local-up`
 2. create Strapi admin
 3. create API token
-4. write `STRAPI_API_TOKEN` into `deploy/.env.local`
+4. записать `STRAPI_API_TOKEN` в `deploy/.env.local`
 5. `local-seed-content`
 6. `local-build-portal`
 
-If the site looks empty before the first build, that is expected.
+Если до первой сборки сайт выглядит пустым, это нормально.
 
-## 20. Docker Desktop complains about WSL integration with Ubuntu
+## 20. Docker Desktop ругается на WSL integration с Ubuntu
 
-If Docker Desktop shows an error specifically about WSL integration with your personal `Ubuntu` distro:
+Если Docker Desktop показывает ошибку именно про WSL integration с вашей личной `Ubuntu`-дистрибуцией:
 
-- this is not a blocker for `CHATPLUS`
-- the local smoke flow only needs a healthy Docker engine
-- WSL integration with the personal `Ubuntu` distro can be skipped
+- это не блокер для `CHATPLUS`
+- local smoke flow требует только рабочий Docker engine
+- интеграцию с личной `Ubuntu` можно пропустить
 
-Safe actions:
+Безопасные действия:
 
 1. Click `Skip WSL distro integration` if Docker offers it.
 2. In `Docker Desktop -> Settings -> Resources -> WSL Integration`, disable integration for `Ubuntu`.
 3. Continue using the Windows local scripts.
 
-## 21. Local Docker build passes, but content-check fails on canonical
+## 21. Local Docker build проходит, но content-check падает на canonical
 
-For local smoke this usually means `PUBLIC_SITE_URL` in `deploy/.env.local` was changed.
+Для local smoke это обычно значит, что был изменен `PUBLIC_SITE_URL` в `deploy/.env.local`.
 
 Expected value:
 
@@ -395,4 +395,4 @@ Expected value:
 PUBLIC_SITE_URL=https://chatplus.ru
 ```
 
-This is intentional: local Docker smoke validates production-style canonical URLs and should pass the same `content-check` guardrails as the normal build.
+Это сделано специально: local Docker smoke проверяет production-style canonical URLs и должен проходить те же `content-check` guardrails, что и обычная сборка.

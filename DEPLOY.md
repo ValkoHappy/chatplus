@@ -1,89 +1,89 @@
-# Deploy CHATPLUS
+# Деплой CHATPLUS
 
-`CHATPLUS` now has two deployment contours:
+У `CHATPLUS` сейчас есть два контура развертывания:
 
-- `demo-mode` for the existing `pages-preview/ -> GitHub Pages` showcase flow
-- `production-mode` for a repeatable Ubuntu VPS deployment through `docker compose`
+- `demo-mode` для текущего showcase-потока `pages-preview/ -> GitHub Pages`
+- `production-mode` для воспроизводимого деплоя на Ubuntu VPS через `docker compose`
 
 ## 1. Demo-mode
 
-Current demo publishing flow:
+Текущий demo publishing flow:
 
 `local Strapi -> Astro build -> pages-preview -> GitHub Pages`
 
-Use demo-mode when you need to refresh the public showcase without touching the production VPS.
+Используйте demo-mode, когда нужно обновить публичный showcase, не трогая production VPS.
 
 ### Demo operator flow
 
-1. Start local Strapi:
+1. Запустить локальный Strapi:
 
 ```powershell
 npm.cmd --prefix cms run develop
 ```
 
-2. If generated content changed, refresh Strapi:
+2. Если менялся generated content, обновить Strapi:
 
 ```powershell
 npm.cmd run seed-content
 ```
 
-3. Build the GitHub Pages snapshot:
+3. Собрать GitHub Pages snapshot:
 
 ```powershell
 npm.cmd --prefix portal run snapshot:github-demo
 ```
 
-4. Commit and push the updated `pages-preview/`.
+4. Закоммитить и запушить обновленный `pages-preview/`.
 
 ## 2. Production-mode
 
-Production is no longer described as a hand-maintained SSH session.
+Production больше не описывается как ручная SSH-сессия, где все держится на памяти.
 
-Target production contour:
+Целевой production contour:
 
-- `postgres` container
-- `strapi` container
-- `nginx` container for public site and CMS reverse proxy
-- one-off `portal-builder` and `tools` containers for build/import operations
+- контейнер `postgres`
+- контейнер `strapi`
+- контейнер `nginx` для публичного сайта и CMS reverse proxy
+- одноразовые контейнеры `portal-builder` и `tools` для build/import-операций
 
-Production runbook lives here:
+Production runbook лежит здесь:
 
 - [deploy/DEPLOY_PRODUCTION.md](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/DEPLOY_PRODUCTION.md)
 
-Primary production entrypoints:
+Главные production entrypoints:
 
 - [deploy.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/deploy.sh)
 - [update.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/update.sh)
 
-## 3. Ownership stays the same in both modes
+## 3. Ownership в обоих режимах одинаковый
 
-- `generated` pages still come from `cms/seed/*.json -> scripts/seed-runtime-content.mjs -> Strapi`
-- `managed` pages are still edited directly in Strapi admin
-- public route structure and template ownership do not change between demo and production
+- `generated`-страницы по-прежнему идут через `cms/seed/*.json -> scripts/seed-runtime-content.mjs -> Strapi`
+- `managed`-страницы по-прежнему редактируются напрямую в Strapi admin
+- структура публичных маршрутов и ownership шаблонов не меняются между demo и production
 
-## 4. Supported production defaults
+## 4. Поддерживаемые production defaults
 
-- Ubuntu `22.04 LTS` or `24.04 LTS`
+- Ubuntu `22.04 LTS` или `24.04 LTS`
 - `docker compose`
-- `Postgres` for Strapi
-- main public domain for the site
-- `cms.` subdomain for Strapi admin/API
+- `Postgres` для Strapi
+- основной публичный домен для сайта
+- поддомен `cms.` для Strapi admin/API
 
-Recommended minimum VPS:
+Рекомендуемый минимум для VPS:
 
 - `2 vCPU`
 - `4 GB RAM`
 - `40-60 GB SSD`
 
-## 5. What production-mode adds
+## 5. Что добавляет production-mode
 
-- reproducible deployment on a clean Ubuntu VPS
-- persistent Postgres and uploads storage
-- backup and restore scripts
-- a documented rebuild flow after managed or generated content updates
-- migration path to another VPS without rebuilding the setup from memory
+- воспроизводимый deploy на чистую Ubuntu VPS
+- постоянное хранение Postgres и uploads
+- backup и restore scripts
+- задокументированный rebuild flow после managed или generated изменений
+- путь миграции на другой VPS без пересборки схемы по памяти
 
-## 6. What production-mode does not add yet
+## 6. Что production-mode пока не добавляет
 
 - Terraform
 - Ansible
@@ -91,13 +91,13 @@ Recommended minimum VPS:
 - webhook-driven automatic rebuilds
 - hosted observability/monitoring stack
 
-This first production step is intentionally `Docker Prod`, not full IaC.
+Этот первый production-шаг сознательно сделан как `Docker Prod`, а не как full IaC.
 
-## 7. Local Docker smoke mode
+## 7. Локальный Docker smoke mode
 
-If Docker Desktop is available on a local machine, there is a lightweight local contour.
+Если на локальной машине есть Docker Desktop, можно использовать облегченный local contour.
 
-Windows-friendly local entrypoints:
+Windows-friendly локальные entrypoints:
 
 - [preflight-local.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/preflight-local.cmd)
 - [local-up.cmd](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.cmd)
@@ -110,41 +110,41 @@ Windows-friendly local entrypoints:
 - [local-seed-content.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-seed-content.ps1)
 - [local-down.ps1](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-down.ps1)
 
-Recommended Windows quickstart:
+Рекомендуемый Windows quickstart:
 
 ```powershell
 Copy-Item deploy/.env.local.example deploy/.env.local
 .\deploy\scripts\local-up.cmd
 ```
 
-Then:
+Дальше:
 
-1. Open `http://127.0.0.1:1337/admin`
-2. Create the first Strapi admin user
-3. In `Settings -> API Tokens`, create a token
-4. Put the token into `deploy/.env.local` as `STRAPI_API_TOKEN`
+1. Открыть `http://127.0.0.1:1337/admin`
+2. Создать первого Strapi admin user
+3. В `Settings -> API Tokens` создать token
+4. Записать token в `deploy/.env.local` как `STRAPI_API_TOKEN`
 
-If this is a clean local database, import generator-owned content first:
+Если это чистая локальная база, сначала импортируйте generator-owned контент:
 
 ```powershell
 .\deploy\scripts\local-seed-content.cmd
 ```
 
-After that, build the local public site:
+После этого соберите локальный публичный сайт:
 
 ```powershell
 .\deploy\scripts\local-build-portal.cmd
 ```
 
-Notes:
+Примечания:
 
-- local services open on:
+- локальные сервисы доступны по адресам:
   - `http://127.0.0.1:1337/admin`
   - `http://127.0.0.1:8080`
-- `PUBLIC_SITE_URL` in `deploy/.env.local` intentionally stays `https://chatplus.ru`, so local smoke uses production-style canonical URLs and passes the same `content-check`
-- if Docker Desktop asks about WSL integration with personal `Ubuntu`, that integration is optional for this project; the local smoke flow only requires a healthy Docker engine
+- `PUBLIC_SITE_URL` в `deploy/.env.local` специально остается равным `https://chatplus.ru`, чтобы local smoke использовал production-style canonical URLs и проходил тот же `content-check`
+- если Docker Desktop спрашивает про WSL integration с вашей личной `Ubuntu`, для этого проекта она необязательна; local smoke flow требует только рабочий Docker engine
 
-Supporting files:
+Вспомогательные файлы:
 
 - [deploy/.env.local.example](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/.env.local.example)
 - [local-up.sh](/e:/Проекты/НоваяГлава/CHATPLUS/deploy/scripts/local-up.sh)

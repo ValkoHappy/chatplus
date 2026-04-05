@@ -180,9 +180,9 @@ CHATPLUS/
 
 ## Entry for Owner or Manager
 
-If you need the shortest non-technical entrypoint, start here:
+Если нужен самый короткий нетехнический вход, начинайте отсюда:
 
-- [Owner Quickstart](owner-quickstart.md)
+- [Быстрый вход для владельца](owner-quickstart.md)
 - [Гайд оператора](operator-guide.md)
 - [Деплой](../DEPLOY.md)
 

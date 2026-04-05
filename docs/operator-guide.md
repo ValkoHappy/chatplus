@@ -158,5 +158,5 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 Если нужно объяснение без инженерных деталей, сначала откройте:
 
-- [Owner Quickstart](owner-quickstart.md)
+- [Быстрый вход для владельца](owner-quickstart.md)
 - [Деплой](../DEPLOY.md)

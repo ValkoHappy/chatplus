@@ -8,7 +8,7 @@
 
 Проект состоит из четырех основных частей:
 
-- `portal/` — фронтенд, шаблоны, стили, маршруты, сборка
+- `portal/` — фронтенд, шаблоны, стили, маршруты и сборка
 - `cms/` — Strapi, content types, админка и CMS-данные
 - `scripts/` — генерация и импорт generator-owned контента
 - `pages-preview/` — статический snapshot для GitHub Pages demo
@@ -23,7 +23,7 @@
 
 - `portal/src/lib/page-adapters.ts` остается публичным entrypoint для фронтенда
 - `scripts/seed-runtime-content.mjs` остается CLI entrypoint для `seed-content`
-- внутренняя логика теперь разложена по отдельным internal modules, но внешний контракт не менялся
+- внутренняя логика разложена по internal modules, но внешний контракт не менялся
 
 ## С чего читать
 
@@ -82,39 +82,39 @@ npm.cmd --prefix portal run dev -- --host 127.0.0.1
 http://127.0.0.1:4321/
 ```
 
-## Local Docker smoke
+## Локальный Docker smoke
 
-If you want to verify the production-like contour locally through Docker Desktop:
+Если нужно локально проверить production-like контур через Docker Desktop:
 
 ```powershell
 Copy-Item deploy/.env.local.example deploy/.env.local
 .\deploy\scripts\local-up.cmd
 ```
 
-Then:
+Дальше:
 
-1. open `http://127.0.0.1:1337/admin`
-2. create a Strapi admin user
-3. create an API token
-4. write it to `deploy/.env.local` as `STRAPI_API_TOKEN`
-5. on a clean local database run:
+1. открыть `http://127.0.0.1:1337/admin`
+2. создать первого Strapi admin user
+3. создать API token
+4. записать его в `deploy/.env.local` как `STRAPI_API_TOKEN`
+5. на чистой локальной базе выполнить:
 
 ```powershell
 .\deploy\scripts\local-seed-content.cmd
 ```
 
-6. build the local public site:
+6. собрать локальный публичный сайт:
 
 ```powershell
 .\deploy\scripts\local-build-portal.cmd
 ```
 
-Result:
+Результат:
 
 - `Strapi`: `http://127.0.0.1:1337/admin`
-- public site: `http://127.0.0.1:8080`
+- публичный сайт: `http://127.0.0.1:8080`
 
-If Docker Desktop asks about WSL integration with `Ubuntu`, you can skip it for this project. The local smoke flow needs the Docker engine, not the Docker CLI inside your personal Ubuntu distro.
+Если Docker Desktop спрашивает про WSL integration с `Ubuntu`, для этого проекта ее можно пропустить. Локальному smoke-flow нужен Docker engine, а не Docker CLI внутри вашей личной Ubuntu-дистрибуции.
 
 ## Основные команды
 
@@ -147,7 +147,7 @@ npm.cmd --prefix portal run build
 - deploy workflows не заменены, это отдельный защитный PR gate
 - для fork PR build/smoke могут быть skipped, потому что текущая архитектура требует `STRAPI_URL` и `STRAPI_TOKEN`
 
-Локально тот же защитный набор проверок:
+Локально тот же набор проверок:
 
 ```powershell
 npm.cmd run test:contracts
@@ -174,7 +174,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 - Для programmatic family: `cms/seed/*.json` и `scripts/seed-runtime-content.mjs` как orchestration entrypoint
 - Для managed singleton pages: Strapi admin
-- Для шаблонов, стилей, адаптива, shared UI behavior: `portal/`
+- Для шаблонов, стилей, адаптива и shared UI behavior: `portal/`
 
 ## Активные шаблоны
 
@@ -211,10 +211,11 @@ npm.cmd --prefix portal run snapshot:github-demo
 - [Release Flow](docs/release-flow.md)
 - [Known Risks](docs/known-risks.md)
 - [Деплой](DEPLOY.md)
-## Non-Technical Owner Entry
 
-If you need the shortest project explanation for an owner, partner, or manager, start here:
+## Вход для владельца без технички
 
-- [Owner Quickstart](docs/owner-quickstart.md)
-- [Operator Guide](docs/operator-guide.md)
-- [Deploy](DEPLOY.md)
+Если нужен самый короткий вход для владельца, партнера или менеджера, начните отсюда:
+
+- [Быстрый вход для владельца](docs/owner-quickstart.md)
+- [Гайд оператора](docs/operator-guide.md)
+- [Деплой](DEPLOY.md)
