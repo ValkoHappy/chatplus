@@ -2,9 +2,11 @@ import { isPlainObject } from './ownership.mjs';
 import {
   COMPETITOR_REQUIRED_SECTION_LABELS,
   CONTENT_ORIGINS,
+  RECORD_MODES,
   GENERATED_SINGLETON_SLUGS,
   hasMeaningfulValue,
   inferLandingPageContentOrigin,
+  inferLandingPageRecordMode,
   inferLandingPageTemplateKind,
   LANDING_PAGE_REQUIRED_FIELDS_BY_TEMPLATE,
   LANDING_PAGE_REQUIRED_SECTION_LABELS,
@@ -93,10 +95,12 @@ function validateUniqueSlugs(endpoint, items) {
 function validateLandingPage(item) {
   const templateKind = normalizeLandingPageTemplateKind(item.template_kind || inferLandingPageTemplateKind(item.slug));
   const contentOrigin = item.content_origin || inferLandingPageContentOrigin(item.slug);
+  const recordMode = item.record_mode || inferLandingPageRecordMode(item.slug);
   const context = `landing-pages/${item.slug || 'unknown'}`;
 
   validateEnumValue('template_kind', templateKind, LANDING_PAGE_TEMPLATE_KINDS, context);
   validateEnumValue('content_origin', contentOrigin, CONTENT_ORIGINS, context);
+  validateEnumValue('record_mode', recordMode, RECORD_MODES, context);
 
   const requiredFields = ['slug', 'meta_title', 'meta_description', 'h1'];
   for (const field of requiredFields) {
@@ -125,6 +129,10 @@ function validateLandingPage(item) {
     throw new Error(`${context}: expected content_origin "generated"`);
   }
 
+  if (MANAGED_SINGLETON_SLUGS.has(item.slug) && recordMode !== 'managed') {
+    throw new Error(`${context}: expected record_mode "managed"`);
+  }
+
   validateSectionLabelKeys(item.section_labels || {}, LANDING_PAGE_REQUIRED_SECTION_LABELS[templateKind], context);
 
   if (templateKind === 'home') {
@@ -149,6 +157,7 @@ function validateLandingPage(item) {
 function validateCompetitor(item) {
   const context = `competitors/${item.slug || 'unknown'}`;
   validateEnumValue('content_origin', item.content_origin || 'generated', CONTENT_ORIGINS, context);
+  validateEnumValue('record_mode', item.record_mode || 'imported', RECORD_MODES, context);
 
   const requiredFields = ['slug', 'name', 'price', 'our_price'];
   for (const field of requiredFields) {
@@ -157,12 +166,12 @@ function validateCompetitor(item) {
     }
   }
 
-  if ((item.content_origin || 'generated') !== 'generated') {
-    throw new Error(`${context}: competitors must remain content_origin "generated"`);
-  }
-
   if (!hasMeaningfulValue(item.compare_summary)) {
     throw new Error(`${context}: missing required field "compare_summary"`);
+  }
+
+  if (!hasMeaningfulValue(item.external_id || item.slug || item.name)) {
+    throw new Error(`${context}: missing identity field`);
   }
 
   validateStringArray(item.compare_points || [], context, 'compare_points');
@@ -172,10 +181,16 @@ function validateCompetitor(item) {
 function validateTendersPage(item) {
   const context = 'tenders-page';
   const contentOrigin = item.content_origin || 'managed';
+  const recordMode = item.record_mode || 'managed';
   validateEnumValue('content_origin', contentOrigin, CONTENT_ORIGINS, context);
+  validateEnumValue('record_mode', recordMode, RECORD_MODES, context);
 
   if (contentOrigin !== 'managed') {
     throw new Error(`${context}: expected content_origin "managed"`);
+  }
+
+  if (recordMode !== 'managed') {
+    throw new Error(`${context}: expected record_mode "managed"`);
   }
 
   const requiredFields = ['meta_title', 'meta_description', 'h1', 'subtitle', 'hero_eyebrow', 'sticky_cta_title', 'sticky_cta_text'];
@@ -206,11 +221,22 @@ function validateTendersPage(item) {
 }
 
 function validateSiteSetting(item) {
+  validateEnumValue('record_mode', item.record_mode || 'settings', RECORD_MODES, 'site-setting');
+
   const requiredFields = ['site_name', 'site_url', 'default_description'];
   for (const field of requiredFields) {
     if (!hasMeaningfulValue(item[field])) {
       throw new Error(`site-setting: missing required field "${field}"`);
     }
+  }
+}
+
+function validateImportedStructuredItem(item, endpoint) {
+  const context = `${endpoint}/${item.slug || 'unknown'}`;
+  validateEnumValue('record_mode', item.record_mode || 'imported', RECORD_MODES, context);
+
+  if (!hasMeaningfulValue(item.external_id || item.slug || item.name)) {
+    throw new Error(`${context}: missing identity field`);
   }
 }
 
@@ -237,6 +263,12 @@ function validateSeedData({
   validateUniqueSlugs('landing-pages', resolvedLandingPages);
 
   resolvedLandingPages.forEach(validateLandingPage);
+  channels.forEach((item) => validateImportedStructuredItem(item, 'channels'));
+  industries.forEach((item) => validateImportedStructuredItem(item, 'industries'));
+  integrations.forEach((item) => validateImportedStructuredItem(item, 'integrations'));
+  features.forEach((item) => validateImportedStructuredItem(item, 'features'));
+  solutions.forEach((item) => validateImportedStructuredItem(item, 'solutions'));
+  businessTypes.forEach((item) => validateImportedStructuredItem(item, 'business-types'));
   competitors.forEach(validateCompetitor);
   validateTendersPage(resolvedTendersPage);
   validateSiteSetting(managedSiteSetting || siteSetting);

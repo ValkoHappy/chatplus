@@ -1,59 +1,51 @@
 # Документация CHATPLUS
 
-Главная карта проекта. Это первый файл, который должен открыть человек или другая нейросеть перед работой с репозиторием.
+Главная карта проекта. Это первый файл, который стоит открыть перед работой с репозиторием.
 
 ## Что это за проект
 
-`CHATPLUS` — это публичный сайт на `Astro`, который берет контент из `Strapi` и частично из generator-owned seed-пайплайна.
+`CHATPLUS` — это контентный сайт на `Astro`, который берет данные из `Strapi`.
 
-Проект состоит из:
+В проекте есть:
 
 - `portal/` — фронтенд
-- `cms/` — Strapi и content types
-- `scripts/` — генерация и импорт контента
-- `pages-preview/` — демо-снапшот для GitHub Pages
-
-После декомпозиции внутренних слоев:
-
-- `portal/src/lib/page-adapters.ts` остается публичным фасадом для adapters
-- `scripts/seed-runtime-content.mjs` остается CLI orchestrator для `seed-content`
-- внутренняя логика теперь живет в отдельных модулях, но import paths и команды не менялись
+- `cms/` — Strapi CMS
+- `scripts/` — importer, генерация и служебные content-скрипты
+- `pages-preview/` — demo snapshot для GitHub Pages
 
 ## Главный принцип
 
-В проекте есть два ownership-режима:
+Текущая рабочая модель:
 
-- `generated` — контентом владеет `seed/generator`-контур
-- `managed` — контентом владеет Strapi admin
+- `managed` — запись редактируется руками в `Strapi`
+- `imported` — запись создается importer-ом и живет в `Strapi`
+- `settings` — singleton/system records
 
-Фронтенд не должен становиться вторым источником истины для пользовательского текста.
+Старый термин `generated` теперь считается legacy-слоем совместимости и не должен использоваться как основная редакторская логика.
 
-## Порядок чтения для инженера или следующей нейронки
+## Порядок чтения для инженера
 
 1. [Архитектура](architecture.md)
 2. [Глоссарий](glossary.md)
 3. [CMS-модель](cms-model.md)
 4. [Контентный workflow](content-workflow.md)
-5. [Матрица маршрутов и ownership](route-ownership-matrix.md)
-6. [Контракты шаблонов](template-contracts.md)
-7. [Карта файлов](file-map.md)
-8. [Контракт безопасных изменений](change-safety.md)
-9. [AI Generation для блоков](ai-block-generation.md)
+5. [Политика импорта](import-policy.md)
+6. [Матрица маршрутов и ownership](route-ownership-matrix.md)
+7. [Контракты шаблонов](template-contracts.md)
+8. [Карта файлов](file-map.md)
+9. [Контракт безопасных изменений](change-safety.md)
 10. [Troubleshooting](troubleshooting.md)
 11. [Release Flow](release-flow.md)
-12. [Known Risks](known-risks.md)
-13. [Гайд оператора](operator-guide.md)
-14. [Деплой](../DEPLOY.md)
+12. [Гайд оператора](operator-guide.md)
+13. [Деплой](../DEPLOY.md)
 
-## Порядок чтения для оператора или контент-менеджера
+## Порядок чтения для оператора или редактора
 
-1. [Гайд оператора](operator-guide.md)
-2. [Release Flow](release-flow.md)
-3. [Как добавить страницу](how-to-add-page.md)
-4. [Чеклист публикации](publishing-checklist.md)
-5. [Troubleshooting](troubleshooting.md)
-6. [Контентный workflow](content-workflow.md)
-7. [Деплой](../DEPLOY.md)
+1. [Быстрый вход для владельца](owner-quickstart.md)
+2. [Гайд оператора](operator-guide.md)
+3. [Контентный workflow](content-workflow.md)
+4. [Release Flow](release-flow.md)
+5. [Деплой](../DEPLOY.md)
 
 ## Где что лежит
 
@@ -61,135 +53,85 @@
 CHATPLUS/
 |- portal/          # Astro frontend
 |- cms/             # Strapi CMS
-|- scripts/         # generator/import scripts
+|- scripts/         # importer и content-скрипты
 |- docs/            # актуальная документация
 |- pages-preview/   # snapshot для GitHub Pages demo
 |- .github/         # workflows
-|- DEPLOY.md        # deploy runbook
+|- DEPLOY.md        # deploy guide
 `- README.md        # главный вход в проект
 ```
 
 ## Где источник истины
 
-### Programmatic pages
+### CMS
 
-Источник истины:
+`Strapi` — главный редакторский интерфейс.
 
-- `cms/seed/*.json`
-- `scripts/seed-runtime-content.mjs` как orchestration entrypoint
+В нем живут:
 
-### Managed singleton pages
+- landing pages
+- singleton pages
+- site settings
+- imported catalog/SEO записи после загрузки
 
-Источник истины:
+### Importer
 
-- Strapi admin
+Importer:
+
+- читает `cms/seed/*.json`
+- умеет `plan`, `apply`, `force-sync`, `report`
+- пишет записи в `Strapi`
+- не должен слепо затирать ручные редакторские правки
 
 ### Frontend
 
-Во frontend должны жить:
+Frontend владеет только:
 
-- шаблоны
-- стили
+- шаблонами
 - layout
-- responsive behavior
-- shared UI behavior
-- adapters и fallback-логика
+- стилями
+- render logic
+- shape normalization
 
-Публичная точка входа adapters:
-
-- `portal/src/lib/page-adapters.ts`
-
-## Активные шаблоны
-
-В системе сейчас 10 шаблонов:
-
-- `home`
-- `structured`
-- `directory`
-- `pricing`
-- `partnership`
-- `tenders`
-- `resource-hub`
-- `brand-content`
-- `comparison`
-- `campaign`
-
-Подробный контракт по каждому:
-
-- [Контракты шаблонов](template-contracts.md)
-- [Матрица маршрутов и ownership](route-ownership-matrix.md)
+Frontend не должен становиться вторым источником пользовательского текста.
 
 ## Быстрый маршрут по типу задачи
 
-### Если нужно поправить только верстку
+### Нужно понять CMS-модель
+
+Читайте:
+
+- [CMS-модель](cms-model.md)
+- [Политика импорта](import-policy.md)
+- [Контентный workflow](content-workflow.md)
+
+### Нужно менять шаблоны или адаптеры
 
 Читайте:
 
 - [Архитектура](architecture.md)
 - [Контракты шаблонов](template-contracts.md)
 - [Карта файлов](file-map.md)
-- [Контракт безопасных изменений](change-safety.md)
 
-### Если нужно добавить новую страницу
-
-Читайте:
-
-- [Как добавить страницу](how-to-add-page.md)
-- [Контентный workflow](content-workflow.md)
-- [Troubleshooting](troubleshooting.md)
-
-### Если нужно изменить существующий шаблон или заменить его
-
-Читайте:
-
-- [Как добавить страницу](how-to-add-page.md)
-- [Контракт безопасных изменений](change-safety.md)
-- [Контракты шаблонов](template-contracts.md)
-- [Карта файлов](file-map.md)
-
-Сначала определите, в каком internal module лежит нужная логика:
-
-- page adaptation/fallbacks -> `portal/src/lib/page-adapters/*`
-- ownership/import rules -> `scripts/seed-runtime-content/*.mjs`
-
-### Если нужно добавить новый CMS-owned блок
-
-Читайте:
-
-- [CMS-модель](cms-model.md)
-- [Контракт безопасных изменений](change-safety.md)
-- [Контентный workflow](content-workflow.md)
-- [Карта файлов](file-map.md)
-
-### Если нужно генерировать тексты для блоков через ИИ
-
-Читайте:
-
-- [AI Generation для блоков](ai-block-generation.md)
-- [Контентный workflow](content-workflow.md)
-- [Контракты шаблонов](template-contracts.md)
-
-### Если нужно выпустить demo
+### Нужно разбираться с публикацией
 
 Читайте:
 
 - [Release Flow](release-flow.md)
 - [Гайд оператора](operator-guide.md)
-- [Чеклист публикации](publishing-checklist.md)
+- [Production setup checklist](production-setup-checklist.md)
 - [Деплой](../DEPLOY.md)
 
-## Entry for Owner or Manager
+### Нужно быстро объяснить проект владельцу
 
-Если нужен самый короткий нетехнический вход, начинайте отсюда:
+Начинайте отсюда:
 
 - [Быстрый вход для владельца](owner-quickstart.md)
-- [Гайд оператора](operator-guide.md)
-- [Деплой](../DEPLOY.md)
 
 ## Zero-Ambiguity правила
 
-- Не создавайте `generated`-страницы руками в Strapi.
-- Не меняйте `content_origin`, если не понимаете последствия.
-- Не хардкодьте user-facing copy в шаблон, если его должен менять редактор.
-- Не добавляйте новый CMS-owned блок без обновления схемы, адаптеров и документации.
-- Не публикуйте demo, пока не прошел `npm.cmd --prefix portal run build`.
+- не используйте `generated` как главный user-facing ownership термин
+- не правьте imported catalog/SEO записи руками как основной workflow
+- не хардкодьте user-facing copy во frontend, если его должен менять редактор
+- не добавляйте новый CMS-owned блок без обновления схемы, адаптеров и docs
+- не публикуйте изменения без успешного `portal build`

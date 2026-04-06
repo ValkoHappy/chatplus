@@ -74,7 +74,7 @@ services:
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       PUBLIC_BASE_PATH: ${PUBLIC_BASE_PATH}
     volumes:
-      - portal_dist:/portal-output
+      - ./data/public-site:/portal-output
     networks:
       - internal
 
@@ -93,6 +93,25 @@ services:
     networks:
       - internal
 
+  content-relay:
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.tools
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      WEBHOOK_TOKEN: ${WEBHOOK_TOKEN}
+      GITHUB_ACTIONS_TOKEN: ${GITHUB_ACTIONS_TOKEN}
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
+      GITHUB_DISPATCH_EVENT: ${GITHUB_DISPATCH_EVENT}
+      RELAY_ALLOWED_MODELS: ${RELAY_ALLOWED_MODELS}
+      RELAY_PORT: ${RELAY_PORT}
+    command: ["node", "scripts/strapi-webhook-relay.mjs"]
+    expose:
+      - "${RELAY_PORT}"
+    networks:
+      - internal
+
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
@@ -108,7 +127,7 @@ services:
       - ./nginx/snippets:/etc/nginx/snippets:ro
       - ./data/letsencrypt:/etc/letsencrypt
       - ./data/certbot-webroot:/var/www/certbot
-      - portal_dist:/usr/share/nginx/html:ro
+      - ./data/public-site:/srv/public-site:ro
     environment:
       PUBLIC_DOMAIN: ${PUBLIC_DOMAIN}
       CMS_DOMAIN: ${CMS_DOMAIN}
@@ -124,7 +143,6 @@ services:
 volumes:
   postgres_data:
   strapi_uploads:
-  portal_dist:
 
 networks:
   internal:

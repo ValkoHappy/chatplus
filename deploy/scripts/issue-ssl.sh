@@ -42,7 +42,7 @@ create_dummy_cert() {
 create_dummy_cert "${PUBLIC_DOMAIN}"
 create_dummy_cert "${CMS_DOMAIN}"
 
-docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --build postgres strapi nginx
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --build postgres strapi content-relay nginx
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --rm certbot \
   certonly --webroot -w /var/www/certbot \

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -70,4 +71,24 @@ test('normalizeSiteSettingsRecord guarantees array and object boundaries', () =>
   assert.deepEqual(normalized.template_defaults, {});
   assert.deepEqual(normalized.header_links, []);
   assert.deepEqual(normalized.footer_columns, [{ title: 'Footer' }]);
+});
+
+test('editorial schemas enable draftAndPublish for publish lifecycle', () => {
+  const landingPageSchema = JSON.parse(
+    readFileSync('cms/src/api/landing-page/content-types/landing-page/schema.json', 'utf8')
+  );
+  const tendersPageSchema = JSON.parse(
+    readFileSync('cms/src/api/tenders-page/content-types/tenders-page/schema.json', 'utf8')
+  );
+  const businessTypesPageSchema = JSON.parse(
+    readFileSync('cms/src/api/business-types-page/content-types/business-types-page/schema.json', 'utf8')
+  );
+  const siteSettingSchema = JSON.parse(
+    readFileSync('cms/src/api/site-setting/content-types/site-setting/schema.json', 'utf8')
+  );
+
+  assert.equal(landingPageSchema.options.draftAndPublish, true);
+  assert.equal(tendersPageSchema.options.draftAndPublish, true);
+  assert.equal(businessTypesPageSchema.options.draftAndPublish, true);
+  assert.equal(siteSettingSchema.options.draftAndPublish, true);
 });

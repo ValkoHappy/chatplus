@@ -8,11 +8,11 @@ export function loadEnv() {
       env
         .split(/\r?\n/)
         .filter(Boolean)
-        .filter(line => !line.trim().startsWith('#'))
-        .map(line => {
+        .filter((line) => !line.trim().startsWith('#'))
+        .map((line) => {
           const index = line.indexOf('=');
           return [line.slice(0, index).trim(), line.slice(index + 1).trim()];
-        })
+        }),
     );
   } catch {
     return {};
@@ -22,9 +22,10 @@ export function loadEnv() {
 export function loadArrayFromJson(relativePath) {
   const generatedPath = relativePath.replace('cms/seed/', 'cms/seed/generated/');
   if (existsSync(resolve(generatedPath))) {
-    console.log(`\n→ Используем generated JSON: ${generatedPath}`);
+    console.log(`\n→ Используем imported source JSON: ${generatedPath}`);
     return JSON.parse(readFileSync(resolve(generatedPath), 'utf-8'));
   }
+
   return JSON.parse(readFileSync(resolve(relativePath), 'utf-8'));
 }
 
@@ -33,6 +34,6 @@ export function loadJsonIfExists(relativePath) {
     return null;
   }
 
-  console.log(`\n→ Используем managed JSON: ${relativePath}`);
+  console.log(`\n→ Используем managed override JSON: ${relativePath}`);
   return JSON.parse(readFileSync(resolve(relativePath), 'utf-8'));
 }

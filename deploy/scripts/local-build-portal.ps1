@@ -4,6 +4,9 @@ $deployDir = Split-Path -Parent $PSScriptRoot
 $envFile = Join-Path $deployDir '.env.local'
 $prodCompose = Join-Path $deployDir 'docker-compose.prod.yml'
 $localCompose = Join-Path $deployDir 'docker-compose.local.yml'
+$publicArtifactDir = Join-Path $deployDir 'data/public-site/current'
+
+New-Item -ItemType Directory -Force -Path $publicArtifactDir | Out-Null
 
 for ($i = 0; $i -lt 30; $i++) {
   try {

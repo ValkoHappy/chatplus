@@ -1,34 +1,39 @@
 # Production Deploy CHATPLUS
 
-Этот runbook описывает первый воспроизводимый production contour для `CHATPLUS` на чистой Ubuntu VPS.
+Этот runbook описывает переходный production contour для `CHATPLUS`:
 
-## 1. Что включает этот контур
+- `Strapi + Postgres` живут на VPS
+- `content-relay` принимает `Strapi` publish webhooks
+- `Astro` собирает статический сайт
+- публичный artifact выкладывается отдельным pipeline
 
-- `postgres` для production Strapi data
-- `strapi` для CMS admin и API
+Это не финальная CDN-only архитектура, а безопасный production bridge к ней.
+
+## 1. Что входит в этот контур
+
+- `postgres` для CMS data
+- `strapi` для admin и API
+- `content-relay` для signed publish automation
 - `nginx` для:
-  - публичного статического Astro-сайта
+  - публичного сайта
   - reverse proxy с `cms.<domain>` на Strapi
-- одноразовые helper containers:
-  - `portal-builder` для static site rebuild
-  - `tools` для `seed-content`
-  - `certbot` для Let's Encrypt
-- orchestration scripts:
-  - `deploy.sh`
-  - `update.sh`
+- helper containers:
+  - `portal-builder`
+  - `tools`
+  - `certbot`
 
-## 2. Предварительные условия
+## 2. Что подготовить заранее
 
-Перед первым deploy подготовьте:
+До первого deploy нужны:
 
-- чистую Ubuntu `22.04 LTS` или `24.04 LTS` VPS
+- чистая Ubuntu `22.04 LTS` или `24.04 LTS`
 - SSH-доступ
 - один публичный домен для сайта
 - один поддомен `cms.` для Strapi
-- DNS A records для обоих host, направленные на VPS
+- DNS A-records на VPS
 - открытые порты `80` и `443`
 
-Рекомендуемый минимум для сервера:
+Рекомендуемый минимум для VPS:
 
 - `2 vCPU`
 - `4 GB RAM`
@@ -42,7 +47,7 @@
 sudo ./deploy/scripts/bootstrap-ubuntu.sh
 ```
 
-После этого склонируйте или скопируйте репозиторий на сервер, например в `/srv/chatplus`.
+После этого склонируйте репозиторий, например в `/srv/chatplus`.
 
 ## 4. Создание production env-файла
 
@@ -54,22 +59,46 @@ cp deploy/.env.example deploy/.env
 
 Минимум заполните:
 
-- `PUBLIC_DOMAIN`
-- `CMS_DOMAIN`
-- `PUBLIC_SITE_URL`
-- `CMS_PUBLIC_URL`
-- `LETSENCRYPT_EMAIL`
-- `POSTGRES_DB`
-- `POSTGRES_USER`
-- `POSTGRES_PASSWORD`
-- `APP_KEYS`
-- `API_TOKEN_SALT`
-- `ADMIN_JWT_SECRET`
-- `TRANSFER_TOKEN_SALT`
-- `JWT_SECRET`
-- `ENCRYPTION_KEY`
+- домены:
+  - `PUBLIC_DOMAIN`
+  - `CMS_DOMAIN`
+  - `PUBLIC_SITE_URL`
+  - `CMS_PUBLIC_URL`
+- SMTP/SSL:
+  - `LETSENCRYPT_EMAIL`
+- БД:
+  - `POSTGRES_DB`
+  - `POSTGRES_USER`
+  - `POSTGRES_PASSWORD`
+- Strapi secrets:
+  - `APP_KEYS`
+  - `API_TOKEN_SALT`
+  - `ADMIN_JWT_SECRET`
+  - `TRANSFER_TOKEN_SALT`
+  - `JWT_SECRET`
+  - `ENCRYPTION_KEY`
+- publish relay:
+  - `WEBHOOK_TOKEN`
+  - `RELAY_INTERNAL_URL`
+  - `GITHUB_ACTIONS_TOKEN`
+  - `GITHUB_REPOSITORY`
+  - `GITHUB_DISPATCH_EVENT`
+  - `RELAY_ALLOWED_MODELS`
+- upload provider:
+  - `UPLOAD_PROVIDER`
+  - по умолчанию `UPLOAD_PROVIDER=local`
+  - `CDN_URL` только если позже появится внешний CDN перед локальным storage
+  - `AWS_*` нужны только если вы осознанно переводите uploads на S3-compatible storage
 
-Не коммитьте `deploy/.env`.
+Важно:
+
+- `deploy/.env` не коммитится
+- `WEBHOOK_TOKEN` должен совпадать с токеном, который Strapi будет отправлять relay-сервису
+- `RELAY_INTERNAL_URL` по умолчанию должен указывать на внутренний docker hostname:
+
+```env
+RELAY_INTERNAL_URL=http://content-relay:8787/strapi/publish
+```
 
 ## 5. Первый запуск контейнеров и SSL bootstrap
 
@@ -79,20 +108,25 @@ cp deploy/.env.example deploy/.env
 ./deploy/scripts/deploy.sh --with-seed
 ```
 
-Ручной путь:
+Этот сценарий:
+
+- поднимает `postgres`, `strapi`, `content-relay`, `nginx`
+- выпускает SSL-сертификаты
+- при флаге `--with-seed` запускает importer
+- собирает публичный Astro artifact
+
+Если нужен ручной путь:
 
 ```bash
 ./deploy/scripts/issue-ssl.sh
 ```
 
-Этот скрипт:
+Скрипт:
 
-- создает временные self-signed сертификаты, чтобы `nginx` смог стартовать
-- поднимает `postgres`, `strapi` и `nginx`
-- запрашивает настоящие Let's Encrypt сертификаты для:
-  - `${PUBLIC_DOMAIN}`
-  - `${CMS_DOMAIN}`
-- перезагружает `nginx` после выпуска сертификатов
+- создает временные self-signed сертификаты
+- поднимает базовые сервисы
+- выпускает настоящие Let's Encrypt сертификаты
+- перезагружает `nginx`
 
 ## 6. Создание первого Strapi admin user
 
@@ -100,84 +134,196 @@ cp deploy/.env.example deploy/.env
 
 - `https://cms.<domain>/admin`
 
-И вручную создайте admin user в Strapi.
+И вручную создайте admin user.
 
-## 7. Создание Strapi API token для build/import
+## 7. Создание Strapi API token
 
-В Strapi admin:
+В `Strapi admin`:
 
 1. Откройте `Settings -> API Tokens`
-2. Создайте token с достаточными правами для build/import read и update
-3. Запишите token в:
+2. Создайте токен для build/import операций
+3. Запишите его в `deploy/.env` как:
 
-```bash
+```env
 STRAPI_API_TOKEN=...
 ```
 
-внутри `deploy/.env`
+Этот токен нужен для:
 
-Этот token используется в:
+- `build-portal.sh`
+- `seed-content.sh`
+- CI build against live CMS
 
-- `deploy/scripts/seed-content.sh`
-- `deploy/scripts/build-portal.sh`
+## 8. Настройка publish webhook в Strapi
 
-## 8. Импорт generator-owned контента при необходимости
+Automation в production-модели строится не на прямом доступе CMS к GitHub, а через relay.
 
-Если этому окружению нужны стартовые generated data:
+В `Strapi admin`:
 
-`deploy.sh --with-seed` уже покрывает этот шаг. Ручной путь:
+1. Откройте `Settings -> Webhooks`
+2. Создайте webhook с URL:
+
+```text
+http://content-relay:8787/strapi/publish
+```
+
+3. Включите события:
+
+- `entry.publish`
+- `entry.unpublish`
+
+4. При необходимости дополнительно:
+
+- `entry.create`
+- `entry.update`
+
+Рекомендация:
+
+- для production rebuild достаточно опираться на `entry.publish`
+- черновики и промежуточные edit-save не должны триггерить deploy
+
+Авторизация:
+
+- `cms/config/server.ts` уже добавляет `Authorization: Bearer ${WEBHOOK_TOKEN}` в default webhook headers
+- relay валидирует этот токен перед вызовом `repository_dispatch`
+
+## 9. Импорт catalog/SEO данных
+
+Новая модель считает importer отдельным safe-sync слоем.
+
+Перед применением всегда смотрите план:
+
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no-deps --rm tools node scripts/seed-runtime-content.mjs --plan
+```
+
+Применить импорт:
 
 ```bash
 ./deploy/scripts/seed-content.sh
 ```
 
-## 9. Сборка и публикация публичного сайта
+Принудительный sync:
 
-`deploy.sh` уже покрывает и этот шаг. Ручной путь:
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no-deps --rm tools node scripts/seed-runtime-content.mjs --force-sync
+```
+
+Отчет по текущему состоянию:
+
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no-deps --rm tools node scripts/seed-runtime-content.mjs --report
+```
+
+Важно:
+
+- `managed` записи importer не меняет
+- `imported` записи обновляются только по system-owned полям
+- editor-owned ручные правки не должны теряться при обычном sync
+
+Подробно:
+
+- [docs/import-policy.md](../docs/import-policy.md)
+
+## 10. Сборка и публикация публичного сайта
+
+Ручной rebuild:
 
 ```bash
 ./deploy/scripts/build-portal.sh
 ```
 
-Эта команда пересобирает Astro-сайт на основе live Strapi и складывает результат в volume `portal_dist`, который `nginx` отдает на публичном домене.
+Команда:
 
-## 10. Day-2 operations
+- читает live `Strapi`
+- собирает `Astro`
+- записывает artifact в `deploy/data/public-site/current`
+- `nginx` отдает этот artifact на публичном домене
+
+Автоматический rebuild:
+
+- publish webhook идет в relay
+- relay вызывает `repository_dispatch`
+- GitHub Actions запускает content publish pipeline
+
+### GitHub secrets для server-first deploy
+
+Для workflow-файлов `.github/workflows/deploy.yml` и `.github/workflows/code-pipeline.yml`
+должны быть заданы:
+
+- `STRAPI_URL`
+- `STRAPI_TOKEN`
+- `VPS_HOST`
+- `VPS_USER`
+- `VPS_SSH_KEY`
+- `VPS_APP_DIR`
+- `VPS_SSH_PORT` — опционально, если SSH не на `22`
+
+## 11. Day-2 operations
 
 ### Обновление managed content
 
-1. Редактор меняет контент в Strapi
-2. Оператор запускает:
+1. Редактор меняет запись в `Strapi`
+2. Нажимает `Publish`
+3. Webhook запускает content publish pipeline
+
+Если automation временно отключен, оператор может вручную:
 
 ```bash
 ./deploy/scripts/build-portal.sh
 ```
 
-### Обновление generated content
+### Обновление imported content
 
-1. Обновить `cms/seed/*.json` в репозитории
-2. Забрать изменения на сервер
-3. Запустить:
+1. Обновить `cms/seed/*.json`
+2. Забрать код на сервер
+3. Проверить план:
+
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no-deps --rm tools node scripts/seed-runtime-content.mjs --plan
+```
+
+4. Применить импорт:
 
 ```bash
 ./deploy/scripts/seed-content.sh
-./deploy/scripts/build-portal.sh
 ```
+
+5. Опубликовать затронутые записи, если нужно
+6. Дождаться automation или вручную пересобрать сайт
 
 ### Обновление кода приложения
 
-Если код репозитория на VPS изменился:
+Если на VPS изменился код:
 
 ```bash
 ./deploy/scripts/update.sh
 ```
 
-Если вместе с кодом есть и новые generated seed changes:
+Если вместе с кодом есть новые seed changes:
 
 ```bash
 ./deploy/scripts/update.sh --with-seed
 ```
 
-## 11. Backup
+## 12. Storage / media
+
+Server-first production для этого проекта использует локальное storage-хранилище на VPS.
+
+Production default:
+
+- `UPLOAD_PROVIDER=local`
+- uploads живут в локальном docker volume `strapi_uploads`
+- backup обязан включать и `Postgres`, и uploads
+- перенос на новый VPS делается через `postgres.sql` + `strapi-uploads.tar.gz` + `deploy/.env`
+
+S3-compatible storage остается только как future path:
+
+- `UPLOAD_PROVIDER=aws-s3`
+- `AWS_*` и `CDN_URL` заполняются только при отдельной миграции
+- это не обязательная часть текущего production rollout
+
+## 13. Backup
 
 Создать backup:
 
@@ -193,19 +339,20 @@ Backup включает:
 Backup не включает:
 
 - `deploy/.env`
-- настройки доменного регистратора или DNS
+- DNS/регистратор
 - SSH-ключи
 
-Примеры cron entries:
+Примеры cron:
 
 - [deploy/system/cron.backup.example](system/cron.backup.example)
 - [deploy/system/cron.ssl-renew.example](system/cron.ssl-renew.example)
 
-## 12. Restore на другой чистой Ubuntu VPS
+## 14. Restore на другой Ubuntu VPS
 
-1. Повторите шаги из разделов `2-7`
-2. Скопируйте backup directory на новый сервер
-3. Запустите:
+1. Повторите bootstrap и настройку env
+2. Поднимите базовые сервисы
+3. Перенесите backup directory
+4. Выполните:
 
 ```bash
 ./deploy/scripts/restore.sh /path/to/backup-directory
@@ -214,80 +361,81 @@ Backup не включает:
 
 Это восстановит:
 
-- Postgres data
-- Strapi uploads
-- публичный статический сайт после rebuild
+- CMS data
+- uploads
+- публичный static artifact после rebuild
 
-## 13. Полезные команды
+## 15. Полезные команды
 
-Показать статус сервисов:
+Статус сервисов:
 
 ```bash
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml ps
 ```
 
-Посмотреть логи:
+Логи:
 
 ```bash
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f strapi
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f content-relay
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f nginx
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f postgres
 ```
 
-Забрать новый код и пересобрать:
+Обновить код и пересобрать:
 
 ```bash
 ./deploy/scripts/update.sh
 ```
 
-## 14. Локальный Docker smoke на ПК разработчика
+Проверить importer plan:
 
-Если хотите проверить deploy package локально перед переносом на VPS:
+```bash
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no-deps --rm tools node scripts/seed-runtime-content.mjs --plan
+```
 
-1. Установите Docker Desktop
-2. Если Docker Desktop предлагает WSL integration с вашей личной `Ubuntu`-дистрибуцией, ее можно безопасно пропустить для этого проекта. Local smoke flow требует только сам Docker engine.
-3. Создайте локальный env:
+## 16. Локальный smoke перед переносом на VPS
+
+Локально на машине разработчика можно использовать Docker smoke contour:
 
 ```powershell
 Copy-Item deploy/.env.local.example deploy/.env.local
-```
-
-4. Поднимите локальные сервисы:
-
-```powershell
 .\deploy\scripts\local-up.cmd
 ```
 
-5. Откройте:
+Дальше:
 
-- `http://127.0.0.1:1337/admin`
-- `http://127.0.0.1:8080`
-
-6. В Strapi admin:
-
-- создайте первого admin user
-- создайте API token в `Settings -> API Tokens`
-- запишите token в `deploy/.env.local` как `STRAPI_API_TOKEN`
-
-7. Если это чистая локальная база, импортируйте generator-owned контент:
+1. создать Strapi admin
+2. создать `API Token`
+3. при необходимости проверить importer:
 
 ```powershell
 .\deploy\scripts\local-seed-content.cmd
 ```
 
-8. Соберите локальный публичный сайт:
+4. собрать сайт:
 
 ```powershell
 .\deploy\scripts\local-build-portal.cmd
 ```
 
-9. После завершения остановите локальные сервисы:
+Проверить:
 
-```powershell
-.\deploy\scripts\local-down.cmd
-```
+- `http://127.0.0.1:1337/admin`
+- `http://127.0.0.1:8080`
 
-Примечания:
+## 17. Что считается Definition of Done для production rollout
 
-- локальный публичный сайт доступен на `http://127.0.0.1:8080`
-- `deploy/.env.local` специально держит `PUBLIC_SITE_URL=https://chatplus.ru`, чтобы local smoke проверял production-style canonical URLs, а не локальный `127.0.0.1`
+Production rollout можно считать доведенным до зрелого переходного состояния, когда:
+
+- editor-facing типы работают с `draft/publish`
+- relay принимает publish webhooks
+- `repository_dispatch` реально запускает content publish pipeline
+- importer работает в safe-sync модели
+- editor не теряет ручные правки после повторного import
+- public artifact собирается из live `Strapi`
+- backup/restore поднимают тот же CMS state
+
+Отдельный operator checklist:
+
+- [docs/production-setup-checklist.md](../docs/production-setup-checklist.md)

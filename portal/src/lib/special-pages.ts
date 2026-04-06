@@ -16,42 +16,6 @@ export interface SpecialPageLinkMeta {
   description: string;
 }
 
-export interface SpecialPageOverride {
-  meta_title?: string;
-  meta_description?: string;
-  h1?: string;
-  subtitle?: string;
-  hero_eyebrow?: string;
-  hero_variant?: 'resource' | 'company' | 'campaign';
-  hero_highlights_label?: string;
-  hero_highlights?: string[];
-  hero_trust_facts?: string[];
-  problem_title?: string;
-  problem_intro?: string;
-  problems?: { title: string; text: string }[];
-  problem_summary?: string;
-  solution_title?: string;
-  solution_intro?: string;
-  solution_steps?: { title: string; text: string }[];
-  features_title?: string;
-  features?: { title: string; text: string }[];
-  integrations_title?: string;
-  roi_title?: string;
-  roi_intro?: string;
-  roi_without_items?: string[];
-  roi_with_items?: string[];
-  roi_quote?: string;
-  use_cases_title?: string;
-  use_cases?: { title: string; audience?: string; text: string }[];
-  faq_title?: string;
-  faqs?: { question: string; answer: string }[];
-  internal_links_variant?: 'related' | 'next_steps' | 'comparisons' | 'docs' | 'solutions';
-  sticky_cta_title?: string;
-  sticky_cta_text?: string;
-  sticky_cta_primary_label?: string;
-  sticky_cta_secondary_label?: string;
-}
-
 export const SPECIAL_PAGE_LINKS: Partial<Record<SpecialPageSlug, SpecialPageLinkMeta>> = {
   academy: {
     label: 'Академия',
@@ -101,12 +65,4 @@ export const SPECIAL_PAGE_LINKS: Partial<Record<SpecialPageSlug, SpecialPageLink
 
 export function getSpecialPageLinkMeta(slug: string) {
   return SPECIAL_PAGE_LINKS[slug as SpecialPageSlug];
-}
-
-// CMS-first compatibility layer:
-// keep the API shape, but stop storing page copy in code.
-export const SPECIAL_PAGE_OVERRIDES: Partial<Record<SpecialPageSlug, SpecialPageOverride>> = {};
-
-export function getLandingPageOverride(slug: string) {
-  return SPECIAL_PAGE_OVERRIDES[slug as SpecialPageSlug];
 }

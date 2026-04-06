@@ -45,7 +45,7 @@
 ## 4. Что нельзя делать
 
 - Хардкодить user-facing copy в шаблон, если блок уже CMS-owned.
-- Создавать generator-owned страницы вручную в Strapi.
+- Создавать importer-owned catalog/SEO записи вручную в Strapi как основной workflow.
 - Менять `content_origin` без понимания ownership-последствий.
 - Добавлять новый блок в верстку без описанного контракта в docs и adapters.
 
@@ -128,7 +128,7 @@ npm.cmd --prefix portal run build
 
 - `block_type`
 - allowed `template_kind`
-- ownership (`generated` / `managed` / mixed-by-page)
+- ownership (`imported` / `managed` / `settings` / mixed-by-page)
 - required fields
 - optional fields
 - fallback behavior
@@ -157,7 +157,7 @@ npm.cmd --prefix portal run build
 
 - Понятно, кто владеет изменяемым блоком: frontend или CMS.
 - Если блок CMS-owned, его поля описаны и валидируются.
-- `generated` и `managed` не перепутаны.
+- `imported`, `managed` и `settings` не перепутаны.
 - Build и checks зеленые.
 - Представительные страницы просмотрены вручную.
 - Документация не противоречит новой реальности проекта.

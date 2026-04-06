@@ -32,7 +32,7 @@
 
 ## 3. Safe fallback-и все еще существуют
 
-В adapters и templates все еще есть безопасные fallback-и, потому что они нужны для устойчивости generated/catalog family.
+В adapters и templates все еще есть безопасные fallback-и, потому что они нужны для устойчивости imported/catalog family.
 
 Это не баг, если:
 
@@ -58,7 +58,7 @@
 
 ## 5. Programmatic family нельзя вести как ручной контент
 
-`solution`, `feature`, `industry`, `integration`, `competitor` и пересечения остаются generator-owned.
+`solution`, `feature`, `industry`, `integration`, `competitor` и пересечения остаются importer-driven catalog family.
 
 Риск:
 
@@ -104,9 +104,9 @@ Docs уже покрывают проект хорошо, но только по
 
 Следующие вещи в текущей архитектуре являются осознанным решением:
 
-- гибрид `generated + managed`
+- гибрид `imported + managed + settings`
 - materialized copy в Strapi
-- fallback-и для generated/catalog family
+- fallback-и для imported/catalog family
 - demo-mode через GitHub Pages
 
 Это не надо “чинить” просто потому, что система не выглядит fully headless или fully manual.

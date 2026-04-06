@@ -1,10 +1,20 @@
 # Гайд оператора
 
-Этот документ для человека, который обновляет контент и публикует demo, не влезая глубоко во frontend-код.
+## Короткое правило
 
-## 1. Короткое правило
+### Если это managed content
 
-### Правим seeds, если страница `generated`
+Правим в `Strapi`.
+
+Примеры:
+
+- landing pages
+- singleton pages
+- site settings
+
+### Если это imported content
+
+Правим source data и запускаем importer.
 
 Примеры:
 
@@ -16,147 +26,58 @@
 - business types
 - competitors
 
-### Правим Strapi, если страница `managed`
+## Основные команды
 
-Примеры:
-
-- `/`
-- `/docs`
-- `/media`
-- `/promo`
-- `/pricing`
-- `/partnership`
-
-## 2. Как запустить проект локально
-
-### Запустить Strapi
+### Проверить importer без записи
 
 ```powershell
-npm.cmd --prefix cms run develop
+npm.cmd run seed-content:plan
 ```
 
-### Запустить Astro
-
-Во втором окне:
-
-```powershell
-npm.cmd --prefix portal run dev -- --host 127.0.0.1
-```
-
-Открыть:
-
-```text
-http://127.0.0.1:4321/
-```
-
-## 3. Как обновить generated-контент
-
-Если вы меняли generator-owned данные, запускайте:
+### Выполнить sync
 
 ```powershell
 npm.cmd run seed-content
 ```
 
-После этого обязательно:
+### Принудительно перезаписать imported-записи
 
 ```powershell
+npm.cmd run seed-content:force
+```
+
+### Посмотреть report
+
+```powershell
+npm.cmd run seed-content:report
+```
+
+## Локальная проверка перед релизом
+
+```powershell
+npm.cmd run test:contracts
+npm.cmd run check:docs-consistency
 npm.cmd --prefix portal run build
 ```
 
-## 4. Как добавить новую generated page
+## Что не надо делать
 
-1. Открыть нужный файл в `cms/seed/`.
-2. Добавить новую запись.
-3. Запустить:
+- не править imported catalog/SEO записи руками как основной способ
+- не менять `content_origin` вручную без понимания миграции
+- не использовать `force-sync` как обычный publish flow
+- не считать frontend источником copy/SEO текста
 
-```powershell
-npm.cmd run seed-content
-```
+## Если нужно объяснение без технички
 
-4. Убедиться, что запись появилась в Strapi.
-5. Запустить build:
+Для владельца проекта:
 
-```powershell
-npm.cmd --prefix portal run build
-```
+- [owner-quickstart.md](owner-quickstart.md)
 
-## 5. Как добавить managed singleton page
+Для общей модели:
 
-1. Создать запись в Strapi.
-2. Выставить:
-   - `template_kind`
-   - `content_origin = managed`
-3. Заполнить контент.
-4. Убедиться, что маршрут поддерживается frontend.
-5. Прогнать build.
+- [cms-model.md](cms-model.md)
+- [content-workflow.md](content-workflow.md)
 
-## 6. Как понять, что все в порядке
+Для первого боевого запуска:
 
-Проект считается здоровым, если проходит:
-
-```powershell
-npm.cmd --prefix portal run build
-```
-
-## 7. Как выпустить demo
-
-1. Запустить Strapi.
-2. Если меняли generated content — выполнить `seed-content`.
-3. Собрать demo snapshot:
-
-```powershell
-npm.cmd --prefix portal run snapshot:github-demo
-```
-
-4. Закоммитить изменения.
-5. Запушить.
-6. Проверить workflow `Deploy Demo Snapshot`.
-
-## 8. Что делать, если что-то пошло не так
-
-### Build падает
-
-Проверить:
-
-- запущен ли Strapi
-- не забыли ли прогнать `seed-content`
-- нет ли ошибок в новых seed-данных
-
-### Страница не появилась
-
-Проверить:
-
-- добавлена ли запись в правильный source seed
-- был ли выполнен `seed-content`
-- появился ли объект в Strapi
-- поддерживается ли маршрут frontend
-
-### На GitHub Pages старые стили
-
-Проверить:
-
-- обновился ли `pages-preview/`
-- был ли закоммичен новый snapshot
-- прошел ли workflow
-- сделать `Ctrl+F5`
-
-### В Telegram нет новой превьюхи
-
-Проверить:
-
-- опубликован ли новый `og:image`
-- обновился ли live HTML
-- если live уже обновился, почистить кэш Telegram через `@WebpageBot`
-
-## 9. К кому идти, если проблема не решается
-
-- контент страницы -> контентщик или владелец Strapi
-- шаблон или верстка -> frontend developer
-- генератор или seeds -> инженер, который ведет content pipeline
-- публикация, GitHub Pages, secrets -> devops или техлид
-## 10. Совсем короткий слой для владельца
-
-Если нужно объяснение без инженерных деталей, сначала откройте:
-
-- [Быстрый вход для владельца](owner-quickstart.md)
-- [Деплой](../DEPLOY.md)
+- [production-setup-checklist.md](production-setup-checklist.md)

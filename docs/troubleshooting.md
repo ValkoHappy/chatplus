@@ -72,7 +72,7 @@ Invoke-WebRequest 'http://127.0.0.1:1337/api/channels?pagination[pageSize]=1'
 npm.cmd --prefix portal run build
 ```
 
-## 4. Новая generated page не появилась
+## 4. Новая imported page не появилась
 
 Что проверить:
 
@@ -89,7 +89,7 @@ npm.cmd run seed-content
 node scripts/export-from-strapi.mjs
 ```
 
-4. Маршрут действительно входит в generator-owned family.
+4. Маршрут действительно входит в importer-owned family.
 5. Route-template mapping и ownership не противоречат docs.
 
 ## 5. Новая managed singleton page не появилась

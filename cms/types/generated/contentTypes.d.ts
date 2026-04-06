@@ -443,12 +443,25 @@ export interface ApiBusinessTypeBusinessType
     draftAndPublish: true;
   };
   attributes: {
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
@@ -461,21 +474,61 @@ export interface ApiBusinessTypeBusinessType
     hero_secondary_cta_url: Schema.Attribute.String;
     hero_title: Schema.Attribute.String;
     icon: Schema.Attribute.String;
+    import_batch_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     integrations: Schema.Attribute.JSON;
     integrations_intro: Schema.Attribute.Text;
     integrations_more_text: Schema.Attribute.String;
     integrations_title: Schema.Attribute.String;
+    last_import_diff: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_payload: Schema.Attribute.JSON &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_imported_at: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::business-type.business-type'
     > &
       Schema.Attribute.Private;
+    manual_override_fields: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     pricing_link_label: Schema.Attribute.String;
     problem_points: Schema.Attribute.JSON;
     problem_title: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'imported'>;
     related_links_intro: Schema.Attribute.String;
     related_types_title: Schema.Attribute.String;
     roi_intro: Schema.Attribute.String;
@@ -490,6 +543,15 @@ export interface ApiBusinessTypeBusinessType
     solution_title: Schema.Attribute.String;
     steps: Schema.Attribute.JSON;
     steps_title: Schema.Attribute.String;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -506,12 +568,18 @@ export interface ApiBusinessTypesPageBusinessTypesPage
     singularName: 'business-types-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     hero_cta_label: Schema.Attribute.String;
     hero_description: Schema.Attribute.Text & Schema.Attribute.Required;
     hero_title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -524,6 +592,24 @@ export interface ApiBusinessTypesPageBusinessTypesPage
     meta_description: Schema.Attribute.Text & Schema.Attribute.Required;
     meta_title: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'managed'>;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -543,29 +629,82 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
   };
   attributes: {
     content: Schema.Attribute.RichText;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
     features_title: Schema.Attribute.String;
     h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
+    import_batch_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_diff: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_payload: Schema.Attribute.JSON &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_imported_at: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::channel.channel'
     > &
       Schema.Attribute.Private;
+    manual_override_fields: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     problem_intro: Schema.Attribute.Text;
     problem_title: Schema.Attribute.String;
     problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'imported'>;
     roi_metrics: Schema.Attribute.JSON;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
@@ -581,6 +720,15 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -605,10 +753,21 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     compare_summary: Schema.Attribute.Text;
     competitor_price_caption: Schema.Attribute.String;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
       Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     eyebrow: Schema.Attribute.String;
     faq_title: Schema.Attribute.String;
     final_cta_label: Schema.Attribute.String;
@@ -617,12 +776,43 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     hero_description: Schema.Attribute.Text;
     hero_eyebrow: Schema.Attribute.String;
     hero_title: Schema.Attribute.String;
+    import_batch_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_diff: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_payload: Schema.Attribute.JSON &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_imported_at: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::competitor.competitor'
     > &
       Schema.Attribute.Private;
+    manual_override_fields: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     our_price: Schema.Attribute.String & Schema.Attribute.Required;
     our_price_caption: Schema.Attribute.String;
@@ -631,6 +821,15 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.String & Schema.Attribute.Required;
     pricing_title: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'imported'>;
     section_labels: Schema.Attribute.JSON;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
@@ -638,6 +837,15 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     strengths_title: Schema.Attribute.String;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -659,29 +867,82 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
   };
   attributes: {
     content: Schema.Attribute.RichText;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
     features_title: Schema.Attribute.String;
     h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
+    import_batch_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_diff: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_payload: Schema.Attribute.JSON &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_imported_at: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::feature.feature'
     > &
       Schema.Attribute.Private;
+    manual_override_fields: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     problem_intro: Schema.Attribute.Text;
     problem_title: Schema.Attribute.String;
     problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'imported'>;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
     roi_with_items: Schema.Attribute.JSON;
@@ -695,6 +956,15 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -714,30 +984,83 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
   };
   attributes: {
     content: Schema.Attribute.RichText;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
     features_title: Schema.Attribute.String;
     h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
+    import_batch_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_diff: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_payload: Schema.Attribute.JSON &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_imported_at: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::industry.industry'
     > &
       Schema.Attribute.Private;
+    manual_override_fields: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     pain: Schema.Attribute.Text;
     problem_intro: Schema.Attribute.Text;
     problem_title: Schema.Attribute.String;
     problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'imported'>;
     roi_metrics: Schema.Attribute.JSON;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
@@ -753,6 +1076,15 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -773,29 +1105,82 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
   attributes: {
     category: Schema.Attribute.String;
     content: Schema.Attribute.RichText;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
     features_title: Schema.Attribute.String;
     h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
+    import_batch_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_diff: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_payload: Schema.Attribute.JSON &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_imported_at: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::integration.integration'
     > &
       Schema.Attribute.Private;
+    manual_override_fields: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     problem_intro: Schema.Attribute.Text;
     problem_title: Schema.Attribute.String;
     problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'imported'>;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
     roi_with_items: Schema.Attribute.JSON;
@@ -809,6 +1194,15 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -824,7 +1218,7 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     singularName: 'landing-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     breadcrumb: Schema.Attribute.JSON;
@@ -832,10 +1226,21 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     comparison_rows: Schema.Attribute.Component<'tenders.compare-row', true>;
     comparison_title: Schema.Attribute.String;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
       Schema.Attribute.DefaultTo<'managed'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq_schema: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     faqs: Schema.Attribute.Component<'tenders.faq-item', true>;
@@ -882,6 +1287,15 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     quote_author: Schema.Attribute.String;
     quote_text: Schema.Attribute.Text;
     quote_title: Schema.Attribute.String;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'managed'>;
     roi_intro: Schema.Attribute.Text;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
@@ -903,6 +1317,15 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     target_keywords: Schema.Attribute.JSON;
     template_kind: Schema.Attribute.Enumeration<
       [
@@ -935,13 +1358,19 @@ export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
     singularName: 'site-setting';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     default_description: Schema.Attribute.Text & Schema.Attribute.Required;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     footer_columns: Schema.Attribute.JSON;
     footer_copyright: Schema.Attribute.String;
     footer_tagline: Schema.Attribute.Text;
@@ -959,12 +1388,30 @@ export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
     organization_description: Schema.Attribute.Text;
     page_templates: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'settings'>;
     site_name: Schema.Attribute.String & Schema.Attribute.Required;
     site_url: Schema.Attribute.String & Schema.Attribute.Required;
     special_page_defaults: Schema.Attribute.JSON;
     sticky_cta_label: Schema.Attribute.String;
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_url: Schema.Attribute.String;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'system_only'>;
     template_defaults: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -985,30 +1432,83 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
   };
   attributes: {
     content: Schema.Attribute.RichText;
+    content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'generated'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     cta: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     emoji: Schema.Attribute.String;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     features: Schema.Attribute.JSON;
     features_title: Schema.Attribute.String;
     h1: Schema.Attribute.String;
     icon: Schema.Attribute.String;
+    import_batch_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_diff: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_import_payload: Schema.Attribute.JSON &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    last_imported_at: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::solution.solution'
     > &
       Schema.Attribute.Private;
+    manual_override_fields: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     pain: Schema.Attribute.Text;
     problem_intro: Schema.Attribute.Text;
     problem_title: Schema.Attribute.String;
     problems: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'imported'>;
     roi_metrics: Schema.Attribute.JSON;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
@@ -1025,6 +1525,15 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1040,7 +1549,7 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     singularName: 'tenders-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     breadcrumb: Schema.Attribute.JSON;
@@ -1048,10 +1557,21 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     comparison_rows: Schema.Attribute.Component<'tenders.compare-row', true>;
     comparison_title: Schema.Attribute.String;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
       Schema.Attribute.DefaultTo<'managed'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    external_id: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     faq_schema: Schema.Attribute.JSON;
     faq_title: Schema.Attribute.String;
     faqs: Schema.Attribute.Component<'tenders.faq-item', true>;
@@ -1088,6 +1608,15 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     problem_title: Schema.Attribute.String;
     problems: Schema.Attribute.Component<'tenders.problem-item', true>;
     publishedAt: Schema.Attribute.DateTime;
+    record_mode: Schema.Attribute.Enumeration<
+      ['managed', 'imported', 'settings']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'managed'>;
     roi_intro: Schema.Attribute.Text;
     roi_quote: Schema.Attribute.Text;
     roi_title: Schema.Attribute.String;
@@ -1106,6 +1635,15 @@ export interface ApiTendersPageTendersPage extends Struct.SingleTypeSchema {
     sticky_cta_text: Schema.Attribute.Text;
     sticky_cta_title: Schema.Attribute.String;
     subtitle: Schema.Attribute.Text;
+    sync_strategy: Schema.Attribute.Enumeration<
+      ['merge', 'frozen', 'system_only']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'merge'>;
     target_keywords: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

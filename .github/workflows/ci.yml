@@ -103,8 +103,8 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
-      - name: Run seed runtime smoke
+      - name: Run seed runtime dry-run smoke
         env:
           STRAPI_URL: ${{ secrets.STRAPI_URL }}
           STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
-        run: npm run seed-content
+        run: npm run seed-content:plan

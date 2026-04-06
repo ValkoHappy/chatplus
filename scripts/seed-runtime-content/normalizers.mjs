@@ -1,4 +1,5 @@
 import { stripReservedKeysDeep } from './ownership.mjs';
+import { getIdentityValue, getSyncPolicy } from './sync-policies.mjs';
 
 function hasStructuredSeoFields(item = {}) {
   return Boolean(
@@ -169,6 +170,14 @@ function prepareStructuredSeedItem(endpoint, item) {
 }
 
 function prepareCollectionItem(endpoint, item) {
+  const policy = getSyncPolicy(endpoint);
+  const baseMetadata = {
+    record_mode: item.record_mode || policy.defaultRecordMode,
+    content_origin: item.content_origin || (policy.defaultRecordMode === 'managed' ? 'managed' : 'generated'),
+    sync_strategy: item.sync_strategy || 'merge',
+    external_id: item.external_id || getIdentityValue(item, policy) || `${policy.family}:${item.slug || item.name || ''}`,
+  };
+
   if (
     endpoint === 'channels' ||
     endpoint === 'industries' ||
@@ -176,15 +185,24 @@ function prepareCollectionItem(endpoint, item) {
     endpoint === 'integrations' ||
     endpoint === 'features'
   ) {
-    return prepareStructuredSeedItem(endpoint, item);
+    return {
+      ...prepareStructuredSeedItem(endpoint, item),
+      ...baseMetadata,
+    };
   }
 
   if (endpoint === 'business-types') {
     const { sticky_cta_title, sticky_cta_text, ...rest } = item;
-    return stripReservedKeysDeep(rest);
+    return stripReservedKeysDeep({
+      ...rest,
+      ...baseMetadata,
+    });
   }
 
-  return stripReservedKeysDeep(item);
+  return stripReservedKeysDeep({
+    ...item,
+    ...baseMetadata,
+  });
 }
 
 export {

@@ -13,6 +13,8 @@ deploy/data/*
 !deploy/data/letsencrypt/.gitkeep
 !deploy/data/certbot-webroot/.gitkeep
 !deploy/data/backups/.gitkeep
+!deploy/data/public-site/.gitkeep
+!deploy/data/public-site/current/.gitkeep
 
 # Build output and caches
 dist

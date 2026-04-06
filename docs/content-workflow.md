@@ -1,261 +1,104 @@
 # Контентный workflow CHATPLUS
 
-## 1. Главная идея
+## Общая схема
 
-Контентный pipeline проекта выглядит так:
+Текущий pipeline выглядит так:
 
-`cms/seed/*.json -> scripts/seed-runtime-content.mjs -> cms/seed/generated/*.json -> Strapi -> Astro build`
+`cms/seed/*.json -> importer -> Strapi -> Astro build -> static deploy`
 
-Это защита проекта от дрейфа между:
+Ключевой смысл:
 
-- seeds
-- Strapi
-- frontend
+- source data остается в git
+- live-контент живет в `Strapi`
+- сайт собирается из `Strapi`
 
-## 2. Три класса контента
+## Два рабочих сценария
 
-### Programmatic content
+### 1. Managed content
 
-Создается только через seeds/generator.
+Используется для:
 
-Сюда относятся:
+- landing pages
+- singleton pages
+- global settings
 
-- channels
-- industries
-- integrations
-- solutions
-- features
-- business types
-- competitors
-- generated landing pages
+Сценарий:
 
-Для этого слоя:
+1. редактор меняет запись в `Strapi`
+2. нажимает `Publish`
+3. webhook уходит в relay
+4. relay триггерит `repository_dispatch`
+5. GitHub Actions собирает сайт и выкатывает новую статику
 
-- source of truth = `cms/seed/*.json`
-- ownership = `content_origin = generated`
+### 2. Imported content
 
-### Managed singleton content
+Используется для:
 
-Редактируется напрямую в Strapi.
+- catalog/SEO families
+- comparison records
+- типовых programmatic страниц
 
-Сюда относятся:
+Сценарий:
 
-- `/`
-- `/docs`
-- `/help`
-- `/academy`
-- `/blog`
-- `/status`
-- `/media`
-- `/team`
-- `/conversation`
-- `/tv`
-- `/promo`
-- `/prozorro`
-- `/demo`
-- `/pricing`
-- `/partnership`
-- `/solutions/tenders`, если он ведется как managed singleton
+1. обновляется source data в `cms/seed/*.json`
+2. запускается importer
+3. importer делает `plan` или `apply`
+4. записи обновляются в `Strapi`
+5. дальше идет publish/rebuild flow
 
-Для этого слоя:
+## Importer команды
 
-- source of truth = Strapi admin
-- ownership = `content_origin = managed`
+### Dry run
 
-### Global content
+```powershell
+npm.cmd run seed-content:plan
+```
 
-Живет в `site-setting`.
+Показывает, что будет создано, обновлено или пропущено.
 
-Сюда относятся:
-
-- header/footer
-- global labels
-- template defaults
-- generator defaults
-- shared CTA defaults
-
-## 3. Где править что
-
-### Править seeds, если:
-
-- добавляется новый `solution`
-- добавляется новый `industry`
-- добавляется новый `integration`
-- добавляется новый `competitor`
-- одна и та же проблема затрагивает много generated-страниц
-- правка относится к generator-owned family
-
-### Править Strapi, если:
-
-- страница managed
-- правка точечная и относится к одной singleton page
-- контентом должен управлять редактор или маркетолог
-
-### Править frontend, если:
-
-- меняется верстка
-- меняется шаблон
-- меняется адаптив
-- меняется rendering logic
-- меняется normalization/fallback behavior
-
-## 4. Основной generator/import script
-
-Operational entry point:
-
-- [seed-runtime-content.mjs](../scripts/seed-runtime-content.mjs)
-
-Он отвечает за:
-
-- чтение source seeds
-- materialization данных для Strapi
-- validation content contracts
-- upsert/import в Strapi
-- соблюдение правил `generated` / `managed`
-
-После декомпозиции внутренняя ответственность разделена так:
-
-- `ownership.mjs` — merge и ownership rules
-- `rules.mjs` — singleton maps, required fields и helper inferrers
-- `normalizers.mjs` — preparers и normalizers
-- `validators.mjs` — validation contracts
-- `strapi-client.mjs` — request/upsert logic
-
-При этом команда и entrypoint не изменились:
-
-- `npm.cmd run seed-content`
-- `scripts/seed-runtime-content.mjs`
-
-## 5. Source-level и generated-level файлы
-
-### Source-level
-
-Редактируются вручную:
-
-- `cms/seed/channels.json`
-- `cms/seed/industries.json`
-- `cms/seed/integrations.json`
-- `cms/seed/solutions.json`
-- `cms/seed/features.json`
-- `cms/seed/businessTypes.json`
-- `cms/seed/competitors.json`
-
-### Generated-level
-
-Не считаются местом ручного редактирования:
-
-- `cms/seed/generated/channels.json`
-- `cms/seed/generated/industries.json`
-- `cms/seed/generated/integrations.json`
-- `cms/seed/generated/solutions.json`
-- `cms/seed/generated/features.json`
-- `cms/seed/generated/businessTypes.json`
-- `cms/seed/generated/competitors.json`
-- `cms/seed/generated/landingPages.json`
-- `cms/seed/generated/siteSetting.json`
-- `cms/seed/generated/tendersPage.json`
-
-Если проблема системная, исправлять нужно source/generator-слой, а не generated JSON руками.
-
-## 6. Import/upsert rules
-
-Текущие правила:
-
-- upsert по slug
-- generated records можно обновлять повторно
-- managed records нельзя silently overwrite как generator-owned контент
-- managed records можно bootstrap-нуть, если они отсутствуют
-- import должен быть идемпотентным
-- данные валидируются до записи
-
-Дополнительная важная логика:
-
-- когда появляются новые source-owned template fields, импорт может безопасно дозаполнить ими существующие managed-записи без полного overwrite
-
-## 7. Минимальные правила валидации
-
-Перед импортом должны проверяться:
-
-- уникальность slug
-- валидность `template_kind`
-- валидность `content_origin`
-- наличие обязательных полей
-- согласованность `generated` / `managed`
-
-## 8. Как добавить новую generated page
-
-1. Добавить запись в нужный `cms/seed/*.json`.
-2. Запустить:
+### Обычный sync
 
 ```powershell
 npm.cmd run seed-content
 ```
 
-3. Проверить, что запись появилась или обновилась в Strapi.
-4. Собрать фронтенд:
+### Force sync
 
 ```powershell
-npm.cmd --prefix portal run build
+npm.cmd run seed-content:force
 ```
 
-5. Проверить route локально.
+Используется только когда нужно сознательно перезаписать editor-owned поля source-данными.
 
-## 9. Как добавить managed singleton page
-
-1. Создать запись в Strapi.
-2. Выставить:
-   - `template_kind`
-   - `content_origin = managed`
-3. Заполнить hero, section labels, FAQ, CTA и metadata.
-4. Проверить, что slug реально поддерживается route/template mapping.
-5. Прогнать build.
-6. Проверить страницу локально.
-
-Подробный практический сценарий:
-
-- [how-to-add-page.md](how-to-add-page.md)
-
-## 10. Какие шаблонные блоки уже переведены в CMS-owned
-
-- `HomePage` proof bar -> `proof_facts`
-- `PricingPage` hero panel -> `hero_panel_items`
-- `PricingPage` pricing cards -> `pricing_tiers`
-- `PricingPage` supporting proof cards -> `proof_cards`
-- `TendersPage` hero panel stream -> `hero_panel_items`
-- `PartnershipPage` helper labels -> `section_labels`
-
-## 11. Что нельзя делать
-
-- создавать generator-owned записи руками в Strapi
-- редактировать generated JSON как основной рабочий метод
-- хардкодить пользовательский текст в шаблон, если блок уже CMS-owned
-- менять `content_origin` без понимания ownership-последствий
-
-## 12. Частые команды
-
-Обновить content layer:
+### Report
 
 ```powershell
-npm.cmd run seed-content
+npm.cmd run seed-content:report
 ```
 
-Проверить сборку:
+Показывает текущее состояние imported-записей и следы последних sync-циклов.
 
-```powershell
-npm.cmd --prefix portal run build
-```
+## Правило безопасного sync
 
-Проверить локально:
+- `managed` записи importer не трогает
+- `imported` записи обновляются только по `system-owned` полям
+- если редактор вручную менял поле, оно попадает в `manual_override_fields`
+- повторный import не должен затирать такие поля
 
-```powershell
-npm.cmd --prefix portal run dev -- --host 127.0.0.1
-```
+## Что считается концом контентного изменения
 
-## 13. Связанные документы
+Изменение считается завершенным, когда:
+
+- запись сохранена в `Strapi`
+- нужный publish/sync выполнен
+- `npm.cmd run test:contracts` зеленый
+- `npm.cmd run check:docs-consistency` зеленый
+- `npm.cmd --prefix portal run build` зеленый
+- representative routes проверены руками
+
+## Связанные документы
 
 - [CMS-модель](cms-model.md)
-- [Контракты шаблонов](template-contracts.md)
-- [Контракт безопасных изменений](change-safety.md)
-- [AI Generation для блоков](ai-block-generation.md)
+- [Политика импорта](import-policy.md)
 - [Гайд оператора](operator-guide.md)
-- [Деплой](../DEPLOY.md)
+- [Release flow](release-flow.md)

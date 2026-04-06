@@ -6,61 +6,60 @@
 
 `CHATPLUS` — это публичный сайт на `Astro` и контентный слой на `Strapi`.
 
-Проект состоит из четырех основных частей:
+Проект состоит из четырех главных частей:
 
-- `portal/` — фронтенд, шаблоны, стили, маршруты и сборка
+- `portal/` — фронтенд, шаблоны, маршруты и сборка
 - `cms/` — Strapi, content types, админка и CMS-данные
-- `scripts/` — генерация и импорт generator-owned контента
-- `pages-preview/` — статический snapshot для GitHub Pages demo
+- `scripts/` — importer, генерация и служебные content-скрипты
+- `pages-preview/` — demo snapshot для GitHub Pages
 
-Контентная модель гибридная:
+## Текущая модель проекта
 
-- `generated`-страницы создаются через `cms/seed/*.json -> scripts/seed-runtime-content.mjs -> Strapi`
-- `managed`-страницы редактируются напрямую в Strapi
-- фронтенд отвечает за верстку, адаптив, шаблоны и render-логику
+Проект больше не описывается как `generated vs managed` в пользовательском смысле.
 
-После декомпозиции внутренней логики:
+Рабочая модель теперь такая:
 
-- `portal/src/lib/page-adapters.ts` остается публичным entrypoint для фронтенда
-- `scripts/seed-runtime-content.mjs` остается CLI entrypoint для `seed-content`
-- внутренняя логика разложена по internal modules, но внешний контракт не менялся
+- `managed` — запись редактируется руками в `Strapi`
+- `imported` — запись создается importer-ом, живет в `Strapi` и безопасно синхронизируется
+- `settings` — singleton/system records
+
+Что это значит на практике:
+
+- `Strapi` — главный редакторский интерфейс
+- `Astro` — только рендер и сборка статики
+- importer загружает SEO/catalog данные в `Strapi`, но не должен тупо перетирать ручные правки
+- publish flow строится вокруг схемы:
+  - `Publish -> webhook -> relay -> CI rebuild -> deploy`
 
 ## С чего читать
 
-### Если вы инженер или следующая нейронка
+### Если вы инженер
 
 Читайте в таком порядке:
 
-1. [Главная карта документации](docs/index.md)
-2. [Глоссарий](docs/glossary.md)
-3. [Архитектура](docs/architecture.md)
-4. [CMS-модель](docs/cms-model.md)
-5. [Контентный workflow](docs/content-workflow.md)
+1. [Карта документации](docs/index.md)
+2. [Архитектура](docs/architecture.md)
+3. [CMS-модель](docs/cms-model.md)
+4. [Контентный workflow](docs/content-workflow.md)
+5. [Политика импорта](docs/import-policy.md)
 6. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
 7. [Контракты шаблонов](docs/template-contracts.md)
 8. [Карта файлов](docs/file-map.md)
 9. [Контракт безопасных изменений](docs/change-safety.md)
-10. [AI Generation для блоков](docs/ai-block-generation.md)
-11. [Troubleshooting](docs/troubleshooting.md)
-12. [Release Flow](docs/release-flow.md)
-13. [Known Risks](docs/known-risks.md)
-14. [Деплой и публикация](DEPLOY.md)
+10. [Troubleshooting](docs/troubleshooting.md)
+11. [Release Flow](docs/release-flow.md)
+12. [Деплой](DEPLOY.md)
 
-### Если вы оператор, контент-менеджер или владелец проекта
+### Если вы оператор, редактор или владелец
 
 Читайте в таком порядке:
 
-1. [Главная карта документации](docs/index.md)
+1. [Быстрый вход для владельца](docs/owner-quickstart.md)
 2. [Гайд оператора](docs/operator-guide.md)
 3. [Release Flow](docs/release-flow.md)
-4. [Как добавить страницу](docs/how-to-add-page.md)
-5. [Чеклист публикации](docs/publishing-checklist.md)
-6. [Troubleshooting](docs/troubleshooting.md)
-7. [Деплой и публикация](DEPLOY.md)
+4. [Деплой](DEPLOY.md)
 
 ## Быстрый запуск
-
-Из корня репозитория.
 
 ### Strapi
 
@@ -84,7 +83,7 @@ http://127.0.0.1:4321/
 
 ## Локальный Docker smoke
 
-Если нужно локально проверить production-like контур через Docker Desktop:
+Если нужно проверить production-like контур локально:
 
 ```powershell
 Copy-Item deploy/.env.local.example deploy/.env.local
@@ -95,9 +94,9 @@ Copy-Item deploy/.env.local.example deploy/.env.local
 
 1. открыть `http://127.0.0.1:1337/admin`
 2. создать первого Strapi admin user
-3. создать API token
+3. создать `API Token`
 4. записать его в `deploy/.env.local` как `STRAPI_API_TOKEN`
-5. на чистой локальной базе выполнить:
+5. при необходимости проверить importer:
 
 ```powershell
 .\deploy\scripts\local-seed-content.cmd
@@ -114,40 +113,33 @@ Copy-Item deploy/.env.local.example deploy/.env.local
 - `Strapi`: `http://127.0.0.1:1337/admin`
 - публичный сайт: `http://127.0.0.1:8080`
 
-Если Docker Desktop спрашивает про WSL integration с `Ubuntu`, для этого проекта ее можно пропустить. Локальному smoke-flow нужен Docker engine, а не Docker CLI внутри вашей личной Ubuntu-дистрибуции.
-
 ## Основные команды
 
-### Обновить generator-owned контент
+### Проверить importer plan
+
+```powershell
+npm.cmd run seed-content:plan
+```
+
+### Применить importer
 
 ```powershell
 npm.cmd run seed-content
 ```
 
-### Полная сборка с QA
+### Принудительный sync
 
 ```powershell
-npm.cmd --prefix portal run build
+npm.cmd run seed-content:force
 ```
 
-### PR CI
+### Посмотреть importer report
 
-На каждый `pull_request` в `main` запускается workflow `CI`:
+```powershell
+npm.cmd run seed-content:report
+```
 
-- `npm run test:contracts`
-- `npm run check:docs-consistency`
-- `portal build`
-- `content-check`
-- `link-graph`
-- `encoding-check`
-- условный `seed-content` smoke при доступных secrets
-
-Важно:
-
-- deploy workflows не заменены, это отдельный защитный PR gate
-- для fork PR build/smoke могут быть skipped, потому что текущая архитектура требует `STRAPI_URL` и `STRAPI_TOKEN`
-
-Локально тот же набор проверок:
+### Полная сборка с QA-проверками
 
 ```powershell
 npm.cmd run test:contracts
@@ -155,67 +147,26 @@ npm.cmd run check:docs-consistency
 npm.cmd --prefix portal run build
 ```
 
-### Собрать snapshot для GitHub Pages demo
-
-```powershell
-npm.cmd --prefix portal run snapshot:github-demo
-```
-
 ## Главные правила проекта
 
-- Не создавайте `generated`-страницы вручную в Strapi.
-- Не меняйте `content_origin`, если не понимаете ownership-последствия.
-- Не хардкодьте новый пользовательский текст в шаблон, если блок должен редактироваться через CMS.
-- Любой новый CMS-owned блок требует обновления схемы, адаптеров и документации.
-- Перед публикацией всегда должен проходить `npm.cmd --prefix portal run build`.
-- Перед merge в `main` должен быть зеленый PR workflow `CI`, если PR не ограничен отсутствием secrets.
+- не правьте imported catalog/SEO контент руками как основной workflow
+- не используйте `force-sync` как обычный publish flow
+- не хардкодьте user-facing copy во frontend, если ее должен редактировать редактор
+- перед публикацией всегда должен проходить `portal build`
+- deploy и content publish считаются отдельными pipeline
 
 ## Где источник истины
 
-- Для programmatic family: `cms/seed/*.json` и `scripts/seed-runtime-content.mjs` как orchestration entrypoint
-- Для managed singleton pages: Strapi admin
-- Для шаблонов, стилей, адаптива и shared UI behavior: `portal/`
-
-## Активные шаблоны
-
-В проекте сейчас 10 активных шаблонов:
-
-- `home`
-- `structured`
-- `directory`
-- `pricing`
-- `partnership`
-- `tenders`
-- `resource-hub`
-- `brand-content`
-- `comparison`
-- `campaign`
-
-Подробнее:
-
-- [Контракты шаблонов](docs/template-contracts.md)
-- [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
-- [Route-to-template registry](portal/src/lib/page-template-map.ts)
+- для `managed` и `settings` контента — `Strapi`
+- для batch generation — `cms/seed/*.json` как bootstrap/import layer
+- для шаблонов, layout и render logic — `portal/`
 
 ## Важные ссылки
 
-- [Главная карта документации](docs/index.md)
-- [Глоссарий](docs/glossary.md)
+- [Карта документации](docs/index.md)
+- [CMS-модель](docs/cms-model.md)
+- [Контентный workflow](docs/content-workflow.md)
+- [Политика импорта](docs/import-policy.md)
 - [Гайд оператора](docs/operator-guide.md)
-- [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
-- [Контракты шаблонов](docs/template-contracts.md)
-- [Карта файлов](docs/file-map.md)
-- [Контракт безопасных изменений](docs/change-safety.md)
-- [AI Generation для блоков](docs/ai-block-generation.md)
-- [Troubleshooting](docs/troubleshooting.md)
 - [Release Flow](docs/release-flow.md)
-- [Known Risks](docs/known-risks.md)
-- [Деплой](DEPLOY.md)
-
-## Вход для владельца без технички
-
-Если нужен самый короткий вход для владельца, партнера или менеджера, начните отсюда:
-
-- [Быстрый вход для владельца](docs/owner-quickstart.md)
-- [Гайд оператора](docs/operator-guide.md)
 - [Деплой](DEPLOY.md)

@@ -8,9 +8,45 @@
     "description": "Глобальный контент сайта: шапка, футер, sticky CTA и SEO-описание"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
+    "record_mode": {
+      "type": "enumeration",
+      "enum": [
+        "managed",
+        "imported",
+        "settings"
+      ],
+      "default": "settings",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "external_id": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "sync_strategy": {
+      "type": "enumeration",
+      "enum": [
+        "merge",
+        "frozen",
+        "system_only"
+      ],
+      "default": "system_only",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
     "site_name": {
       "type": "string",
       "required": true

@@ -21,7 +21,7 @@ server {
 
     include /etc/nginx/snippets/ssl-params.conf;
 
-    root /usr/share/nginx/html;
+    root /srv/public-site/current;
     index index.html;
 
     location /.well-known/acme-challenge/ {

@@ -3,8 +3,12 @@
   "scripts": {
     "generate-content": "node --env-file=.env scripts/generate-seo-content.mjs",
     "seed-content": "node --env-file=.env scripts/seed-runtime-content.mjs",
+    "seed-content:plan": "node --env-file=.env scripts/seed-runtime-content.mjs --plan",
+    "seed-content:force": "node --env-file=.env scripts/seed-runtime-content.mjs --force-sync",
+    "seed-content:report": "node --env-file=.env scripts/seed-runtime-content.mjs --report",
+    "relay:content-publish": "node --env-file=.env scripts/strapi-webhook-relay.mjs",
     "check:docs-consistency": "node scripts/check-docs-consistency.mjs",
-    "test:contracts": "node --test --experimental-strip-types --experimental-specifier-resolution=node tests/seed-runtime-content.test.mjs tests/page-adapters.test.ts tests/strapi-schemas.test.ts"
+    "test:contracts": "node --test --experimental-strip-types --experimental-specifier-resolution=node tests/seed-runtime-content.test.mjs tests/page-adapters.test.ts tests/strapi-schemas.test.ts tests/strapi-webhook-relay.test.mjs"
   },
   "dependencies": {
     "dotenv": "^17.3.1"

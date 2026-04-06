@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildImportedMerge,
   hydrateMissingManagedContent,
   mergeSourceOwnedContent,
   shouldSkipManagedUpdate,
@@ -136,4 +137,74 @@ test('hydrateMissingManagedContent keeps editor values and fills blanks from sou
 test('shouldSkipManagedUpdate protects managed records from generator overwrite', () => {
   assert.equal(shouldSkipManagedUpdate({ content_origin: 'managed' }, 'generated'), true);
   assert.equal(shouldSkipManagedUpdate({ content_origin: 'generated' }, 'generated'), false);
+});
+
+test('buildImportedMerge preserves manual overrides while updating system-owned fields', () => {
+  const nextData = buildImportedMerge({
+    endpoint: 'competitors',
+    sourceData: {
+      slug: 'respond-io',
+      name: 'Respond.io',
+      external_id: 'competitor:respond-io',
+      record_mode: 'imported',
+      compare_summary: 'New source summary',
+      price: '$99',
+    },
+    existingData: {
+      slug: 'respond-io',
+      name: 'Respond.io',
+      external_id: 'competitor:respond-io',
+      record_mode: 'imported',
+      compare_summary: 'Edited in CMS',
+      price: '$79',
+      last_import_payload: {
+        compare_summary: 'Old source summary',
+        price: '$79',
+      },
+      manual_override_fields: [],
+    },
+    importBatchId: 'batch-1',
+    now: '2026-04-06T00:00:00.000Z',
+    forceSync: false,
+  });
+
+  assert.equal(nextData.price, '$99');
+  assert.equal(nextData.compare_summary, 'Edited in CMS');
+  assert.deepEqual(nextData.manual_override_fields, ['compare_summary']);
+  assert.equal(nextData.import_batch_id, 'batch-1');
+});
+
+test('buildImportedMerge force-sync overwrites manual overrides and clears preserved fields', () => {
+  const nextData = buildImportedMerge({
+    endpoint: 'competitors',
+    sourceData: {
+      slug: 'respond-io',
+      name: 'Respond.io',
+      external_id: 'competitor:respond-io',
+      record_mode: 'imported',
+      compare_summary: 'Forced source summary',
+      price: '$129',
+    },
+    existingData: {
+      slug: 'respond-io',
+      name: 'Respond.io',
+      external_id: 'competitor:respond-io',
+      record_mode: 'imported',
+      compare_summary: 'Edited in CMS',
+      price: '$79',
+      last_import_payload: {
+        compare_summary: 'Old source summary',
+        price: '$79',
+      },
+      manual_override_fields: ['compare_summary'],
+    },
+    importBatchId: 'batch-2',
+    now: '2026-04-06T00:00:00.000Z',
+    forceSync: true,
+  });
+
+  assert.equal(nextData.compare_summary, 'Forced source summary');
+  assert.equal(nextData.price, '$129');
+  assert.deepEqual(nextData.manual_override_fields, []);
+  assert.equal(nextData.last_import_diff.status, 'forced');
 });

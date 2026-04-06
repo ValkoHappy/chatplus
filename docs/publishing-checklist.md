@@ -5,7 +5,7 @@
 Проверить:
 
 - Strapi запущен
-- если менялись generator-owned данные, выполнен `npm.cmd run seed-content`
+- если менялись imported catalog/SEO данные через source payload, выполнен `npm.cmd run seed-content`
 - если менялись managed pages, правки сохранены в Strapi
 
 ## 2. Обязательная локальная проверка

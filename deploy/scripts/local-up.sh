@@ -10,7 +10,7 @@ LOCAL_COMPOSE="${DEPLOY_DIR}/docker-compose.local.yml"
 
 "${SCRIPT_DIR}/preflight-local.sh" --skip-port-check
 
-docker compose --env-file "${ENV_FILE}" -f "${PROD_COMPOSE}" -f "${LOCAL_COMPOSE}" up -d --build postgres strapi nginx
+docker compose --env-file "${ENV_FILE}" -f "${PROD_COMPOSE}" -f "${LOCAL_COMPOSE}" up -d --build postgres strapi content-relay nginx
 
 echo "Local stack is up."
 echo "Strapi admin: http://127.0.0.1:1337/admin"

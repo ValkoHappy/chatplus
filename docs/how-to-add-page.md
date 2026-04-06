@@ -2,13 +2,13 @@
 
 Этот документ разделяет три сценария:
 
-- добавить новую generated page
+- добавить новую imported page
 - добавить новую managed singleton page
 - добавить новый template kind
 - изменить существующий шаблон
 - заменить один шаблон другим
 
-## Сценарий 1. Новая generated page
+## Сценарий 1. Новая imported page
 
 Примеры:
 
@@ -20,7 +20,7 @@
 
 ### Шаги
 
-1. Найти нужный source seed в `cms/seed/*.json`.
+1. Найти нужный source seed в `cms/seed/*.json` или AI batch payload.
 2. Добавить новую запись.
 3. Запустить:
 
@@ -28,7 +28,7 @@
 npm.cmd run seed-content
 ```
 
-4. Проверить, что запись появилась в Strapi.
+4. Проверить, что запись появилась в Strapi как `record_mode = imported`.
 5. Собрать frontend:
 
 ```powershell
@@ -144,7 +144,7 @@ npm.cmd --prefix portal run build
 ### Шаги
 
 1. Проверить ownership маршрута:
-   - `managed` или `generated`
+   - `managed` или `imported`
 2. Проверить, поддерживает ли новый шаблон существующие поля страницы.
 3. Если не поддерживает:
    - описать новый contract
@@ -155,8 +155,8 @@ npm.cmd --prefix portal run build
 5. Если это `managed` singleton:
    - обновить `template_kind` в Strapi
    - убедиться, что `content_origin` не меняется случайно
-6. Если это `generated` family:
-   - обновить source seed/generator contract
+6. Если это `imported` family:
+   - обновить source seed/import contract
    - не делать такой перевод вручную только в админке
 7. Обновить документацию:
    - `template-contracts.md`
@@ -183,6 +183,6 @@ npm.cmd --prefix portal run build
 - страница открывается локально
 - прошел `npm.cmd --prefix portal run build`
 - новый маршрут соответствует ownership-модели
-- страница не нарушает `generated` / `managed` contract
+- страница не нарушает `managed` / `imported` contract
 - если добавлялся новый блок, его contract описан в docs и валидируется
 - если менялся или заменялся шаблон, route-template mapping и docs обновлены синхронно

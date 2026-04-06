@@ -11,6 +11,49 @@
   "attributes": {
     "slug": { "type": "uid", "targetField": "name", "required": true },
     "name": { "type": "string", "required": true },
+    "content_origin": {
+      "type": "enumeration",
+      "enum": ["generated", "managed"],
+      "default": "generated",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "record_mode": {
+      "type": "enumeration",
+      "enum": ["managed", "imported", "settings"],
+      "default": "imported",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "external_id": {
+      "type": "string",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "import_batch_id": {
+      "type": "string",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "last_imported_at": {
+      "type": "datetime",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "sync_strategy": {
+      "type": "enumeration",
+      "enum": ["merge", "frozen", "system_only"],
+      "default": "merge",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "manual_override_fields": {
+      "type": "json",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "last_import_diff": {
+      "type": "json",
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
+    "last_import_payload": {
+      "type": "json",
+      "private": true,
+      "pluginOptions": { "content-manager": { "visible": false } }
+    },
     "emoji": { "type": "string" },
     "icon": { "type": "string" },
     "description": { "type": "text", "required": true },

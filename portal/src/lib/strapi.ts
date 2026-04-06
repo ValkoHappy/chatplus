@@ -7,7 +7,6 @@ import {
   parseSingleData,
   type StrapiRecord,
 } from './strapi-schemas.ts';
-import { getLandingPageOverride } from './special-pages.ts';
 
 const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://127.0.0.1:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
@@ -58,51 +57,10 @@ function normalizeLandingPage(data: StrapiRecord, slugHint?: string) {
   const normalized = normalizeLandingPageRecord(data, slugHint);
   const slug = normalized.slug || slugHint || '';
   const inferredLinkSections = inferLandingPageLinkSectionProps(slug);
-  const override = getLandingPageOverride(slug) || {};
-  const overrideRecord = override as Record<string, unknown>;
-  const pickValue = (primary: unknown, fallback: unknown) => (primary !== undefined && primary !== null && primary !== '' ? primary : fallback);
-  const pickArray = (primary: unknown, fallback: unknown) =>
-    Array.isArray(primary) && primary.length > 0 ? primary : Array.isArray(fallback) ? fallback : [];
-  const pickObject = (primary: unknown, fallback: unknown) => {
-    if (primary && typeof primary === 'object' && !Array.isArray(primary) && Object.keys(primary).length > 0) {
-      return primary;
-    }
-
-    if (fallback && typeof fallback === 'object' && !Array.isArray(fallback)) {
-      return fallback;
-    }
-
-    return {};
-  };
 
   return {
-    ...override,
     ...normalized,
-    template_kind: pickValue(normalized.template_kind, overrideRecord.template_kind),
-    content_origin: pickValue(normalized.content_origin, overrideRecord.content_origin),
-    hero_eyebrow: pickValue(normalized.hero_eyebrow, overrideRecord.hero_eyebrow),
-    hero_variant: pickValue(normalized.hero_variant, overrideRecord.hero_variant),
-    hero_highlights_label: pickValue(normalized.hero_highlights_label, overrideRecord.hero_highlights_label),
-    hero_highlights: pickArray(normalized.hero_highlights, overrideRecord.hero_highlights),
-    hero_trust_facts: pickArray(normalized.hero_trust_facts, overrideRecord.hero_trust_facts),
-    hero_panel_items: pickArray(normalized.hero_panel_items, overrideRecord.hero_panel_items),
-    pricing_tiers: pickArray(normalized.pricing_tiers, overrideRecord.pricing_tiers),
-    proof_cards: pickArray(normalized.proof_cards, overrideRecord.proof_cards),
-    problems: pickArray(normalized.problems, overrideRecord.problems),
-    solution_steps: pickArray(normalized.solution_steps, overrideRecord.solution_steps),
-    features: pickArray(normalized.features, overrideRecord.features),
-    roi_without_items: pickArray(normalized.roi_without_items, overrideRecord.roi_without_items),
-    roi_with_items: pickArray(normalized.roi_with_items, overrideRecord.roi_with_items),
-    use_cases: pickArray(normalized.use_cases, overrideRecord.use_cases),
-    faqs: pickArray(normalized.faqs, overrideRecord.faqs),
-    proof_facts: pickArray(normalized.proof_facts, overrideRecord.proof_facts),
-    section_labels: pickObject(normalized.section_labels, overrideRecord.section_labels),
-    quote_title: pickValue(normalized.quote_title, overrideRecord.quote_title),
-    quote_text: pickValue(normalized.quote_text, overrideRecord.quote_text),
-    quote_author: pickValue(normalized.quote_author, overrideRecord.quote_author),
-    presentation_flags: pickObject(normalized.presentation_flags, overrideRecord.presentation_flags),
     internal_links_context: {
-      ...(overrideRecord.internal_links_context as Record<string, unknown> | undefined),
       ...(normalized.internal_links_context || {}),
       pageSlug: normalized.slug || inferredLinkSections.internal_links_context?.pageSlug,
     },
@@ -167,6 +125,7 @@ export async function getCompetitors() {
   const data = normalizeCatalogItems(await fetchCollection('/competitors'));
   return data.map((item) => ({
     ...item,
+    record_mode: typeof item.record_mode === 'string' && item.record_mode ? item.record_mode : 'imported',
     content_origin: typeof item.content_origin === 'string' && item.content_origin ? item.content_origin : 'generated',
     our_price: typeof item.our_price === 'string' ? item.our_price : '',
     eyebrow: typeof item.eyebrow === 'string' ? item.eyebrow : '',

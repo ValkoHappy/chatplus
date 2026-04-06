@@ -1,9 +1,24 @@
-name: Content Publish Pipeline
+name: Code Pipeline
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [strapi-content-publish]
+    inputs:
+      with_seed:
+        description: 'Run importer as part of the production update'
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: [main]
+    paths:
+      - 'cms/**'
+      - 'deploy/**'
+      - 'portal/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/code-pipeline.yml'
 
 permissions:
   contents: read
@@ -21,6 +36,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -66,8 +83,26 @@ jobs:
           STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
         run: npm --prefix portal run build
 
-      - name: Package static artifact
-        run: tar czf portal-dist.tar.gz -C portal/dist .
+      - name: Detect importer-relevant changes
+        id: importer
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_WITH_SEED: ${{ inputs.with_seed }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          WITH_SEED="false"
+
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" && "${INPUT_WITH_SEED}" == "true" ]]; then
+            WITH_SEED="true"
+          elif [[ "${EVENT_NAME}" == "push" && -n "${BEFORE_SHA}" && "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ]]; then
+            git diff --name-only "${BEFORE_SHA}" "${CURRENT_SHA}" > changed-files.txt
+            if grep -Eq '^(cms/seed/|scripts/seed-runtime-content/)' changed-files.txt; then
+              WITH_SEED="true"
+            fi
+          fi
+
+          echo "with_seed=${WITH_SEED}" >> "${GITHUB_OUTPUT}"
 
       - name: Start SSH agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -82,21 +117,19 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p "${VPS_SSH_PORT:-22}" -H "${VPS_HOST}" >> ~/.ssh/known_hosts
 
-      - name: Upload static artifact to VPS
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
-        run: |
-          scp -P "${VPS_SSH_PORT:-22}" portal-dist.tar.gz \
-            "${VPS_USER}@${VPS_HOST}:/tmp/chatplus-static-${GITHUB_SHA}.tar.gz"
-
-      - name: Activate static artifact on VPS
+      - name: Deploy code on VPS
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
           VPS_APP_DIR: ${{ secrets.VPS_APP_DIR }}
+          WITH_SEED: ${{ steps.importer.outputs.with_seed }}
         run: |
-          ssh -p "${VPS_SSH_PORT:-22}" "${VPS_USER}@${VPS_HOST}" \
-            "cd '${VPS_APP_DIR}' && ./deploy/scripts/install-static-release.sh '/tmp/chatplus-static-${GITHUB_SHA}.tar.gz' '${GITHUB_SHA}' && rm -f '/tmp/chatplus-static-${GITHUB_SHA}.tar.gz'"
+          REMOTE_BRANCH="${GITHUB_REF_NAME:-main}"
+          REMOTE_CMD="cd '${VPS_APP_DIR}' && git checkout '${REMOTE_BRANCH}' && git pull --ff-only origin '${REMOTE_BRANCH}' && ./deploy/scripts/update.sh --skip-pull"
+
+          if [[ "${WITH_SEED}" == "true" ]]; then
+            REMOTE_CMD="${REMOTE_CMD} --with-seed"
+          fi
+
+          ssh -p "${VPS_SSH_PORT:-22}" "${VPS_USER}@${VPS_HOST}" "${REMOTE_CMD}"

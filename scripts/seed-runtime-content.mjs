@@ -12,6 +12,10 @@ const env = { ...loadEnv(), ...process.env };
 const STRAPI_URL = env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = env.STRAPI_TOKEN || '';
 const now = new Date().toISOString();
+const args = new Set(process.argv.slice(2));
+const mode = args.has('--plan') ? 'plan' : args.has('--report') ? 'report' : 'apply';
+const forceSync = args.has('--force-sync');
+const importBatchId = env.IMPORT_BATCH_ID || now;
 
 if (!STRAPI_TOKEN) {
   console.error('STRAPI_TOKEN not found in environment or .env');
@@ -19,12 +23,16 @@ if (!STRAPI_TOKEN) {
 }
 
 const {
+  reportCollection,
   seedCollection,
   upsertSingle,
 } = createStrapiClient({
   strapiToken: STRAPI_TOKEN,
   strapiUrl: STRAPI_URL,
   now,
+  importBatchId,
+  mode,
+  forceSync,
 });
 
 const channelEmoji = {
@@ -489,14 +497,14 @@ const siteSetting = {
     compare_summary_label: 'Ключевые различия',
   },
   global_labels: {
-    generator_owned: 'Страница управляется генератором',
-    manual_owned: 'Страница управляется в Strapi',
+    generator_owned: 'Запись импортируется системой и живет в Strapi',
+    manual_owned: 'Запись редактируется вручную в Strapi',
     next_steps_title: 'Куда перейти дальше',
   },
   generator_defaults: {
     source_of_truth: 'seed-runtime-content',
-    programmatic_origin: 'generated',
-    singleton_origin: 'managed',
+    programmatic_origin: 'imported',
+    singleton_origin: 'settings',
   },
   page_templates: {
     shared: {
@@ -1696,7 +1704,32 @@ const resolvedTendersPage = managedTendersPage
   ? mergeSourceOwnedContent(tendersPage, managedTendersPage)
   : tendersPage;
 
+function summarizeResults(label, results) {
+  const summary = results.reduce((acc, item) => {
+    acc[item.action] = (acc[item.action] || 0) + 1;
+    return acc;
+  }, {});
+  console.log(`\n${label} summary: ${JSON.stringify(summary)}`);
+}
+
+async function runReport() {
+  const reportEndpoints = ['channels', 'industries', 'integrations', 'features', 'solutions', 'business-types', 'competitors', 'landing-pages'];
+  console.log(`Importer report for ${STRAPI_URL}`);
+  for (const endpoint of reportEndpoints) {
+    const rows = await reportCollection(endpoint);
+    console.log(`\n${endpoint}`);
+    rows.slice(0, 10).forEach((row) => {
+      console.log(`- ${row.key} | mode=${row.record_mode} | imported=${row.last_imported_at || 'never'} | overrides=${(row.manual_override_fields || []).length}`);
+    });
+  }
+}
+
 async function main() {
+  if (mode === 'report') {
+    await runReport();
+    return;
+  }
+
   console.log(`Seeding ${STRAPI_URL}`);
   validateSeedData({
     channels,
@@ -1711,20 +1744,29 @@ async function main() {
     managedSiteSetting,
     siteSetting,
   });
-  await seedCollection('channels', channels);
-  await seedCollection('industries', industries);
-  await seedCollection('integrations', integrations);
-  await seedCollection('features', features);
-  await seedCollection('solutions', solutions);
-  await seedCollection('business-types', businessTypes);
-  await seedCollection('competitors', competitors);
-  await upsertSingle('site-setting', managedSiteSetting || siteSetting);
-  console.log('\n- upserted site-setting');
-  await seedCollection('landing-pages', resolvedLandingPages);
-  await upsertSingle('business-types-page', managedBusinessTypesPage || businessTypesPage);
-  console.log('\n- upserted business-types-page');
+  const channelResults = await seedCollection('channels', channels);
+  const industryResults = await seedCollection('industries', industries);
+  const integrationResults = await seedCollection('integrations', integrations);
+  const featureResults = await seedCollection('features', features);
+  const solutionResults = await seedCollection('solutions', solutions);
+  const businessTypeResults = await seedCollection('business-types', businessTypes);
+  const competitorResults = await seedCollection('competitors', competitors);
+  const siteSettingResult = await upsertSingle('site-setting', managedSiteSetting || siteSetting);
+  console.log(`\n- ${siteSettingResult.action} site-setting`);
+  const landingPageResults = await seedCollection('landing-pages', resolvedLandingPages);
+  const businessTypesPageResult = await upsertSingle('business-types-page', managedBusinessTypesPage || businessTypesPage);
+  console.log(`\n- ${businessTypesPageResult.action} business-types-page`);
   const tendersAction = await upsertSingle('tenders-page', resolvedTendersPage);
-  console.log(`- ${tendersAction} tenders-page`);
+  console.log(`- ${tendersAction.action} tenders-page`);
+  summarizeResults('channels', channelResults);
+  summarizeResults('industries', industryResults);
+  summarizeResults('integrations', integrationResults);
+  summarizeResults('features', featureResults);
+  summarizeResults('solutions', solutionResults);
+  summarizeResults('business-types', businessTypeResults);
+  summarizeResults('competitors', competitorResults);
+  summarizeResults('landing-pages', landingPageResults);
+  summarizeResults('singletons', [siteSettingResult, businessTypesPageResult, tendersAction]);
   console.log('\nDone');
 }
 

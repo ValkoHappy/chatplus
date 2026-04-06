@@ -5,6 +5,13 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Server =>
   port: env.int('PORT', 1337),
   url: env('PUBLIC_URL', undefined),
   proxy: env.bool('IS_PROXIED', false),
+  webhooks: {
+    defaultHeaders: env('WEBHOOK_TOKEN')
+      ? {
+          Authorization: `Bearer ${env('WEBHOOK_TOKEN')}`,
+        }
+      : {},
+  },
   app: {
     keys: env.array('APP_KEYS'),
   },

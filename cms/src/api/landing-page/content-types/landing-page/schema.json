@@ -8,7 +8,7 @@
     "description": "Унифицированная продающая страница по структуре PDF"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "slug": {
@@ -45,7 +45,48 @@
         "generated",
         "managed"
       ],
-      "default": "managed"
+      "default": "managed",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "record_mode": {
+      "type": "enumeration",
+      "enum": [
+        "managed",
+        "imported",
+        "settings"
+      ],
+      "default": "managed",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "external_id": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "sync_strategy": {
+      "type": "enumeration",
+      "enum": [
+        "merge",
+        "frozen",
+        "system_only"
+      ],
+      "default": "merge",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "h1": {
       "type": "string",

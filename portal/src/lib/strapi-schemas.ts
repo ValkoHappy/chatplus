@@ -69,6 +69,11 @@ export function normalizeCatalogItems(items: StrapiRecord[]) {
     slug: asString(item.slug),
     description: asString(item.description),
     cta: asString(item.cta),
+    record_mode: asString(item.record_mode) || (asString(item.content_origin) === 'managed' ? 'managed' : 'imported'),
+    external_id: asString(item.external_id),
+    sync_strategy: asString(item.sync_strategy),
+    manual_override_fields: asArray(item.manual_override_fields),
+    last_imported_at: asString(item.last_imported_at),
     seo_title: asString(item.seo_title),
     seo_description: asString(item.seo_description),
     pain: asString(item.pain),
@@ -83,6 +88,7 @@ export function normalizeLandingPageRecord(data: StrapiRecord, slugHint?: string
     slug: asString(data.slug) || slugHint || '',
     template_kind: toCanonicalTemplateKind(asString(data.template_kind)),
     content_origin: asString(data.content_origin),
+    record_mode: asString(data.record_mode) || (asString(data.content_origin) === 'managed' ? 'managed' : 'imported'),
     hero_eyebrow: asString(data.hero_eyebrow),
     hero_variant: asString(data.hero_variant),
     hero_highlights_label: asString(data.hero_highlights_label),
@@ -169,6 +175,7 @@ export function normalizeLandingPageRecord(data: StrapiRecord, slugHint?: string
 export function normalizeSiteSettingsRecord(data: StrapiRecord) {
   return {
     ...data,
+    record_mode: asString(data.record_mode) || 'settings',
     header_links: asArray(data.header_links),
     footer_columns: asArray(data.footer_columns),
     page_templates: asRecord(data.page_templates),

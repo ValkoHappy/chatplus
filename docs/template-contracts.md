@@ -9,7 +9,7 @@
 - шаблон владеет версткой и поведением
 - CMS владеет пользовательским текстом и structured content
 - fallback-и допустимы только как safety layer, а не как главный источник истины
-- catalog/generated pages могут использовать безопасные data-derivation fallback-и из самих сущностей
+- imported catalog pages могут использовать безопасные data-derivation fallback-и из самих сущностей
 - managed singleton pages не должны держать hidden marketing copy в adapters или компонентах
 
 ## Быстрая матрица
@@ -17,14 +17,14 @@
 | Шаблон | Маршруты | Основной источник данных | Ownership |
 |---|---|---|---|
 | `home` | `/` | `landing-page` | `managed` |
-| `structured` | detail pages, intersections, `/demo` | catalog entities + generated landing content | в основном `generated` |
+| `structured` | detail pages, intersections, `/demo` | catalog entities + imported landing content | в основном `imported` |
 | `directory` | `/channels`, `/industries`, `/integrations`, `/solutions`, `/features`, `/for` | catalog collections + `site-setting` labels | mixed |
 | `pricing` | `/pricing` | `landing-page` | `managed` |
 | `partnership` | `/partnership` | `landing-page` | `managed` |
 | `tenders` | `/solutions/tenders` | `tenders-page` | обычно `managed` |
 | `resource-hub` | `/docs`, `/help`, `/academy`, `/blog`, `/status` | `landing-page` | `managed` |
 | `brand-content` | `/media`, `/team`, `/conversation`, `/tv` | `landing-page` | `managed` |
-| `comparison` | `/compare/[slug]`, `/vs/[slug]` | `competitor` | в основном `generated` |
+| `comparison` | `/compare/[slug]`, `/vs/[slug]` | `competitor` | в основном `imported` |
 | `campaign` | `/promo`, `/prozorro` | `landing-page` | `managed` |
 
 Подробная привязка маршрутов и ownership:
@@ -90,7 +90,7 @@
 Источник данных:
 
 - catalog entities
-- generated landing content
+- imported landing content
 
 Обязательные поля:
 

@@ -95,12 +95,12 @@ Materialized snapshot-слой, а не ручной рабочий источн
 
 - `scripts/seed-runtime-content.mjs` — CLI orchestrator и public entrypoint для `seed-content`
 - `scripts/seed-runtime-content/env.mjs` — загрузка `.env` и JSON source-файлов
-- `scripts/seed-runtime-content/ownership.mjs` — merge/ownership rules для `generated` и `managed`
+- `scripts/seed-runtime-content/ownership.mjs` — merge/ownership rules для `imported`, `managed` и legacy compatibility-слоя
 - `scripts/seed-runtime-content/rules.mjs` — константы, singleton maps и helper inferrers
 - `scripts/seed-runtime-content/normalizers.mjs` — normalizers и preparers для seed/runtime контента
 - `scripts/seed-runtime-content/validators.mjs` — validation слоя и top-level contract checks
 - `scripts/seed-runtime-content/strapi-client.mjs` — Strapi request/upsert logic
-- `scripts/export-from-strapi.mjs` — export materialized data обратно в `cms/seed/generated`
+- `scripts/export-from-strapi.mjs` — export materialized data обратно в legacy bootstrap-слой `cms/seed/generated`
 
 ### Frontend QA
 

@@ -167,9 +167,13 @@ Route-to-template registry:
 
 ## 6. Контентная архитектура
 
-### Generator-owned слой
+### Imported слой
 
-Источник истины:
+Источник live-данных:
+
+- записи в `Strapi`
+
+Источник bootstrap/generation payload:
 
 - `cms/seed/*.json`
 - `scripts/seed-runtime-content.mjs` как orchestration entrypoint
@@ -183,7 +187,7 @@ Route-to-template registry:
 - features
 - business types
 - competitors
-- generated landing pages
+- programmatic landing families
 
 ### Managed слой
 
@@ -201,6 +205,17 @@ Route-to-template registry:
 - partnership
 - другие singleton pages, если они переведены в managed-режим
 
+### Settings слой
+
+Источник истины:
+
+- singleton/system records в Strapi
+
+Используется для:
+
+- site-wide settings
+- shared operational CMS values
+
 ### Ownership flags
 
 Ключевые поля:
@@ -208,15 +223,13 @@ Route-to-template registry:
 - `template_kind`
 - `content_origin`
 
-Значения `content_origin`:
+В новой operational-модели важнее поле `record_mode`:
 
-- `generated`
 - `managed`
+- `imported`
+- `settings`
 
-Смысл:
-
-- `generated` можно безопасно обновлять генератором
-- `managed` нельзя перезаписывать генератором после bootstrap-этапа
+`content_origin` остается только как legacy compatibility flag.
 
 ## 7. Маршрутный слой
 

@@ -8,6 +8,7 @@ export const LANDING_PAGE_TEMPLATE_KINDS = new Set(
 );
 
 export const CONTENT_ORIGINS = new Set(['generated', 'managed']);
+export const RECORD_MODES = new Set(['managed', 'imported', 'settings']);
 
 export const GENERATED_SINGLETON_SLUGS = new Set([]);
 export const MANAGED_SINGLETON_SLUGS = new Set([
@@ -92,6 +93,10 @@ export function inferLandingPageContentOrigin(slug = '') {
   }
 
   return 'managed';
+}
+
+export function inferLandingPageRecordMode(slug = '') {
+  return inferLandingPageContentOrigin(slug) === 'managed' ? 'managed' : 'imported';
 }
 
 export function hasMeaningfulValue(value) {

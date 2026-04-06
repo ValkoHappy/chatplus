@@ -8,9 +8,45 @@
     "description": "Контент страницы /for"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
+    "record_mode": {
+      "type": "enumeration",
+      "enum": [
+        "managed",
+        "imported",
+        "settings"
+      ],
+      "default": "managed",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "external_id": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "sync_strategy": {
+      "type": "enumeration",
+      "enum": [
+        "merge",
+        "frozen",
+        "system_only"
+      ],
+      "default": "merge",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
     "meta_title": {
       "type": "string",
       "required": true

@@ -7,8 +7,10 @@ DEPLOY_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 ENV_FILE="${DEPLOY_DIR}/.env.local"
 PROD_COMPOSE="${DEPLOY_DIR}/docker-compose.prod.yml"
 LOCAL_COMPOSE="${DEPLOY_DIR}/docker-compose.local.yml"
+PUBLIC_ARTIFACT_DIR="${DEPLOY_DIR}/data/public-site/current"
 
 "${SCRIPT_DIR}/preflight-local.sh" --require-token --skip-port-check
+mkdir -p "${PUBLIC_ARTIFACT_DIR}"
 
 for _ in $(seq 1 30); do
   if curl -fsS "http://127.0.0.1:1337/admin" >/dev/null 2>&1; then
