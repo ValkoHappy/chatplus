@@ -11,7 +11,14 @@
 - `portal/` — фронтенд
 - `cms/` — Strapi CMS
 - `scripts/` — importer, генерация и служебные content-скрипты
-- `pages-preview/` — demo snapshot для GitHub Pages
+- `pages-preview/` — legacy demo snapshot для showcase-режима
+
+Основной рабочий режим проекта сейчас server-first:
+
+- `Strapi + Postgres + uploads` живут на VPS
+- `Astro` собирает публичную статику
+- `nginx` отдает сайт и reverse proxy на CMS
+- `pages-preview/` нужен только для optional demo-потока
 
 ## Главный принцип
 
@@ -55,7 +62,7 @@ CHATPLUS/
 |- cms/             # Strapi CMS
 |- scripts/         # importer и content-скрипты
 |- docs/            # актуальная документация
-|- pages-preview/   # snapshot для GitHub Pages demo
+|- pages-preview/   # optional demo snapshot
 |- .github/         # workflows
 |- DEPLOY.md        # deploy guide
 `- README.md        # главный вход в проект

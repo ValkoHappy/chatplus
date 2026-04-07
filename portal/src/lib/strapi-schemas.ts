@@ -32,6 +32,25 @@ function asArray(value: unknown) {
   return Array.isArray(value) ? value : [];
 }
 
+function getPublicSiteUrl() {
+  return (process.env.PUBLIC_SITE_URL || 'https://chatplus.ru').replace(/\/+$/, '');
+}
+
+function rebaseAbsoluteSiteUrl(value: unknown) {
+  const current = asString(value);
+  if (!current) {
+    return current;
+  }
+
+  try {
+    const url = new URL(current);
+    const base = new URL(getPublicSiteUrl());
+    return new URL(`${url.pathname}${url.search}${url.hash}`, `${base.toString().replace(/\/$/, '')}/`).toString();
+  } catch {
+    return current;
+  }
+}
+
 export function parseCollectionData(json: unknown, path: string) {
   const parsed = CollectionResponseSchema.safeParse(json);
 
@@ -83,9 +102,11 @@ export function normalizeCatalogItems(items: StrapiRecord[]) {
 }
 
 export function normalizeLandingPageRecord(data: StrapiRecord, slugHint?: string) {
+  const softwareSchema = asRecord(data.software_schema);
   return {
     ...data,
     slug: asString(data.slug) || slugHint || '',
+    canonical: rebaseAbsoluteSiteUrl(data.canonical),
     template_kind: toCanonicalTemplateKind(asString(data.template_kind)),
     content_origin: asString(data.content_origin),
     record_mode: asString(data.record_mode) || (asString(data.content_origin) === 'managed' ? 'managed' : 'imported'),
@@ -167,15 +188,22 @@ export function normalizeLandingPageRecord(data: StrapiRecord, slugHint?: string
     quote_author: asString(data.quote_author),
     presentation_flags: asRecord(data.presentation_flags),
     internal_links_context: asRecord(data.internal_links_context),
-    software_schema: data.software_schema ?? null,
+    software_schema: Object.keys(softwareSchema).length > 0
+      ? {
+          ...softwareSchema,
+          url: rebaseAbsoluteSiteUrl(softwareSchema.url),
+        }
+      : null,
     faq_schema: data.faq_schema ?? null,
   };
 }
 
 export function normalizeSiteSettingsRecord(data: StrapiRecord) {
+  const normalizedSiteUrl = rebaseAbsoluteSiteUrl(data.site_url);
   return {
     ...data,
     record_mode: asString(data.record_mode) || 'settings',
+    site_url: normalizedSiteUrl ? normalizedSiteUrl.replace(/\/+$/, '') : getPublicSiteUrl(),
     header_links: asArray(data.header_links),
     footer_columns: asArray(data.footer_columns),
     page_templates: asRecord(data.page_templates),

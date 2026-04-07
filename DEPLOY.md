@@ -2,8 +2,8 @@
 
 У `CHATPLUS` сейчас есть два режима работы:
 
-- `demo-mode` для showcase-потока `pages-preview/ -> GitHub Pages`
-- `production-mode` для переходного боевого контура `VPS + docker`, где живут `Strapi`, `Postgres`, relay и сборка сайта
+- `production-mode` — основной server-first контур `VPS + docker`, где живут `Strapi`, `Postgres`, relay и публичная статика
+- `demo-mode` — optional showcase-поток `pages-preview/ -> GitHub Pages`
 
 Главное изменение новой модели:
 
@@ -12,7 +12,36 @@
 - importer загружает SEO/catalog данные в `Strapi`, но не считается вечным главным владельцем live-контента
 - публикация строится вокруг схемы `Publish -> webhook -> relay -> CI rebuild -> deploy`
 
-## 1. Demo-mode
+## 1. Production-mode
+
+Production — основной рабочий режим проекта.
+
+Production больше не описывается как ручная SSH-сессия, где все держится на памяти.
+
+Текущий production contour:
+
+- `postgres` для CMS-данных
+- `strapi` для админки и API
+- `content-relay` для безопасного приема `Strapi` webhooks и вызова `repository_dispatch`
+- `nginx` для публичного сайта и reverse proxy на CMS
+- одноразовые контейнеры:
+  - `portal-builder`
+  - `tools`
+  - `certbot`
+
+Production runbook:
+
+- [deploy/DEPLOY_PRODUCTION.md](deploy/DEPLOY_PRODUCTION.md)
+- [Production setup checklist](docs/production-setup-checklist.md)
+
+Главные production entrypoints:
+
+- [deploy.sh](deploy/scripts/deploy.sh)
+- [update.sh](deploy/scripts/update.sh)
+- [backup.sh](deploy/scripts/backup.sh)
+- [restore.sh](deploy/scripts/restore.sh)
+
+## 2. Demo-mode
 
 Текущий demo publishing flow:
 
@@ -47,33 +76,6 @@ npm.cmd --prefix portal run snapshot:github-demo
 ```
 
 5. Закоммитить и запушить обновленный `pages-preview/`.
-
-## 2. Production-mode
-
-Production больше не описывается как ручная SSH-сессия, где все держится на памяти.
-
-Переходный production contour сейчас такой:
-
-- `postgres` для CMS-данных
-- `strapi` для админки и API
-- `content-relay` для безопасного приема `Strapi` webhooks и вызова `repository_dispatch`
-- `nginx` для публичного сайта и reverse proxy на CMS
-- одноразовые контейнеры:
-  - `portal-builder`
-  - `tools`
-  - `certbot`
-
-Production runbook:
-
-- [deploy/DEPLOY_PRODUCTION.md](deploy/DEPLOY_PRODUCTION.md)
-- [Production setup checklist](docs/production-setup-checklist.md)
-
-Главные production entrypoints:
-
-- [deploy.sh](deploy/scripts/deploy.sh)
-- [update.sh](deploy/scripts/update.sh)
-- [backup.sh](deploy/scripts/backup.sh)
-- [restore.sh](deploy/scripts/restore.sh)
 
 ## 3. Новая operational-модель
 
@@ -153,6 +155,7 @@ Imported catalog/SEO сущности:
 
 - воспроизводимый deploy на чистую Ubuntu VPS
 - `Postgres` для Strapi
+- локальный server-first storage для uploads/media
 - переход к `Strapi-first` редакторской модели
 - safe importer с режимами:
   - `plan`
@@ -161,7 +164,8 @@ Imported catalog/SEO сущности:
   - `report`
 - relay для publish automation
 - backup/restore scripts
-- S3-compatible upload provider в production-конфиге
+- локальный uploads volume как production default
+- optional S3-compatible upload provider как future path
 
 ## 7. Что production-mode пока не делает
 

@@ -4,6 +4,7 @@ import path from 'node:path';
 const portalRoot = process.cwd();
 const repoRoot = path.resolve(portalRoot, '..');
 const distRoot = path.join(portalRoot, 'dist');
+const expectedPublicSiteUrl = (process.env.PUBLIC_SITE_URL || 'https://chatplus.ru').replace(/\/+$/, '');
 
 const sourceFiles = [
   path.join(repoRoot, 'cms', 'seed', 'generated', 'landingPages.json'),
@@ -123,8 +124,8 @@ for (const route of representativeRoutes) {
 
   if (!/<link[^>]+rel=["']canonical["']/i.test(html)) {
     issues.push(`route ${route} -> missing canonical link`);
-  } else if (!/href=["']https:\/\/chatplus\.ru/i.test(html)) {
-    issues.push(`route ${route} -> canonical is not anchored to https://chatplus.ru`);
+  } else if (!html.includes(`href="${expectedPublicSiteUrl}`) && !html.includes(`href='${expectedPublicSiteUrl}`)) {
+    issues.push(`route ${route} -> canonical is not anchored to ${expectedPublicSiteUrl}`);
   }
 
   if (!/<meta[^>]+property=["']og:title["']/i.test(html)) {

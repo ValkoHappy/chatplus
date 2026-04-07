@@ -34,11 +34,19 @@ test('parseSingleData validates single payloads', () => {
 });
 
 test('normalizeLandingPageRecord normalizes alias template kinds and nested arrays', () => {
+  const previousPublicSiteUrl = process.env.PUBLIC_SITE_URL;
+  process.env.PUBLIC_SITE_URL = 'https://astro.integromat.ru';
+
   const normalized = normalizeLandingPageRecord(
     {
       slug: 'media',
       template_kind: 'brand-content',
       content_origin: 'managed',
+      canonical: 'https://chatplus.ru/media',
+      software_schema: {
+        '@type': 'SoftwareApplication',
+        url: 'https://chatplus.ru/media',
+      },
       use_cases: [{ audience: 'PR team', description: 'Editorial workflows' }],
       faqs: [{ q: 'What is this?', a: 'A brand page.' }],
       internal_links: [{ title: 'Docs', url: '/docs', description: 'Knowledge base' }],
@@ -52,25 +60,48 @@ test('normalizeLandingPageRecord normalizes alias template kinds and nested arra
     'media',
   );
 
-  assert.equal(normalized.template_kind, 'brand_content');
-  assert.equal(normalized.use_cases[0].title, 'PR team');
-  assert.equal(normalized.faqs[0].question, 'What is this?');
-  assert.equal(normalized.internal_links[0].href, '/docs');
-  assert.equal(normalized.navigation_groups[0].items[0].label, 'Team');
+  try {
+    assert.equal(normalized.template_kind, 'brand_content');
+    assert.equal(normalized.canonical, 'https://astro.integromat.ru/media');
+    assert.equal(normalized.software_schema?.url, 'https://astro.integromat.ru/media');
+    assert.equal(normalized.use_cases[0].title, 'PR team');
+    assert.equal(normalized.faqs[0].question, 'What is this?');
+    assert.equal(normalized.internal_links[0].href, '/docs');
+    assert.equal(normalized.navigation_groups[0].items[0].label, 'Team');
+  } finally {
+    if (previousPublicSiteUrl === undefined) {
+      delete process.env.PUBLIC_SITE_URL;
+    } else {
+      process.env.PUBLIC_SITE_URL = previousPublicSiteUrl;
+    }
+  }
 });
 
 test('normalizeSiteSettingsRecord guarantees array and object boundaries', () => {
+  const previousPublicSiteUrl = process.env.PUBLIC_SITE_URL;
+  process.env.PUBLIC_SITE_URL = 'https://astro.integromat.ru';
+
   const normalized = normalizeSiteSettingsRecord({
+    site_url: 'https://chatplus.ru',
     page_templates: null,
     template_defaults: undefined,
     header_links: 'bad-shape',
     footer_columns: [{ title: 'Footer' }],
   });
 
-  assert.deepEqual(normalized.page_templates, {});
-  assert.deepEqual(normalized.template_defaults, {});
-  assert.deepEqual(normalized.header_links, []);
-  assert.deepEqual(normalized.footer_columns, [{ title: 'Footer' }]);
+  try {
+    assert.equal(normalized.site_url, 'https://astro.integromat.ru');
+    assert.deepEqual(normalized.page_templates, {});
+    assert.deepEqual(normalized.template_defaults, {});
+    assert.deepEqual(normalized.header_links, []);
+    assert.deepEqual(normalized.footer_columns, [{ title: 'Footer' }]);
+  } finally {
+    if (previousPublicSiteUrl === undefined) {
+      delete process.env.PUBLIC_SITE_URL;
+    } else {
+      process.env.PUBLIC_SITE_URL = previousPublicSiteUrl;
+    }
+  }
 });
 
 test('editorial schemas enable draftAndPublish for publish lifecycle', () => {

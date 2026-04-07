@@ -61,13 +61,13 @@ Build должен пройти полностью.
 - burger / header
 - footer
 - таблицы и длинные карточки
-## 5. Сборка demo snapshot
+## 5. Optional demo snapshot
 
 ```powershell
 npm.cmd --prefix portal run snapshot:github-demo
 ```
 
-Проверить, что `pages-preview/` действительно обновился.
+Проверить, что `pages-preview/` действительно обновился, только если вы сознательно поддерживаете showcase-flow.
 
 ## 6. Перед push
 
@@ -75,15 +75,15 @@ npm.cmd --prefix portal run snapshot:github-demo
 
 - нет лишних временных файлов в коммите
 - закоммичены нужные изменения
-- `pages-preview/` попал в commit, если обновлялся demo
+- `pages-preview/` попал в commit, только если обновлялся optional demo
 - если изменения шли через PR, workflow `CI` должен быть зеленым или осознанно skipped на fork PR без secrets
 
 ## 7. После push
 
 Проверить:
 
-- workflow `Deploy Demo Snapshot` завершился успешно
-- открывается опубликованный demo
+- для production-flow: deploy на VPS завершился успешно и сайт обновился
+- для optional demo-flow: workflow `Deploy Demo Snapshot` завершился успешно
 - нет старых стилей или старого контента
 
 Если стили выглядят старыми, сделать `Ctrl+F5`.

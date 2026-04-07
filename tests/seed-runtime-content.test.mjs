@@ -3,10 +3,14 @@ import test from 'node:test';
 
 import {
   buildImportedMerge,
+  describeSyncResult,
   hydrateMissingManagedContent,
   mergeSourceOwnedContent,
   shouldSkipManagedUpdate,
 } from '../scripts/seed-runtime-content/ownership.mjs';
+import {
+  createStrapiClient,
+} from '../scripts/seed-runtime-content/strapi-client.mjs';
 import {
   inferLandingPageTemplateKind,
   normalizeLandingPageTemplateKind,
@@ -207,4 +211,120 @@ test('buildImportedMerge force-sync overwrites manual overrides and clears prese
   assert.equal(nextData.price, '$129');
   assert.deepEqual(nextData.manual_override_fields, []);
   assert.equal(nextData.last_import_diff.status, 'forced');
+});
+
+test('upsertSingle creates singleton when Strapi returns 404 for missing record', async () => {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (url, init = {}) => {
+    calls.push({ url: String(url), method: init.method || 'GET', body: init.body });
+
+    if (String(url).includes('/api/site-setting') && (init.method || 'GET') === 'GET') {
+      return {
+        ok: false,
+        status: 404,
+        json: async () => ({ data: null, error: { status: 404, name: 'NotFoundError' } }),
+      };
+    }
+
+    if (String(url).includes('/api/site-setting') && init.method === 'PUT') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ data: { id: 1 } }),
+      };
+    }
+
+    throw new Error(`Unexpected fetch ${init.method || 'GET'} ${url}`);
+  };
+
+  try {
+    const client = createStrapiClient({
+      strapiUrl: 'http://example.test',
+      strapiToken: 'token',
+      now: '2026-04-07T00:00:00.000Z',
+      importBatchId: 'batch-1',
+    });
+
+    const result = await client.upsertSingle('site-setting', {
+      record_mode: 'settings',
+      site_name: 'CHATPLUS',
+      site_url: 'https://astro.integromat.ru',
+      default_description: 'Default description',
+    });
+
+    assert.equal(result.action, 'updated');
+    assert.equal(calls[0].method, 'GET');
+    assert.equal(calls[1].method, 'PUT');
+    assert.match(calls[1].body, /"site_name":"CHATPLUS"/);
+    assert.doesNotMatch(calls[1].body, /"content_origin":/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('upsertCollection creates managed landing pages without imported-only metadata', async () => {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async (url, init = {}) => {
+    calls.push({ url: String(url), method: init.method || 'GET', body: init.body });
+
+    if (String(url).includes('/api/landing-pages?filters[external_id][$eq]=') && (init.method || 'GET') === 'GET') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ data: [] }),
+      };
+    }
+
+    if (String(url).includes('/api/landing-pages?filters[slug][$eq]=') && (init.method || 'GET') === 'GET') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ data: [] }),
+      };
+    }
+
+    if (String(url).endsWith('/api/landing-pages') && init.method === 'POST') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ data: { id: 1 } }),
+      };
+    }
+
+    throw new Error(`Unexpected fetch ${init.method || 'GET'} ${url}`);
+  };
+
+  try {
+    const client = createStrapiClient({
+      strapiUrl: 'http://example.test',
+      strapiToken: 'token',
+      now: '2026-04-07T00:00:00.000Z',
+      importBatchId: 'batch-1',
+    });
+
+    const result = await client.upsertCollection('landing-pages', {
+      slug: 'academy',
+      external_id: 'landing:academy',
+      meta_title: 'Academy',
+      meta_description: 'Academy description',
+      h1: 'Academy',
+      subtitle: 'Academy subtitle',
+      template_kind: 'resource_hub',
+    });
+
+    assert.equal(result.action, 'created');
+    assert.equal(calls.at(-1).method, 'POST');
+    assert.match(calls.at(-1).body, /"record_mode":"managed"/);
+    assert.match(calls.at(-1).body, /"content_origin":"managed"/);
+    assert.doesNotMatch(calls.at(-1).body, /"import_batch_id":/);
+    assert.doesNotMatch(calls.at(-1).body, /"last_imported_at":/);
+    assert.doesNotMatch(calls.at(-1).body, /"manual_override_fields":/);
+    assert.doesNotMatch(calls.at(-1).body, /"last_import_diff":/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

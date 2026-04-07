@@ -2,33 +2,32 @@
 
 Этот файл фиксирует не баги “на потом”, а текущие ограничения и осознанные риски проекта, чтобы их не путали с неожиданными поломками.
 
-## 1. Local Strapi — это не production contour
+## 1. Первый production rollout все еще требует оператора
 
-Сейчас основной рабочий режим проекта — demo-mode.
+Сейчас основной рабочий режим проекта — server-first `VPS + docker`.
 
 Это значит:
 
-- Strapi может быть локальным
-- frontend собирается вручную
-- demo публикуется snapshot-ом на GitHub Pages
+- production contour уже воспроизводим
+- но первый bootstrap, роли, webhook и secrets все еще требуют внимательного оператора
 
 Риск:
 
-- проект еще зависит от человека, который знает текущий publish flow
+- без живого runbook и smoke-проверки можно решить, что deploy уже полностью self-service, хотя initial bootstrap еще не wizard-driven
 
-## 2. GitHub Pages — это витрина, а не live CMS
+## 2. GitHub Pages — это только optional demo-витрина
 
-На GitHub Pages живет только статический frontend.
+На GitHub Pages живет только demo snapshot, если команда сознательно использует showcase-flow.
 
 Там нет:
 
 - Strapi admin
-- live Node backend
-- CMS execution layer
+- production CMS/data plane
+- live publish automation
 
 Риск:
 
-- если это не понимать, можно ошибочно ожидать “редактирование контента прямо на Pages”
+- если это не понимать, можно принять demo-витрину за основной production-контур
 
 ## 3. Safe fallback-и все еще существуют
 
@@ -107,7 +106,7 @@ Docs уже покрывают проект хорошо, но только по
 - гибрид `imported + managed + settings`
 - materialized copy в Strapi
 - fallback-и для imported/catalog family
-- demo-mode через GitHub Pages
+- optional demo-mode через GitHub Pages
 
 Это не надо “чинить” просто потому, что система не выглядит fully headless или fully manual.
 
@@ -115,10 +114,9 @@ Docs уже покрывают проект хорошо, но только по
 
 Следующий уровень зрелости проекта — не переделка шаблонов, а:
 
-- hosted Strapi
-- CI/CD from live CMS
-- production deploy contour
-- operational ownership и backup strategy
+- roles/webhooks hardening в Strapi admin
+- fully routine publish flow без ручных донастроек
+- recovery discipline и регулярный backup/restore smoke
 
 ## 11. Первый CI gate уже есть, но он не убирает secret dependency
 

@@ -11,7 +11,14 @@
 - `portal/` — фронтенд, шаблоны, маршруты и сборка
 - `cms/` — Strapi, content types, админка и CMS-данные
 - `scripts/` — importer, генерация и служебные content-скрипты
-- `pages-preview/` — demo snapshot для GitHub Pages
+- `pages-preview/` — legacy demo snapshot для showcase-режима
+
+Основной рабочий контур сейчас server-first:
+
+- `Strapi + Postgres + uploads` живут на VPS
+- `Astro` собирает публичную статику
+- `nginx` отдает публичный сайт и reverse proxy на CMS
+- publish flow идет по схеме `Publish -> webhook -> relay -> CI rebuild -> deploy на VPS`
 
 ## Текущая модель проекта
 

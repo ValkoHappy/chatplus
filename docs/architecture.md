@@ -8,7 +8,11 @@
 2. `portal/` — Astro, где живут шаблоны, стили и рендер
 3. `scripts/` + `cms/seed/` — генерационный слой для programmatic-контента
 
-Текущий публичный demo-контур:
+Текущий основной production-контур:
+
+`Strapi + Postgres + uploads on VPS -> Astro build -> static artifact on VPS -> nginx`
+
+Optional legacy demo-контур:
 
 `local Strapi -> Astro build -> pages-preview -> GitHub Pages`
 
@@ -301,17 +305,18 @@ npm.cmd --prefix portal run build
 
 ### Сейчас
 
-- local Strapi
+- `Strapi + Postgres + uploads` на VPS
 - `seed-content` при необходимости
+- `build-portal.sh` для production rebuild
+- `nginx` отдает актуальный static artifact
+- publish automation идет через `Strapi webhook -> relay -> GitHub Actions -> deploy на VPS`
+
+### Optional demo
+
+- local Strapi
 - `snapshot:github-demo`
 - публикация `pages-preview/`
-- GitHub Pages
-
-### Потом
-
-- hosted Strapi
-- CI build from live CMS
-- deploy artifact
+- GitHub Pages только как showcase-витрина
 
 Operational details:
 

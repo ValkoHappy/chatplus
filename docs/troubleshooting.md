@@ -130,15 +130,15 @@ node scripts/export-from-strapi.mjs
 Возможные причины:
 
 - build не был прогнан после изменения
-- опубликован старый `pages-preview`
-- GitHub Pages держит старый артефакт
 - браузер или Telegram показывают кэш
 - production VPS не пересобрал статический сайт
+- в optional demo-flow опубликован старый `pages-preview`
+- optional demo-flow показывает старый GitHub Pages артефакт
 
 Что делать:
 
 1. Прогнать build.
-2. Если нужен demo snapshot:
+2. Если вы обновляете именно optional demo snapshot:
 
 ```powershell
 npm.cmd --prefix portal run snapshot:github-demo
@@ -153,7 +153,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 ./deploy/scripts/build-portal.sh
 ```
 
-## 8. На GitHub Pages старые стили
+## 8. В optional demo на GitHub Pages старые стили
 
 Что делать:
 
@@ -387,12 +387,12 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 
 ## 21. Local Docker build проходит, но content-check падает на canonical
 
-Для local smoke это обычно значит, что был изменен `PUBLIC_SITE_URL` в `deploy/.env.local`.
+Для local smoke это обычно значит, что `PUBLIC_SITE_URL` в `deploy/.env.local` не совпадает с тем production-like доменом, под который вы хотите проверить canonical.
 
-Expected value:
+Чаще всего достаточно оставить значение из примера или явно поставить нужный боевой домен, например:
 
 ```text
-PUBLIC_SITE_URL=https://chatplus.ru
+PUBLIC_SITE_URL=https://astro.integromat.ru
 ```
 
-Это сделано специально: local Docker smoke проверяет production-style canonical URLs и должен проходить те же `content-check` guardrails, что и обычная сборка.
+Это сделано специально: local Docker smoke проверяет production-style canonical URLs и должен проходить те же `content-check` guardrails, что и обычная сборка. Если нужен другой домен, используйте тот же host и для build, и для ожидаемых canonical.

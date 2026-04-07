@@ -11,6 +11,7 @@ import { createStrapiClient } from './seed-runtime-content/strapi-client.mjs';
 const env = { ...loadEnv(), ...process.env };
 const STRAPI_URL = env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = env.STRAPI_TOKEN || '';
+const PUBLIC_SITE_URL = (env.PUBLIC_SITE_URL || 'https://chatplus.ru').replace(/\/+$/, '');
 const now = new Date().toISOString();
 const args = new Set(process.argv.slice(2));
 const mode = args.has('--plan') ? 'plan' : args.has('--report') ? 'report' : 'apply';
@@ -416,7 +417,7 @@ const tendersPage = {
 
 const siteSetting = {
   site_name: 'Chat Plus',
-  site_url: 'https://chatplus.ru',
+  site_url: PUBLIC_SITE_URL,
   default_description: 'Омниканальная платформа для бизнеса: WhatsApp, Telegram и другие каналы в одном окне с AI и автоматизацией.',
   organization_description: 'Chat Plus объединяет каналы коммуникации, автоматизацию и AI-слои в единой платформе для бизнеса.',
   header_links: [
@@ -870,7 +871,7 @@ function makeLandingPage({
     hero_variant: heroVariant,
     hero_highlights_label: heroHighlightsLabel,
     hero_highlights: heroHighlights || [],
-    canonical: `https://chatplus.ru${slug === 'home' ? '/' : `/${slug}`}`,
+    canonical: `${PUBLIC_SITE_URL}${slug === 'home' ? '/' : `/${slug}`}`,
     schema_type: 'SoftwareApplication',
     target_keywords: [slug, 'chat plus', 'omnichannel', 'automation'],
     word_count: 1800,
@@ -965,7 +966,7 @@ function makeLandingPage({
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web',
       description: metaDescription,
-      url: `https://chatplus.ru${slug === 'home' ? '/' : `/${slug}`}`,
+      url: `${PUBLIC_SITE_URL}${slug === 'home' ? '/' : `/${slug}`}`,
       author: {
         '@type': 'Organization',
         name: 'Chat Plus'
@@ -1017,7 +1018,7 @@ const landingPages = [
     hero_variant: 'home',
     hero_highlights_label: 'Что внутри',
     hero_highlights: ['Омниканал', 'AI-агенты 24/7', 'CRM и автоматизация'],
-    canonical: 'https://chatplus.ru/',
+    canonical: `${PUBLIC_SITE_URL}/`,
     schema_type: 'SoftwareApplication',
     target_keywords: [
       'омниканальная платформа',
@@ -1141,7 +1142,7 @@ const landingPages = [
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web, iOS, Android',
       description: 'Омниканальная платформа для бизнеса: WhatsApp, Telegram, Instagram и другие каналы в одном окне с AI и автоматизацией.',
-      url: 'https://chatplus.ru',
+      url: PUBLIC_SITE_URL,
       author: {
         '@type': 'Organization',
         name: 'Chat Plus'

@@ -36,6 +36,24 @@ export function createStrapiClient({ strapiUrl, strapiToken, now, importBatchId,
     return json;
   }
 
+  async function requestOptional(path, init = {}, allowedStatuses = []) {
+    const res = await fetch(`${strapiUrl}${path}`, {
+      ...init,
+      headers: { ...headers, ...(init.headers || {}) },
+    });
+    const json = await res.json().catch(() => ({}));
+
+    if (allowedStatuses.includes(res.status)) {
+      return { ok: false, status: res.status, json };
+    }
+
+    if (!res.ok) {
+      throw new Error(`${init.method || 'GET'} ${path} failed: ${res.status} ${JSON.stringify(json)}`);
+    }
+
+    return { ok: true, status: res.status, json };
+  }
+
   async function findExistingRecord(endpoint, preparedItem) {
     const policy = getSyncPolicy(endpoint);
     const identityValue = getIdentityValue(preparedItem, policy);
@@ -61,35 +79,72 @@ export function createStrapiClient({ strapiUrl, strapiToken, now, importBatchId,
     return null;
   }
 
+  function buildCollectionCreateData(endpoint, preparedItem) {
+    const policy = getSyncPolicy(endpoint);
+    const baseData = {
+      ...preparedItem,
+      record_mode: preparedItem.record_mode || policy.defaultRecordMode,
+      sync_strategy: preparedItem.sync_strategy || 'merge',
+      external_id: preparedItem.external_id || getIdentityValue(preparedItem, policy),
+      publishedAt: now,
+    };
+
+    if (policy.preserveLegacyContentOrigin) {
+      baseData.content_origin = preparedItem.content_origin
+        || (policy.defaultRecordMode === 'managed' ? 'managed' : 'generated');
+    }
+
+    if (policy.defaultRecordMode !== 'imported') {
+      return baseData;
+    }
+
+    return {
+      ...baseData,
+      import_batch_id: importBatchId,
+      last_imported_at: now,
+      last_import_payload: stripReservedKeysDeep(preparedItem),
+      manual_override_fields: [],
+      last_import_diff: {
+        status: 'created',
+        changed_fields: Object.keys(preparedItem),
+        preserved_fields: [],
+      },
+    };
+  }
+
   async function upsertCollection(endpoint, item) {
     const preparedItem = prepareCollectionItem(endpoint, item);
     const existing = await findExistingRecord(endpoint, preparedItem);
     const policy = getSyncPolicy(endpoint);
 
     if (!existing) {
-      const createdData = {
-        ...preparedItem,
-        import_batch_id: importBatchId,
-        last_imported_at: now,
-        last_import_payload: stripReservedKeysDeep(preparedItem),
-        manual_override_fields: [],
-        last_import_diff: {
-          status: 'created',
-          changed_fields: Object.keys(preparedItem),
-          preserved_fields: [],
-        },
-        publishedAt: now,
-      };
+      const createdData = buildCollectionCreateData(endpoint, preparedItem);
 
       if (mode !== 'apply') {
-        return describeSyncResult('planned-create', getIdentityValue(createdData, policy), createdData.last_import_diff);
+        return describeSyncResult(
+          'planned-create',
+          getIdentityValue(createdData, policy),
+          createdData.last_import_diff || {
+            status: 'created',
+            changed_fields: Object.keys(preparedItem),
+            preserved_fields: [],
+          },
+        );
       }
 
       await request(`/api/${endpoint}`, {
         method: 'POST',
         body: JSON.stringify({ data: createdData }),
       });
-      return describeSyncResult('created', getIdentityValue(createdData, policy), createdData.last_import_diff);
+      return describeSyncResult(
+        'created',
+        getIdentityValue(createdData, policy),
+        createdData.last_import_diff || {
+          status: 'created',
+          changed_fields: Object.keys(preparedItem),
+          preserved_fields: [],
+        },
+      );
     }
 
     const existingAttributes = stripReservedKeysDeep(existing.attributes);
@@ -139,7 +194,8 @@ export function createStrapiClient({ strapiUrl, strapiToken, now, importBatchId,
   async function upsertSingle(endpoint, data) {
     const preparedData = stripReservedKeysDeep(data);
     const policy = getSyncPolicy(endpoint);
-    const existing = await request(`/api/${endpoint}`);
+    const existingResponse = await requestOptional(`/api/${endpoint}`, {}, [404]);
+    const existing = existingResponse.ok ? existingResponse.json : null;
     const existingAttributes = existing?.data?.attributes ? stripReservedKeysDeep(existing.data.attributes) : {};
     const recordMode = getRecordMode(existingAttributes, policy.defaultRecordMode === 'managed' ? 'managed' : 'generated', endpoint);
 
@@ -170,8 +226,15 @@ export function createStrapiClient({ strapiUrl, strapiToken, now, importBatchId,
       : {
           ...preparedData,
           record_mode: preparedData.record_mode || policy.defaultRecordMode,
-          content_origin: preparedData.content_origin || (policy.defaultRecordMode === 'managed' ? 'managed' : 'generated'),
         };
+
+    if (policy.preserveLegacyContentOrigin) {
+      nextData.content_origin = preparedData.content_origin
+        || existingAttributes.content_origin
+        || (policy.defaultRecordMode === 'managed' ? 'managed' : 'generated');
+    } else {
+      delete nextData.content_origin;
+    }
 
     const diff = makeDiff(existingAttributes, nextData);
     if (diff.changed_fields.length === 0) {
