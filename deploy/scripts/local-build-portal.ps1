@@ -47,7 +47,7 @@ Move-Item -Force $nextDir $releaseDir
 
 $tmpCurrent = Join-Path $publicRoot ('.current-' + $releaseId)
 if (Test-Path $tmpCurrent) { Remove-Item -Force $tmpCurrent }
-New-Item -ItemType SymbolicLink -Path $tmpCurrent -Target $releaseDir | Out-Null
+New-Item -ItemType SymbolicLink -Path $tmpCurrent -Target (Join-Path 'releases' $releaseId) | Out-Null
 if (Test-Path $currentDir) { Remove-Item -Force $currentDir }
 Move-Item -Force $tmpCurrent $currentDir
 

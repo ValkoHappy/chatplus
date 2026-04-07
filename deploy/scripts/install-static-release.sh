@@ -36,7 +36,7 @@ fi
 
 CURRENT_TARGET=""
 if [[ -L "${CURRENT_DIR}" ]]; then
-  CURRENT_TARGET="$(readlink -f "${CURRENT_DIR}")"
+  CURRENT_TARGET="$(readlink "${CURRENT_DIR}")"
 elif [[ -d "${CURRENT_DIR}" ]]; then
   rm -rf "${PREVIOUS_DIR}"
   mv "${CURRENT_DIR}" "${PREVIOUS_DIR}"
@@ -46,7 +46,7 @@ rm -rf "${RELEASES_DIR:?}/${RELEASE_ID}"
 mv "${NEXT_DIR}" "${RELEASES_DIR}/${RELEASE_ID}"
 
 TMP_CURRENT_LINK="${PUBLIC_ROOT}/.current-${RELEASE_ID}"
-ln -sfn "${RELEASES_DIR}/${RELEASE_ID}" "${TMP_CURRENT_LINK}"
+ln -sfn "releases/${RELEASE_ID}" "${TMP_CURRENT_LINK}"
 mv -Tf "${TMP_CURRENT_LINK}" "${CURRENT_DIR}"
 
 if [[ -n "${CURRENT_TARGET}" && -d "${CURRENT_TARGET}" ]]; then
