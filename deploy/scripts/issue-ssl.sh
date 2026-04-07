@@ -44,6 +44,12 @@ create_dummy_cert "${CMS_DOMAIN}"
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --build postgres strapi content-relay nginx
 
+# Remove bootstrap-only dummy certificate paths before asking certbot to create
+# the real Let's Encrypt material in the same location.
+rm -rf \
+  "${LETSENCRYPT_DIR}/live/${PUBLIC_DOMAIN}" \
+  "${LETSENCRYPT_DIR}/live/${CMS_DOMAIN}"
+
 CERTBOT_ARGS=(
   certonly
   --webroot
