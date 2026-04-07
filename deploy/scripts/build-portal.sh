@@ -58,5 +58,6 @@ mv -Tf "${TMP_CURRENT_LINK}" "${CURRENT_DIR}"
 if [[ -n "${CURRENT_TARGET}" && -d "${CURRENT_TARGET}" ]]; then
   TMP_PREVIOUS_LINK="${PUBLIC_ROOT}/.previous-${RELEASE_ID}"
   ln -sfn "${CURRENT_TARGET}" "${TMP_PREVIOUS_LINK}"
+  rm -rf "${PREVIOUS_DIR}"
   mv -Tf "${TMP_PREVIOUS_LINK}" "${PREVIOUS_DIR}"
 fi

@@ -56,6 +56,7 @@ if ($currentTarget -and (Test-Path $currentTarget)) {
   if (Test-Path $tmpPrevious) { Remove-Item -Force $tmpPrevious }
   New-Item -ItemType SymbolicLink -Path $tmpPrevious -Target $currentTarget | Out-Null
   if (Test-Path $previousDir) { Remove-Item -Force $previousDir }
+  if (Test-Path $previousDir) { Remove-Item -Recurse -Force $previousDir }
   Move-Item -Force $tmpPrevious $previousDir
 }
 
