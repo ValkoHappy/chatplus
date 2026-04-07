@@ -52,6 +52,12 @@ npm.cmd run seed-content:force
 npm.cmd run seed-content:report
 ```
 
+### Проверить backup перед восстановлением
+
+```bash
+./deploy/scripts/restore.sh --check /path/to/backup-directory
+```
+
 ## Локальная проверка перед релизом
 
 ```powershell

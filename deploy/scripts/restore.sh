@@ -2,25 +2,15 @@
 
 set -euo pipefail
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <backup-directory>"
-  exit 1
-fi
+CHECK_ONLY=false
 
-BACKUP_SOURCE="$1"
-
-if [[ ! -d "${BACKUP_SOURCE}" ]]; then
-  echo "Backup directory not found: ${BACKUP_SOURCE}"
-  exit 1
-fi
-
-if [[ ! -f "${BACKUP_SOURCE}/postgres.sql" ]]; then
-  echo "Missing postgres.sql in ${BACKUP_SOURCE}"
-  exit 1
-fi
-
-if [[ ! -f "${BACKUP_SOURCE}/strapi-uploads.tar.gz" ]]; then
-  echo "Missing strapi-uploads.tar.gz in ${BACKUP_SOURCE}"
+if [[ $# -eq 2 && "$1" == "--check" ]]; then
+  CHECK_ONLY=true
+  BACKUP_SOURCE="$2"
+elif [[ $# -eq 1 ]]; then
+  BACKUP_SOURCE="$1"
+else
+  echo "Usage: $0 [--check] <backup-directory>"
   exit 1
 fi
 
@@ -37,6 +27,35 @@ fi
 set -a
 source "${ENV_FILE}"
 set +a
+
+PROJECT_ROOT="${HOST_PROJECT_ROOT:-$(cd "${DEPLOY_DIR}/.." && pwd)}"
+if [[ "${BACKUP_SOURCE}" != /* ]]; then
+  BACKUP_SOURCE="${PROJECT_ROOT}/${BACKUP_SOURCE#./}"
+fi
+
+if [[ ! -d "${BACKUP_SOURCE}" ]]; then
+  echo "Backup directory not found: ${BACKUP_SOURCE}"
+  exit 1
+fi
+
+if [[ ! -f "${BACKUP_SOURCE}/postgres.sql" ]]; then
+  echo "Missing postgres.sql in ${BACKUP_SOURCE}"
+  exit 1
+fi
+
+if [[ ! -f "${BACKUP_SOURCE}/strapi-uploads.tar.gz" ]]; then
+  echo "Missing strapi-uploads.tar.gz in ${BACKUP_SOURCE}"
+  exit 1
+fi
+
+if [[ "${CHECK_ONLY}" == "true" ]]; then
+  echo "Restore check passed for ${BACKUP_SOURCE}"
+  echo "Files found:"
+  echo "- ${BACKUP_SOURCE}/postgres.sql"
+  echo "- ${BACKUP_SOURCE}/strapi-uploads.tar.gz"
+  echo "No changes were applied."
+  exit 0
+fi
 
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-chatplus}"
 UPLOADS_VOLUME="${PROJECT_NAME}_strapi_uploads"

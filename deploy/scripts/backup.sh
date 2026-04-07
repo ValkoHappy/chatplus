@@ -17,9 +17,13 @@ source "${ENV_FILE}"
 set +a
 
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-chatplus}"
+PROJECT_ROOT="${HOST_PROJECT_ROOT:-$(cd "${DEPLOY_DIR}/.." && pwd)}"
 BACKUP_ROOT="${BACKUP_DIR:-${DEPLOY_DIR}/data/backups}"
 KEEP_DAYS="${BACKUP_KEEP_DAYS:-7}"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
+if [[ "${BACKUP_ROOT}" != /* ]]; then
+  BACKUP_ROOT="${PROJECT_ROOT}/${BACKUP_ROOT#./}"
+fi
 TARGET_DIR="${BACKUP_ROOT}/${TIMESTAMP}"
 UPLOADS_VOLUME="${PROJECT_NAME}_strapi_uploads"
 

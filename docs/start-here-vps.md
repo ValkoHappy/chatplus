@@ -200,8 +200,17 @@ Backup включает:
 - `Postgres`
 - uploads
 - рабочие данные deploy-контура
+- если `BACKUP_DIR` в `deploy/.env` задан относительным путем, скрипт сам развернет его относительно `deploy/`
 
 ## 9. Как восстановить проект
+
+Сначала безопасно проверьте backup без изменений:
+
+```bash
+./deploy/scripts/restore.sh --check /path/to/backup-directory
+```
+
+Если всё в порядке, уже потом запускайте реальное восстановление:
 
 ```bash
 ./deploy/scripts/restore.sh /path/to/backup-directory
