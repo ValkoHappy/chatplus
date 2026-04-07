@@ -44,10 +44,17 @@
 2. создать webhook на:
 
 ```text
-http://content-relay:8787/strapi/publish
+https://cms.<domain>/__relay/strapi/publish
 ```
 
-3. включить события:
+3. добавить header:
+
+```text
+Key: Authorization
+Value: Bearer <WEBHOOK_TOKEN из deploy/.env>
+```
+
+4. включить события:
 - `entry.publish`
 - `entry.unpublish`
 
@@ -58,7 +65,8 @@ http://content-relay:8787/strapi/publish
 Важно:
 
 - `entry.publish` работает только для типов с `draftAndPublish`
-- relay использует `Authorization: Bearer ${WEBHOOK_TOKEN}`
+- relay использует `Authorization: Bearer ${WEBHOOK_TOKEN}` и по умолчанию запускает локальный rebuild на VPS
+- если header не задан, publish сохранится в Strapi, но сайт автоматически не пересоберется
 
 ## 6. Роли
 
@@ -128,7 +136,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 1. изменить контент
 2. нажать `Publish`
 3. убедиться, что webhook дошел до relay
-4. убедиться, что `repository_dispatch` запустил workflow
+4. убедиться, что relay запустил локальный rebuild и сайт обновился
 5. убедиться, что публичный сайт обновился
 
 ## 10. GitHub secrets для production pipelines

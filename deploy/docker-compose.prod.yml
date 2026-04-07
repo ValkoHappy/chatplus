@@ -98,9 +98,12 @@ services:
       context: ..
       dockerfile: deploy/docker/Dockerfile.tools
     restart: unless-stopped
+    working_dir: ${HOST_PROJECT_ROOT:-/srv/chatplus}
     environment:
       NODE_ENV: production
       WEBHOOK_TOKEN: ${WEBHOOK_TOKEN}
+      RELAY_DISPATCH_TARGET: ${RELAY_DISPATCH_TARGET:-local}
+      RELAY_LOCAL_COMMAND: ${RELAY_LOCAL_COMMAND:-/srv/chatplus/deploy/scripts/build-portal.sh}
       GITHUB_ACTIONS_TOKEN: ${GITHUB_ACTIONS_TOKEN}
       GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
       GITHUB_DISPATCH_EVENT: ${GITHUB_DISPATCH_EVENT}
@@ -109,6 +112,11 @@ services:
     command: ["node", "scripts/strapi-webhook-relay.mjs"]
     expose:
       - "${RELAY_PORT}"
+    volumes:
+      - ..:${HOST_PROJECT_ROOT:-/srv/chatplus}
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker:ro
+      - /usr/libexec/docker/cli-plugins:/usr/libexec/docker/cli-plugins:ro
     networks:
       - internal
 

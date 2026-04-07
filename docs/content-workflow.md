@@ -27,8 +27,8 @@
 1. редактор меняет запись в `Strapi`
 2. нажимает `Publish`
 3. webhook уходит в relay
-4. relay триггерит `repository_dispatch`
-5. GitHub Actions собирает сайт и выкатывает новую статику
+4. relay запускает локальный rebuild на VPS
+5. публичная статика обновляется сразу на сервере
 
 ### 2. Imported content
 

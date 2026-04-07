@@ -14,8 +14,8 @@
 1. правим запись в `Strapi`
 2. нажимаем `Publish`
 3. webhook уходит в relay
-4. relay вызывает `repository_dispatch`
-5. workflow `Content Publish Pipeline` собирает и выкатывает сайт
+4. relay запускает локальный `build-portal.sh` на VPS
+5. сайт пересобирается и выкатывается на том же сервере
 
 ## 3. Imported release
 
@@ -73,8 +73,8 @@ Representative routes:
 
 ### Content publish
 
-- workflow: `.github/workflows/deploy.yml`
-- trigger: `repository_dispatch` с типом `strapi-content-publish`
+- trigger по умолчанию: `Strapi webhook -> relay -> local rebuild`
+- entrypoint: `content-relay` + `./deploy/scripts/build-portal.sh`
 
 ### Code pipeline
 

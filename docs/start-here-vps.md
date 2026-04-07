@@ -84,6 +84,7 @@ PUBLIC_DOMAIN=astro.example.com
 CMS_DOMAIN=strapi.example.com
 PUBLIC_SITE_URL=https://astro.example.com
 CMS_PUBLIC_URL=https://strapi.example.com
+HOST_PROJECT_ROOT=/srv/chatplus
 LETSENCRYPT_EMAIL=
 
 POSTGRES_DB=chatplus
@@ -98,6 +99,8 @@ JWT_SECRET=replace-with-random-string
 ENCRYPTION_KEY=replace-with-random-string
 
 WEBHOOK_TOKEN=replace-with-random-string
+RELAY_DISPATCH_TARGET=local
+RELAY_LOCAL_COMMAND=/srv/chatplus/deploy/scripts/build-portal.sh
 GITHUB_ACTIONS_TOKEN=
 GITHUB_REPOSITORY=ValkoHappy/chatplus
 GITHUB_DISPATCH_EVENT=strapi-content-publish
@@ -178,7 +181,7 @@ git pull
 
 1. изменить запись в `Strapi`
 2. нажать `Publish`
-3. если webhook уже настроен, сайт пересоберется автоматически
+3. если webhook уже настроен с `Authorization: Bearer <WEBHOOK_TOKEN>`, сайт пересоберется автоматически
 
 Если webhook еще не настроен:
 

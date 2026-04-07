@@ -309,7 +309,7 @@ npm.cmd --prefix portal run build
 - `seed-content` при необходимости
 - `build-portal.sh` для production rebuild
 - `nginx` отдает актуальный static artifact
-- publish automation идет через `Strapi webhook -> relay -> GitHub Actions -> deploy на VPS`
+- publish automation по умолчанию идет через `Strapi webhook -> relay -> local rebuild -> deploy на VPS`
 
 ### Optional demo
 

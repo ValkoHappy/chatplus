@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
 
@@ -16,9 +17,14 @@ function normalizeAllowedModels(value) {
 }
 
 export function buildRelayConfig(env = process.env) {
+  const localCommand = (env.RELAY_LOCAL_COMMAND || '').trim();
+  const dispatchTarget = env.RELAY_DISPATCH_TARGET || (localCommand ? 'local' : 'github');
+
   return {
     port: Number(env.RELAY_PORT || 8787),
     relayToken: env.WEBHOOK_TOKEN || '',
+    dispatchTarget,
+    localCommand,
     githubToken: env.GITHUB_ACTIONS_TOKEN || env.GITHUB_TOKEN || '',
     githubRepo: env.GITHUB_REPOSITORY || 'ValkoHappy/chatplus',
     dispatchEvent: env.GITHUB_DISPATCH_EVENT || 'strapi-content-publish',
@@ -101,6 +107,86 @@ export async function defaultDispatchFn({ githubToken, githubRepo, body }) {
   }
 }
 
+function trimLogOutput(value, limit = 4000) {
+  if (!value) {
+    return '';
+  }
+
+  return value.length > limit ? value.slice(-limit) : value;
+}
+
+export async function defaultLocalDispatchFn({ localCommand }) {
+  await new Promise((resolve, reject) => {
+    const child = spawn('/bin/sh', ['-lc', localCommand], {
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+    });
+
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+
+    child.on('error', (error) => {
+      reject(error);
+    });
+
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      const details = trimLogOutput(stderr || stdout);
+      reject(new Error(`Local deploy command failed (${code}): ${details || 'no output'}`));
+    });
+  });
+}
+
+function createDispatchQueue(dispatchFn) {
+  let tail = Promise.resolve();
+
+  return async (payload) => {
+    const run = () => dispatchFn(payload);
+    const current = tail.then(run, run);
+    tail = current.catch(() => {});
+    return current;
+  };
+}
+
+function isDispatchConfigured(config) {
+  if (!config.relayToken) {
+    return false;
+  }
+
+  if (config.dispatchTarget === 'local') {
+    return Boolean(config.localCommand);
+  }
+
+  return Boolean(config.githubToken);
+}
+
+function createDefaultDispatchFn(config) {
+  if (config.dispatchTarget === 'local') {
+    return async (payload) => defaultLocalDispatchFn({
+      localCommand: config.localCommand,
+      ...payload,
+    });
+  }
+
+  return async (payload) => defaultDispatchFn({
+    githubToken: config.githubToken,
+    githubRepo: config.githubRepo,
+    ...payload,
+  });
+}
+
 function logRelay(level, message, details = {}) {
   const line = JSON.stringify({
     level,
@@ -150,7 +236,8 @@ export function createRelayServer(options = {}) {
     ...options,
   };
   const deduper = config.deduper || createDeduper(config.duplicateWindowMs);
-  const dispatchFn = config.dispatchFn || defaultDispatchFn;
+  const dispatchFn = config.dispatchFn || createDefaultDispatchFn(config);
+  const queuedDispatchFn = config.queuedDispatchFn || createDispatchQueue(dispatchFn);
 
   return createServer(async (req, res) => {
     if (req.method !== 'POST' || req.url !== '/strapi/publish') {
@@ -158,9 +245,11 @@ export function createRelayServer(options = {}) {
       return;
     }
 
-    if (!config.relayToken || !config.githubToken) {
+    if (!isDispatchConfigured(config)) {
       logRelay('error', 'relay.misconfigured', {
         hasRelayToken: Boolean(config.relayToken),
+        dispatchTarget: config.dispatchTarget,
+        hasLocalCommand: Boolean(config.localCommand),
         hasGithubToken: Boolean(config.githubToken),
       });
       sendJson(res, 500, { ok: false, error: 'Relay is missing required secrets' });
@@ -196,10 +285,12 @@ export function createRelayServer(options = {}) {
       }
 
       const body = buildDispatchPayload(payload, req.headers, config.dispatchEvent, fingerprint);
-      await dispatchFn({
+      await queuedDispatchFn({
+        body,
+        dispatchTarget: config.dispatchTarget,
         githubToken: config.githubToken,
         githubRepo: config.githubRepo,
-        body,
+        localCommand: config.localCommand,
         payload,
         headers: req.headers,
       });
@@ -209,6 +300,7 @@ export function createRelayServer(options = {}) {
         model,
         event,
         fingerprint,
+        dispatchTarget: config.dispatchTarget,
         dispatchEvent: config.dispatchEvent,
         githubRepo: config.githubRepo,
       });
@@ -228,6 +320,7 @@ export function startRelayServer(config = buildRelayConfig()) {
     logRelay('info', 'relay.started', {
       port: config.port,
       allowedModels: [...config.allowedModels],
+      dispatchTarget: config.dispatchTarget,
       githubRepo: config.githubRepo,
       dispatchEvent: config.dispatchEvent,
     });

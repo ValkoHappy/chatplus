@@ -10,7 +10,7 @@
 - `Strapi` — главный редакторский интерфейс
 - `Astro` — только сборка и рендер статики
 - importer загружает SEO/catalog данные в `Strapi`, но не считается вечным главным владельцем live-контента
-- публикация строится вокруг схемы `Publish -> webhook -> relay -> CI rebuild -> deploy`
+- публикация по умолчанию строится вокруг схемы `Publish -> webhook -> relay -> local rebuild -> deploy`
 
 ## 1. Production-mode
 
@@ -22,7 +22,7 @@ Production больше не описывается как ручная SSH-се
 
 - `postgres` для CMS-данных
 - `strapi` для админки и API
-- `content-relay` для безопасного приема `Strapi` webhooks и вызова `repository_dispatch`
+- `content-relay` для безопасного приема `Strapi` webhooks и локального rebuild/deploy на VPS
 - `nginx` для публичного сайта и reverse proxy на CMS
 - одноразовые контейнеры:
   - `portal-builder`
@@ -133,13 +133,8 @@ Imported catalog/SEO сущности:
 1. Редактор меняет запись в `Strapi`
 2. Нажимает `Publish`
 3. `Strapi webhook` уходит в relay
-4. Relay валидирует токен и вызывает `repository_dispatch`
-5. GitHub Actions запускает:
-   - `Astro build`
-   - `content-check`
-   - `link-graph`
-   - `encoding-check`
-   - deploy static artifact
+4. Relay валидирует токен и запускает локальный `build-portal.sh` на VPS
+5. Скрипт пересобирает `Astro` и обновляет публичную статику
 
 Важно:
 

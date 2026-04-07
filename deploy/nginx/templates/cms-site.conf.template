@@ -6,6 +6,13 @@ server {
         root /var/www/certbot;
     }
 
+    location = /__relay/strapi/publish {
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://content-relay:8787/strapi/publish;
+    }
+
     location / {
         return 301 https://$host$request_uri;
     }
@@ -26,6 +33,13 @@ server {
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
+    }
+
+    location = /__relay/strapi/publish {
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://content-relay:8787/strapi/publish;
     }
 
     location / {

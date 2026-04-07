@@ -18,7 +18,7 @@
 - `Strapi + Postgres + uploads` живут на VPS
 - `Astro` собирает публичную статику
 - `nginx` отдает публичный сайт и reverse proxy на CMS
-- publish flow идет по схеме `Publish -> webhook -> relay -> CI rebuild -> deploy на VPS`
+- publish flow по умолчанию идет по схеме `Publish -> webhook -> relay -> local rebuild -> deploy на VPS`
 
 ## Текущая модель проекта
 
@@ -36,7 +36,7 @@
 - `Astro` — только рендер и сборка статики
 - importer загружает SEO/catalog данные в `Strapi`, но не должен тупо перетирать ручные правки
 - publish flow строится вокруг схемы:
-  - `Publish -> webhook -> relay -> CI rebuild -> deploy`
+  - `Publish -> webhook -> relay -> local rebuild -> deploy`
 
 ## С чего читать
 
