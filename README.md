@@ -61,10 +61,11 @@
 
 Читайте в таком порядке:
 
-1. [Быстрый вход для владельца](docs/owner-quickstart.md)
-2. [Гайд оператора](docs/operator-guide.md)
-3. [Release Flow](docs/release-flow.md)
-4. [Деплой](DEPLOY.md)
+1. [Быстрый запуск на VPS](docs/start-here-vps.md)
+2. [Быстрый вход для владельца](docs/owner-quickstart.md)
+3. [Гайд оператора](docs/operator-guide.md)
+4. [Release Flow](docs/release-flow.md)
+5. [Деплой](DEPLOY.md)
 
 ## Быстрый запуск
 
@@ -175,5 +176,6 @@ npm.cmd --prefix portal run build
 - [Контентный workflow](docs/content-workflow.md)
 - [Политика импорта](docs/import-policy.md)
 - [Гайд оператора](docs/operator-guide.md)
+- [Быстрый запуск на VPS](docs/start-here-vps.md)
 - [Release Flow](docs/release-flow.md)
 - [Деплой](DEPLOY.md)

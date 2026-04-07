@@ -48,11 +48,12 @@
 
 ## Порядок чтения для оператора или редактора
 
-1. [Быстрый вход для владельца](owner-quickstart.md)
-2. [Гайд оператора](operator-guide.md)
-3. [Контентный workflow](content-workflow.md)
-4. [Release Flow](release-flow.md)
-5. [Деплой](../DEPLOY.md)
+1. [Быстрый запуск на VPS](start-here-vps.md)
+2. [Быстрый вход для владельца](owner-quickstart.md)
+3. [Гайд оператора](operator-guide.md)
+4. [Контентный workflow](content-workflow.md)
+5. [Release Flow](release-flow.md)
+6. [Деплой](../DEPLOY.md)
 
 ## Где что лежит
 
