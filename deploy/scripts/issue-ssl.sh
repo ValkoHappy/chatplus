@@ -81,7 +81,7 @@ for domain in "${PUBLIC_DOMAIN}" "${CMS_DOMAIN}"; do
 
   if [[ "${TARGET_DIR}" != "${PRIMARY_CERT_DIR}" ]]; then
     rm -rf "${TARGET_DIR}"
-    ln -s "${PRIMARY_CERT_DIR}" "${TARGET_DIR}"
+    ln -s "$(basename "${PRIMARY_CERT_DIR}")" "${TARGET_DIR}"
   fi
 done
 
