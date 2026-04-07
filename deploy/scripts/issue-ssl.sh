@@ -69,6 +69,22 @@ fi
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --rm certbot "${CERTBOT_ARGS[@]}"
 
+PRIMARY_CERT_DIR="$(find "${LETSENCRYPT_DIR}/live" -maxdepth 1 -mindepth 1 -type d -name "${PUBLIC_DOMAIN}*" | sort | tail -n 1)"
+
+if [[ -z "${PRIMARY_CERT_DIR}" ]]; then
+  echo "Could not find issued certificate directory for ${PUBLIC_DOMAIN} in ${LETSENCRYPT_DIR}/live."
+  exit 1
+fi
+
+for domain in "${PUBLIC_DOMAIN}" "${CMS_DOMAIN}"; do
+  TARGET_DIR="${LETSENCRYPT_DIR}/live/${domain}"
+
+  if [[ "${TARGET_DIR}" != "${PRIMARY_CERT_DIR}" ]]; then
+    rm -rf "${TARGET_DIR}"
+    ln -s "${PRIMARY_CERT_DIR}" "${TARGET_DIR}"
+  fi
+done
+
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" exec nginx nginx -s reload
 
 echo "Let's Encrypt certificates issued or renewed for ${PUBLIC_DOMAIN} and ${CMS_DOMAIN}."
