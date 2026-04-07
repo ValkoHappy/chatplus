@@ -16,4 +16,4 @@ COPY config ../config
 COPY cms ../cms
 COPY scripts ../scripts
 
-CMD ["sh", "-lc", "mkdir -p /portal-output/current && find /portal-output/current -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true && npm run build && cp -R dist/. /portal-output/current/"]
+CMD ["sh", "-lc", "OUTPUT_DIR=${PORTAL_OUTPUT_DIR:-/portal-output/current}; mkdir -p \"$OUTPUT_DIR\" && find \"$OUTPUT_DIR\" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true && npm run build && cp -R dist/. \"$OUTPUT_DIR/\""]

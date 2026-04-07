@@ -29,13 +29,30 @@ mkdir -p "${NEXT_DIR}"
 
 tar xzf "${ARTIFACT_PATH}" -C "${NEXT_DIR}"
 
-if [[ -d "${CURRENT_DIR}" ]]; then
+if [[ ! -f "${NEXT_DIR}/index.html" ]]; then
+  echo "Static artifact is missing index.html in ${NEXT_DIR}"
+  exit 1
+fi
+
+CURRENT_TARGET=""
+if [[ -L "${CURRENT_DIR}" ]]; then
+  CURRENT_TARGET="$(readlink -f "${CURRENT_DIR}")"
+elif [[ -d "${CURRENT_DIR}" ]]; then
   rm -rf "${PREVIOUS_DIR}"
   mv "${CURRENT_DIR}" "${PREVIOUS_DIR}"
 fi
 
-mv "${NEXT_DIR}" "${CURRENT_DIR}"
 rm -rf "${RELEASES_DIR:?}/${RELEASE_ID}"
-cp -R "${CURRENT_DIR}" "${RELEASES_DIR}/${RELEASE_ID}"
+mv "${NEXT_DIR}" "${RELEASES_DIR}/${RELEASE_ID}"
+
+TMP_CURRENT_LINK="${PUBLIC_ROOT}/.current-${RELEASE_ID}"
+ln -sfn "${RELEASES_DIR}/${RELEASE_ID}" "${TMP_CURRENT_LINK}"
+mv -Tf "${TMP_CURRENT_LINK}" "${CURRENT_DIR}"
+
+if [[ -n "${CURRENT_TARGET}" && -d "${CURRENT_TARGET}" ]]; then
+  TMP_PREVIOUS_LINK="${PUBLIC_ROOT}/.previous-${RELEASE_ID}"
+  ln -sfn "${CURRENT_TARGET}" "${TMP_PREVIOUS_LINK}"
+  mv -Tf "${TMP_PREVIOUS_LINK}" "${PREVIOUS_DIR}"
+fi
 
 echo "Installed static release ${RELEASE_ID} into ${CURRENT_DIR}"
