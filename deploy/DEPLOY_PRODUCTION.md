@@ -65,7 +65,8 @@ cp deploy/.env.example deploy/.env
   - `PUBLIC_SITE_URL`
   - `CMS_PUBLIC_URL`
 - SMTP/SSL:
-  - `LETSENCRYPT_EMAIL`
+- `LETSENCRYPT_EMAIL`
+  - можно временно оставить пустым, тогда certbot зарегистрируется без email
 - БД:
   - `POSTGRES_DB`
   - `POSTGRES_USER`

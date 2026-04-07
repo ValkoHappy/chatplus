@@ -18,8 +18,8 @@ set -a
 source "${ENV_FILE}"
 set +a
 
-if [[ -z "${PUBLIC_DOMAIN:-}" || -z "${CMS_DOMAIN:-}" || -z "${LETSENCRYPT_EMAIL:-}" ]]; then
-  echo "PUBLIC_DOMAIN, CMS_DOMAIN and LETSENCRYPT_EMAIL must be set in deploy/.env."
+if [[ -z "${PUBLIC_DOMAIN:-}" || -z "${CMS_DOMAIN:-}" ]]; then
+  echo "PUBLIC_DOMAIN and CMS_DOMAIN must be set in deploy/.env."
   exit 1
 fi
 
@@ -44,13 +44,24 @@ create_dummy_cert "${CMS_DOMAIN}"
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --build postgres strapi content-relay nginx
 
-docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --rm certbot \
-  certonly --webroot -w /var/www/certbot \
-  -d "${PUBLIC_DOMAIN}" -d "${CMS_DOMAIN}" \
-  --email "${LETSENCRYPT_EMAIL}" \
-  --agree-tos \
-  --no-eff-email \
+CERTBOT_ARGS=(
+  certonly
+  --webroot
+  -w /var/www/certbot
+  -d "${PUBLIC_DOMAIN}"
+  -d "${CMS_DOMAIN}"
+  --agree-tos
   --keep-until-expiring
+)
+
+if [[ -n "${LETSENCRYPT_EMAIL:-}" ]]; then
+  CERTBOT_ARGS+=(--email "${LETSENCRYPT_EMAIL}" --no-eff-email)
+else
+  echo "LETSENCRYPT_EMAIL is empty. Registering Let's Encrypt account without email."
+  CERTBOT_ARGS+=(--register-unsafely-without-email)
+fi
+
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --rm certbot "${CERTBOT_ARGS[@]}"
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" exec nginx nginx -s reload
 
