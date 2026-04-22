@@ -280,7 +280,33 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f postgres
 ```
 
-## 15. Production: `portal-builder` не может достучаться до CMS
+## 15. Production: браузер пишет `NET::ERR_CERT_AUTHORITY_INVALID`
+
+Признаки:
+
+- `https://cms.<domain>` или `https://<public-domain>` открывается с предупреждением про небезопасное подключение
+- в браузере видно `NET::ERR_CERT_AUTHORITY_INVALID`
+
+Что это обычно значит:
+
+- SSL bootstrap не завершился до конца
+- DNS еще не смотрит на нужный VPS
+- `80/443` закрыты
+
+Что делать:
+
+```bash
+./deploy/scripts/issue-ssl.sh
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs --tail=100 nginx
+```
+
+Проверьте дополнительно:
+
+1. `PUBLIC_DOMAIN` и `CMS_DOMAIN` в `deploy/.env`
+2. A-records реально указывают на IP сервера
+3. снаружи открыты `80` и `443`
+
+## 16. Production: `portal-builder` не может достучаться до CMS
 
 Признаки:
 
@@ -299,7 +325,39 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 ./deploy/scripts/build-portal.sh
 ```
 
-## 16. Production: nginx отдает старую статику
+Если ошибка про `STRAPI_API_TOKEN`, сначала:
+
+1. создайте новый токен в `Settings -> API Tokens`
+2. проверьте, что в `deploy/.env` нет дублирующихся строк `STRAPI_API_TOKEN=...`
+3. повторите:
+
+```bash
+./deploy/scripts/finalize-first-launch.sh
+```
+
+## 17. Production: публичный домен показывает bootstrap-страницу или 403 после первого запуска
+
+Что это значит:
+
+- контур поднялся
+- но content bootstrap еще не завершен
+- или build упал до публикации первого artifact
+
+Правильный порядок действий:
+
+1. открыть `https://cms.<domain>/admin`
+2. создать первого admin user
+3. создать `API Token`
+4. записать его в `deploy/.env` как `STRAPI_API_TOKEN`
+5. выполнить:
+
+```bash
+./deploy/scripts/finalize-first-launch.sh
+```
+
+Если после этого проблема осталась, уже смотреть логи `strapi`, `content-relay` и `nginx`.
+
+## 18. Production: nginx отдает старую статику
 
 Что проверить:
 
@@ -314,7 +372,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f nginx
 ```
 
-## 17. Production: перенос на новый VPS после сбоя
+## 19. Production: перенос на новый VPS после сбоя
 
 Правильный flow:
 
@@ -332,7 +390,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 
 - [deploy/DEPLOY_PRODUCTION.md](../deploy/DEPLOY_PRODUCTION.md)
 
-## 18. Локальный Docker smoke не поднимается
+## 20. Локальный Docker smoke не поднимается
 
 Что нужно для локального режима:
 
@@ -350,7 +408,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 ./deploy/scripts/local-build-portal.sh
 ```
 
-## 19. Local Docker smoke на Windows
+## 21. Local Docker smoke на Windows
 
 Для реального Windows flow используйте:
 
@@ -371,7 +429,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 
 Если до первой сборки сайт выглядит пустым, это нормально.
 
-## 20. Docker Desktop ругается на WSL integration с Ubuntu
+## 22. Docker Desktop ругается на WSL integration с Ubuntu
 
 Если Docker Desktop показывает ошибку именно про WSL integration с вашей личной `Ubuntu`-дистрибуцией:
 
@@ -385,7 +443,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 2. In `Docker Desktop -> Settings -> Resources -> WSL Integration`, disable integration for `Ubuntu`.
 3. Continue using the Windows local scripts.
 
-## 21. Local Docker build проходит, но content-check падает на canonical
+## 23. Local Docker build проходит, но content-check падает на canonical
 
 Для local smoke это обычно значит, что `PUBLIC_SITE_URL` в `deploy/.env.local` не совпадает с тем production-like доменом, под который вы хотите проверить canonical.
 

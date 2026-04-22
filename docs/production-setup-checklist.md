@@ -8,18 +8,25 @@
 
 - заполнен `deploy/.env`
 - домен сайта указывает на VPS
-- поддомен `cms.` указывает на VPS
+- домен `CMS_DOMAIN` указывает на VPS
 - Docker и `docker compose` работают
 - HTTPS на `80/443` открыт
+- в `deploy/.env` не осталось placeholder-значений `replace-with-*` и `replace-me-*`
 
 ## 2. После первого `deploy.sh`
 
 Проверьте:
 
 - `https://cms.<domain>/admin` открывается
-- `https://<public-domain>` открывается
+- `https://<public-domain>` открывается хотя бы bootstrap-страницей
 - контейнер `content-relay` запущен
 - `postgres`, `strapi`, `nginx` healthy
+
+Важно:
+
+- на чистом сервере после первого `deploy.sh` публичный сайт еще может не быть собран
+- если вы видите bootstrap-страницу, это нормально
+- ненормально только немое падение, битый SSL или неоткрывающийся `Strapi`
 
 ## 3. Первый администратор
 
@@ -35,6 +42,14 @@
 1. открыть `Settings -> API Tokens`
 2. создать токен для build/import flow
 3. записать его в `deploy/.env` как `STRAPI_API_TOKEN`
+
+После этого выполнить на сервере:
+
+```bash
+./deploy/scripts/finalize-first-launch.sh
+```
+
+И проверить, что публичный домен перестал показывать bootstrap-страницу и начал отдавать настоящий сайт.
 
 ## 5. Webhook
 
@@ -66,6 +81,7 @@ Value: Bearer <WEBHOOK_TOKEN из deploy/.env>
 
 - `entry.publish` работает только для типов с `draftAndPublish`
 - relay использует `Authorization: Bearer ${WEBHOOK_TOKEN}` и по умолчанию запускает локальный rebuild на VPS
+- относитесь к `WEBHOOK_TOKEN` как к production secret с доступом к rebuild-контуру сервера, а не как к безобидному UI-hook токену
 - если header не задан, publish сохранится в Strapi, но сайт автоматически не пересоберется
 
 ## 6. Роли
@@ -158,6 +174,8 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 - один раз выполнить `backup.sh`
 - проверить, куда пишется backup
 - убедиться, что команда `restore.sh` понятна оператору
+- установить регулярный backup и SSL-renew по cron/systemd timer, а не откладывать это “на потом”
+- самый простой вариант в этом репозитории: `./deploy/scripts/install-ops-cron.sh`
 
 ## 12. Definition of Ready
 
@@ -165,6 +183,7 @@ Production setup можно считать готовым к боевой раб
 
 - есть admin user
 - есть `STRAPI_API_TOKEN`
+- выполнен `./deploy/scripts/finalize-first-launch.sh`
 - webhook настроен
 - роли созданы
 - importer `plan` работает

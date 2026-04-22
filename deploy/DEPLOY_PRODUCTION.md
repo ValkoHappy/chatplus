@@ -29,9 +29,16 @@
 - чистая Ubuntu `22.04 LTS` или `24.04 LTS`
 - SSH-доступ
 - один публичный домен для сайта
-- один поддомен `cms.` для Strapi
+- один отдельный домен или поддомен для Strapi
 - DNS A-records на VPS
 - открытые порты `80` и `443`
+
+В этом проекте рекомендуемый и уже проверенный вариант:
+
+- публичный сайт: `astro.<domain>`
+- CMS: `strapi.<domain>`
+
+Если хотите свои имена, это допустимо, но только при полностью согласованной настройке `PUBLIC_DOMAIN`, `CMS_DOMAIN`, `PUBLIC_SITE_URL`, `CMS_PUBLIC_URL`, DNS и webhook URL.
 
 Рекомендуемый минимум для VPS:
 
@@ -48,6 +55,12 @@ sudo ./deploy/scripts/bootstrap-ubuntu.sh
 ```
 
 После этого склонируйте репозиторий, например в `/srv/chatplus`.
+
+После клона и настройки `deploy/.env` рекомендуется сразу установить регулярные ops-задачи:
+
+```bash
+./deploy/scripts/install-ops-cron.sh
+```
 
 ## 4. Создание production env-файла
 
@@ -98,6 +111,8 @@ cp deploy/.env.example deploy/.env
 
 - `deploy/.env` не коммитится
 - `WEBHOOK_TOKEN` должен совпадать с токеном, который Strapi будет отправлять relay-сервису
+- `WEBHOOK_TOKEN` по факту защищает host-level rebuild entrypoint, поэтому храните его как production secret и ротируйте при любом подозрении на утечку
+- placeholder-значения `replace-with-*` и `replace-me-*` нельзя оставлять в production
 - `RELAY_INTERNAL_URL` по умолчанию должен указывать на внутренний docker hostname:
 
 ```env
@@ -106,18 +121,31 @@ RELAY_INTERNAL_URL=http://content-relay:8787/strapi/publish
 
 ## 5. Первый запуск контейнеров и SSL bootstrap
 
-Быстрый путь:
+На чистом VPS правильный первый шаг такой:
 
 ```bash
-./deploy/scripts/deploy.sh --with-seed
+./deploy/scripts/deploy.sh
 ```
 
 Этот сценарий:
 
 - поднимает `postgres`, `strapi`, `content-relay`, `nginx`
 - выпускает SSL-сертификаты
-- при флаге `--with-seed` запускает importer
-- собирает публичный Astro artifact
+- валидирует `deploy/.env`
+- если `STRAPI_API_TOKEN` еще не задан, не пытается прогонять importer и build вслепую
+- публикует bootstrap-страницу вместо немого `403` на публичном домене
+
+Важно:
+
+- на чистой установке это ожидаемое поведение
+- сначала надо поднять контур и открыть `Strapi`
+- только потом завершать content bootstrap и первую сборку публичного сайта
+
+Если у вас уже есть рабочий `STRAPI_API_TOKEN`, например при повторном deploy не с нуля, можно использовать:
+
+```bash
+./deploy/scripts/deploy.sh --with-seed
+```
 
 Если нужен ручной путь:
 
@@ -157,6 +185,20 @@ STRAPI_API_TOKEN=...
 - `build-portal.sh`
 - `seed-content.sh`
 - CI build against live CMS
+
+После записи токена в `deploy/.env` на чистой установке обязательно выполните:
+
+```bash
+./deploy/scripts/finalize-first-launch.sh
+```
+
+Это безопасный обязательный шаг, который:
+
+- валидирует env
+- импортирует стартовый контент
+- собирает первый публичный Astro artifact
+
+Без этого шага CMS уже может открываться, а публичный домен еще нет.
 
 ## 8. Настройка publish webhook в Strapi
 
@@ -257,6 +299,12 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 - relay запускает локальный `build-portal.sh`
 - сайт обновляется прямо на VPS
 
+Важно для эксплуатации:
+
+- никогда не вставляйте в `deploy/.env` старый или непроверенный `STRAPI_API_TOKEN` "на память"
+- если токен устарел, удален или в файле появились дубликаты ключей, preflight теперь остановит сборку заранее
+- если content bootstrap еще не выполнен, публичный домен покажет bootstrap-страницу, а не битый `403`
+
 ### GitHub secrets для server-first deploy
 
 Для workflow-файлов `.github/workflows/deploy.yml` и `.github/workflows/code-pipeline.yml`
@@ -352,11 +400,20 @@ Backup не включает:
 - `deploy/.env`
 - DNS/регистратор
 - SSH-ключи
+- SSL-секреты вне deploy-контура, если вы храните их отдельно
 
 Примеры cron:
 
 - [deploy/system/cron.backup.example](system/cron.backup.example)
 - [deploy/system/cron.ssl-renew.example](system/cron.ssl-renew.example)
+
+Это не декоративные файлы. Их нужно реально установить на сервере как часть production bootstrap.
+
+Самый простой путь:
+
+```bash
+./deploy/scripts/install-ops-cron.sh
+```
 
 ## 14. Restore на другой Ubuntu VPS
 

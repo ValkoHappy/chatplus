@@ -19,6 +19,8 @@ DEPLOY_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 COMPOSE_FILE="${DEPLOY_DIR}/docker-compose.prod.yml"
 ENV_FILE="${DEPLOY_DIR}/.env"
 
+"${SCRIPT_DIR}/validate-env.sh"
+
 if [[ ! -f "${ENV_FILE}" ]]; then
   echo "Missing ${ENV_FILE}. Copy deploy/.env.example to deploy/.env first."
   exit 1
@@ -49,10 +51,21 @@ if [[ ! -f "${BACKUP_SOURCE}/strapi-uploads.tar.gz" ]]; then
 fi
 
 if [[ "${CHECK_ONLY}" == "true" ]]; then
+  if [[ ! -s "${BACKUP_SOURCE}/postgres.sql" ]]; then
+    echo "postgres.sql exists but is empty in ${BACKUP_SOURCE}"
+    exit 1
+  fi
+
+  if ! tar tzf "${BACKUP_SOURCE}/strapi-uploads.tar.gz" >/dev/null 2>&1; then
+    echo "strapi-uploads.tar.gz exists but cannot be read as a valid gzip tar archive."
+    exit 1
+  fi
+
   echo "Restore check passed for ${BACKUP_SOURCE}"
   echo "Files found:"
   echo "- ${BACKUP_SOURCE}/postgres.sql"
   echo "- ${BACKUP_SOURCE}/strapi-uploads.tar.gz"
+  echo "Archive readability verified."
   echo "No changes were applied."
   exit 0
 fi
@@ -60,7 +73,11 @@ fi
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-chatplus}"
 UPLOADS_VOLUME="${PROJECT_NAME}_strapi_uploads"
 
-docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d postgres strapi nginx
+echo "Creating a safety backup before destructive restore..."
+"${SCRIPT_DIR}/backup.sh"
+
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d postgres
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" stop strapi content-relay nginx >/dev/null 2>&1 || true
 
 until docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" exec -T postgres \
   pg_isready -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" >/dev/null 2>&1; do
@@ -79,4 +96,12 @@ docker run --rm \
   alpine:3.20 \
   sh -lc "rm -rf /volume/* && tar xzf /backup/strapi-uploads.tar.gz -C /volume"
 
-echo "Restore completed. Run deploy/scripts/build-portal.sh to refresh the public site."
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d strapi content-relay nginx
+
+until docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" exec -T strapi \
+  node -e "fetch('http://127.0.0.1:1337/admin').then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))" >/dev/null 2>&1; do
+  sleep 3
+done
+
+echo "Restore completed. A safety backup was created before restore."
+echo "Run deploy/scripts/build-portal.sh to refresh the public site."

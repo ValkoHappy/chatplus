@@ -18,7 +18,19 @@ for arg in "$@"; do
   esac
 done
 
+"${SCRIPT_DIR}/validate-env.sh"
 "${SCRIPT_DIR}/issue-ssl.sh"
+"${SCRIPT_DIR}/ensure-public-placeholder.sh"
+
+if grep -q '^STRAPI_API_TOKEN=replace-with-strapi-api-token$' "${SCRIPT_DIR}/../.env" || ! grep -q '^STRAPI_API_TOKEN=' "${SCRIPT_DIR}/../.env"; then
+  echo "Core services and SSL are ready."
+  echo "Next steps:"
+  echo "  1. Open Strapi admin and create the first admin user."
+  echo "  2. Create a full-access API token in Settings -> API Tokens."
+  echo "  3. Save it to deploy/.env as STRAPI_API_TOKEN=..."
+  echo "  4. Run ./deploy/scripts/finalize-first-launch.sh"
+  exit 0
+fi
 
 if [[ "${WITH_SEED}" == "true" ]]; then
   "${SCRIPT_DIR}/seed-content.sh"

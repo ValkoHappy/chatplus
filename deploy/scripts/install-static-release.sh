@@ -22,10 +22,34 @@ RELEASES_DIR="${PUBLIC_ROOT}/releases"
 NEXT_DIR="${PUBLIC_ROOT}/incoming-${RELEASE_ID}"
 CURRENT_DIR="${PUBLIC_ROOT}/current"
 PREVIOUS_DIR="${PUBLIC_ROOT}/previous"
+LOCK_DIR="${PUBLIC_ROOT}/.build-lock"
+
+cleanup() {
+  rm -rf "${NEXT_DIR}" "${LOCK_DIR}"
+}
+
+resolve_link_target() {
+  local link_path="$1"
+  local target=""
+
+  target="$(readlink "${link_path}")"
+  if [[ "${target}" != /* ]]; then
+    target="${PUBLIC_ROOT}/${target}"
+  fi
+
+  printf '%s' "${target}"
+}
 
 mkdir -p "${RELEASES_DIR}"
 rm -rf "${NEXT_DIR}"
 mkdir -p "${NEXT_DIR}"
+
+if ! mkdir "${LOCK_DIR}" 2>/dev/null; then
+  echo "Another public-site release installation is already in progress."
+  exit 1
+fi
+
+trap cleanup EXIT
 
 tar xzf "${ARTIFACT_PATH}" -C "${NEXT_DIR}"
 
@@ -36,13 +60,12 @@ fi
 
 CURRENT_TARGET=""
 if [[ -L "${CURRENT_DIR}" ]]; then
-  CURRENT_TARGET="$(readlink "${CURRENT_DIR}")"
+  CURRENT_TARGET="$(resolve_link_target "${CURRENT_DIR}")"
 elif [[ -d "${CURRENT_DIR}" ]]; then
   rm -rf "${PREVIOUS_DIR}"
   mv "${CURRENT_DIR}" "${PREVIOUS_DIR}"
 fi
 
-rm -rf "${RELEASES_DIR:?}/${RELEASE_ID}"
 mv "${NEXT_DIR}" "${RELEASES_DIR}/${RELEASE_ID}"
 
 TMP_CURRENT_LINK="${PUBLIC_ROOT}/.current-${RELEASE_ID}"
@@ -50,8 +73,9 @@ ln -sfn "releases/${RELEASE_ID}" "${TMP_CURRENT_LINK}"
 mv -Tf "${TMP_CURRENT_LINK}" "${CURRENT_DIR}"
 
 if [[ -n "${CURRENT_TARGET}" && -d "${CURRENT_TARGET}" ]]; then
+  PREVIOUS_TARGET_RELATIVE="$(realpath --relative-to="${PUBLIC_ROOT}" "${CURRENT_TARGET}")"
   TMP_PREVIOUS_LINK="${PUBLIC_ROOT}/.previous-${RELEASE_ID}"
-  ln -sfn "${CURRENT_TARGET}" "${TMP_PREVIOUS_LINK}"
+  ln -sfn "${PREVIOUS_TARGET_RELATIVE}" "${TMP_PREVIOUS_LINK}"
   rm -rf "${PREVIOUS_DIR}"
   mv -Tf "${TMP_PREVIOUS_LINK}" "${PREVIOUS_DIR}"
 fi

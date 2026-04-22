@@ -10,25 +10,44 @@ PUBLIC_ROOT="${DEPLOY_DIR}/data/public-site"
 RELEASES_DIR="${PUBLIC_ROOT}/releases"
 CURRENT_DIR="${PUBLIC_ROOT}/current"
 PREVIOUS_DIR="${PUBLIC_ROOT}/previous"
-RELEASE_ID="${RELEASE_ID:-local-$(date +%Y%m%d-%H%M%S)}"
+LOCK_DIR="${PUBLIC_ROOT}/.build-lock"
+RELEASE_ID="${RELEASE_ID:-local-$(date +%Y%m%d-%H%M%S)-$$-$(date +%N)}"
 NEXT_DIR="${PUBLIC_ROOT}/incoming-${RELEASE_ID}"
 
-if [[ ! -f "${ENV_FILE}" ]]; then
-  echo "Missing ${ENV_FILE}. Copy deploy/.env.example to deploy/.env first."
-  exit 1
-fi
+cleanup() {
+  rm -rf "${NEXT_DIR}" "${LOCK_DIR}"
+}
+
+resolve_link_target() {
+  local link_path="$1"
+  local target=""
+
+  target="$(readlink "${link_path}")"
+  if [[ "${target}" != /* ]]; then
+    target="${PUBLIC_ROOT}/${target}"
+  fi
+
+  printf '%s' "${target}"
+}
 
 mkdir -p "${RELEASES_DIR}"
 rm -rf "${NEXT_DIR}"
+
+if ! mkdir "${LOCK_DIR}" 2>/dev/null; then
+  echo "Another public-site build is already in progress."
+  exit 1
+fi
+
+trap cleanup EXIT
+
+"${SCRIPT_DIR}/validate-env.sh" --require-token
 
 set -a
 source "${ENV_FILE}"
 set +a
 
-if [[ -z "${STRAPI_API_TOKEN:-}" || "${STRAPI_API_TOKEN}" == "replace-with-strapi-api-token" ]]; then
-  echo "Set STRAPI_API_TOKEN in deploy/.env before building the portal."
-  exit 1
-fi
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" build tools
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --no-deps --rm tools node scripts/preflight-portal-build.mjs
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" build portal-builder
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --no-deps --rm \
@@ -42,13 +61,12 @@ fi
 
 CURRENT_TARGET=""
 if [[ -L "${CURRENT_DIR}" ]]; then
-  CURRENT_TARGET="$(readlink "${CURRENT_DIR}")"
+  CURRENT_TARGET="$(resolve_link_target "${CURRENT_DIR}")"
 elif [[ -d "${CURRENT_DIR}" ]]; then
   rm -rf "${PREVIOUS_DIR}"
   mv "${CURRENT_DIR}" "${PREVIOUS_DIR}"
 fi
 
-rm -rf "${RELEASES_DIR:?}/${RELEASE_ID}"
 mv "${NEXT_DIR}" "${RELEASES_DIR}/${RELEASE_ID}"
 
 TMP_CURRENT_LINK="${PUBLIC_ROOT}/.current-${RELEASE_ID}"
@@ -56,8 +74,14 @@ ln -sfn "releases/${RELEASE_ID}" "${TMP_CURRENT_LINK}"
 mv -Tf "${TMP_CURRENT_LINK}" "${CURRENT_DIR}"
 
 if [[ -n "${CURRENT_TARGET}" && -d "${CURRENT_TARGET}" ]]; then
+  PREVIOUS_TARGET_RELATIVE="$(realpath --relative-to="${PUBLIC_ROOT}" "${CURRENT_TARGET}")"
   TMP_PREVIOUS_LINK="${PUBLIC_ROOT}/.previous-${RELEASE_ID}"
-  ln -sfn "${CURRENT_TARGET}" "${TMP_PREVIOUS_LINK}"
+  ln -sfn "${PREVIOUS_TARGET_RELATIVE}" "${TMP_PREVIOUS_LINK}"
   rm -rf "${PREVIOUS_DIR}"
   mv -Tf "${TMP_PREVIOUS_LINK}" "${PREVIOUS_DIR}"
+fi
+
+if [[ ! -L "${CURRENT_DIR}" && ! -d "${CURRENT_DIR}" ]]; then
+  echo "Current public-site pointer was not created successfully."
+  exit 1
 fi

@@ -62,10 +62,11 @@
 Читайте в таком порядке:
 
 1. [Быстрый запуск на VPS](docs/start-here-vps.md)
-2. [Быстрый вход для владельца](docs/owner-quickstart.md)
-3. [Гайд оператора](docs/operator-guide.md)
-4. [Release Flow](docs/release-flow.md)
-5. [Деплой](DEPLOY.md)
+2. [Production setup checklist](docs/production-setup-checklist.md)
+3. [Быстрый вход для владельца](docs/owner-quickstart.md)
+4. [Гайд оператора](docs/operator-guide.md)
+5. [Release Flow](docs/release-flow.md)
+6. [Деплой](DEPLOY.md)
 
 ## Быстрый запуск
 
@@ -104,13 +105,14 @@ Copy-Item deploy/.env.local.example deploy/.env.local
 2. создать первого Strapi admin user
 3. создать `API Token`
 4. записать его в `deploy/.env.local` как `STRAPI_API_TOKEN`
-5. при необходимости проверить importer:
+5. до этого момента публичный локальный сайт может быть пустым или в bootstrap-состоянии, и это нормально
+6. при необходимости проверить importer:
 
 ```powershell
 .\deploy\scripts\local-seed-content.cmd
 ```
 
-6. собрать локальный публичный сайт:
+7. собрать локальный публичный сайт:
 
 ```powershell
 .\deploy\scripts\local-build-portal.cmd

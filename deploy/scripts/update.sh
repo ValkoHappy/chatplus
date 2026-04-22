@@ -25,6 +25,8 @@ for arg in "$@"; do
   esac
 done
 
+"${SCRIPT_DIR}/validate-env.sh" --require-token
+
 if [[ ! -f "${ENV_FILE}" ]]; then
   echo "Missing ${ENV_FILE}. Copy deploy/.env.example to deploy/.env first."
   exit 1
@@ -33,7 +35,11 @@ fi
 if [[ "${SKIP_PULL}" != "true" ]]; then
   git pull --ff-only
 fi
+
+"${SCRIPT_DIR}/validate-env.sh" --require-token
+
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --build strapi content-relay nginx
+"${SCRIPT_DIR}/ensure-public-placeholder.sh"
 
 if [[ "${WITH_SEED}" == "true" ]]; then
   "${SCRIPT_DIR}/seed-content.sh"

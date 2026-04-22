@@ -24,6 +24,12 @@ DNS должен смотреть на IP сервера:
 - `astro.<domain>` -> IP VPS
 - `strapi.<domain>` -> IP VPS
 
+Важно:
+
+- в этом проекте мы используем два отдельных боевых домена: публичный сайт и CMS
+- в примерах ниже это `astro.<domain>` и `strapi.<domain>`
+- если вы хотите другие имена, меняйте их только консистентно: и в DNS, и в `deploy/.env`
+
 ## 2. Подключиться к серверу
 
 С локального компьютера:
@@ -43,6 +49,12 @@ apt install -y git
 
 ```bash
 sudo ./deploy/scripts/bootstrap-ubuntu.sh
+```
+
+После первого клона репозитория и настройки `deploy/.env` можно сразу поставить регулярные ops-задачи:
+
+```bash
+./deploy/scripts/install-ops-cron.sh
 ```
 
 ## 3. Склонировать проект
@@ -114,12 +126,12 @@ UPLOAD_PROVIDER=local
 - можно оставить `LETSENCRYPT_EMAIL=` пустым
 - сертификат все равно выпустится
 
-## 5. Первый запуск
+## 5. Первый запуск: сначала контур, потом CMS bootstrap
 
 Из корня проекта:
 
 ```bash
-./deploy/scripts/deploy.sh --with-seed
+./deploy/scripts/deploy.sh
 ```
 
 Что делает эта команда:
@@ -129,15 +141,23 @@ UPLOAD_PROVIDER=local
 - поднимает `content-relay`
 - поднимает `nginx`
 - выпускает SSL
-- прогоняет importer
-- собирает публичный сайт
+- проверяет `deploy/.env`
+- если `STRAPI_API_TOKEN` еще не задан, не пытается делать importer/build вслепую
+- создает bootstrap-заглушку вместо немого `403`
+
+Важно:
+
+- на чистом сервере это нормальный первый шаг
+- после него `Strapi` уже должен открываться
+- публичный домен на этом этапе может показывать bootstrap-страницу, а не финальный сайт
+- это не ошибка: контентный bootstrap еще не завершен
 
 ## 6. Что должно открыться
 
 После успешного запуска:
 
-- сайт: `https://astro.<domain>`
 - CMS: `https://strapi.<domain>/admin`
+- сайт: `https://astro.<domain>`
 
 Если CMS открылась:
 
@@ -150,12 +170,20 @@ UPLOAD_PROVIDER=local
 STRAPI_API_TOKEN=your-token-here
 ```
 
-После этого обновить importer и публичный сайт:
+После этого завершить первый запуск одной командой:
 
 ```bash
-./deploy/scripts/seed-content.sh
-./deploy/scripts/build-portal.sh
+./deploy/scripts/finalize-first-launch.sh
 ```
+
+Что делает `finalize-first-launch.sh`:
+
+- валидирует `deploy/.env`
+- проверяет, что `STRAPI_API_TOKEN` реально задан
+- прогоняет importer
+- собирает публичный сайт уже против live `Strapi`
+
+После этого `https://astro.<domain>` должен стать обычным живым сайтом, а не bootstrap-страницей.
 
 ## 7. Как обновлять проект
 
@@ -199,8 +227,13 @@ Backup включает:
 
 - `Postgres`
 - uploads
-- рабочие данные deploy-контура
-- если `BACKUP_DIR` в `deploy/.env` задан относительным путем, скрипт сам развернет его относительно `deploy/`
+- если `BACKUP_DIR` в `deploy/.env` задан относительным путем, скрипт сам развернет его относительно корня проекта
+
+Backup не включает:
+
+- `deploy/.env`
+- DNS-настройки
+- SSH-ключи и другие внешние секреты
 
 ## 9. Как восстановить проект
 
@@ -216,6 +249,8 @@ Backup включает:
 ./deploy/scripts/restore.sh /path/to/backup-directory
 ./deploy/scripts/build-portal.sh
 ```
+
+Во время restore теперь автоматически создается safety backup текущего состояния перед разрушительными изменениями.
 
 ## 10. Если что-то не открылось
 
@@ -243,14 +278,44 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 ./deploy/scripts/build-portal.sh
 ```
 
+Если браузер пишет `NET::ERR_CERT_AUTHORITY_INVALID`:
+
+```bash
+./deploy/scripts/issue-ssl.sh
+docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs --tail=100 nginx
+```
+
+Если публичный домен показывает bootstrap-страницу:
+
+- это значит, что первый запуск не завершен до конца
+- нужно создать admin user, создать `API Token`, записать `STRAPI_API_TOKEN` в `deploy/.env`
+- потом выполнить:
+
+```bash
+./deploy/scripts/finalize-first-launch.sh
+```
+
+Если хотите сразу включить регулярные backup и SSL-renew:
+
+```bash
+./deploy/scripts/install-ops-cron.sh
+```
+
 ## 11. Самое короткое резюме
 
-Первый запуск:
+Первый запуск на чистой Ubuntu:
 
 ```bash
 cp deploy/.env.example deploy/.env
 nano deploy/.env
-./deploy/scripts/deploy.sh --with-seed
+./deploy/scripts/deploy.sh
+```
+
+Потом завершение CMS bootstrap:
+
+```bash
+nano deploy/.env
+./deploy/scripts/finalize-first-launch.sh
 ```
 
 Обычное обновление:

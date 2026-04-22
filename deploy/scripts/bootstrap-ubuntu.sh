@@ -10,7 +10,7 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
-apt-get install -y ca-certificates curl gnupg git openssl
+apt-get install -y ca-certificates curl gnupg git openssl cron
 
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -26,5 +26,7 @@ apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin do
 
 systemctl enable docker
 systemctl restart docker
+systemctl enable cron
+systemctl restart cron
 
-echo "Docker and Docker Compose plugin are installed."
+echo "Docker, Docker Compose plugin, and cron are installed."
