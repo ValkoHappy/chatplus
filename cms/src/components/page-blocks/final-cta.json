@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_page_blocks_final_ctas",
+  "info": {
+    "displayName": "Final CTA Block"
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "primary_label": {
+      "type": "string"
+    },
+    "primary_url": {
+      "type": "string"
+    },
+    "secondary_label": {
+      "type": "string"
+    },
+    "secondary_url": {
+      "type": "string"
+    }
+  }
+}

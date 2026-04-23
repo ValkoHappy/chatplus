@@ -1,4 +1,4 @@
-# File Map CHATPLUS
+# Карта файлов CHATPLUS
 
 Быстрая карта проекта: куда идти, если нужно найти конкретную логику.
 
@@ -10,14 +10,14 @@
 - `docs/` — handoff и runbooks
 - `pages-preview/` — demo snapshot
 
-## 2. Frontend
+## 2. Фронтенд
 
-### Layout и глобальная обвязка
+### Layout-слой и глобальная обвязка
 
 - `portal/src/layouts/Base.astro` — header, footer, глобальный layout
 - `portal/src/styles/global.css` — глобальные стили
 
-### Активные page templates
+### Активные шаблоны страниц
 
 - `portal/src/components/HomePage.astro`
 - `portal/src/components/StructuredLandingPage.astro`
@@ -30,14 +30,14 @@
 - `portal/src/components/ComparisonPage.astro`
 - `portal/src/components/CampaignPage.astro`
 
-### Shared sections
+### Общие секции
 
 - `portal/src/components/FaqSection.astro`
 - `portal/src/components/InternalLinksSection.astro`
 - `portal/src/components/NavigationGroupsSection.astro`
 - `portal/src/components/ChatIllustration.astro`
 
-### Data access и adapters
+### Доступ к данным и адаптеры
 
 - `portal/src/lib/strapi.ts` — fetch и нормализация данных из Strapi
 - `portal/src/lib/page-adapters.ts` — public facade для adapters; старый import path сохранен
@@ -52,20 +52,20 @@
 
 ## 3. CMS
 
-### Главные content types
+### Главные content-типы
 
 - `cms/src/api/landing-page/content-types/landing-page/schema.json`
 - `cms/src/api/competitor/content-types/competitor/schema.json`
 - `cms/src/api/site-setting/content-types/site-setting/schema.json`
 - `cms/src/api/tenders-page/content-types/tenders-page/schema.json`
 
-### Generated type definitions
+### Сгенерированные определения типов
 
 - `cms/types/generated/contentTypes.d.ts`
 
-## 4. Seeds и materialized data
+## 4. Seed-данные и materialized-data
 
-### Source-level seeds
+### Seed-данные уровня источника
 
 - `cms/seed/channels.json`
 - `cms/seed/industries.json`
@@ -74,7 +74,7 @@
 - `cms/seed/solutions.json`
 - `cms/seed/competitors.json`
 
-### Generated-level snapshots
+### Снимки сгенерированного уровня
 
 Materialized snapshot-слой, а не ручной рабочий источник истины:
 
@@ -91,7 +91,7 @@ Materialized snapshot-слой, а не ручной рабочий источн
 
 ## 5. Scripts
 
-### Generator/import/export
+### Генерация, импорт и экспорт
 
 - `scripts/seed-runtime-content.mjs` — CLI orchestrator и public entrypoint для `seed-content`
 - `scripts/seed-runtime-content/env.mjs` — загрузка `.env` и JSON source-файлов
@@ -102,7 +102,7 @@ Materialized snapshot-слой, а не ручной рабочий источн
 - `scripts/seed-runtime-content/strapi-client.mjs` — Strapi request/upsert logic
 - `scripts/export-from-strapi.mjs` — export materialized data обратно в legacy bootstrap-слой `cms/seed/generated`
 
-### Frontend QA
+### QA фронтенда
 
 - `portal/scripts/check-content-quality.mjs`
 - `portal/scripts/check-internal-links.mjs`
@@ -145,7 +145,7 @@ Materialized snapshot-слой, а не ручной рабочий источн
 - `portal/src/lib/page-adapters/intersections.ts`
 - `portal/src/lib/page-adapters/specialized.ts`
 
-### Где менять Open Graph / global SEO shell
+### Где менять Open Graph / глобальную SEO-обвязку
 
 - `portal/src/layouts/Base.astro`
 
@@ -162,7 +162,7 @@ Materialized snapshot-слой, а не ручной рабочий источн
 - `scripts/seed-runtime-content/ownership.mjs`
 - `scripts/seed-runtime-content.mjs`
 
-### Где смотреть publish flow
+### Где смотреть поток публикации
 
 - `docs/release-flow.md`
 - `docs/publishing-checklist.md`

@@ -1,8 +1,9 @@
 ---
+import PageV2Page from '../../components/PageV2Page.astro';
 import TendersPage from '../../components/TendersPage.astro';
-import { getTendersPage } from '../../lib/strapi';
+import { getManagedRoutePage, getTendersPage } from '../../lib/strapi';
 
-const page = await getTendersPage();
+const resolved = await getManagedRoutePage('/solutions/tenders', () => getTendersPage());
 ---
 
-<TendersPage page={page} />
+{resolved.kind === 'page_v2' ? <PageV2Page page={resolved.page} /> : <TendersPage page={resolved.page} />}

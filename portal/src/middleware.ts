@@ -1,6 +1,13 @@
 import { defineMiddleware } from 'astro:middleware';
+import { normalizeInternalPath, shouldRedirectTrailingSlash } from './lib/urls.ts';
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  if (shouldRedirectTrailingSlash(context.url.pathname)) {
+    const redirectURL = new URL(context.url.toString());
+    redirectURL.pathname = normalizeInternalPath(context.url.pathname);
+    return Response.redirect(redirectURL, 308);
+  }
+
   const response = await next();
   const ct = response.headers.get('content-type') ?? '';
   if (ct.includes('text/html') && !ct.includes('charset')) {

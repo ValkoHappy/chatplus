@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_page_blocks_stat_items",
+  "info": {
+    "displayName": "Stat Item"
+  },
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

@@ -1,0 +1,250 @@
+---
+import { Icon } from 'astro-icon/components';
+import { withBasePath } from '../../lib/urls';
+
+const { section, templateVariant = 'default' } = Astro.props as {
+  section: Record<string, any>;
+  templateVariant?: string;
+};
+
+const toHref = (href?: string) => withBasePath(href);
+const trustFacts = Array.isArray(section.trust_facts) ? section.trust_facts.filter(Boolean) : [];
+const panelItems = Array.isArray(section.panel_items) ? section.panel_items : [];
+const variant = section.variant || 'default';
+---
+
+<section class:list={['pagev2-hero', `pagev2-hero--${templateVariant}`, `pagev2-hero--variant-${variant}`]}>
+  <div class="container pagev2-hero__inner">
+    <div class="pagev2-hero__copy">
+      {section.eyebrow && <span class="pagev2-hero__eyebrow">{section.eyebrow}</span>}
+      <h1>{section.title}</h1>
+      {section.subtitle && <p>{section.subtitle}</p>}
+      {(section.primary_label || section.secondary_label) && (
+        <div class="pagev2-hero__actions">
+          {section.primary_label && section.primary_url && (
+            <a href={toHref(section.primary_url)} class="btn-primary">{section.primary_label}</a>
+          )}
+          {section.secondary_label && section.secondary_url && (
+            <a href={toHref(section.secondary_url)} class="btn-outline">{section.secondary_label}</a>
+          )}
+        </div>
+      )}
+
+      {trustFacts.length > 0 && (
+        <ul class="pagev2-hero__trust-list">
+          {trustFacts.map((fact) => (
+            <li>
+              <Icon name="lucide:circle-check-big" />
+              <span>{fact}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+
+    {(panelItems.length > 0 || section.context_title || section.context_text) && (
+      <aside class="pagev2-hero__panel">
+        {(section.context_title || section.context_text) && (
+          <div class="pagev2-hero__panel-copy">
+            {section.context_title && <span>{section.context_title}</span>}
+            {section.context_text && <strong>{section.context_text}</strong>}
+          </div>
+        )}
+
+        {panelItems.length > 0 && (
+          <div class="pagev2-hero__panel-grid">
+            {panelItems.map((item) => (
+              <article class="pagev2-hero__panel-card">
+                <div class="pagev2-hero__panel-head">
+                  {item.icon && (
+                    <span class="pagev2-hero__panel-icon">
+                      <Icon name={item.icon} />
+                    </span>
+                  )}
+                  <div>
+                    {(item.eyebrow || item.title) && <span class="pagev2-hero__panel-label">{item.eyebrow || item.title}</span>}
+                    {item.title && <strong class="pagev2-hero__panel-title">{item.title}</strong>}
+                  </div>
+                </div>
+                {item.text && <p>{item.text}</p>}
+                {item.secondary_text && <p class="pagev2-hero__panel-secondary">{item.secondary_text}</p>}
+              </article>
+            ))}
+          </div>
+        )}
+      </aside>
+    )}
+  </div>
+</section>
+
+<style>
+  .pagev2-hero {
+    padding: clamp(3.6rem, 7vw, 5.4rem) 0;
+    color: #fff;
+    background: linear-gradient(135deg, #0f172a 0%, #1f2557 52%, #312e81 100%);
+  }
+
+  .pagev2-hero--editorial {
+    background: linear-gradient(135deg, #0f172a 0%, #19324f 52%, #155e75 100%);
+  }
+
+  .pagev2-hero--showcase {
+    background: linear-gradient(135deg, #0f172a 0%, #312e81 48%, #7c3aed 100%);
+  }
+
+  .pagev2-hero--minimal {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .pagev2-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, .86fr);
+    gap: 1.2rem;
+    align-items: start;
+  }
+
+  .pagev2-hero__eyebrow {
+    display: inline-flex;
+    padding: .42rem .82rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .12);
+    color: #dbe4ff;
+    font-size: .74rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .pagev2-hero h1 {
+    margin: .95rem 0 0;
+    font-size: clamp(2.4rem, 5vw, 4.4rem);
+    line-height: .98;
+    letter-spacing: -.05em;
+  }
+
+  .pagev2-hero p {
+    margin: 1rem 0 0;
+    max-width: 60ch;
+    color: #dbe4ff;
+    line-height: 1.8;
+  }
+
+  .pagev2-hero__actions {
+    display: flex;
+    gap: .85rem;
+    flex-wrap: wrap;
+    margin-top: 1.4rem;
+  }
+
+  .pagev2-hero__actions :global(.btn-outline) {
+    border-color: rgba(255, 255, 255, .28);
+    background: transparent;
+    color: #fff;
+  }
+
+  .pagev2-hero__trust-list {
+    display: grid;
+    gap: .75rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.4rem 0 0;
+  }
+
+  .pagev2-hero__trust-list li {
+    display: flex;
+    gap: .65rem;
+    align-items: flex-start;
+    color: #dbe4ff;
+    font-weight: 600;
+  }
+
+  .pagev2-hero__trust-list :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    color: #86efac;
+    flex-shrink: 0;
+    margin-top: .2rem;
+  }
+
+  .pagev2-hero__panel {
+    display: grid;
+    gap: .9rem;
+  }
+
+  .pagev2-hero__panel-copy,
+  .pagev2-hero__panel-card {
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .14);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .14);
+  }
+
+  .pagev2-hero__panel-copy span {
+    display: block;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #c7d2fe;
+  }
+
+  .pagev2-hero__panel-copy strong {
+    display: block;
+    margin-top: .35rem;
+    line-height: 1.45;
+  }
+
+  .pagev2-hero__panel-grid {
+    display: grid;
+    gap: .8rem;
+  }
+
+  .pagev2-hero__panel-head {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+  }
+
+  .pagev2-hero__panel-icon {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .16);
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .pagev2-hero__panel-label {
+    display: block;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #c7d2fe;
+  }
+
+  .pagev2-hero__panel-title {
+    display: block;
+    margin-top: .15rem;
+    color: #fff;
+  }
+
+  .pagev2-hero__panel-card p {
+    margin-top: .65rem;
+  }
+
+  .pagev2-hero__panel-secondary {
+    color: #e2e8f0;
+    font-size: .95rem;
+  }
+
+  @media (max-width: 900px) {
+    .pagev2-hero__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

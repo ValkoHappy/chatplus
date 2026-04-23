@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Run queued scheduled page_v2 AI jobs every 30 minutes
+*/30 * * * * cd /srv/chatplus && npm run page-v2:generate:scheduled >> /var/log/chatplus-page-v2-ai.log 2>&1

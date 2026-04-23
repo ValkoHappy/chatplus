@@ -1,0 +1,202 @@
+---
+import { Icon } from 'astro-icon/components';
+import { withBasePath } from '../../lib/urls';
+
+const { section } = Astro.props as { section: Record<string, any> };
+const items = Array.isArray(section.items) ? section.items : [];
+const toHref = (href?: string) => withBasePath(href);
+---
+
+{items.length > 0 && (
+  <section class="section">
+    <div class="container">
+      {(section.title || section.intro) && (
+        <div class="section-header">
+          {section.title && <h2>{section.title}</h2>}
+          {section.intro && <p>{section.intro}</p>}
+        </div>
+      )}
+
+      <div class="pagev2-pricing-grid">
+        {items.map((item) => (
+          <article class:list={['pagev2-pricing-card', item.accent && 'pagev2-pricing-card--accent']}>
+            <div class="pagev2-pricing-card__top">
+              <div class="pagev2-pricing-chip">
+                {item.icon && <Icon name={item.icon} />}
+                <span>{item.label || item.title}</span>
+              </div>
+              {item.accent && <span class="pagev2-pricing-badge">Popular</span>}
+            </div>
+
+            {item.kicker && <p class="pagev2-pricing-kicker">{item.kicker}</p>}
+
+            <div class="pagev2-pricing-price">
+              {item.price && <strong>{item.price}</strong>}
+              {item.period && <span>{item.period}</span>}
+            </div>
+
+            {item.note && <p class="pagev2-pricing-note">{item.note}</p>}
+            {item.text && <p class="pagev2-pricing-text">{item.text}</p>}
+
+            {Array.isArray(item.features) && item.features.length > 0 && (
+              <ul class="pagev2-pricing-features">
+                {item.features.map((feature: string) => (
+                  <li>
+                    <Icon name="lucide:circle-check-big" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {item.cta_label && item.cta_url && (
+              <a href={toHref(item.cta_url)} class:list={['pagev2-pricing-cta', item.accent && 'pagev2-pricing-cta--accent']}>
+                {item.cta_label}
+              </a>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .pagev2-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .pagev2-pricing-card {
+    padding: 1.35rem;
+    border-radius: 22px;
+    border: 1px solid #e2e8f0;
+    background: linear-gradient(180deg, #fff, #fbfcff);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .05);
+  }
+
+  .pagev2-pricing-card--accent {
+    border-color: #6366f1;
+    box-shadow: 0 22px 44px rgba(99, 102, 241, .14);
+  }
+
+  .pagev2-pricing-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+  }
+
+  .pagev2-pricing-chip,
+  .pagev2-pricing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .4rem .7rem;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 700;
+  }
+
+  .pagev2-pricing-chip {
+    background: #eef2ff;
+    color: #4338ca;
+  }
+
+  .pagev2-pricing-badge {
+    background: #ede9fe;
+    color: #5b21b6;
+  }
+
+  .pagev2-pricing-kicker {
+    margin-top: .9rem;
+    color: #64748b;
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .pagev2-pricing-price {
+    display: flex;
+    align-items: flex-end;
+    gap: .35rem;
+    margin-top: .75rem;
+  }
+
+  .pagev2-pricing-price strong {
+    font-size: clamp(1.9rem, 3vw, 2.6rem);
+    line-height: 1;
+    letter-spacing: -.04em;
+    color: #0f172a;
+  }
+
+  .pagev2-pricing-price span {
+    color: #64748b;
+    font-weight: 700;
+  }
+
+  .pagev2-pricing-note,
+  .pagev2-pricing-text {
+    color: #475569;
+    line-height: 1.7;
+  }
+
+  .pagev2-pricing-note {
+    margin-top: .45rem;
+  }
+
+  .pagev2-pricing-text {
+    margin-top: .9rem;
+  }
+
+  .pagev2-pricing-features {
+    display: grid;
+    gap: .65rem;
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+  }
+
+  .pagev2-pricing-features li {
+    display: flex;
+    gap: .6rem;
+    align-items: flex-start;
+    color: #334155;
+  }
+
+  .pagev2-pricing-features :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    color: #4f46e5;
+    flex-shrink: 0;
+    margin-top: .15rem;
+  }
+
+  .pagev2-pricing-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    margin-top: 1.1rem;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #0f172a;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .pagev2-pricing-cta--accent {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border-color: transparent;
+    color: #fff;
+  }
+
+  @media (max-width: 980px) {
+    .pagev2-pricing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

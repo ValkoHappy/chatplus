@@ -1,8 +1,8 @@
-# Known Risks CHATPLUS
+# Известные риски CHATPLUS
 
 Этот файл фиксирует не баги “на потом”, а текущие ограничения и осознанные риски проекта, чтобы их не путали с неожиданными поломками.
 
-## 1. Первый production rollout все еще требует оператора
+## 1. Первый production-rollout всё ещё требует оператора
 
 Сейчас основной рабочий режим проекта — server-first `VPS + docker`.
 
@@ -15,7 +15,7 @@
 
 - без живого runbook и smoke-проверки можно решить, что deploy уже полностью self-service, хотя initial bootstrap еще не wizard-driven
 
-## 2. GitHub Pages — это только optional demo-витрина
+## 2. GitHub Pages — это только опциональная demo-витрина
 
 На GitHub Pages живет только demo snapshot, если команда сознательно использует showcase-flow.
 
@@ -29,7 +29,7 @@
 
 - если это не понимать, можно принять demo-витрину за основной production-контур
 
-## 3. Safe fallback-и все еще существуют
+## 3. Безопасные fallback-механики всё ещё существуют
 
 В adapters и templates все еще есть безопасные fallback-и, потому что они нужны для устойчивости imported/catalog family.
 
@@ -42,7 +42,7 @@
 
 - новый инженер может попытаться “добить до нуля” все fallback-и и сломать устойчивость build
 
-## 4. Block system пока contract-first, но не fully dynamic
+## 4. Блочная система пока contract-first, но ещё не полностью dynamic
 
 Сейчас проект не использует полноценную универсальную dynamic block-system.
 
@@ -55,7 +55,7 @@
 
 - попытка быстро добавить новый блок “просто в CMS” приведет к расхождению contracts
 
-## 5. Programmatic family нельзя вести как ручной контент
+## 5. Programmatic-family нельзя вести как ручной контент
 
 `solution`, `feature`, `industry`, `integration`, `competitor` и пересечения остаются importer-driven catalog family.
 
@@ -63,7 +63,7 @@
 
 - если начать заводить их руками в Strapi, source-of-truth расползется
 
-## 6. Замена шаблона — это часто schema-level change
+## 6. Замена шаблона — это часто изменение на уровне схемы
 
 Нельзя считать замену одного `template_kind` другим просто “переключением компонента”.
 
@@ -72,7 +72,7 @@
 - route начнет ждать другой набор полей
 - docs, adapters и validation разъедутся
 
-## 7. Ручной visual QA все еще обязателен
+## 7. Ручной visual QA всё ещё обязателен
 
 Даже если:
 
@@ -118,7 +118,7 @@ Docs уже покрывают проект хорошо, но только по
 - fully routine publish flow без ручных донастроек
 - recovery discipline и регулярный backup/restore smoke
 
-## 11. Первый CI gate уже есть, но он не убирает secret dependency
+## 11. Первый CI-gate уже есть, но он не убирает secret dependency
 
 PR workflow `CI` улучшает защиту до merge, но не снимает текущее ограничение:
 

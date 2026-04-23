@@ -1,188 +1,193 @@
-# Как добавить страницу
+# Как добавлять страницы
 
-Этот документ разделяет три сценария:
+Этот документ разделяет реальные сценарии создания страниц в `CHATPLUS`.
 
-- добавить новую imported page
-- добавить новую managed singleton page
-- добавить новый template kind
-- изменить существующий шаблон
-- заменить один шаблон другим
+## Главное правило
 
-## Сценарий 1. Новая imported page
+Если вам нужна новая публичная managed page, создавайте её через `page_v2`.
 
-Примеры:
+Не продолжайте по умолчанию расширять legacy `landing-page` как основную модель новых routes.
 
-- новый `solution`
-- новый `feature`
-- новый `industry`
-- новый `integration`
-- новый `competitor`
+## Сценарий 1. Новая managed page через `page_v2`
 
-### Шаги
+Используйте этот путь для:
 
-1. Найти нужный source seed в `cms/seed/*.json` или AI batch payload.
-2. Добавить новую запись.
-3. Запустить:
-
-```powershell
-npm.cmd run seed-content
-```
-
-4. Проверить, что запись появилась в Strapi как `record_mode = imported`.
-5. Собрать frontend:
-
-```powershell
-npm.cmd --prefix portal run build
-```
-
-6. Открыть новый route локально.
-
-## Сценарий 2. Новая managed singleton page
-
-Примеры:
-
-- новая resource page
-- новая brand page
-- новая campaign page
+- новых campaign pages
+- новых brand pages
+- новых resource pages
+- любых новых manual routes вне imported catalog families
 
 ### Шаги
 
-1. Создать запись `landing-page` в Strapi.
-2. Выставить:
+1. Создайте запись `page-v2` в `Strapi`
+2. Заполните минимум:
    - `slug`
-   - `template_kind`
-   - `content_origin = managed`
-3. Заполнить контент.
-4. Убедиться, что frontend знает, какой шаблон рендерить для такого slug и template.
-5. Собрать frontend:
+   - `route_path`
+   - `title`
+   - `page_kind`
+   - `template_variant`
+   - `seo_title`
+   - `seo_description`
+3. Если страница должна участвовать в структуре сайта, дополнительно задайте:
+   - `show_in_header`
+   - `show_in_footer`
+   - `show_in_sitemap`
+   - `nav_group`
+   - `nav_label`
+   - `nav_order`
+   - `parent_page`
+4. Соберите страницу через dynamic zone `sections`
+5. При необходимости свяжите её с entities
+6. Сохраните как draft
+7. Прогоните локальную сборку:
 
 ```powershell
-npm.cmd --prefix portal run build
+npm --prefix portal run build
 ```
 
-6. Проверить страницу локально.
-
-## Сценарий 3. Новый `template_kind`
-
-Это уже инженерная задача.
-
-Нужно:
-
-1. Описать новый template contract.
-2. Обновить schema, если нужны новые CMS-owned поля.
-3. Обновить import/generator validation.
-4. Обновить route-template mapping.
-5. Обновить документацию.
-6. Только потом внедрять шаблон.
-
-## Сценарий 4. Новый CMS-owned блок
-
-Это не “версточная мелочь”, а изменение контракта.
-
-### Шаги
-
-1. Описать block contract в docs:
-   - `block_type`
-   - allowed `template_kind`
-   - ownership
-   - required fields
-   - optional fields
-   - fallback behavior
-2. Если блок идет из CMS, обновить schema.
-3. Обновить generator/import validation.
-4. Обновить adapter layer.
-5. Только после этого рендерить блок во frontend.
-6. Прогнать build и representative routes.
-
-## Сценарий 5. Изменить существующий шаблон
-
-Это самый частый реальный сценарий: шаблон уже есть, но нужно поменять его верстку, порядок секций, карточки, CTA или поведение на tablet/mobile.
-
-### Шаги
-
-1. Определить, что именно меняется:
-   - только layout/styling
-   - contract текущего блока
-   - required fields
-   - ownership блока
-2. Проверить контракт шаблона в `docs/template-contracts.md`.
-3. Определить internal module, где живет нужная логика:
-   - общие helpers/fallbacks -> `portal/src/lib/page-adapters/shared.ts`
-   - detail adapters -> `portal/src/lib/page-adapters/details.ts`
-   - intersection adapters -> `portal/src/lib/page-adapters/intersections.ts`
-   - specialized adapters -> `portal/src/lib/page-adapters/specialized.ts`
-4. Если меняется только визуал, работать можно во frontend без schema changes.
-5. Если меняется CMS-owned блок или набор его полей:
-   - обновить docs
-   - обновить schema при необходимости
-   - обновить generator/import validation
-   - обновить adapter layer
-6. Проверить representative routes этого template family.
-7. Прогнать build:
-
-```powershell
-npm.cmd --prefix portal run build
-```
+8. Опубликуйте страницу
+9. Убедитесь, что сайт пересобрался
 
 ### Важно
 
-- Нельзя хардкодить новый пользовательский текст в шаблон, если этот текст должен редактироваться в CMS.
-- Нельзя менять template-owned блок так, чтобы он начинал ждать CMS-поля без обновления контракта.
-- Если правка затрагивает секции, CTA, FAQ, hero или side-panels, нужно проверить desktop, tablet и mobile.
-- `portal/src/lib/page-adapters.ts` остается public facade; внутренние изменения обычно вносятся в `page-adapters/*`, а не в фасад.
+- `route_path` не должен конфликтовать с immutable reserved routes вроде `/admin`, `/api`, `/site-map`, `/compare` и imported catalog roots
+- для новых `page_v2` routes не нужен новый `.astro` файл
+- navigation и sitemap управляются из самой CMS-записи
 
-## Сценарий 6. Заменить один шаблон другим
+## Сценарий 2. Миграция существующего legacy managed-маршрута
 
-Это уже не просто версточная правка, а изменение route/template contract.
+Используйте этот путь, когда route уже существует в legacy wrapper-ах и вы хотите передать ownership `page_v2`, не удаляя wrapper.
 
-Примеры:
+Поддерживаемые migratable exact routes:
 
-- страница раньше рендерилась как `resource-hub`, а должна стать `brand-content`
-- singleton page переводится на новый `template_kind`
-- старый шаблон выводится из эксплуатации
+- `/`
+- `/pricing`
+- `/partnership`
+- `/docs`
+- `/help`
+- `/academy`
+- `/blog`
+- `/status`
+- `/media`
+- `/team`
+- `/conversation`
+- `/tv`
+- `/promo`
+- `/prozorro`
+- `/demo`
+- `/solutions/tenders`
+
+### Правило выбора источника
+
+- если published `page_v2` существует на exact route, frontend рендерит `page_v2`
+- иначе frontend остаётся на legacy source
+
+Draft не может перехватить legacy route.
+
+### Рекомендуемый сценарий миграции
+
+1. Создайте `page_v2` с тем же `route_path`
+2. Воссоздайте content structure через blueprint и blocks
+3. Настройте nav, sitemap, breadcrumbs и internal links в `page_v2`
+4. Проверьте страницу локально
+5. Только потом публикуйте
+6. После publish подтвердите, что route реально рендерится из `page_v2`
+
+### Правило защиты от поломок
+
+Нельзя считать route migrated только потому, что `page_v2` создан.
+
+Route считается migrated только если:
+
+- сохранены ключевые section patterns
+- nav и sitemap не сломаны
+- breadcrumbs корректны
+- parity smoke пройден
+
+Если parity ломается, route остаётся на legacy source.
+
+## Сценарий 3. Новая imported page
+
+Используйте этот путь для imported catalog и SEO entities:
+
+- `solution`
+- `feature`
+- `industry`
+- `integration`
+- `channel`
+- `business-type`
+- `competitor`
 
 ### Шаги
 
-1. Проверить ownership маршрута:
-   - `managed` или `imported`
-2. Проверить, поддерживает ли новый шаблон существующие поля страницы.
-3. Если не поддерживает:
-   - описать новый contract
-   - обновить schema
-   - обновить generator/import validation
-   - обновить adapters
-4. Обновить route-template mapping во frontend.
-5. Если это `managed` singleton:
-   - обновить `template_kind` в Strapi
-   - убедиться, что `content_origin` не меняется случайно
-6. Если это `imported` family:
-   - обновить source seed/import contract
-   - не делать такой перевод вручную только в админке
-7. Обновить документацию:
-   - `template-contracts.md`
-   - `route-ownership-matrix.md`
-   - при необходимости `docs/index.md`
-8. Прогнать build и representative routes.
+1. Обновите source seed или generation payload
+2. Запустите importer:
 
-Если при замене шаблона меняется seed/import/runtime contract, сначала определите зону изменения:
+```powershell
+npm run seed-content
+```
 
-- `rules.mjs`
-- `validators.mjs`
-- `ownership.mjs`
-- `normalizers.mjs`
-- `strapi-client.mjs`
+3. Убедитесь, что запись появилась в `Strapi` как `record_mode = imported`
+4. Соберите frontend:
+
+```powershell
+npm --prefix portal run build
+```
+
+5. Проверьте публичный route локально
+
+## Сценарий 4. Поддержка старой legacy singleton-страницы
+
+Используйте это только когда надо поддерживать уже существующую legacy family и вы пока не переводите её в `page_v2`.
+
+### Шаги
+
+1. Обновите legacy content type, например `landing-page` или `tenders-page`
+2. Сохраните текущий `slug`, `template_kind` и ownership contract
+3. Соберите проект и проверьте representative routes
 
 ### Важно
 
-- Замена шаблона без обновления docs и adapters считается unsafe change.
-- Нельзя просто переключить route на другой `.astro`, если новый шаблон ждет другой набор полей.
-- Если старый шаблон выводится из эксплуатации, это надо явно зафиксировать в docs.
+- не добавляйте новые manual route families через legacy `landing-page`
+- legacy content types — это maintenance path, а не preferred future model
 
-## Что проверить после добавления страницы
+## Сценарий 5. Добавление нового CMS-owned блока
 
-- страница открывается локально
-- прошел `npm.cmd --prefix portal run build`
-- новый маршрут соответствует ownership-модели
-- страница не нарушает `managed` / `imported` contract
-- если добавлялся новый блок, его contract описан в docs и валидируется
-- если менялся или заменялся шаблон, route-template mapping и docs обновлены синхронно
+Это уже engineering change, а не только editor work.
+
+### Шаги
+
+1. Определите block contract
+2. Добавьте schema компонента в `Strapi`
+3. Добавьте normalization во frontend data layer
+4. Добавьте renderer
+5. Добавьте тесты
+6. Прогоните build и representative route checks
+
+## Сценарий 6. Изменение существующего template или page family
+
+Это тоже engineering change.
+
+### Шаги
+
+1. Определите, влияет ли изменение только на styling или ещё и на data contract
+2. Обновите нужные adapters или `page_v2` renderer
+3. Если меняется data contract, обновите schema и docs вместе
+4. Пересоберите проект и проверьте representative routes
+
+## Что проверять после добавления или migration страницы
+
+- route открывается локально
+- `npm --prefix portal run build` проходит
+- страница соблюдает managed/imported ownership rules
+- если это новая managed page, она использует `page_v2`
+- если это migrated route, `page_v2` выигрывает только после publish
+- sitemap и navigation корректны
+- breadcrumbs и internal links идут из page-owned data
+
+## Связанные документы
+
+- [Конструктор managed-страниц](page-v2-manual-builder.md)
+- [Миграция managed routes](managed-route-migration.md)
+- [Гайд оператора](operator-guide.md)
+

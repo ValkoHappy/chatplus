@@ -1,8 +1,8 @@
 ﻿---
 import '../styles/global.css';
-import { getSiteSettings } from '../lib/strapi';
+import { getPageV2Pages, getSiteSettings } from '../lib/strapi';
 import { getFooterColumns, getHeaderLinks, getMobileNavSections, isPathActive } from '../lib/navigation';
-import { withBasePath } from '../lib/urls';
+import { normalizeInternalPath, withBasePath } from '../lib/urls';
 
 export interface Props {
   title: string;
@@ -22,10 +22,10 @@ const {
 
 const settings = await getSiteSettings();
 const site = (Astro.site?.toString() || settings.site_url).replace(/\/$/, '');
-const pathname = Astro.url.pathname;
+const pathname = normalizeInternalPath(Astro.url.pathname);
 const isDemoPreview = site.includes('github.io/chatplus');
 const finalDescription = description || settings.default_description;
-const canonicalURL = (isDemoPreview ? null : canonical) || new URL(Astro.url.pathname, `${site}/`).toString();
+const canonicalURL = (isDemoPreview ? null : canonical) || new URL(pathname, `${site}/`).toString();
 const ogImage = /^https?:\/\//.test(image) ? image : `${site}${image.startsWith('/') ? image : `/${image}`}`;
 const ogImageType = ogImage.toLowerCase().endsWith('.png')
   ? 'image/png'
@@ -37,8 +37,9 @@ const ogImageType = ogImage.toLowerCase().endsWith('.png')
         ? 'image/svg+xml'
         : undefined;
 const siteName = settings.site_name?.trim() || 'Chat Plus';
-const headerLinks = getHeaderLinks(settings.header_links);
-const footerColumns = getFooterColumns(settings.footer_columns);
+const pageV2Pages = await getPageV2Pages();
+const headerLinks = getHeaderLinks(settings.header_links, pageV2Pages);
+const footerColumns = getFooterColumns(settings.footer_columns, pageV2Pages);
 const mobileNavSections = getMobileNavSections(headerLinks, footerColumns);
 const toHref = (href?: string) => withBasePath(href);
 const normalizedTitle = (title || '').trim();

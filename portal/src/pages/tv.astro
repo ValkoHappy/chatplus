@@ -1,8 +1,9 @@
 ---
+import PageV2Page from '../components/PageV2Page.astro';
 import BrandContentPage from '../components/BrandContentPage.astro';
-import { getLandingPage } from '../lib/strapi';
+import { getLandingPage, getManagedRoutePage } from '../lib/strapi';
 
-const page = await getLandingPage('tv');
+const resolved = await getManagedRoutePage('/tv', () => getLandingPage('tv'));
 ---
 
-<BrandContentPage page={page} />
+{resolved.kind === 'page_v2' ? <PageV2Page page={resolved.page} /> : <BrandContentPage page={resolved.page} />}

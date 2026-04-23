@@ -1,8 +1,9 @@
 ---
+import PageV2Page from '../../components/PageV2Page.astro';
 import ResourceHubPage from '../../components/ResourceHubPage.astro';
-import { getLandingPage } from '../../lib/strapi';
+import { getLandingPage, getManagedRoutePage } from '../../lib/strapi';
 
-const page = await getLandingPage('blog');
+const resolved = await getManagedRoutePage('/blog', () => getLandingPage('blog'));
 ---
 
-<ResourceHubPage page={page} />
+{resolved.kind === 'page_v2' ? <PageV2Page page={resolved.page} /> : <ResourceHubPage page={resolved.page} />}

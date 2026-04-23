@@ -1,59 +1,65 @@
 # Документация CHATPLUS
 
-Главная карта проекта. Это первый файл, который стоит открыть перед работой с репозиторием.
+Главная карта проекта. Этот файл стоит открыть первым перед работой с репозиторием.
 
 ## Что это за проект
 
-`CHATPLUS` — это контентный сайт на `Astro`, который берет данные из `Strapi`.
+`CHATPLUS` — это контентный сайт на `Astro`, который получает данные из `Strapi`.
 
 В проекте есть:
 
 - `portal/` — фронтенд
-- `cms/` — Strapi CMS
-- `scripts/` — importer, генерация и служебные content-скрипты
+- `cms/` — `Strapi` CMS
+- `scripts/` — importer, AI generation и служебные content-скрипты
 - `pages-preview/` — legacy demo snapshot для showcase-режима
 
-Основной рабочий режим проекта сейчас server-first:
+Основной рабочий режим сейчас server-first:
 
 - `Strapi + Postgres + uploads` живут на VPS
 - `Astro` собирает публичную статику
-- `nginx` отдает сайт и reverse proxy на CMS
-- `pages-preview/` нужен только для optional demo-потока
+- `nginx` отдаёт сайт и проксирует CMS
 
 ## Главный принцип
 
 Текущая рабочая модель:
 
-- `managed` — запись редактируется руками в `Strapi`
-- `imported` — запись создается importer-ом и живет в `Strapi`
-- `settings` — singleton/system records
+- `managed` — запись редактируется вручную в `Strapi`
+- `imported` — запись создаётся importer-ом и затем живёт в `Strapi`
+- `settings` — singleton и системные записи
 
-Старый термин `generated` теперь считается legacy-слоем совместимости и не должен использоваться как основная редакторская логика.
+Для всех новых ручных managed pages действует отдельное правило:
+
+- новый route создаётся через `page_v2`
+- legacy `landing-page` не расширяется под новые manual routes
 
 ## Порядок чтения для инженера
 
 1. [Архитектура](architecture.md)
 2. [Глоссарий](glossary.md)
 3. [CMS-модель](cms-model.md)
-4. [Контентный workflow](content-workflow.md)
-5. [Политика импорта](import-policy.md)
-6. [Матрица маршрутов и ownership](route-ownership-matrix.md)
-7. [Контракты шаблонов](template-contracts.md)
-8. [Карта файлов](file-map.md)
-9. [Контракт безопасных изменений](change-safety.md)
-10. [Troubleshooting](troubleshooting.md)
-11. [Release Flow](release-flow.md)
-12. [Гайд оператора](operator-guide.md)
-13. [Деплой](../DEPLOY.md)
+4. [Конструктор managed-страниц](page-v2-manual-builder.md)
+5. [Миграция managed routes](managed-route-migration.md)
+6. [Передача следующего production-этапа](manual-first-production-handoff.md)
+6. [AI-генерация черновиков](ai-page-generation.md)
+6. [Контентный workflow](content-workflow.md)
+7. [Политика импорта](import-policy.md)
+8. [Матрица маршрутов и ownership](route-ownership-matrix.md)
+9. [Контракты шаблонов](template-contracts.md)
+10. [Карта файлов](file-map.md)
+11. [Контракт безопасных изменений](change-safety.md)
+12. [Диагностика неполадок](troubleshooting.md)
+13. [Релизный поток](release-flow.md)
+14. [Гайд оператора](operator-guide.md)
+16. [Production Deploy](../deploy/DEPLOY_PRODUCTION.md)
 
-## Порядок чтения для оператора или редактора
+## Порядок чтения для оператора и редактора
 
 1. [Быстрый запуск на VPS](start-here-vps.md)
 2. [Быстрый вход для владельца](owner-quickstart.md)
 3. [Гайд оператора](operator-guide.md)
 4. [Контентный workflow](content-workflow.md)
-5. [Release Flow](release-flow.md)
-6. [Деплой](../DEPLOY.md)
+5. [Релизный поток](release-flow.md)
+6. [Production Deploy](../deploy/DEPLOY_PRODUCTION.md)
 
 ## Где что лежит
 
@@ -65,24 +71,25 @@ CHATPLUS/
 |- docs/            # актуальная документация
 |- pages-preview/   # optional demo snapshot
 |- .github/         # workflows
-|- DEPLOY.md        # deploy guide
+|- deploy/          # production и local runbooks
 `- README.md        # главный вход в проект
 ```
 
 ## Где источник истины
 
-### CMS
+### CMS и админка
 
 `Strapi` — главный редакторский интерфейс.
 
-В нем живут:
+В нём живут:
 
-- landing pages
+- legacy managed pages
+- новые `page_v2` managed pages
 - singleton pages
 - site settings
-- imported catalog/SEO записи после загрузки
+- imported catalog и SEO-записи после загрузки
 
-### Importer
+### Импорт и генерация
 
 Importer:
 
@@ -91,7 +98,7 @@ Importer:
 - пишет записи в `Strapi`
 - не должен слепо затирать ручные редакторские правки
 
-### Frontend
+### Фронтенд
 
 Frontend владеет только:
 
@@ -99,47 +106,15 @@ Frontend владеет только:
 - layout
 - стилями
 - render logic
-- shape normalization
+- safe shape normalization
 
-Frontend не должен становиться вторым источником пользовательского текста.
+Frontend не должен становиться вторым источником истины для copy.
 
-## Быстрый маршрут по типу задачи
-
-### Нужно понять CMS-модель
-
-Читайте:
-
-- [CMS-модель](cms-model.md)
-- [Политика импорта](import-policy.md)
-- [Контентный workflow](content-workflow.md)
-
-### Нужно менять шаблоны или адаптеры
-
-Читайте:
-
-- [Архитектура](architecture.md)
-- [Контракты шаблонов](template-contracts.md)
-- [Карта файлов](file-map.md)
-
-### Нужно разбираться с публикацией
-
-Читайте:
-
-- [Release Flow](release-flow.md)
-- [Гайд оператора](operator-guide.md)
-- [Production setup checklist](production-setup-checklist.md)
-- [Деплой](../DEPLOY.md)
-
-### Нужно быстро объяснить проект владельцу
-
-Начинайте отсюда:
-
-- [Быстрый вход для владельца](owner-quickstart.md)
-
-## Zero-Ambiguity правила
+## Правила без двусмысленности
 
 - не используйте `generated` как главный user-facing ownership термин
-- не правьте imported catalog/SEO записи руками как основной workflow
-- не хардкодьте user-facing copy во frontend, если его должен менять редактор
-- не добавляйте новый CMS-owned блок без обновления схемы, адаптеров и docs
+- не правьте imported catalog/SEO записи вручную как основной workflow
+- не хардкодьте user-facing copy во frontend, если её должен менять редактор
+- не добавляйте новый CMS-owned блок без обновления схемы, рендерера и docs
 - не публикуйте изменения без успешного `portal build`
+

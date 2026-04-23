@@ -1,0 +1,90 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const { section } = Astro.props as { section: Record<string, any> };
+const items = Array.isArray(section.items) ? section.items : [];
+---
+
+{items.length > 0 && (
+  <section class="section section-tonal">
+    <div class="container">
+      {(section.title || section.intro) && (
+        <div class="section-header">
+          {section.title && <h2>{section.title}</h2>}
+          {section.intro && <p>{section.intro}</p>}
+        </div>
+      )}
+      <div class="pagev2-features">
+        {items.map((item) => (
+          <article class="pagev2-feature">
+            <div class="pagev2-feature__bullet">
+              {item.icon ? <Icon name={item.icon} /> : null}
+            </div>
+            <div>
+              {item.eyebrow && <span class="pagev2-feature__eyebrow">{item.eyebrow}</span>}
+              <h3>{item.title}</h3>
+              {item.text && <p>{item.text}</p>}
+              {item.secondary_text && <p class="pagev2-feature__secondary">{item.secondary_text}</p>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .pagev2-features {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .pagev2-feature {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .9rem;
+    padding: 1rem 1.1rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .95);
+    border: 1px solid rgba(226, 232, 240, .95);
+  }
+
+  .pagev2-feature__bullet {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    margin-top: .2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, .08);
+  }
+
+  .pagev2-feature__eyebrow {
+    display: inline-block;
+    color: #6366f1;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .pagev2-feature h3 {
+    margin: .2rem 0 0;
+    color: #0f172a;
+    font-size: 1.02rem;
+  }
+
+  .pagev2-feature p {
+    margin: .45rem 0 0;
+    color: #475569;
+    line-height: 1.7;
+  }
+
+  .pagev2-feature__secondary {
+    color: #64748b;
+    font-size: .95rem;
+  }
+</style>

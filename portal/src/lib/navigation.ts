@@ -1,15 +1,29 @@
-import { stripBasePath } from './urls';
-import { getSpecialPageLinkMeta } from './special-pages';
+import { PAGE_V2_NAV_GROUPS } from '../../../config/page-v2-routes.mjs';
+import { stripBasePath } from './urls.ts';
+import { getSpecialPageLinkMeta } from './special-pages.ts';
 
 export interface NavLink {
   label: string;
   href: string;
   description?: string;
+  navOrder?: number;
 }
 
 export interface NavColumn {
   title: string;
   links: NavLink[];
+}
+
+export interface PageV2NavRecord {
+  route_path: string;
+  title?: string;
+  nav_label?: string;
+  nav_description?: string;
+  nav_group?: string;
+  nav_order?: number;
+  show_in_header?: boolean;
+  show_in_footer?: boolean;
+  show_in_sitemap?: boolean;
 }
 
 function specialLink(href: string, fallbackLabel: string, fallbackDescription: string): NavLink {
@@ -29,7 +43,7 @@ const HEADER_LINKS: NavLink[] = [
   { label: 'Возможности', href: '/features' },
   { label: 'Для бизнеса', href: '/for' },
   { label: 'Цены', href: '/pricing' },
-  { label: 'Партнёрам', href: '/partnership' },
+  { label: 'Партнерам', href: '/partnership' },
 ];
 
 const FOOTER_COLUMNS: NavColumn[] = [
@@ -38,7 +52,7 @@ const FOOTER_COLUMNS: NavColumn[] = [
     links: [
       { label: 'Цены', href: '/pricing', description: 'Тарифы, коммерческая модель и формат запуска.' },
       { label: 'Демо', href: '/demo', description: 'Запись на демонстрацию и быстрый старт с командой.' },
-      { label: 'Партнёрам', href: '/partnership', description: 'Программа для агентств, интеграторов и реселлеров.' },
+      { label: 'Партнерам', href: '/partnership', description: 'Программа для агентств, интеграторов и реселлеров.' },
       { label: 'Для бизнеса', href: '/for', description: 'Сценарии Chat Plus под формат и модель бизнеса.' },
     ],
   },
@@ -95,20 +109,84 @@ function buildLinkLookup(collections: Array<Array<Partial<NavLink>> | undefined>
   return lookup;
 }
 
-export function getHeaderLinks(provided: Partial<NavLink>[] = []) {
-  const lookup = buildLinkLookup([provided]);
+function mapPageV2Link(page: PageV2NavRecord): NavLink {
+  return {
+    label: page.nav_label || page.title || page.route_path,
+    href: page.route_path,
+    description: page.nav_description || '',
+    navOrder: typeof page.nav_order === 'number' ? page.nav_order : 100,
+  };
+}
 
-  return HEADER_LINKS.map((link) => ({
+function sortDynamicLinks(links: NavLink[]) {
+  return [...links].sort((a, b) => {
+    const orderDelta = (a.navOrder || 100) - (b.navOrder || 100);
+    if (orderDelta !== 0) {
+      return orderDelta;
+    }
+
+    return a.label.localeCompare(b.label, 'ru');
+  });
+}
+
+function appendUniqueLinks(baseLinks: NavLink[], extraLinks: NavLink[]) {
+  const merged = [...baseLinks];
+
+  for (const link of extraLinks) {
+    const existingIndex = merged.findIndex((current) => current.href === link.href);
+    if (existingIndex >= 0) {
+      merged[existingIndex] = {
+        ...merged[existingIndex],
+        ...link,
+      };
+      continue;
+    }
+
+    merged.push(link);
+  }
+
+  return merged;
+}
+
+function footerTitleForGroup(group?: string) {
+  switch (group) {
+    case 'product':
+      return 'Продукт';
+    case 'catalogs':
+      return 'Каталоги';
+    case 'resources':
+      return 'Ресурсы';
+    case 'company':
+      return 'Компания';
+    case 'special':
+      return 'Спецразделы';
+    default:
+      return 'Ресурсы';
+  }
+}
+
+export function getHeaderLinks(provided: Partial<NavLink>[] = [], dynamicPages: PageV2NavRecord[] = []) {
+  const lookup = buildLinkLookup([provided]);
+  const baseLinks = HEADER_LINKS.map((link) => ({
     ...lookup.get(link.href),
     label: link.label,
     href: link.href,
   }));
+  const dynamicLinks = sortDynamicLinks(
+    dynamicPages
+      .filter((page) => page.show_in_header)
+      .map((page) => mapPageV2Link(page)),
+  );
+
+  return appendUniqueLinks(baseLinks, dynamicLinks);
 }
 
-export function getFooterColumns(provided: Array<{ title?: string; links?: Partial<NavLink>[] }> = []) {
+export function getFooterColumns(
+  provided: Array<{ title?: string; links?: Partial<NavLink>[] }> = [],
+  dynamicPages: PageV2NavRecord[] = [],
+) {
   const lookup = buildLinkLookup(provided.map((column) => column.links || []));
-
-  return FOOTER_COLUMNS.map((column) => ({
+  const columns = FOOTER_COLUMNS.map((column) => ({
     title: column.title,
     links: column.links.map((link) => ({
       ...lookup.get(link.href),
@@ -117,20 +195,68 @@ export function getFooterColumns(provided: Array<{ title?: string; links?: Parti
       description: lookup.get(link.href)?.description || link.description,
     })),
   }));
+
+  const dynamicByTitle = new Map<string, NavLink[]>();
+  for (const page of dynamicPages.filter((item) => item.show_in_footer)) {
+    const title = footerTitleForGroup(page.nav_group);
+    const current = dynamicByTitle.get(title) || [];
+    current.push(mapPageV2Link(page));
+    dynamicByTitle.set(title, current);
+  }
+
+  for (const column of columns) {
+    const dynamicLinks = sortDynamicLinks(dynamicByTitle.get(column.title) || []);
+    column.links = appendUniqueLinks(column.links, dynamicLinks);
+    dynamicByTitle.delete(column.title);
+  }
+
+  for (const [title, links] of dynamicByTitle.entries()) {
+    columns.push({
+      title,
+      links: sortDynamicLinks(links),
+    });
+  }
+
+  return columns;
 }
 
 export function getMobileNavSections(headerLinks: NavLink[], footerColumns: NavColumn[]) {
   const footerMap = new Map(footerColumns.map((column) => [column.title, column.links]));
 
   return [
-    { title: 'Основное', links: headerLinks },
+    { title: PAGE_V2_NAV_GROUPS.primary, links: headerLinks },
     { title: 'Ресурсы', links: footerMap.get('Ресурсы') || [] },
     { title: 'Компания', links: footerMap.get('Компания') || [] },
     { title: 'Спецразделы', links: footerMap.get('Спецразделы') || [] },
   ].filter((section) => section.links.length > 0);
 }
 
-export function getSiteMapGroups(footerColumns: NavColumn[]) {
+export function getSiteMapGroups(footerColumns: NavColumn[], dynamicPages: PageV2NavRecord[] = []) {
+  const existing = new Set<string>();
+  for (const column of footerColumns) {
+    for (const link of column.links) {
+      existing.add(link.href);
+    }
+  }
+
+  const groupedDynamic = new Map<string, NavLink[]>();
+  for (const page of dynamicPages.filter((item) => item.show_in_sitemap)) {
+    const link = mapPageV2Link(page);
+    if (existing.has(link.href)) {
+      continue;
+    }
+
+    const title = footerTitleForGroup(page.nav_group);
+    const current = groupedDynamic.get(title) || [];
+    current.push(link);
+    groupedDynamic.set(title, current);
+  }
+
+  const extraGroups = [...groupedDynamic.entries()].map(([title, links]) => ({
+    title,
+    links: sortDynamicLinks(links),
+  }));
+
   return [
     {
       title: 'Главное',
@@ -154,6 +280,7 @@ export function getSiteMapGroups(footerColumns: NavColumn[]) {
       ],
     },
     ...footerColumns,
+    ...extraGroups,
   ];
 }
 

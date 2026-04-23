@@ -2,7 +2,7 @@
 
 Этот файл нужен для самого простого первого запуска на чистой Ubuntu VPS.
 
-Если вы не хотите читать архитектуру и длинные runbook-документы, идите по шагам ниже.
+Если вы не хотите сначала читать всю архитектуру и длинные runbook-документы, идите по шагам ниже.
 
 ## 1. Что нужно заранее
 
@@ -28,7 +28,7 @@ DNS должен смотреть на IP сервера:
 
 - в этом проекте мы используем два отдельных боевых домена: публичный сайт и CMS
 - в примерах ниже это `astro.<domain>` и `strapi.<domain>`
-- если вы хотите другие имена, меняйте их только консистентно: и в DNS, и в `deploy/.env`
+- если вы хотите другие имена, меняйте их консистентно и в DNS, и в `deploy/.env`
 
 ## 2. Подключиться к серверу
 
@@ -38,7 +38,7 @@ DNS должен смотреть на IP сервера:
 ssh root@YOUR_SERVER_IP
 ```
 
-Если `git` и Docker еще не стоят:
+Если `git` и Docker ещё не стоят:
 
 ```bash
 apt update
@@ -75,7 +75,7 @@ cd /srv/chatplus
 git pull
 ```
 
-## 4. Создать production env
+## 4. Создать production env-файл
 
 Скопировать пример:
 
@@ -116,17 +116,24 @@ RELAY_LOCAL_COMMAND=/srv/chatplus/deploy/scripts/build-portal.sh
 GITHUB_ACTIONS_TOKEN=
 GITHUB_REPOSITORY=ValkoHappy/chatplus
 GITHUB_DISPATCH_EVENT=strapi-content-publish
-RELAY_ALLOWED_MODELS=landing-page,tenders-page,business-types-page,site-setting,competitor,solution,channel,industry,integration,feature,business-type
+RELAY_ALLOWED_MODELS=landing-page,page-v2,tenders-page,business-types-page,site-setting,competitor,solution,channel,industry,integration,feature,business-type
 
 UPLOAD_PROVIDER=local
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 Если пока нет email для Let's Encrypt:
 
 - можно оставить `LETSENCRYPT_EMAIL=` пустым
-- сертификат все равно выпустится
+- сертификат всё равно выпустится
 
-## 5. Первый запуск: сначала контур, потом CMS bootstrap
+Если AI-генерация черновиков пока не нужна:
+
+- `OPENAI_API_KEY` можно оставить пустым
+- на deploy и обычный publish flow это не влияет
+
+## 5. Первый запуск: сначала контур, потом первичная подготовка CMS
 
 Из корня проекта:
 
@@ -134,7 +141,7 @@ UPLOAD_PROVIDER=local
 ./deploy/scripts/deploy.sh
 ```
 
-Что делает эта команда:
+Что делает команда:
 
 - поднимает `postgres`
 - поднимает `strapi`
@@ -142,15 +149,14 @@ UPLOAD_PROVIDER=local
 - поднимает `nginx`
 - выпускает SSL
 - проверяет `deploy/.env`
-- если `STRAPI_API_TOKEN` еще не задан, не пытается делать importer/build вслепую
-- создает bootstrap-заглушку вместо немого `403`
+- если `STRAPI_API_TOKEN` ещё не задан, не пытается слепо запускать importer и build
+- создаёт bootstrap-страницу вместо немого `403`
 
 Важно:
 
 - на чистом сервере это нормальный первый шаг
 - после него `Strapi` уже должен открываться
 - публичный домен на этом этапе может показывать bootstrap-страницу, а не финальный сайт
-- это не ошибка: контентный bootstrap еще не завершен
 
 ## 6. Что должно открыться
 
@@ -161,16 +167,16 @@ UPLOAD_PROVIDER=local
 
 Если CMS открылась:
 
-1. создать первого admin user
-2. зайти в `Settings -> API Tokens`
-3. создать токен с `Full access`
-4. записать его в `deploy/.env` как:
+1. создайте первого admin user
+2. зайдите в `Settings -> API Tokens`
+3. создайте токен с `Full access`
+4. запишите его в `deploy/.env` как:
 
 ```env
 STRAPI_API_TOKEN=your-token-here
 ```
 
-После этого завершить первый запуск одной командой:
+После этого завершите первый запуск:
 
 ```bash
 ./deploy/scripts/finalize-first-launch.sh
@@ -183,9 +189,23 @@ STRAPI_API_TOKEN=your-token-here
 - прогоняет importer
 - собирает публичный сайт уже против live `Strapi`
 
-После этого `https://astro.<domain>` должен стать обычным живым сайтом, а не bootstrap-страницей.
+После этого `https://astro.<domain>` должен стать обычным живым сайтом.
 
-## 7. Как обновлять проект
+## 7. Что проверить после будущего deploy manual-first слоя
+
+Когда вы будете выкатывать новый CMS-код с `page_v2` и `generation_job`, перед route migration сначала прогоните readiness-check:
+
+```powershell
+npm run page-v2:live:ready
+```
+
+Если проверка не зелёная, не начинайте перенос managed routes.
+
+Подробный handoff:
+
+- [manual-first-production-handoff.md](manual-first-production-handoff.md)
+
+## 8. Как обновлять проект
 
 ### Если обновился код
 
@@ -203,21 +223,21 @@ git pull
 ./deploy/scripts/update.sh --with-seed
 ```
 
-### Если поменяли контент в Strapi
+### Если поменяли контент в `Strapi`
 
 Нормальный flow такой:
 
 1. изменить запись в `Strapi`
 2. нажать `Publish`
-3. если webhook уже настроен с `Authorization: Bearer <WEBHOOK_TOKEN>`, сайт пересоберется автоматически
+3. если webhook уже настроен с `Authorization: Bearer <WEBHOOK_TOKEN>`, сайт пересоберётся автоматически
 
-Если webhook еще не настроен:
+Если webhook ещё не настроен:
 
 ```bash
 ./deploy/scripts/build-portal.sh
 ```
 
-## 8. Как сделать backup
+## 9. Как сделать резервную копию
 
 ```bash
 ./deploy/scripts/backup.sh
@@ -227,7 +247,6 @@ Backup включает:
 
 - `Postgres`
 - uploads
-- если `BACKUP_DIR` в `deploy/.env` задан относительным путем, скрипт сам развернет его относительно корня проекта
 
 Backup не включает:
 
@@ -235,7 +254,7 @@ Backup не включает:
 - DNS-настройки
 - SSH-ключи и другие внешние секреты
 
-## 9. Как восстановить проект
+## 10. Как восстановить проект
 
 Сначала безопасно проверьте backup без изменений:
 
@@ -243,18 +262,18 @@ Backup не включает:
 ./deploy/scripts/restore.sh --check /path/to/backup-directory
 ```
 
-Если всё в порядке, уже потом запускайте реальное восстановление:
+Если всё в порядке:
 
 ```bash
 ./deploy/scripts/restore.sh /path/to/backup-directory
 ./deploy/scripts/build-portal.sh
 ```
 
-Во время restore теперь автоматически создается safety backup текущего состояния перед разрушительными изменениями.
+Во время restore теперь автоматически создаётся safety backup текущего состояния.
 
-## 10. Если что-то не открылось
+## 11. Если что-то не открылось
 
-Сначала проверить контейнеры:
+Сначала проверьте контейнеры:
 
 ```bash
 docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml ps
@@ -287,18 +306,12 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs --t
 
 Если публичный домен показывает bootstrap-страницу:
 
-- это значит, что первый запуск не завершен до конца
+- значит первый запуск не завершён до конца
 - нужно создать admin user, создать `API Token`, записать `STRAPI_API_TOKEN` в `deploy/.env`
 - потом выполнить:
 
 ```bash
 ./deploy/scripts/finalize-first-launch.sh
-```
-
-Если хотите сразу включить регулярные backup и SSL-renew:
-
-```bash
-./deploy/scripts/install-ops-cron.sh
 ```
 
 ## 11. Самое короткое резюме
@@ -337,3 +350,4 @@ git pull
 - [Production Deploy](../deploy/DEPLOY_PRODUCTION.md)
 - [Production setup checklist](production-setup-checklist.md)
 - [Гайд оператора](operator-guide.md)
+

@@ -1,12 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getSiteSettings } from '../lib/strapi';
+import { getPageV2Pages, getSiteSettings } from '../lib/strapi';
 import { getFooterColumns, getSiteMapGroups } from '../lib/navigation';
 import { withBasePath } from '../lib/urls';
 
 const settings = await getSiteSettings();
-const footerColumns = getFooterColumns(settings.footer_columns);
-const groups = getSiteMapGroups(footerColumns);
+const pageV2Pages = await getPageV2Pages();
+const footerColumns = getFooterColumns(settings.footer_columns, pageV2Pages);
+const groups = getSiteMapGroups(footerColumns, pageV2Pages);
 const toHref = (href?: string) => withBasePath(href);
 ---
 

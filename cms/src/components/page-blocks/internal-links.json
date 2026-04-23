@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_page_blocks_internal_links",
+  "info": {
+    "displayName": "Internal Links Block"
+  },
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "links": {
+      "type": "component",
+      "component": "page-blocks.link-item",
+      "repeatable": true
+    }
+  }
+}

@@ -3,6 +3,7 @@ import type { PanelComponent, PanelComponentProps } from '@strapi/content-manage
 
 const CMS_MODELS = new Set([
   'api::landing-page.landing-page',
+  'api::page-v2.page-v2',
   'api::tenders-page.tenders-page',
   'api::business-types-page.business-types-page',
   'api::site-setting.site-setting',
@@ -25,6 +26,16 @@ function readDocument(document: PanelComponentProps['document']) {
 
 function pickLabel(record: Record<string, unknown>) {
   const explicitMode = typeof record.record_mode === 'string' ? record.record_mode : '';
+  const sourceMode = typeof record.source_mode === 'string' ? record.source_mode : '';
+
+  if (sourceMode === 'managed') {
+    return 'Редактируется вручную в CMS';
+  }
+
+  if (sourceMode === 'hybrid') {
+    return 'Гибридная страница';
+  }
+
   if (explicitMode === 'managed') {
     return 'Редактируется вручную в CMS';
   }
@@ -58,6 +69,8 @@ const SyncStatusPanel: PanelComponent = ({ document, model }: PanelComponentProp
   const syncStrategy = typeof record.sync_strategy === 'string' ? record.sync_strategy : 'merge';
   const importedAt = typeof record.last_imported_at === 'string' ? record.last_imported_at : '';
   const isImported = record.record_mode === 'imported' || record.content_origin === 'generated';
+  const generationMode = typeof record.generation_mode === 'string' ? record.generation_mode : '';
+  const editorialStatus = typeof record.editorial_status === 'string' ? record.editorial_status : '';
 
   return {
     title: 'Content Mode',
@@ -76,6 +89,18 @@ const SyncStatusPanel: PanelComponent = ({ document, model }: PanelComponentProp
         <div>
           <strong>Sync strategy:</strong> {syncStrategy}
         </div>
+
+        {generationMode && (
+          <div>
+            <strong>Generation mode:</strong> {generationMode}
+          </div>
+        )}
+
+        {editorialStatus && (
+          <div>
+            <strong>Editorial status:</strong> {editorialStatus}
+          </div>
+        )}
 
         <div>
           <strong>Ручные правки:</strong> {manualOverrides.length > 0 ? manualOverrides.join(', ') : 'не зафиксированы'}

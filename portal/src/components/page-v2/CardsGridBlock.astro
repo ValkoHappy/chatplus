@@ -1,0 +1,111 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const { section } = Astro.props as { section: Record<string, any> };
+const items = Array.isArray(section.items) ? section.items : [];
+const variant = section.variant || 'default';
+---
+
+{items.length > 0 && (
+  <section class:list={['section', variant === 'editorial' && 'section-tonal']}>
+    <div class="container">
+      {(section.title || section.intro) && (
+        <div class="section-header">
+          {section.title && <h2>{section.title}</h2>}
+          {section.intro && <p>{section.intro}</p>}
+        </div>
+      )}
+      <div class:list={['pagev2-grid', `pagev2-grid--${variant}`]}>
+        {items.map((item, index) => (
+          <article class="pagev2-card">
+            <div class="pagev2-card__head">
+              {item.icon ? (
+                <span class="pagev2-card__icon">
+                  <Icon name={item.icon} />
+                </span>
+              ) : (
+                <span class="pagev2-card__eyebrow">{item.eyebrow || String(index + 1).padStart(2, '0')}</span>
+              )}
+              {item.eyebrow && item.icon && <span class="pagev2-card__eyebrow">{item.eyebrow}</span>}
+            </div>
+            <h3>{item.title}</h3>
+            {item.text && <p>{item.text}</p>}
+            {item.secondary_text && <p class="pagev2-card__secondary">{item.secondary_text}</p>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .pagev2-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .pagev2-grid--editorial,
+  .pagev2-grid--pillars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pagev2-card {
+    padding: 1.15rem;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(248, 250, 252, .98), rgba(241, 245, 249, .96));
+    border: 1px solid rgba(148, 163, 184, .14);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .08);
+  }
+
+  .pagev2-card__head {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+  }
+
+  .pagev2-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eef2ff, #ede9fe);
+    color: #4f46e5;
+  }
+
+  .pagev2-card__eyebrow {
+    color: #6366f1;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .pagev2-card h3 {
+    margin: .6rem 0 0;
+    color: #0f172a;
+    font-size: 1.06rem;
+    line-height: 1.3;
+  }
+
+  .pagev2-card p {
+    margin: .7rem 0 0;
+    color: #475569;
+    line-height: 1.7;
+  }
+
+  .pagev2-card__secondary {
+    color: #64748b;
+    font-size: .95rem;
+  }
+
+  @media (max-width: 900px) {
+    .pagev2-grid,
+    .pagev2-grid--editorial,
+    .pagev2-grid--pillars {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

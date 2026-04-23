@@ -1,0 +1,194 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroBlock from './page-v2/HeroBlock.astro';
+import RichTextBlock from './page-v2/RichTextBlock.astro';
+import ProofStatsBlock from './page-v2/ProofStatsBlock.astro';
+import CardsGridBlock from './page-v2/CardsGridBlock.astro';
+import FeatureListBlock from './page-v2/FeatureListBlock.astro';
+import StepsBlock from './page-v2/StepsBlock.astro';
+import FaqBlock from './page-v2/FaqBlock.astro';
+import TestimonialBlock from './page-v2/TestimonialBlock.astro';
+import RelatedLinksBlock from './page-v2/RelatedLinksBlock.astro';
+import FinalCtaBlock from './page-v2/FinalCtaBlock.astro';
+import PricingPlansBlock from './page-v2/PricingPlansBlock.astro';
+import ComparisonTableBlock from './page-v2/ComparisonTableBlock.astro';
+import BeforeAfterBlock from './page-v2/BeforeAfterBlock.astro';
+import InternalLinksBlock from './page-v2/InternalLinksBlock.astro';
+import { withBasePath } from '../lib/urls';
+
+const { page } = Astro.props as { page: Record<string, any> };
+const sections = Array.isArray(page.sections) ? page.sections : [];
+const firstBlockType = sections[0]?.block_type || '';
+const toHref = (href?: string) => withBasePath(href);
+
+const blockComponents: Record<string, any> = {
+  hero: HeroBlock,
+  'rich-text': RichTextBlock,
+  'proof-stats': ProofStatsBlock,
+  'cards-grid': CardsGridBlock,
+  'feature-list': FeatureListBlock,
+  steps: StepsBlock,
+  faq: FaqBlock,
+  testimonial: TestimonialBlock,
+  'related-links': RelatedLinksBlock,
+  'final-cta': FinalCtaBlock,
+  'pricing-plans': PricingPlansBlock,
+  'comparison-table': ComparisonTableBlock,
+  'before-after': BeforeAfterBlock,
+  'internal-links': InternalLinksBlock,
+};
+
+const breadcrumbs = Array.isArray(page.breadcrumbs) && page.breadcrumbs.length > 0
+  ? page.breadcrumbs
+  : page.parent_page?.route_path
+    ? [
+        { label: 'Главная', href: '/' },
+        { label: page.parent_page.nav_label || page.parent_page.title, href: page.parent_page.route_path },
+      ]
+    : [];
+
+const hasInternalLinksBlock = sections.some((section) => section?.block_type === 'internal-links');
+const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.internal_links) && page.internal_links.length > 0
+  ? {
+      block_type: 'internal-links',
+      eyebrow: 'Continue',
+      title: page.internal_links_title || 'Explore more',
+      intro: page.internal_links_intro || '',
+      links: page.internal_links,
+    }
+  : null;
+---
+
+<Base title={page.seo_title || page.title} description={page.seo_description} canonical={page.canonical}>
+  <article class:list={['pagev2-shell', `pagev2-shell--${page.template_variant || 'default'}`]}>
+    {breadcrumbs.length > 0 && (
+      <section class="section pagev2-breadcrumbs">
+        <div class="container container-narrow">
+          <nav aria-label="Хлебные крошки">
+            <ol>
+              {breadcrumbs.map((item) => (
+                <li>
+                  <a href={toHref(item.href)}>{item.label}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+      </section>
+    )}
+
+    {firstBlockType !== 'hero' && (
+      <section class="section pagev2-intro">
+        <div class="container container-narrow">
+          <span class="pagev2-intro__eyebrow">{page.page_kind}</span>
+          <h1>{page.title}</h1>
+          {page.seo_description && <p>{page.seo_description}</p>}
+        </div>
+      </section>
+    )}
+
+    {sections.map((section) => {
+      const Component = blockComponents[section.block_type];
+      if (!Component) {
+        return null;
+      }
+
+      return <Component section={section} templateVariant={page.template_variant} />;
+    })}
+
+    {fallbackInternalLinks && <InternalLinksBlock section={fallbackInternalLinks} />}
+
+    {sections.length === 0 && (
+      <section class="section">
+        <div class="container container-narrow pagev2-empty">
+          <h2>Страница еще не собрана</h2>
+          <p>Добавьте блоки в dynamic zone, чтобы контент появился на сайте.</p>
+        </div>
+      </section>
+    )}
+  </article>
+</Base>
+
+<style>
+  .pagev2-shell--editorial,
+  .pagev2-shell--minimal {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .pagev2-shell--showcase {
+    background:
+      radial-gradient(circle at top right, rgba(99, 102, 241, .08), transparent 22%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .pagev2-breadcrumbs {
+    padding-bottom: 0;
+  }
+
+  .pagev2-breadcrumbs ol {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .pagev2-breadcrumbs li {
+    color: #64748b;
+    font-size: .9rem;
+  }
+
+  .pagev2-breadcrumbs li + li::before {
+    content: '/';
+    margin-right: .5rem;
+    color: #94a3b8;
+  }
+
+  .pagev2-breadcrumbs a {
+    color: inherit;
+  }
+
+  .pagev2-intro {
+    padding-top: clamp(2.6rem, 5vw, 4rem);
+  }
+
+  .pagev2-intro__eyebrow {
+    color: #4f46e5;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .pagev2-intro h1 {
+    margin: .8rem 0 0;
+    color: #0f172a;
+    font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+    line-height: 1;
+    letter-spacing: -.05em;
+  }
+
+  .pagev2-intro p {
+    margin: 1rem 0 0;
+    color: #475569;
+    line-height: 1.8;
+  }
+
+  .pagev2-empty {
+    padding: 1.4rem;
+    border-radius: 24px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+  }
+
+  .pagev2-empty h2 {
+    margin: 0;
+    color: #0f172a;
+  }
+
+  .pagev2-empty p {
+    margin: .75rem 0 0;
+    color: #475569;
+  }
+</style>

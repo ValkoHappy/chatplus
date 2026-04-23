@@ -971,6 +971,75 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiGenerationJobGenerationJob
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'generation_jobs';
+  info: {
+    description: 'AI generation queue item for future page_v2 draft workflows.';
+    displayName: 'Generation Job';
+    pluralName: 'generation-jobs';
+    singularName: 'generation-job';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    job_type: Schema.Attribute.Enumeration<['manual_request', 'scheduled']> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::generation-job.generation-job'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    request_prompt: Schema.Attribute.Text;
+    requested_by: Schema.Attribute.String;
+    run_report: Schema.Attribute.JSON;
+    status: Schema.Attribute.Enumeration<
+      ['queued', 'running', 'draft_ready', 'failed', 'approved', 'published']
+    > &
+      Schema.Attribute.DefaultTo<'queued'>;
+    target_blueprint: Schema.Attribute.String;
+    target_business_types: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::business-type.business-type'
+    >;
+    target_channels: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::channel.channel'
+    >;
+    target_competitors: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::competitor.competitor'
+    >;
+    target_features: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::feature.feature'
+    >;
+    target_industries: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::industry.industry'
+    >;
+    target_integrations: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::integration.integration'
+    >;
+    target_page: Schema.Attribute.Relation<'manyToOne', 'api::page-v2.page-v2'>;
+    target_solutions: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::solution.solution'
+    >;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
   collectionName: 'industries';
   info: {
@@ -1346,6 +1415,145 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
     use_cases: Schema.Attribute.Component<'tenders.use-case-item', true>;
     use_cases_title: Schema.Attribute.String;
     word_count: Schema.Attribute.Integer;
+  };
+}
+
+export interface ApiPageV2PageV2 extends Struct.CollectionTypeSchema {
+  collectionName: 'page_v2s';
+  info: {
+    description: 'Manual-first managed page record.';
+    displayName: 'Page';
+    pluralName: 'page-v2s';
+    singularName: 'page-v2';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    ai_metadata: Schema.Attribute.JSON;
+    breadcrumbs: Schema.Attribute.Component<'page-blocks.link-item', true>;
+    business_types: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::business-type.business-type'
+    >;
+    canonical: Schema.Attribute.String;
+    channels: Schema.Attribute.Relation<'manyToMany', 'api::channel.channel'>;
+    child_pages: Schema.Attribute.Relation<'oneToMany', 'api::page-v2.page-v2'>;
+    competitors: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::competitor.competitor'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    editorial_status: Schema.Attribute.Enumeration<
+      ['draft', 'review', 'approved', 'archived']
+    > &
+      Schema.Attribute.DefaultTo<'draft'>;
+    features: Schema.Attribute.Relation<'manyToMany', 'api::feature.feature'>;
+    generation_mode: Schema.Attribute.Enumeration<
+      ['manual', 'ai_assisted', 'ai_generated']
+    > &
+      Schema.Attribute.DefaultTo<'manual'>;
+    generation_prompt: Schema.Attribute.Text;
+    hreflang_policy: Schema.Attribute.JSON;
+    human_review_required: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    industries: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::industry.industry'
+    >;
+    integrations: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::integration.integration'
+    >;
+    internal_links: Schema.Attribute.Component<'page-blocks.link-item', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::page-v2.page-v2'
+    > &
+      Schema.Attribute.Private;
+    nav_description: Schema.Attribute.Text;
+    nav_group: Schema.Attribute.Enumeration<
+      ['primary', 'product', 'catalogs', 'resources', 'company', 'special']
+    > &
+      Schema.Attribute.DefaultTo<'resources'>;
+    nav_label: Schema.Attribute.String;
+    nav_order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<100>;
+    og_image: Schema.Attribute.Media<'images'>;
+    owner: Schema.Attribute.String;
+    page_kind: Schema.Attribute.Enumeration<
+      [
+        'landing',
+        'directory',
+        'entity_detail',
+        'entity_intersection',
+        'comparison',
+        'campaign',
+        'resource',
+        'brand',
+        'system',
+      ]
+    > &
+      Schema.Attribute.Required;
+    parent_page: Schema.Attribute.Relation<'manyToOne', 'api::page-v2.page-v2'>;
+    publishedAt: Schema.Attribute.DateTime;
+    reviewer: Schema.Attribute.String;
+    robots: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'index,follow'>;
+    route_path: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    sections: Schema.Attribute.DynamicZone<
+      [
+        'page-blocks.hero',
+        'page-blocks.rich-text',
+        'page-blocks.proof-stats',
+        'page-blocks.cards-grid',
+        'page-blocks.feature-list',
+        'page-blocks.steps',
+        'page-blocks.faq',
+        'page-blocks.testimonial',
+        'page-blocks.related-links',
+        'page-blocks.final-cta',
+        'page-blocks.pricing-plans',
+        'page-blocks.comparison-table',
+        'page-blocks.before-after',
+        'page-blocks.internal-links',
+      ]
+    >;
+    seo_description: Schema.Attribute.Text;
+    seo_title: Schema.Attribute.String;
+    show_in_footer: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    show_in_header: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    show_in_sitemap: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    sitemap_changefreq: Schema.Attribute.Enumeration<
+      ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never']
+    > &
+      Schema.Attribute.DefaultTo<'weekly'>;
+    sitemap_priority: Schema.Attribute.Decimal &
+      Schema.Attribute.DefaultTo<0.5>;
+    slug: Schema.Attribute.UID<'title'> &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    solutions: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::solution.solution'
+    >;
+    source_mode: Schema.Attribute.Enumeration<['managed', 'hybrid']> &
+      Schema.Attribute.DefaultTo<'managed'>;
+    template_variant: Schema.Attribute.Enumeration<
+      ['default', 'editorial', 'showcase', 'minimal']
+    > &
+      Schema.Attribute.DefaultTo<'default'>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -2170,9 +2378,11 @@ declare module '@strapi/strapi' {
       'api::channel.channel': ApiChannelChannel;
       'api::competitor.competitor': ApiCompetitorCompetitor;
       'api::feature.feature': ApiFeatureFeature;
+      'api::generation-job.generation-job': ApiGenerationJobGenerationJob;
       'api::industry.industry': ApiIndustryIndustry;
       'api::integration.integration': ApiIntegrationIntegration;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::page-v2.page-v2': ApiPageV2PageV2;
       'api::site-setting.site-setting': ApiSiteSettingSiteSetting;
       'api::solution.solution': ApiSolutionSolution;
       'api::tenders-page.tenders-page': ApiTendersPageTendersPage;

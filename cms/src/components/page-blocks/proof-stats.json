@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_page_blocks_proof_stats",
+  "info": {
+    "displayName": "Proof Stats Block"
+  },
+  "attributes": {
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "band",
+        "cards",
+        "sidebar"
+      ],
+      "default": "cards"
+    },
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "component": "page-blocks.stat-item",
+      "repeatable": true
+    }
+  }
+}

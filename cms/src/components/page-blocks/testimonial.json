@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_page_blocks_testimonials",
+  "info": {
+    "displayName": "Testimonial Block"
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "quote": {
+      "type": "text",
+      "required": true
+    },
+    "author": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    }
+  }
+}

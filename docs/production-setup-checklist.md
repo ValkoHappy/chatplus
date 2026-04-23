@@ -1,4 +1,4 @@
-# Production Setup Checklist
+# Чеклист production-настройки
 
 Этот чеклист нужен для первого боевого запуска.
 
@@ -17,7 +17,7 @@
 
 Проверьте:
 
-- `https://cms.<domain>/admin` открывается
+- `https://strapi.<domain>/admin` открывается
 - `https://<public-domain>` открывается хотя бы bootstrap-страницей
 - контейнер `content-relay` запущен
 - `postgres`, `strapi`, `nginx` healthy
@@ -35,7 +35,7 @@
 1. создать первого admin user
 2. войти под ним
 
-## 4. API token
+## 4. API-токен
 
 В `Strapi`:
 
@@ -59,7 +59,7 @@
 2. создать webhook на:
 
 ```text
-https://cms.<domain>/__relay/strapi/publish
+https://strapi.<domain>/__relay/strapi/publish
 ```
 
 3. добавить header:
@@ -115,7 +115,7 @@ Value: Bearer <WEBHOOK_TOKEN из deploy/.env>
 - API tokens
 - роли и permissions
 
-## 7. Storage
+## 7. Хранилище
 
 Для текущего server-first production storage по умолчанию локальный:
 
@@ -131,7 +131,7 @@ Value: Bearer <WEBHOOK_TOKEN из deploy/.env>
 - только тогда заполнять `AWS_*` и `CDN_URL`
 - не считать S3-compatible storage обязательной частью текущего rollout
 
-## 8. Importer smoke
+## 8. Smoke-проверка importer-а
 
 Перед первым массовым sync:
 
@@ -145,7 +145,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 ./deploy/scripts/seed-content.sh
 ```
 
-## 9. Publish smoke
+## 9. Smoke-проверка публикации
 
 Проверьте на одной managed-странице:
 
@@ -155,7 +155,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 4. убедиться, что relay запустил локальный rebuild и сайт обновился
 5. убедиться, что публичный сайт обновился
 
-## 10. GitHub secrets для production pipelines
+## 10. GitHub-секреты для production-pipeline
 
 Для server-first deploy должны быть заполнены:
 
@@ -167,7 +167,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 - `VPS_APP_DIR`
 - `VPS_SSH_PORT` — только если используется нестандартный SSH-port
 
-## 11. Recovery baseline
+## 11. Базовый recovery-набор
 
 Перед реальным запуском:
 
@@ -177,7 +177,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 - установить регулярный backup и SSL-renew по cron/systemd timer, а не откладывать это “на потом”
 - самый простой вариант в этом репозитории: `./deploy/scripts/install-ops-cron.sh`
 
-## 12. Definition of Ready
+## 12. Критерии готовности
 
 Production setup можно считать готовым к боевой работе, когда:
 
@@ -189,3 +189,4 @@ Production setup можно считать готовым к боевой раб
 - importer `plan` работает
 - build/rebuild workflow реально стартует
 - backup/restore понятны оператору
+

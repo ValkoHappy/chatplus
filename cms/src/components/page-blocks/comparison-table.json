@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_page_blocks_comparison_tables",
+  "info": {
+    "displayName": "Comparison Table Block"
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "option_one_label": {
+      "type": "string"
+    },
+    "option_two_label": {
+      "type": "string"
+    },
+    "option_highlight_label": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "component",
+      "component": "page-blocks.comparison-row",
+      "repeatable": true
+    }
+  }
+}

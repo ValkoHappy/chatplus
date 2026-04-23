@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_page_blocks_steps",
+  "info": {
+    "displayName": "Steps Block"
+  },
+  "attributes": {
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "cards",
+        "timeline"
+      ],
+      "default": "cards"
+    },
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "component": "page-blocks.step-item",
+      "repeatable": true
+    }
+  }
+}

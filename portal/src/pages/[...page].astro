@@ -1,0 +1,22 @@
+---
+import PageV2Page from '../components/PageV2Page.astro';
+import { getPublishedPageV2Routes } from '../lib/strapi';
+import { toPageV2CatchAllParam } from '../../../config/page-v2-routes.mjs';
+
+export async function getStaticPaths() {
+  const pages = await getPublishedPageV2Routes();
+
+  return pages.map((page) => ({
+    params: {
+      page: toPageV2CatchAllParam(page.route_path),
+    },
+    props: {
+      page,
+    },
+  }));
+}
+
+const { page } = Astro.props as { page: Record<string, any> };
+---
+
+<PageV2Page page={page} />

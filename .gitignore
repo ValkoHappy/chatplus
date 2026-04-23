@@ -50,3 +50,7 @@ Thumbs.db
 # IDE
 .vscode/settings.json
 *.swp
+
+# Local agent/tooling artifacts
+.serena/
+kakdolshno

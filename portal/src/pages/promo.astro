@@ -1,8 +1,9 @@
 ---
+import PageV2Page from '../components/PageV2Page.astro';
 import CampaignPage from '../components/CampaignPage.astro';
-import { getLandingPage } from '../lib/strapi';
+import { getLandingPage, getManagedRoutePage } from '../lib/strapi';
 
-const page = await getLandingPage('promo');
+const resolved = await getManagedRoutePage('/promo', () => getLandingPage('promo'));
 ---
 
-<CampaignPage page={page} />
+{resolved.kind === 'page_v2' ? <PageV2Page page={resolved.page} /> : <CampaignPage page={resolved.page} />}

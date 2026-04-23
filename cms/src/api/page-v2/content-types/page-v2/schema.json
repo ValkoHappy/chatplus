@@ -1,0 +1,252 @@
+{
+  "kind": "collectionType",
+  "collectionName": "page_v2s",
+  "info": {
+    "singularName": "page-v2",
+    "pluralName": "page-v2s",
+    "displayName": "Page",
+    "description": "Manual-first managed page record."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true,
+      "unique": true
+    },
+    "route_path": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "locale": {
+      "type": "string",
+      "default": "ru"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "page_kind": {
+      "type": "enumeration",
+      "enum": [
+        "landing",
+        "directory",
+        "entity_detail",
+        "entity_intersection",
+        "comparison",
+        "campaign",
+        "resource",
+        "brand",
+        "system"
+      ],
+      "required": true
+    },
+    "template_variant": {
+      "type": "enumeration",
+      "enum": [
+        "default",
+        "editorial",
+        "showcase",
+        "minimal"
+      ],
+      "default": "default"
+    },
+    "generation_mode": {
+      "type": "enumeration",
+      "enum": [
+        "manual",
+        "ai_assisted",
+        "ai_generated"
+      ],
+      "default": "manual"
+    },
+    "source_mode": {
+      "type": "enumeration",
+      "enum": [
+        "managed",
+        "hybrid"
+      ],
+      "default": "managed"
+    },
+    "editorial_status": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "review",
+        "approved",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "channels": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::channel.channel"
+    },
+    "industries": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::industry.industry"
+    },
+    "integrations": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::integration.integration"
+    },
+    "solutions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::solution.solution"
+    },
+    "features": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::feature.feature"
+    },
+    "business_types": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::business-type.business-type"
+    },
+    "competitors": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::competitor.competitor"
+    },
+    "sections": {
+      "type": "dynamiczone",
+      "components": [
+        "page-blocks.hero",
+        "page-blocks.rich-text",
+        "page-blocks.proof-stats",
+        "page-blocks.cards-grid",
+        "page-blocks.feature-list",
+        "page-blocks.steps",
+        "page-blocks.faq",
+        "page-blocks.testimonial",
+        "page-blocks.related-links",
+        "page-blocks.final-cta",
+        "page-blocks.pricing-plans",
+        "page-blocks.comparison-table",
+        "page-blocks.before-after",
+        "page-blocks.internal-links"
+      ]
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "seo_description": {
+      "type": "text"
+    },
+    "canonical": {
+      "type": "string"
+    },
+    "robots": {
+      "type": "string",
+      "default": "index,follow"
+    },
+    "og_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "hreflang_policy": {
+      "type": "json"
+    },
+    "show_in_header": {
+      "type": "boolean",
+      "default": false
+    },
+    "show_in_footer": {
+      "type": "boolean",
+      "default": false
+    },
+    "show_in_sitemap": {
+      "type": "boolean",
+      "default": true
+    },
+    "nav_group": {
+      "type": "enumeration",
+      "enum": [
+        "primary",
+        "product",
+        "catalogs",
+        "resources",
+        "company",
+        "special"
+      ],
+      "default": "resources"
+    },
+    "nav_label": {
+      "type": "string"
+    },
+    "nav_description": {
+      "type": "text"
+    },
+    "nav_order": {
+      "type": "integer",
+      "default": 100
+    },
+    "parent_page": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::page-v2.page-v2",
+      "inversedBy": "child_pages"
+    },
+    "child_pages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::page-v2.page-v2",
+      "mappedBy": "parent_page"
+    },
+    "breadcrumbs": {
+      "type": "component",
+      "component": "page-blocks.link-item",
+      "repeatable": true
+    },
+    "internal_links": {
+      "type": "component",
+      "component": "page-blocks.link-item",
+      "repeatable": true
+    },
+    "sitemap_priority": {
+      "type": "decimal",
+      "default": 0.5
+    },
+    "sitemap_changefreq": {
+      "type": "enumeration",
+      "enum": [
+        "always",
+        "hourly",
+        "daily",
+        "weekly",
+        "monthly",
+        "yearly",
+        "never"
+      ],
+      "default": "weekly"
+    },
+    "generation_prompt": {
+      "type": "text"
+    },
+    "ai_metadata": {
+      "type": "json"
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "default": true
+    },
+    "owner": {
+      "type": "string"
+    },
+    "reviewer": {
+      "type": "string"
+    }
+  }
+}

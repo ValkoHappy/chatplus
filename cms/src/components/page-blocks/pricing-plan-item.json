@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_page_blocks_pricing_plan_items",
+  "info": {
+    "displayName": "Pricing Plan Item"
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    },
+    "period": {
+      "type": "string"
+    },
+    "note": {
+      "type": "text"
+    },
+    "text": {
+      "type": "text"
+    },
+    "cta_label": {
+      "type": "string"
+    },
+    "cta_url": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "kicker": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "boolean",
+      "default": false
+    },
+    "features": {
+      "type": "json"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+---
+const { section } = Astro.props as { section: Record<string, any> };
+---
+
+<section class="section">
+  <div class="container container-narrow pagev2-richtext">
+    {section.title && <h2>{section.title}</h2>}
+    {section.body && <div class="pagev2-richtext__body" set:html={section.body} />}
+  </div>
+</section>
+
+<style>
+  .pagev2-richtext {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .pagev2-richtext h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    letter-spacing: -.04em;
+  }
+
+  .pagev2-richtext__body {
+    color: #475569;
+    line-height: 1.85;
+  }
+
+  .pagev2-richtext__body :global(p:first-child) {
+    margin-top: 0;
+  }
+</style>

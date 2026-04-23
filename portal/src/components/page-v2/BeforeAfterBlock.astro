@@ -1,0 +1,96 @@
+---
+const { section } = Astro.props as { section: Record<string, any> };
+const beforeItems = Array.isArray(section.before_items) ? section.before_items : [];
+const afterItems = Array.isArray(section.after_items) ? section.after_items : [];
+---
+
+{(beforeItems.length > 0 || afterItems.length > 0) && (
+  <section class="section">
+    <div class="container">
+      {(section.title || section.intro) && (
+        <div class="section-header">
+          {section.title && <h2>{section.title}</h2>}
+          {section.intro && <p>{section.intro}</p>}
+        </div>
+      )}
+      <div class="pagev2-roi-grid">
+        <article class="pagev2-roi-card pagev2-roi-card--before">
+          <h3>{section.before_title || 'Before'}</h3>
+          <ul>
+            {beforeItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </article>
+        <article class="pagev2-roi-card pagev2-roi-card--after">
+          <h3>{section.after_title || 'After'}</h3>
+          <ul>
+            {afterItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </article>
+      </div>
+      {section.quote && (
+        <blockquote class="pagev2-roi-quote">
+          {section.quote}
+          {section.quote_author && <footer>{section.quote_author}</footer>}
+        </blockquote>
+      )}
+    </div>
+  </section>
+)}
+
+<style>
+  .pagev2-roi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .pagev2-roi-card {
+    padding: 1.3rem;
+    border-radius: 20px;
+  }
+
+  .pagev2-roi-card h3 {
+    margin-bottom: .8rem;
+  }
+
+  .pagev2-roi-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: .6rem;
+  }
+
+  .pagev2-roi-card--before {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+  }
+
+  .pagev2-roi-card--after {
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+  }
+
+  .pagev2-roi-quote {
+    margin-top: 1.2rem;
+    padding: 1rem 1.2rem;
+    border-left: 4px solid #6366f1;
+    background: #f8fafc;
+    border-radius: 0 14px 14px 0;
+    font-style: italic;
+    color: #516074;
+  }
+
+  .pagev2-roi-quote footer {
+    margin-top: .65rem;
+    color: #334155;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  @media (max-width: 980px) {
+    .pagev2-roi-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

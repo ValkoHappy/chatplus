@@ -1,0 +1,84 @@
+---
+const { section } = Astro.props as { section: Record<string, any> };
+const items = Array.isArray(section.items) ? section.items : [];
+const variant = section.variant || 'cards';
+---
+
+{items.length > 0 && (
+  <section class="section">
+    <div class="container container-narrow">
+      {(section.title || section.intro) && (
+        <div class="section-header">
+          {section.title && <h2>{section.title}</h2>}
+          {section.intro && <p>{section.intro}</p>}
+        </div>
+      )}
+      <div class:list={['pagev2-steps', `pagev2-steps--${variant}`]}>
+        {items.map((item, index) => (
+          <article class="pagev2-step">
+            <span class="pagev2-step__index">{index + 1}</span>
+            <div>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .pagev2-steps {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .pagev2-steps--cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pagev2-steps--timeline {
+    grid-template-columns: 1fr;
+  }
+
+  .pagev2-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .95rem;
+    padding: 1.05rem 1.15rem;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(248, 250, 252, .98), rgba(241, 245, 249, .96));
+    border: 1px solid rgba(148, 163, 184, .14);
+  }
+
+  .pagev2-step__index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    font-weight: 800;
+  }
+
+  .pagev2-step h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.02rem;
+  }
+
+  .pagev2-step p {
+    margin: .45rem 0 0;
+    color: #475569;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 980px) {
+    .pagev2-steps--cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

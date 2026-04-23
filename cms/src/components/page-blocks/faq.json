@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_page_blocks_faqs",
+  "info": {
+    "displayName": "FAQ Block"
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "component": "page-blocks.faq-item",
+      "repeatable": true
+    }
+  }
+}

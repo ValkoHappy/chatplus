@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_page_blocks_cards_grids",
+  "info": {
+    "displayName": "Cards Grid Block"
+  },
+  "attributes": {
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "default",
+        "problems",
+        "use_cases",
+        "pillars",
+        "editorial"
+      ],
+      "default": "default"
+    },
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "component": "page-blocks.card-item",
+      "repeatable": true
+    }
+  }
+}

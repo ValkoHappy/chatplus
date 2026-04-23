@@ -1,4 +1,4 @@
-# Release Flow CHATPLUS
+# Релизный поток CHATPLUS
 
 ## 1. Понять тип изменения
 
@@ -7,7 +7,7 @@
 1. Это `managed` или `imported` изменение?
 2. Это контент, importer, frontend или deploy automation?
 
-## 2. Managed release
+## 2. Релиз managed-контента
 
 Если меняли `managed`-страницу:
 
@@ -17,7 +17,7 @@
 4. relay запускает локальный `build-portal.sh` на VPS
 5. сайт пересобирается и выкатывается на том же сервере
 
-## 3. Imported release
+## 3. Релиз imported-контента
 
 Если меняли source data:
 
@@ -25,19 +25,19 @@
 2. прогнать dry-run:
 
 ```powershell
-npm.cmd run seed-content:plan
+npm run seed-content:plan
 ```
 
 3. если diff корректный, выполнить:
 
 ```powershell
-npm.cmd run seed-content
+npm run seed-content
 ```
 
 4. если нужен принудительный overwrite:
 
 ```powershell
-npm.cmd run seed-content:force
+npm run seed-content:force
 ```
 
 5. после sync выполнить publish flow
@@ -45,9 +45,9 @@ npm.cmd run seed-content:force
 ## 4. Локальные обязательные проверки
 
 ```powershell
-npm.cmd run test:contracts
-npm.cmd run check:docs-consistency
-npm.cmd --prefix portal run build
+npm run test:contracts
+npm run check:docs-consistency
+npm --prefix portal run build
 ```
 
 ## 5. Что проверять руками
@@ -69,19 +69,19 @@ Representative routes:
 - header/footer
 - отсутствие очевидного content drift
 
-## 6. Automation entrypoints
+## 6. Точки входа автоматизации
 
-### Content publish
+### Публикация контента
 
 - trigger по умолчанию: `Strapi webhook -> relay -> local rebuild`
 - entrypoint: `content-relay` + `./deploy/scripts/build-portal.sh`
 
-### Code pipeline
+### Кодовый конвейер
 
 - workflow: `.github/workflows/code-pipeline.yml`
 - trigger: `push` в `main` и `workflow_dispatch`
 
-## 7. Transitional production contour
+## 7. Переходный прод-контур
 
 Пока production идет через:
 

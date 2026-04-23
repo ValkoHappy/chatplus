@@ -8,7 +8,14 @@
     "seed-content:report": "node --env-file=.env scripts/seed-runtime-content.mjs --report",
     "relay:content-publish": "node --env-file=.env scripts/strapi-webhook-relay.mjs",
     "check:docs-consistency": "node scripts/check-docs-consistency.mjs",
-    "test:contracts": "node --test --experimental-strip-types --experimental-specifier-resolution=node tests/seed-runtime-content.test.mjs tests/page-adapters.test.ts tests/strapi-schemas.test.ts tests/strapi-webhook-relay.test.mjs"
+    "test:contracts": "node --test --experimental-strip-types --experimental-specifier-resolution=node tests/seed-runtime-content.test.mjs tests/page-adapters.test.ts tests/strapi-schemas.test.ts tests/page-v2.test.ts tests/navigation.test.ts tests/urls.test.ts tests/page-v2-generation.test.mjs tests/page-v2-migration.test.mjs tests/check-live-page-v2-readiness.test.mjs tests/strapi-webhook-relay.test.mjs",
+    "page-v2:generate": "node --env-file=.env scripts/generate-page-v2-drafts.mjs",
+    "page-v2:generate:queued": "node --env-file=.env scripts/generate-page-v2-drafts.mjs --queued",
+    "page-v2:generate:scheduled": "node --env-file=.env scripts/generate-page-v2-drafts.mjs --queued --job-type=scheduled",
+    "page-v2:generate:report": "node --env-file=.env scripts/generate-page-v2-drafts.mjs --report",
+    "page-v2:live:ready": "node --env-file=.env scripts/check-live-page-v2-readiness.mjs",
+    "page-v2:migrate:managed": "node --env-file=.env scripts/migrate-managed-pages-to-page-v2.mjs",
+    "page-v2:migrate:managed:report": "node scripts/migrate-managed-pages-to-page-v2.mjs --report"
   },
   "dependencies": {
     "dotenv": "^17.3.1"

@@ -12,7 +12,7 @@
 
 Если вы меняете CMS-owned блок, почти наверняка придется затронуть не только шаблон, но и schema, adapter или импорт.
 
-## 2. Что можно менять без schema changes
+## 2. Что можно менять без изменений схемы
 
 Можно менять без изменения Strapi schema и generator/import contract:
 
@@ -31,7 +31,7 @@
 2. tablet/mobile
 3. build + QA
 
-## 3. Что уже требует schema/import changes
+## 3. Что уже требует изменений схемы или импорта
 
 Любая из этих правок требует обновления CMS/model layer:
 
@@ -58,7 +58,7 @@
 5. Прогнать:
 
 ```powershell
-npm.cmd --prefix portal run build
+npm --prefix portal run build
 ```
 
 6. Проверить representative routes вручную.
@@ -153,7 +153,7 @@ npm.cmd --prefix portal run build
 
 Фасад `scripts/seed-runtime-content.mjs` трогайте только если меняется CLI/public orchestration contract.
 
-## 7. Self-check перед merge или publish
+## 7. Самопроверка перед merge или publish
 
 - Понятно, кто владеет изменяемым блоком: frontend или CMS.
 - Если блок CMS-owned, его поля описаны и валидируются.
@@ -161,3 +161,4 @@ npm.cmd --prefix portal run build
 - Build и checks зеленые.
 - Представительные страницы просмотрены вручную.
 - Документация не противоречит новой реальности проекта.
+

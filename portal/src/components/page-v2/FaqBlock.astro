@@ -1,0 +1,14 @@
+---
+import FaqSection from '../FaqSection.astro';
+
+const { section } = Astro.props as { section: Record<string, any> };
+const faqs = Array.isArray(section.items) ? section.items : [];
+---
+
+<FaqSection
+  title={section.title}
+  intro={section.intro}
+  faqs={faqs}
+  sectionClass="section section-tonal"
+  containerClass="container container-narrow"
+/>

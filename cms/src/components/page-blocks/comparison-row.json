@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_page_blocks_comparison_rows",
+  "info": {
+    "displayName": "Comparison Row"
+  },
+  "attributes": {
+    "parameter": {
+      "type": "string",
+      "required": true
+    },
+    "option_one": {
+      "type": "text"
+    },
+    "option_two": {
+      "type": "text"
+    },
+    "option_highlight": {
+      "type": "text"
+    }
+  }
+}

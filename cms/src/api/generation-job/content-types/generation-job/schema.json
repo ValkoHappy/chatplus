@@ -1,0 +1,88 @@
+{
+  "kind": "collectionType",
+  "collectionName": "generation_jobs",
+  "info": {
+    "singularName": "generation-job",
+    "pluralName": "generation-jobs",
+    "displayName": "Generation Job",
+    "description": "AI generation queue item for future page_v2 draft workflows."
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "job_type": {
+      "type": "enumeration",
+      "enum": [
+        "manual_request",
+        "scheduled"
+      ],
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "queued",
+        "running",
+        "draft_ready",
+        "failed",
+        "approved",
+        "published"
+      ],
+      "default": "queued"
+    },
+    "target_blueprint": {
+      "type": "string"
+    },
+    "request_prompt": {
+      "type": "text"
+    },
+    "requested_by": {
+      "type": "string"
+    },
+    "target_page": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::page-v2.page-v2"
+    },
+    "target_channels": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::channel.channel"
+    },
+    "target_industries": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::industry.industry"
+    },
+    "target_integrations": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::integration.integration"
+    },
+    "target_solutions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::solution.solution"
+    },
+    "target_features": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::feature.feature"
+    },
+    "target_business_types": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::business-type.business-type"
+    },
+    "target_competitors": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::competitor.competitor"
+    },
+    "run_report": {
+      "type": "json"
+    }
+  }
+}

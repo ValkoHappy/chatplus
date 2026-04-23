@@ -24,7 +24,7 @@ Importer берет source data из `cms/seed/*.json` и синхронизир
 - singleton/system record
 - не используется для catalog sync
 
-## Sync strategy
+## Стратегия синхронизации
 
 Поддерживаемые значения:
 
@@ -36,7 +36,7 @@ Importer берет source data из `cms/seed/*.json` и синхронизир
 
 - imported catalog/SEO записи создаются с `merge`
 
-## Что такое manual override
+## Что такое ручной override
 
 Когда редактор меняет imported-запись руками, importer сравнивает текущее значение с `last_import_payload`.
 
@@ -46,7 +46,7 @@ Importer берет source data из `cms/seed/*.json` и синхронизир
 
 Следующий обычный sync это поле не перетирает.
 
-## Когда использовать force sync
+## Когда использовать принудительную синхронизацию
 
 `force-sync` нужен только если:
 
@@ -56,7 +56,7 @@ Importer берет source data из `cms/seed/*.json` и синхронизир
 
 Обычный редактор не должен использовать `force-sync`.
 
-## Identity contract
+## Контракт идентичности
 
 Для imported family используются:
 

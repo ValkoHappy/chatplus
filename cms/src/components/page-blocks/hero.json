@@ -1,0 +1,53 @@
+{
+  "collectionName": "components_page_blocks_heroes",
+  "info": {
+    "displayName": "Hero Block"
+  },
+  "attributes": {
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "default",
+        "showcase",
+        "panel"
+      ],
+      "default": "default"
+    },
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "subtitle": {
+      "type": "text"
+    },
+    "primary_label": {
+      "type": "string"
+    },
+    "primary_url": {
+      "type": "string"
+    },
+    "secondary_label": {
+      "type": "string"
+    },
+    "secondary_url": {
+      "type": "string"
+    },
+    "context_title": {
+      "type": "string"
+    },
+    "context_text": {
+      "type": "text"
+    },
+    "panel_items": {
+      "type": "component",
+      "component": "page-blocks.card-item",
+      "repeatable": true
+    },
+    "trust_facts": {
+      "type": "json"
+    }
+  }
+}

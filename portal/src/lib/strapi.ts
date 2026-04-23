@@ -2,16 +2,23 @@ import { inferLandingPageLinkSectionProps } from './link-sections.ts';
 import {
   normalizeCatalogItems,
   normalizeLandingPageRecord,
+  normalizePageV2Record,
   normalizeSiteSettingsRecord,
   parseCollectionData,
   parseSingleData,
   type StrapiRecord,
 } from './strapi-schemas.ts';
+import {
+  isImmutableReservedPageV2Route,
+  normalizePageV2RoutePath,
+  shouldGeneratePageV2CatchAllRoute,
+} from '../../../config/page-v2-routes.mjs';
 
 const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://127.0.0.1:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
 
 let siteSettingsPromise: Promise<ReturnType<typeof normalizeSiteSettingsRecord>> | undefined;
+let pageV2Promise: Promise<ReturnType<typeof normalizePageV2Record>[]> | undefined;
 
 async function request(path: string): Promise<unknown> {
   try {
@@ -33,14 +40,14 @@ async function request(path: string): Promise<unknown> {
   }
 }
 
-async function fetchCollection(path: string) {
-  const json = await request(`${path}${path.includes('?') ? '&' : '?'}pagination[pageSize]=100`);
+async function fetchCollection(path: string, pageSize = 100, options?: { allowEmpty?: boolean }) {
+  const json = await request(`${path}${path.includes('?') ? '&' : '?'}pagination[pageSize]=${pageSize}`);
 
   if (!json) {
     throw new Error(`Strapi returned no data for ${path}`);
   }
 
-  return parseCollectionData(json, path);
+  return parseCollectionData(json, path, options);
 }
 
 async function fetchSingle(path: string) {
@@ -186,4 +193,56 @@ export async function getSiteSettings() {
   }
 
   return siteSettingsPromise;
+}
+
+export async function getPageV2Pages() {
+  if (import.meta.env.DEV) {
+    return (await fetchCollection('/page-v2s', 500, { allowEmpty: true }))
+      .map((item) => normalizePageV2Record(item))
+      .filter((item) => item.is_published);
+  }
+
+  if (!pageV2Promise) {
+    pageV2Promise = fetchCollection('/page-v2s', 500, { allowEmpty: true })
+      .then((data) => data.map((item) => normalizePageV2Record(item)).filter((item) => item.is_published))
+      .catch((err) => {
+        pageV2Promise = undefined;
+        throw err;
+      });
+  }
+
+  return pageV2Promise;
+}
+
+export async function getPageV2ByRoute(routePath: string) {
+  const normalizedRoutePath = normalizePageV2RoutePath(routePath);
+  const pages = await getPageV2Pages();
+  return pages.find((page) => page.route_path === normalizedRoutePath) || null;
+}
+
+export async function getManagedRoutePage<T>(routePath: string, legacyLoader: () => Promise<T>) {
+  const pageV2 = await getPageV2ByRoute(routePath);
+  if (pageV2) {
+    return {
+      kind: 'page_v2' as const,
+      page: pageV2,
+    };
+  }
+
+  return {
+    kind: 'legacy' as const,
+    page: await legacyLoader(),
+  };
+}
+
+export async function getPublishedPageV2Routes() {
+  const pages = await getPageV2Pages();
+
+  for (const page of pages) {
+    if (isImmutableReservedPageV2Route(page.route_path)) {
+      throw new Error(`page_v2 route collision detected for reserved path ${page.route_path}`);
+    }
+  }
+
+  return pages.filter((page) => shouldGeneratePageV2CatchAllRoute(page.route_path));
 }

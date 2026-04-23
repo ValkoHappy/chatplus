@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_page_blocks_feature_lists",
+  "info": {
+    "displayName": "Feature List Block"
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "component": "page-blocks.card-item",
+      "repeatable": true
+    }
+  }
+}

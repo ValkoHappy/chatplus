@@ -1,4 +1,4 @@
-# Контентный workflow CHATPLUS
+# Контентный процесс CHATPLUS
 
 ## Общая схема
 
@@ -14,7 +14,7 @@
 
 ## Два рабочих сценария
 
-### 1. Managed content
+### 1. Managed-контент
 
 Используется для:
 
@@ -30,7 +30,7 @@
 4. relay запускает локальный rebuild на VPS
 5. публичная статика обновляется сразу на сервере
 
-### 2. Imported content
+### 2. Imported-контент
 
 Используется для:
 
@@ -48,10 +48,10 @@
 
 ## Importer команды
 
-### Dry run
+### Пробный прогон
 
 ```powershell
-npm.cmd run seed-content:plan
+npm run seed-content:plan
 ```
 
 Показывает, что будет создано, обновлено или пропущено.
@@ -59,21 +59,21 @@ npm.cmd run seed-content:plan
 ### Обычный sync
 
 ```powershell
-npm.cmd run seed-content
+npm run seed-content
 ```
 
-### Force sync
+### Принудительная синхронизация
 
 ```powershell
-npm.cmd run seed-content:force
+npm run seed-content:force
 ```
 
 Используется только когда нужно сознательно перезаписать editor-owned поля source-данными.
 
-### Report
+### Отчёт
 
 ```powershell
-npm.cmd run seed-content:report
+npm run seed-content:report
 ```
 
 Показывает текущее состояние imported-записей и следы последних sync-циклов.
@@ -91,9 +91,9 @@ npm.cmd run seed-content:report
 
 - запись сохранена в `Strapi`
 - нужный publish/sync выполнен
-- `npm.cmd run test:contracts` зеленый
-- `npm.cmd run check:docs-consistency` зеленый
-- `npm.cmd --prefix portal run build` зеленый
+- `npm run test:contracts` зеленый
+- `npm run check:docs-consistency` зеленый
+- `npm --prefix portal run build` зеленый
 - representative routes проверены руками
 
 ## Связанные документы
@@ -102,3 +102,4 @@ npm.cmd run seed-content:report
 - [Политика импорта](import-policy.md)
 - [Гайд оператора](operator-guide.md)
 - [Release flow](release-flow.md)
+

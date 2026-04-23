@@ -31,6 +31,12 @@
 
 - [Матрица маршрутов и ownership](route-ownership-matrix.md)
 
+Отдельно:
+
+- новые manual routes через `page_v2` не образуют еще один legacy `template_kind`
+- они используют `template_variant` как layout hint и section registry как page composition layer
+- для них ориентиром служит [Конструктор managed-страниц](page-v2-manual-builder.md)
+
 ## 1. `home`
 
 Назначение:
@@ -393,7 +399,8 @@ Shared sections:
 4. Проходит ли:
 
 ```powershell
-npm.cmd --prefix portal run build
+npm --prefix portal run build
 ```
 
 5. Не сломались ли representative routes этого шаблона.
+

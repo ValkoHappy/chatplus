@@ -6,6 +6,7 @@ interface FaqItem {
 
 interface Props {
   title?: string;
+  intro?: string;
   faqs?: FaqItem[];
   sectionClass?: string;
   containerClass?: string;
@@ -13,6 +14,7 @@ interface Props {
 
 const {
   title,
+  intro,
   faqs = [],
   sectionClass = 'section',
   containerClass = 'container faq-container',
@@ -27,6 +29,7 @@ const resolvedTitle = title?.trim() || 'Частые вопросы';
     <div class={containerClass}>
       <div class="section-header">
         <h2>{resolvedTitle}</h2>
+        {intro && <p>{intro}</p>}
       </div>
       <div class="faq-list">
         {items.map((item) => (

@@ -5,25 +5,25 @@
 Проверить:
 
 - Strapi запущен
-- если менялись imported catalog/SEO данные через source payload, выполнен `npm.cmd run seed-content`
+- если менялись imported catalog/SEO данные через source payload, выполнен `npm run seed-content`
 - если менялись managed pages, правки сохранены в Strapi
 
 ## 2. Обязательная локальная проверка
 
 ```powershell
-npm.cmd run test:contracts
-npm.cmd run check:docs-consistency
+npm run test:contracts
+npm run check:docs-consistency
 ```
 
 И только потом:
 
 ```powershell
-npm.cmd --prefix portal run build
+npm --prefix portal run build
 ```
 
 Build должен пройти полностью.
 
-## 3. Representative routes
+## 3. Репрезентативные маршруты
 
 Минимум открыть локально:
 
@@ -46,7 +46,7 @@ Build должен пройти полностью.
 - header и footer
 - отсутствие очевидных fallback-артефактов и битых текстов
 
-## 4. Ручной responsive QA
+## 4. Ручной responsive-QA
 
 Минимум посмотреть representative routes в трех режимах:
 
@@ -61,10 +61,10 @@ Build должен пройти полностью.
 - burger / header
 - footer
 - таблицы и длинные карточки
-## 5. Optional demo snapshot
+## 5. Опциональный demo-снимок
 
 ```powershell
-npm.cmd --prefix portal run snapshot:github-demo
+npm --prefix portal run snapshot:github-demo
 ```
 
 Проверить, что `pages-preview/` действительно обновился, только если вы сознательно поддерживаете showcase-flow.
@@ -103,13 +103,14 @@ Workflow `CI` на `pull_request` проверяет:
 
 Это не deploy и не замена ручного QA. Это защитный gate до merge.
 
-## 9. Contract guardrails
+## 9. Защитные contract-правила
 
 Перед publish желательно и локально, и на PR иметь зелеными:
 
 ```powershell
-npm.cmd run test:contracts
-npm.cmd run check:docs-consistency
+npm run test:contracts
+npm run check:docs-consistency
 ```
 
 Если они красные, публиковать изменение не надо даже при зеленом build.
+

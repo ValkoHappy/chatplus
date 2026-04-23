@@ -1,4 +1,4 @@
-# Troubleshooting CHATPLUS
+# Диагностика неполадок CHATPLUS
 
 Этот файл нужен для быстрого разбора типичных проблем без долгих поисков по проекту.
 
@@ -15,7 +15,7 @@
 1. Запущен ли Strapi:
 
 ```powershell
-npm.cmd --prefix cms run develop
+npm --prefix cms run develop
 ```
 
 2. Отвечает ли API:
@@ -69,10 +69,10 @@ Invoke-WebRequest 'http://127.0.0.1:1337/api/channels?pagination[pageSize]=1'
 Команда:
 
 ```powershell
-npm.cmd --prefix portal run build
+npm --prefix portal run build
 ```
 
-## 4. Новая imported page не появилась
+## 4. Новая imported-страница не появилась
 
 Что проверить:
 
@@ -80,7 +80,7 @@ npm.cmd --prefix portal run build
 2. Выполнен:
 
 ```powershell
-npm.cmd run seed-content
+npm run seed-content
 ```
 
 3. Если нужен materialized JSON snapshot, выполнен:
@@ -92,7 +92,7 @@ node scripts/export-from-strapi.mjs
 4. Маршрут действительно входит в importer-owned family.
 5. Route-template mapping и ownership не противоречат docs.
 
-## 5. Новая managed singleton page не появилась
+## 5. Новая managed singleton-страница не появилась
 
 Что проверить:
 
@@ -141,7 +141,7 @@ node scripts/export-from-strapi.mjs
 2. Если вы обновляете именно optional demo snapshot:
 
 ```powershell
-npm.cmd --prefix portal run snapshot:github-demo
+npm --prefix portal run snapshot:github-demo
 ```
 
 3. Commit + push.
@@ -153,7 +153,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 ./deploy/scripts/build-portal.sh
 ```
 
-## 8. В optional demo на GitHub Pages старые стили
+## 8. В опциональной demo-витрине на GitHub Pages старые стили
 
 Что делать:
 
@@ -217,7 +217,7 @@ npm.cmd --prefix portal run snapshot:github-demo
 - import/generator
 - deploy/publish
 
-## 12. PR workflow `CI` красный или skipped
+## 12. PR workflow `CI` красный или пропущен
 
 Что означает красный `CI`:
 
@@ -237,17 +237,17 @@ npm.cmd --prefix portal run snapshot:github-demo
 2. Повторить локально:
 
 ```powershell
-npm.cmd run test:contracts
-npm.cmd run check:docs-consistency
-npm.cmd --prefix portal run build
-npm.cmd run seed-content
+npm run test:contracts
+npm run check:docs-consistency
+npm --prefix portal run build
+npm run seed-content
 ```
 
 3. Если локально все ок, смотреть логи конкретного job:
 - `build-and-check`
 - `seed-runtime-smoke`
 
-## 13. Упали contract tests или docs/code consistency
+## 13. Упали contract-tests или проверка docs/code consistency
 
 Если краснеет `npm run test:contracts`, смотрите по типу поломки:
 
@@ -264,7 +264,7 @@ npm.cmd run seed-content
 - `portal/src/lib/page-template-map.ts`
 - `config/template-kinds.mjs`
 
-## 14. Production: контейнер Strapi unhealthy
+## 14. Production: контейнер Strapi в unhealthy-состоянии
 
 Что проверить:
 
@@ -284,7 +284,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 
 Признаки:
 
-- `https://cms.<domain>` или `https://<public-domain>` открывается с предупреждением про небезопасное подключение
+- `https://strapi.<domain>` или `https://<public-domain>` открывается с предупреждением про небезопасное подключение
 - в браузере видно `NET::ERR_CERT_AUTHORITY_INVALID`
 
 Что это обычно значит:
@@ -345,7 +345,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs --t
 
 Правильный порядок действий:
 
-1. открыть `https://cms.<domain>/admin`
+1. открыть `https://strapi.<domain>/admin`
 2. создать первого admin user
 3. создать `API Token`
 4. записать его в `deploy/.env` как `STRAPI_API_TOKEN`
@@ -408,7 +408,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 ./deploy/scripts/local-build-portal.sh
 ```
 
-## 21. Local Docker smoke на Windows
+## 21. Локальная Docker smoke-проверка на Windows
 
 Для реального Windows flow используйте:
 
@@ -443,7 +443,7 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml logs -f 
 2. In `Docker Desktop -> Settings -> Resources -> WSL Integration`, disable integration for `Ubuntu`.
 3. Continue using the Windows local scripts.
 
-## 23. Local Docker build проходит, но content-check падает на canonical
+## 23. Локальный Docker build проходит, но content-check падает на canonical
 
 Для local smoke это обычно значит, что `PUBLIC_SITE_URL` в `deploy/.env.local` не совпадает с тем production-like доменом, под который вы хотите проверить canonical.
 
@@ -454,3 +454,4 @@ PUBLIC_SITE_URL=https://astro.integromat.ru
 ```
 
 Это сделано специально: local Docker smoke проверяет production-style canonical URLs и должен проходить те же `content-check` guardrails, что и обычная сборка. Если нужен другой домен, используйте тот же host и для build, и для ожидаемых canonical.
+

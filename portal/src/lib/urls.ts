@@ -1,4 +1,17 @@
 const ABSOLUTE_OR_SPECIAL_URL_RE = /^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i;
+const FILE_LIKE_PATH_RE = /\/[^/?#]+\.[^/?#]+\/?$/i;
+
+function getDefaultBase() {
+  return import.meta.env?.BASE_URL || '/';
+}
+
+function splitPathSuffix(value = '') {
+  const match = value.match(/^([^?#]*)(.*)$/);
+  return {
+    pathname: match?.[1] || '',
+    suffix: match?.[2] || '',
+  };
+}
 
 function normalizeBase(base = import.meta.env.BASE_URL || '/') {
   if (!base || base === '/') {
@@ -8,7 +21,24 @@ function normalizeBase(base = import.meta.env.BASE_URL || '/') {
   return base.endsWith('/') ? base.slice(0, -1) : base;
 }
 
-export function withBasePath(href?: string, base = import.meta.env.BASE_URL || '/') {
+export function normalizeInternalPath(value = '/') {
+  const { pathname, suffix } = splitPathSuffix(value || '/');
+  const normalizedPathname = (`/${(pathname || '/').replace(/^\/+/, '')}`)
+    .replace(/\/{2,}/g, '/')
+    .replace(/\/+$/g, '') || '/';
+
+  return `${normalizedPathname}${suffix}`;
+}
+
+export function shouldRedirectTrailingSlash(pathname = '/') {
+  if (!pathname || pathname === '/' || !pathname.endsWith('/')) {
+    return false;
+  }
+
+  return !FILE_LIKE_PATH_RE.test(pathname);
+}
+
+export function withBasePath(href?: string, base = getDefaultBase()) {
   if (!href) {
     return href || '';
   }
@@ -22,15 +52,15 @@ export function withBasePath(href?: string, base = import.meta.env.BASE_URL || '
     return cleanBase || '/';
   }
 
-  const normalizedHref = href.startsWith('/') ? href : `/${href}`;
+  const normalizedHref = normalizeInternalPath(href.startsWith('/') ? href : `/${href}`);
   return `${cleanBase}${normalizedHref}`;
 }
 
-export function stripBasePath(pathname: string, base = import.meta.env.BASE_URL || '/') {
+export function stripBasePath(pathname: string, base = getDefaultBase()) {
   const cleanBase = normalizeBase(base);
 
   if (!cleanBase) {
-    return pathname || '/';
+    return normalizeInternalPath(pathname || '/');
   }
 
   if (pathname === cleanBase) {
@@ -38,9 +68,9 @@ export function stripBasePath(pathname: string, base = import.meta.env.BASE_URL 
   }
 
   if (pathname.startsWith(`${cleanBase}/`)) {
-    const normalizedPath = pathname.slice(cleanBase.length);
-    return normalizedPath || '/';
+    const normalizedPath = pathname.slice(cleanBase.length) || '/';
+    return normalizeInternalPath(normalizedPath);
   }
 
-  return pathname || '/';
+  return normalizeInternalPath(pathname || '/');
 }

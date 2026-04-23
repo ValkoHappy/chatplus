@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_page_blocks_link_items",
+  "info": {
+    "displayName": "Link Item"
+  },
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

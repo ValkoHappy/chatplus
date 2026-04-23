@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_page_blocks_card_items",
+  "info": {
+    "displayName": "Card Item"
+  },
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text"
+    },
+    "icon": {
+      "type": "string"
+    }
+  }
+}

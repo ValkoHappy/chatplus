@@ -1,0 +1,84 @@
+---
+const { section } = Astro.props as { section: Record<string, any> };
+const items = Array.isArray(section.items) ? section.items : [];
+const variant = section.variant || 'cards';
+---
+
+{items.length > 0 && (
+  <section class:list={['section', variant === 'band' && 'section-tonal']}>
+    <div class:list={['container', variant === 'sidebar' && 'pagev2-proof-sidebar']}>
+      {(section.title || section.intro) && (
+        <div class="section-header">
+          {section.title && <h2>{section.title}</h2>}
+          {section.intro && <p>{section.intro}</p>}
+        </div>
+      )}
+      <div class:list={['pagev2-stats', `pagev2-stats--${variant}`]}>
+        {items.map((item) => (
+          <article class="pagev2-stat">
+            <strong>{item.value}</strong>
+            <span>{item.label}</span>
+            {item.description && <p>{item.description}</p>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .pagev2-proof-sidebar {
+    display: grid;
+    grid-template-columns: minmax(0, .6fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .pagev2-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .pagev2-stats--band {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .pagev2-stats--sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .pagev2-stat {
+    display: grid;
+    gap: .35rem;
+    padding: 1.1rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .95);
+    border: 1px solid rgba(226, 232, 240, .95);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, .06);
+  }
+
+  .pagev2-stat strong {
+    color: #4f46e5;
+    font-size: clamp(1.5rem, 3vw, 2.3rem);
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+
+  .pagev2-stat span {
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  .pagev2-stat p {
+    margin: 0;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .pagev2-proof-sidebar {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

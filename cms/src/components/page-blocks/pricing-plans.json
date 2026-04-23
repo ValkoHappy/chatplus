@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_page_blocks_pricing_plans",
+  "info": {
+    "displayName": "Pricing Plans Block"
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "cards",
+        "compact"
+      ],
+      "default": "cards"
+    },
+    "items": {
+      "type": "component",
+      "component": "page-blocks.pricing-plan-item",
+      "repeatable": true
+    }
+  }
+}

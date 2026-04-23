@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_page_blocks_before_afters",
+  "info": {
+    "displayName": "Before After Block"
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "before_title": {
+      "type": "string"
+    },
+    "after_title": {
+      "type": "string"
+    },
+    "before_items": {
+      "type": "json"
+    },
+    "after_items": {
+      "type": "json"
+    },
+    "quote": {
+      "type": "text"
+    },
+    "quote_author": {
+      "type": "string"
+    }
+  }
+}

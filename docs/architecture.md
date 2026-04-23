@@ -79,7 +79,7 @@ portal/src/
 
 ## 3. Архитектура фронтенда
 
-### Layout layer
+### Слой layout
 
 Глобальный shell:
 
@@ -95,7 +95,7 @@ portal/src/
 - sticky CTA
 - легкий client-side UI behavior
 
-### Data access layer
+### Слой доступа к данным
 
 Главный gateway к CMS:
 
@@ -120,7 +120,7 @@ Page adaptation layer:
 - `portal/src/lib/page-adapters/intersections.ts`
 - `portal/src/lib/page-adapters/specialized.ts`
 
-### Registry layer
+### Слой реестров
 
 Route-to-template registry:
 
@@ -160,7 +160,7 @@ Route-to-template registry:
 
 - [template-contracts.md](template-contracts.md)
 
-## 5. Shared sections
+## 5. Общие секции
 
 Ключевые shared-компоненты:
 
@@ -171,7 +171,7 @@ Route-to-template registry:
 
 ## 6. Контентная архитектура
 
-### Imported слой
+### Слой imported
 
 Источник live-данных:
 
@@ -193,7 +193,7 @@ Route-to-template registry:
 - competitors
 - programmatic landing families
 
-### Managed слой
+### Слой managed
 
 Источник истины:
 
@@ -209,7 +209,7 @@ Route-to-template registry:
 - partnership
 - другие singleton pages, если они переведены в managed-режим
 
-### Settings слой
+### Слой settings
 
 Источник истины:
 
@@ -220,7 +220,7 @@ Route-to-template registry:
 - site-wide settings
 - shared operational CMS values
 
-### Ownership flags
+### Флаги ownership
 
 Ключевые поля:
 
@@ -237,7 +237,7 @@ Route-to-template registry:
 
 ## 7. Маршрутный слой
 
-### Managed singleton pages
+### Managed singleton-страницы
 
 - `/`
 - `/docs`
@@ -255,7 +255,7 @@ Route-to-template registry:
 - `/partnership`
 - `/demo`
 
-### Catalog pages
+### Каталоговые страницы
 
 - `/channels`
 - `/industries`
@@ -264,7 +264,7 @@ Route-to-template registry:
 - `/features`
 - `/for`
 
-### Programmatic/detail pages
+### Programmatic/detail-страницы
 
 - `/channels/[slug]`
 - `/industries/[slug]`
@@ -280,18 +280,18 @@ Route-to-template registry:
 - `/compare/[slug]`
 - `/vs/[slug]`
 
-### Technical/supporting pages
+### Технические и вспомогательные страницы
 
 - `/compare`
 - `/site-map`
 - `/dev`
 
-## 8. Build и QA
+## 8. Сборка и QA
 
 Основная команда:
 
 ```powershell
-npm.cmd --prefix portal run build
+npm --prefix portal run build
 ```
 
 Она включает:
@@ -311,7 +311,7 @@ npm.cmd --prefix portal run build
 - `nginx` отдает актуальный static artifact
 - publish automation по умолчанию идет через `Strapi webhook -> relay -> local rebuild -> deploy на VPS`
 
-### Optional demo
+### Опциональная demo-витрина
 
 - local Strapi
 - `snapshot:github-demo`
@@ -321,3 +321,4 @@ npm.cmd --prefix portal run build
 Operational details:
 
 - [DEPLOY.md](../DEPLOY.md)
+

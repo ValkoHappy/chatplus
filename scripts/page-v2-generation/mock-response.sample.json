@@ -1,0 +1,47 @@
+{
+  "title": "AI draft smoke page",
+  "route_path": "/campaigns/ai-draft-smoke",
+  "seo_title": "AI draft smoke page",
+  "seo_description": "Mocked page_v2 draft used for local generation smoke tests.",
+  "nav_group": "resources",
+  "nav_label": "AI smoke",
+  "nav_description": "Mocked AI draft generated locally for verification.",
+  "show_in_header": false,
+  "show_in_footer": false,
+  "show_in_sitemap": true,
+  "sections": [
+    {
+      "block_type": "hero",
+      "eyebrow": "CHATPLUS",
+      "title": "AI draft smoke page",
+      "subtitle": "This page is generated through the local generation_job smoke flow.",
+      "primary_label": "Request demo",
+      "primary_url": "/demo"
+    },
+    {
+      "block_type": "rich-text",
+      "title": "Why this draft exists",
+      "body": "The draft proves that generation_job can create a page_v2 draft without publishing it automatically."
+    },
+    {
+      "block_type": "final-cta",
+      "title": "Review before publish",
+      "text": "Editors still review the draft before it can go live.",
+      "primary_label": "Open docs",
+      "primary_url": "/docs"
+    }
+  ],
+  "breadcrumbs": [
+    {
+      "label": "Resources",
+      "href": "/docs"
+    }
+  ],
+  "internal_links": [
+    {
+      "label": "Documentation",
+      "href": "/docs",
+      "description": "Reference materials for editors."
+    }
+  ]
+}
