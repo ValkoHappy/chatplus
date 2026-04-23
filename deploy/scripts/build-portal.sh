@@ -40,7 +40,7 @@ fi
 
 trap cleanup EXIT
 
-"${SCRIPT_DIR}/validate-env.sh" --require-token
+bash "${SCRIPT_DIR}/validate-env.sh" --require-token
 
 set -a
 source "${ENV_FILE}"

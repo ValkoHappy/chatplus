@@ -19,7 +19,7 @@ DEPLOY_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 COMPOSE_FILE="${DEPLOY_DIR}/docker-compose.prod.yml"
 ENV_FILE="${DEPLOY_DIR}/.env"
 
-"${SCRIPT_DIR}/validate-env.sh"
+bash "${SCRIPT_DIR}/validate-env.sh"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
   echo "Missing ${ENV_FILE}. Copy deploy/.env.example to deploy/.env first."

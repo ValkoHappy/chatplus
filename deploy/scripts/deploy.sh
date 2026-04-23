@@ -18,9 +18,9 @@ for arg in "$@"; do
   esac
 done
 
-"${SCRIPT_DIR}/validate-env.sh"
+bash "${SCRIPT_DIR}/validate-env.sh"
 "${SCRIPT_DIR}/issue-ssl.sh"
-"${SCRIPT_DIR}/ensure-public-placeholder.sh"
+bash "${SCRIPT_DIR}/ensure-public-placeholder.sh"
 
 if grep -q '^STRAPI_API_TOKEN=replace-with-strapi-api-token$' "${SCRIPT_DIR}/../.env" || ! grep -q '^STRAPI_API_TOKEN=' "${SCRIPT_DIR}/../.env"; then
   echo "Core services and SSL are ready."

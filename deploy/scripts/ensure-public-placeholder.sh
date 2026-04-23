@@ -11,7 +11,7 @@ CURRENT_DIR="${PUBLIC_ROOT}/current"
 PLACEHOLDER_RELEASE="bootstrap-placeholder"
 PLACEHOLDER_DIR="${RELEASES_DIR}/${PLACEHOLDER_RELEASE}"
 
-"${SCRIPT_DIR}/validate-env.sh"
+bash "${SCRIPT_DIR}/validate-env.sh"
 
 set -a
 source "${ENV_FILE}"
@@ -116,4 +116,3 @@ if [[ ! -e "${CURRENT_DIR}" ]]; then
 fi
 
 echo "Public placeholder is ready at ${CURRENT_DIR}"
-
