@@ -39,6 +39,7 @@ fi
 bash "${SCRIPT_DIR}/validate-env.sh" --require-token
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --build strapi content-relay nginx
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --force-recreate nginx
 bash "${SCRIPT_DIR}/ensure-public-placeholder.sh"
 
 if [[ "${WITH_SEED}" == "true" ]]; then
