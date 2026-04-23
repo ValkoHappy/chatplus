@@ -18,6 +18,33 @@ cleanup() {
   rm -rf "${NEXT_DIR}" "${LOCK_DIR}"
 }
 
+wait_for_service_healthy() {
+  local service="$1"
+  local timeout_seconds="${2:-180}"
+  local container_id=""
+  local status=""
+  local start_time=""
+
+  start_time="$(date +%s)"
+  while true; do
+    container_id="$(docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" ps -q "${service}" || true)"
+    if [[ -n "${container_id}" ]]; then
+      status="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "${container_id}" 2>/dev/null || true)"
+      if [[ "${status}" == "healthy" || "${status}" == "running" ]]; then
+        echo "${service} is ${status}."
+        return 0
+      fi
+    fi
+
+    if (( "$(date +%s)" - start_time >= timeout_seconds )); then
+      echo "Timed out waiting for ${service} to become healthy. Last status: ${status:-missing}."
+      return 1
+    fi
+
+    sleep 5
+  done
+}
+
 resolve_link_target() {
   local link_path="$1"
   local target=""
@@ -45,6 +72,8 @@ bash "${SCRIPT_DIR}/validate-env.sh" --require-token
 set -a
 source "${ENV_FILE}"
 set +a
+
+wait_for_service_healthy strapi 240
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" build tools
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --no-deps --rm tools node scripts/preflight-portal-build.mjs
