@@ -114,9 +114,16 @@ for key in "${sensitive_keys[@]}"; do
 done
 
 if [[ "${#placeholder_keys[@]}" -gt 0 ]]; then
-  echo "Placeholder secrets found in deploy/.env. Replace them before continuing:"
-  printf ' - %s\n' "${placeholder_keys[@]}"
-  exit 1
+  if [[ "${ALLOW_PLACEHOLDER_SECRETS:-false}" == "true" ]]; then
+    echo "WARNING: placeholder secrets are still present in deploy/.env:"
+    printf ' - %s\n' "${placeholder_keys[@]}"
+    echo "Continuing because ALLOW_PLACEHOLDER_SECRETS=true is set."
+    echo "Rotate these secrets in a controlled maintenance window."
+  else
+    echo "Placeholder secrets found in deploy/.env. Replace them before continuing:"
+    printf ' - %s\n' "${placeholder_keys[@]}"
+    exit 1
+  fi
 fi
 
 if [[ "${REQUIRE_TOKEN}" == "true" ]]; then
