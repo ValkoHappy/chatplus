@@ -44,6 +44,10 @@ async function fetchCollection(path: string, pageSize = 100, options?: { allowEm
   const json = await request(`${path}${path.includes('?') ? '&' : '?'}pagination[pageSize]=${pageSize}`);
 
   if (!json) {
+    if (options?.allowEmpty) {
+      return [];
+    }
+
     throw new Error(`Strapi returned no data for ${path}`);
   }
 
