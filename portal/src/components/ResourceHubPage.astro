@@ -34,6 +34,8 @@ interface PageData {
   features?: { title?: string; text?: string }[];
   use_cases_title?: string;
   use_cases?: { title?: string; audience?: string; text?: string }[];
+  integrations_title?: string;
+  integration_blocks?: { label?: string; text?: string }[];
   faq_title?: string;
   faqs?: { question?: string; answer?: string }[];
   internal_links_title?: string;
@@ -168,7 +170,28 @@ const sectionLabels = page.section_labels || {};
     </section>
   )}
 
-  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section section-tonal" containerClass="container container-narrow" />
+  {page.integrations_title && page.integration_blocks && page.integration_blocks.length > 0 && (
+    <section class="section section-tonal">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.integrations_title}</h2>
+        </div>
+        <div class="hub-feature-grid">
+          {page.integration_blocks.map((item, index) => (
+            <article class="hub-feature-card">
+              <div class="hub-feature-icon">
+                <Icon name={['lucide:plug-zap', 'lucide:workflow', 'lucide:database-zap', 'lucide:messages-square'][index % 4]} />
+              </div>
+              <h3>{item.label}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section section-tonal" />
   <InternalLinksSection page={page} />
 
   {(page.sticky_cta_title || page.sticky_cta_text) && (

@@ -1,14 +1,17 @@
 {
   "collectionName": "components_page_blocks_pricing_plans",
   "info": {
-    "displayName": "Pricing Plans Block"
+    "displayName": "Pricing Plans Block",
+    "description": "Блок тарифов или пакетов."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока тарифов."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое пояснение перед тарифами."
     },
     "variant": {
       "type": "enumeration",
@@ -16,12 +19,14 @@
         "cards",
         "compact"
       ],
-      "default": "cards"
+      "default": "cards",
+      "description": "Вариант отображения тарифов."
     },
     "items": {
       "type": "component",
       "component": "page-blocks.pricing-plan-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Карточки тарифов."
     }
   }
 }

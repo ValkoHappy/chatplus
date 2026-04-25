@@ -1,16 +1,19 @@
 {
   "collectionName": "components_page_blocks_faq_items",
   "info": {
-    "displayName": "FAQ Item"
+    "displayName": "FAQ Item",
+    "description": "Один вопрос и ответ."
   },
   "attributes": {
     "question": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Вопрос, который увидит пользователь."
     },
     "answer": {
       "type": "text",
-      "required": true
+      "required": true,
+      "description": "Ответ. Пишите коротко и конкретно."
     }
   }
 }

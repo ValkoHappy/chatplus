@@ -7,7 +7,10 @@ import {
   makeLinks,
   makeSteps,
   pickFirstMeaningfulString,
+  prioritizeBySlugs,
 } from './shared.ts';
+
+const INTERSECTION_RELATED_SOLUTIONS = ['onboarding', 'nps', 'support'];
 
 export function adaptChannelIndustryPage(channel: any, industry: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channel_industry');
@@ -44,7 +47,7 @@ export function adaptChannelIndustryPage(channel: any, industry: any, context: a
     internal_links: makeLinks([
       { label: channel.name, href: `/channels/${channel.slug}`, description: channel.description },
       { label: industry.name, href: `/industries/${industry.slug}`, description: industry.description },
-      ...context.solutions.slice(0, 3).map((item: any) => ({ label: item.name, href: `/solutions/${item.slug}`, description: item.description })),
+      ...prioritizeBySlugs(context.solutions, INTERSECTION_RELATED_SOLUTIONS).slice(0, 3).map((item: any) => ({ label: item.name, href: `/solutions/${item.slug}`, description: item.description })),
     ]),
     sticky_cta_title: fill(template.sticky_cta_title, { channel: channel.name, industry: industry.name }),
     sticky_cta_text: fill(template.sticky_cta_text, { channel: channel.name, industry: industry.name }),
@@ -95,7 +98,7 @@ export function adaptChannelIntegrationPage(channel: any, integration: any, cont
     internal_links: makeLinks([
       { label: channel.name, href: `/channels/${channel.slug}`, description: channel.description },
       { label: integration.name, href: `/integrations/${integration.slug}`, description: integration.description },
-      ...context.solutions.slice(0, 3).map((item: any) => ({ label: item.name, href: `/solutions/${item.slug}`, description: item.description })),
+      ...prioritizeBySlugs(context.solutions, INTERSECTION_RELATED_SOLUTIONS).slice(0, 3).map((item: any) => ({ label: item.name, href: `/solutions/${item.slug}`, description: item.description })),
     ]),
     sticky_cta_title: fill(template.sticky_cta_title, { channel: channel.name, industry: integration.name, integration: integration.name }) || pairName,
     sticky_cta_text: fill(template.sticky_cta_text, { channel: channel.name, industry: integration.name, integration: integration.name }) || pairSubtitle,

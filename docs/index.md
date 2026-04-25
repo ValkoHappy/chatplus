@@ -1,120 +1,114 @@
 # Документация CHATPLUS
 
-Главная карта проекта. Этот файл стоит открыть первым перед работой с репозиторием.
+Это главная карта проекта. Если вы открыли репозиторий впервые, начните отсюда.
 
-## Что это за проект
+## Коротко
 
-`CHATPLUS` — это контентный сайт на `Astro`, который получает данные из `Strapi`.
+CHATPLUS сейчас строится вокруг модели **Strapi-first**:
 
-В проекте есть:
+- `Strapi` хранит страницы, блоки, SEO, навигацию, связи и AI-задачи.
+- `Astro` рендерит сайт из данных Strapi и собирает статический frontend.
+- Старые шаблоны пока не удаляются: они остаются защитным renderer/fallback-слоем, чтобы перенос не ломал внешний вид.
+- Новая универсальная сущность страницы технически называется `page_v2`, но в интерфейсе Strapi её можно воспринимать просто как `Page`.
+- Для старых URL действует safety gate: страница заменяет legacy только после проверки `migration_ready=true` и `parity_status=approved`.
+- Для новых страниц можно сразу использовать Strapi-конструктор без добавления нового route в код.
 
-- `portal/` — фронтенд
-- `cms/` — `Strapi` CMS
-- `scripts/` — importer, AI generation и служебные content-скрипты
-- `pages-preview/` — legacy demo snapshot для showcase-режима
+## Если вы редактор
 
-Основной рабочий режим сейчас server-first:
+Читайте в таком порядке:
 
-- `Strapi + Postgres + uploads` живут на VPS
-- `Astro` собирает публичную статику
-- `nginx` отдаёт сайт и проксирует CMS
+1. [Понятная инструкция для редактора Strapi](strapi-editor-handbook.md)
+2. [Быстрый старт редактора](editor-quickstart.md)
+3. [Как добавлять страницы](how-to-add-page.md)
+4. [Конструктор страниц в Strapi](page-v2-manual-builder.md)
+5. [Глоссарий](glossary.md)
 
-## Главный принцип
+Главная идея: чтобы изменить контент, откройте `Content Manager -> Page`, найдите страницу по `route_path`, измените блоки в `sections`, сохраните и опубликуйте.
 
-Текущая рабочая модель:
+## Если вы разработчик или AI-агент
 
-- `managed` — запись редактируется вручную в `Strapi`
-- `imported` — запись создаётся importer-ом и затем живёт в `Strapi`
-- `settings` — singleton и системные записи
+Читайте в таком порядке:
 
-Для всех новых ручных managed pages действует отдельное правило:
+1. [Контекст для AI и разработчика](ai-agent-context.md)
+2. [CMS-модель](cms-model.md)
+3. [Единая система блоков](unified-block-system-plan.md)
+4. [Контракты шаблонов](template-contracts.md)
+5. [Миграция маршрутов](managed-route-migration.md)
+6. [Гайд оператора](operator-guide.md)
+7. [Production handoff](manual-first-production-handoff.md)
 
-- новый route создаётся через `page_v2`
-- legacy `landing-page` не расширяется под новые manual routes
+Главное правило для разработки: не переписывать старую страницу в generic `PageV2Page`, если у неё есть legacy family. Старый URL должен сохранять свой family-renderer, а `page_v2` становится владельцем контента и метаданных.
 
-## Порядок чтения для инженера
+## Если нужно работать с AI-генерацией
 
-1. [Архитектура](architecture.md)
-2. [Глоссарий](glossary.md)
-3. [CMS-модель](cms-model.md)
-4. [Конструктор managed-страниц](page-v2-manual-builder.md)
-5. [Миграция managed routes](managed-route-migration.md)
-6. [Передача следующего production-этапа](manual-first-production-handoff.md)
-6. [AI-генерация черновиков](ai-page-generation.md)
-6. [Контентный workflow](content-workflow.md)
-7. [Политика импорта](import-policy.md)
-8. [Матрица маршрутов и ownership](route-ownership-matrix.md)
-9. [Контракты шаблонов](template-contracts.md)
-10. [Карта файлов](file-map.md)
-11. [Контракт безопасных изменений](change-safety.md)
-12. [Диагностика неполадок](troubleshooting.md)
-13. [Релизный поток](release-flow.md)
-14. [Гайд оператора](operator-guide.md)
-16. [Production Deploy](../deploy/DEPLOY_PRODUCTION.md)
+Читайте:
 
-## Порядок чтения для оператора и редактора
+1. [AI-генерация черновиков](ai-page-generation.md)
+2. [План AI-генерации и автопубликации](ai-scheduled-autopublish-plan.md)
+3. [Контекст для AI и разработчика](ai-agent-context.md)
 
-1. [Быстрый запуск на VPS](start-here-vps.md)
-2. [Быстрый вход для владельца](owner-quickstart.md)
-3. [Гайд оператора](operator-guide.md)
-4. [Контентный workflow](content-workflow.md)
-5. [Релизный поток](release-flow.md)
-6. [Production Deploy](../deploy/DEPLOY_PRODUCTION.md)
+Текущее правило: AI создаёт страницы через тот же `page_v2` contract, что и человек. AI может выбирать блоки по blueprint, но не должен обходить ограничения blueprint, route policy и safety gate.
 
 ## Где что лежит
 
 ```text
 CHATPLUS/
-|- portal/          # Astro frontend
-|- cms/             # Strapi CMS
-|- scripts/         # importer и content-скрипты
-|- docs/            # актуальная документация
-|- pages-preview/   # optional demo snapshot
-|- .github/         # workflows
-|- deploy/          # production и local runbooks
-`- README.md        # главный вход в проект
+|- portal/          # Astro frontend и renderer страниц
+|- cms/             # Strapi CMS, схемы content types и components
+|- scripts/         # materializer, проверки, importer, AI generation runner
+|- docs/            # документация и runbook-и
+|- deploy/          # серверные примеры, cron, env и runbook-и
+|- pages-preview/   # legacy/demo snapshot
+`- README.md        # общий вход в проект
 ```
 
-## Где источник истины
+## Статус локальной модели
 
-### CMS и админка
+Локально подготовлена модель, где:
 
-`Strapi` — главный редакторский интерфейс.
+- текущие публичные URL материализованы как `page_v2`;
+- старые страницы сохраняют legacy family-renderer;
+- `page_blueprint` хранит правила допустимых блоков;
+- `page_version` хранит snapshots для истории и rollback;
+- `generation_job` готовит AI drafts;
+- проверки показывали целевое состояние `800/800` по materialized public pages, без bridge losses и без data quality issues.
 
-В нём живут:
+Важно: это не означает, что live server уже полностью cutover. Серверный перенос делается отдельно, по controlled waves, с smoke-проверками и rollback.
 
-- legacy managed pages
-- новые `page_v2` managed pages
-- singleton pages
-- site settings
-- imported catalog и SEO-записи после загрузки
+## Главные правила безопасности
 
-### Импорт и генерация
+- Не удалять legacy templates до отдельного cleanup-этапа.
+- Не включать `migration_ready` без визуальной проверки страницы.
+- Не делать массовый cutover старых страниц без route-by-route smoke.
+- Не считать `published` достаточным условием для старого URL: нужен approved статус и parity gate.
+- Если страница выглядит плохо, выключить `migration_ready` или снять publish, затем чинить bridge/materializer.
+- Новый блок добавляется только через Strapi schema, frontend primitive/renderer, tests и docs.
 
-Importer:
+## Частые ответы
 
-- читает `cms/seed/*.json`
-- умеет `plan`, `apply`, `force-sync`, `report`
-- пишет записи в `Strapi`
-- не должен слепо затирать ручные редакторские правки
+**Можно ли добавить новую страницу?**  
+Да. Создайте запись `Page` в Strapi, заполните `route_path`, SEO, blueprint и `sections`, затем publish.
 
-### Фронтенд
+**Можно ли удалить старую страницу?**  
+Публично убрать можно через unpublish или `migration_ready=false`. Физически удалять legacy template пока нельзя: он нужен для rollback до полного cleanup-этапа.
 
-Frontend владеет только:
+**Весь ли контент в Strapi?**  
+Целевая локальная модель: публичные страницы имеют `page_v2` записи, а entities остаются источником фактов. Legacy templates пока остаются не как владелец контента, а как renderer/fallback для сохранения макета.
 
-- шаблонами
-- layout
-- стилями
-- render logic
-- safe shape normalization
+**Как понять, что ничего не потеряли?**  
+Запустите проверки:
 
-Frontend не должен становиться вторым источником истины для copy.
+```powershell
+npm.cmd run page-v2:data-quality -- --problems --json
+npm.cmd run page-v2:parity-report -- --json
+npm.cmd run page-v2:rendered-coverage -- --problems --json
+npm.cmd run test:contracts
+npm.cmd --prefix portal run build
+```
 
-## Правила без двусмысленности
+**Где смотреть понятные подсказки в Strapi?**  
+Описание полей и блоков хранится в схемах Strapi. Для обновления русских подсказок запустите:
 
-- не используйте `generated` как главный user-facing ownership термин
-- не правьте imported catalog/SEO записи вручную как основной workflow
-- не хардкодьте user-facing copy во frontend, если её должен менять редактор
-- не добавляйте новый CMS-owned блок без обновления схемы, рендерера и docs
-- не публикуйте изменения без успешного `portal build`
-
+```powershell
+npm.cmd run strapi:help:ru
+```

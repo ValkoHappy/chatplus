@@ -15,6 +15,9 @@ export const PAGE_V2_TEMPLATE_VARIANTS = [
   'editorial',
   'showcase',
   'minimal',
+  'directory',
+  'comparison',
+  'sitemap',
 ];
 
 export const PAGE_V2_GENERATION_MODES = [
@@ -25,6 +28,7 @@ export const PAGE_V2_GENERATION_MODES = [
 
 export const PAGE_V2_SOURCE_MODES = [
   'managed',
+  'generated',
   'hybrid',
 ];
 
@@ -66,7 +70,18 @@ export const PAGE_V2_MIGRATABLE_MANAGED_PATHS = Object.freeze([
 export const PAGE_V2_IMMUTABLE_RESERVED_EXACT_PATHS = Object.freeze([
   '/admin',
   '/api',
-  '/business-types',
+]);
+
+export const PAGE_V2_IMMUTABLE_RESERVED_PREFIXES = Object.freeze([
+  '/admin/',
+  '/api/',
+  '/_astro/',
+  '/assets/',
+  '/uploads/',
+]);
+
+export const PAGE_V2_BRIDGED_EXACT_PATHS = Object.freeze([
+  ...PAGE_V2_MIGRATABLE_MANAGED_PATHS,
   '/channels',
   '/compare',
   '/features',
@@ -78,9 +93,7 @@ export const PAGE_V2_IMMUTABLE_RESERVED_EXACT_PATHS = Object.freeze([
   '/vs',
 ]);
 
-export const PAGE_V2_IMMUTABLE_RESERVED_PREFIXES = Object.freeze([
-  '/admin/',
-  '/api/',
+export const PAGE_V2_BRIDGED_PREFIXES = Object.freeze([
   '/channels/',
   '/compare/',
   '/features/',
@@ -127,7 +140,15 @@ export function canPageV2UseRoute(routePath = '') {
 
 export function shouldGeneratePageV2CatchAllRoute(routePath = '') {
   const normalized = normalizePageV2RoutePath(routePath);
-  return normalized !== '/' && !isMigratableManagedPageV2Route(normalized);
+  if (normalized === '/') {
+    return false;
+  }
+
+  if (PAGE_V2_BRIDGED_EXACT_PATHS.includes(normalized)) {
+    return false;
+  }
+
+  return !PAGE_V2_BRIDGED_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
 export function toPageV2CatchAllParam(routePath = '') {

@@ -37,6 +37,13 @@ function asBoolean(value: unknown, fallback = false) {
   return fallback;
 }
 
+function isTechnicalFaqItem(question: string, answer: string) {
+  const normalizedQuestion = question.trim().toLowerCase();
+  const normalizedAnswer = answer.trim().toLowerCase();
+  return normalizedQuestion === 'can this page be edited in strapi?'
+    || normalizedAnswer === 'yes. the page record owns route, seo, sections and links.';
+}
+
 function asInteger(value: unknown, fallback = 0) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return Math.trunc(value);
@@ -166,7 +173,7 @@ function normalizePageV2Section(value: unknown) {
           question: asString(current.question) || asString(current.q),
           answer: asString(current.answer) || asString(current.a),
         };
-      });
+      }).filter((item) => !isTechnicalFaqItem(asString(item.question), asString(item.answer)));
       break;
     case 'testimonial':
       normalized.quote = asString(record.quote);
@@ -222,8 +229,8 @@ function normalizePageV2Section(value: unknown) {
     case 'before-after':
       normalized.before_title = asString(record.before_title);
       normalized.after_title = asString(record.after_title);
-      normalized.before_items = asArray(record.before_items).map((item) => asString(item)).filter(Boolean);
-      normalized.after_items = asArray(record.after_items).map((item) => asString(item)).filter(Boolean);
+      normalized.before_items = asArray(record.before_items).map(normalizeBeforeAfterItem).filter(Boolean);
+      normalized.after_items = asArray(record.after_items).map(normalizeBeforeAfterItem).filter(Boolean);
       normalized.quote = asString(record.quote);
       normalized.quote_author = asString(record.quote_author);
       break;
@@ -234,6 +241,21 @@ function normalizePageV2Section(value: unknown) {
   }
 
   return normalized;
+}
+
+function normalizeBeforeAfterItem(value: unknown) {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  const record = asRecord(value);
+  const itemValue = asString(record.value);
+  const itemLabel = asString(record.label) || asString(record.title) || asString(record.text);
+  if (itemValue && itemLabel) {
+    return `${itemValue} — ${itemLabel}`;
+  }
+
+  return itemValue || itemLabel;
 }
 
 export function parseCollectionData(json: unknown, path: string, options?: { allowEmpty?: boolean }) {
@@ -341,7 +363,7 @@ export function normalizeLandingPageRecord(data: StrapiRecord, slugHint?: string
         question: asString(record.question) || asString(record.q),
         answer: asString(record.answer) || asString(record.a),
       };
-    }),
+    }).filter((item) => !isTechnicalFaqItem(item.question, item.answer)),
     internal_links: asArray(data.internal_links).map((item) => {
       const record = asRecord(item);
       return {
@@ -408,6 +430,18 @@ export function normalizeSiteSettingsRecord(data: StrapiRecord) {
 export function normalizePageV2Record(data: StrapiRecord) {
   const parentPage = asRecord(data.parent_page);
   const publishedAt = asString(data.publishedAt) || asString(data.published_at);
+  const editorialStatus = asString(data.editorial_status) || 'draft';
+  const migrationReady = asBoolean(data.migration_ready);
+  const parityStatus = asString(data.parity_status) || 'unchecked';
+  const legacyTemplateFamily = asString(data.legacy_template_family);
+  const isPublishedApproved = publishedAt.length > 0 && editorialStatus === 'approved';
+  const isMigrationVisible = legacyTemplateFamily
+    ? (
+        isPublishedApproved &&
+        migrationReady &&
+        parityStatus === 'approved'
+      )
+    : isPublishedApproved;
 
   return {
       ...data,
@@ -427,9 +461,15 @@ export function normalizePageV2Record(data: StrapiRecord) {
     nav_description: asString(data.nav_description),
       nav_group: asString(data.nav_group) || 'resources',
       nav_order: asInteger(data.nav_order, 100),
-      editorial_status: asString(data.editorial_status) || 'draft',
+      editorial_status: editorialStatus,
+      migration_ready: migrationReady,
+      parity_status: parityStatus,
+      legacy_template_family: legacyTemplateFamily,
+      legacy_layout_signature: asRecord(data.legacy_layout_signature),
+      parity_notes: asRecord(data.parity_notes),
       publishedAt,
       is_published: publishedAt.length > 0,
+      is_migration_visible: isMigrationVisible,
       show_in_header: asBoolean(data.show_in_header),
     show_in_footer: asBoolean(data.show_in_footer),
     show_in_sitemap: asBoolean(data.show_in_sitemap, true),

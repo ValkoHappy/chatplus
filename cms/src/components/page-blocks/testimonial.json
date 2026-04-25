@@ -1,21 +1,26 @@
 {
   "collectionName": "components_page_blocks_testimonials",
   "info": {
-    "displayName": "Testimonial Block"
+    "displayName": "Testimonial Block",
+    "description": "Цитата, отзыв или редакционный вывод."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока, если нужен."
     },
     "quote": {
       "type": "text",
-      "required": true
+      "required": true,
+      "description": "Текст цитаты."
     },
     "author": {
-      "type": "string"
+      "type": "string",
+      "description": "Автор цитаты."
     },
     "role": {
-      "type": "string"
+      "type": "string",
+      "description": "Роль или компания автора."
     }
   }
 }

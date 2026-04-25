@@ -20,29 +20,14 @@ const MIGRATABLE_MANAGED_PATHS = new Set([
 const IMMUTABLE_RESERVED_EXACT_PATHS = new Set([
   '/admin',
   '/api',
-  '/business-types',
-  '/channels',
-  '/compare',
-  '/features',
-  '/for',
-  '/industries',
-  '/integrations',
-  '/site-map',
-  '/solutions',
-  '/vs',
 ]);
 
 const IMMUTABLE_RESERVED_PREFIXES = [
   '/admin/',
   '/api/',
-  '/channels/',
-  '/compare/',
-  '/features/',
-  '/for/',
-  '/industries/',
-  '/integrations/',
-  '/solutions/',
-  '/vs/',
+  '/_astro/',
+  '/assets/',
+  '/uploads/',
 ];
 
 export function normalizePageV2RoutePath(routePath: string) {

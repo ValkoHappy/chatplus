@@ -28,6 +28,7 @@ portal/dist
 cms/.tmp
 cms/dist
 cms/.cache
+cms/.strapi-updater.json.*
 cms/public/uploads/*
 !cms/public/uploads/.gitkeep
 

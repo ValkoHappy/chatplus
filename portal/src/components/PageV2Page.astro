@@ -51,8 +51,8 @@ const hasInternalLinksBlock = sections.some((section) => section?.block_type ===
 const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.internal_links) && page.internal_links.length > 0
   ? {
       block_type: 'internal-links',
-      eyebrow: 'Continue',
-      title: page.internal_links_title || 'Explore more',
+      eyebrow: 'По теме страницы',
+      title: page.internal_links_title || 'Что ещё посмотреть',
       intro: page.internal_links_intro || '',
       links: page.internal_links,
     }

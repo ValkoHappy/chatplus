@@ -1,28 +1,35 @@
 {
   "collectionName": "components_page_blocks_comparison_tables",
   "info": {
-    "displayName": "Comparison Table Block"
+    "displayName": "Comparison Table Block",
+    "description": "Таблица сравнения тарифов, решений, конкурентов или подходов."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок таблицы."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое пояснение перед таблицей."
     },
     "option_one_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Название первой колонки. Пример: Без Chat Plus."
     },
     "option_two_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Название второй колонки. Пример: С Chat Plus."
     },
     "option_highlight_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Название колонки вывода/подсветки, если используется."
     },
     "rows": {
       "type": "component",
       "component": "page-blocks.comparison-row",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Строки сравнения."
     }
   }
 }

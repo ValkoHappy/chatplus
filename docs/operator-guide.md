@@ -1,177 +1,140 @@
 # Гайд оператора
 
-## Короткое правило
+Этот документ для человека, который сопровождает систему: запускает проверки, переносит страницы, готовит серверный этап и понимает, что уже готово локально.
 
-### Если это managed-контент
+## Быстрая карта документов
 
-Правим в `Strapi`.
+- [Быстрый старт редактора](editor-quickstart.md) — как работать руками в Strapi.
+- [Как добавить страницу](how-to-add-page.md) — как создать новую страницу или перенести старую.
+- [Конструктор страниц](page-v2-manual-builder.md) — какие блоки и поля есть.
+- [Миграция маршрутов](managed-route-migration.md) — как безопасно переводить старые URL.
+- [Локальный чек-лист](local-readiness-checklist.md) — что должно быть зеленым до сервера.
+- [Production handoff](manual-first-production-handoff.md) — что делать на VPS после локальной готовности.
 
-Примеры:
+## Что сейчас является источником страниц
 
-- `page_v2` pages
-- legacy landing pages
-- singleton pages
-- site settings
+Основной источник публичных страниц — `page_v2`.
 
-### Если это imported-контент
+Сущности `channel`, `industry`, `integration`, `solution`, `feature`, `business_type`, `competitor` остаются источниками фактов. Они не должны быть единственным владельцем публичной страницы.
 
-Правим source data и запускаем importer.
+Legacy-модели и старые `.astro` wrappers пока остаются как fallback.
 
-Примеры:
+## Главные команды проверки
 
-- channels
-- industries
-- integrations
-- solutions
-- features
-- business types
-- competitors
-
-## Основные команды
-
-### Проверить importer без записи
+Запускайте перед серверным шагом:
 
 ```powershell
-npm run seed-content:plan
+npm.cmd run test:contracts
+npm.cmd run check:docs-consistency
+npm.cmd --prefix cms run build
+npm.cmd --prefix portal run build
+npm.cmd run page-v2:data-quality -- --problems --json
+npm.cmd run page-v2:parity-report -- --json
+npm.cmd run page-v2:rendered-coverage -- --problems --json
+npm.cmd run page-v2:local:layout-smoke -- --json
 ```
 
-### Выполнить sync
+`page-v2:local:layout-smoke` проверяет текущий `portal/dist` в read-only режиме: он не пишет в Strapi и оставляет approved routes включенными. Для полной проверки с пересборкой используйте `npm.cmd run page-v2:local:layout-smoke:build -- --json`.
+
+Хороший результат:
+
+- tests проходят;
+- builds проходят;
+- `data-quality` возвращает `withIssues = 0`;
+- `parity-report` возвращает `withBridgeLosses = 0`;
+- `rendered-coverage` возвращает `missingMarkers = 0`.
+
+## Как создать записи page_v2 локально
+
+Отчет без изменений:
 
 ```powershell
-npm run seed-content
+npm.cmd run page-v2:materialize:report
 ```
 
-### Принудительно перезаписать imported-записи
+Создать или обновить все drafts:
 
 ```powershell
-npm run seed-content:force
+npm.cmd run page-v2:materialize -- --apply --all
 ```
 
-### Посмотреть отчёт
+Создать один route:
 
 ```powershell
-npm run seed-content:report
+npm.cmd run page-v2:materialize -- --route=/pricing --apply
 ```
 
-### Запустить AI-генерацию черновика для одного job
+## Как безопасно включить старый route
+
+1. Создать или обновить запись:
 
 ```powershell
-npm run page-v2:generate -- --job-id=JOB_ID
+npm.cmd run page-v2:materialize -- --route=/pricing --apply
 ```
 
-### Обработать ручные AI-задачи в очереди
+2. Опубликовать запись:
 
 ```powershell
-npm run page-v2:generate:queued -- --job-type=manual_request
+npm.cmd run page-v2:materialize -- --route=/pricing --apply --publish
 ```
 
-### Обработать плановые AI-задачи в очереди
+3. Проверить макет.
+4. Разрешить cutover:
 
 ```powershell
-npm run page-v2:generate:scheduled
+npm.cmd run page-v2:materialize -- --route=/pricing --approve
 ```
 
-### Посмотреть отчёт по `generation_job`
+## Как быстро откатить route
 
 ```powershell
-npm run page-v2:generate:report
+npm.cmd run page-v2:materialize -- --route=/pricing --mark-not-ready
 ```
 
-### Посмотреть план миграции по managed-маршрутам
+Если нужно снять публикацию:
 
 ```powershell
-npm run page-v2:migrate:managed:report
+npm.cmd run page-v2:materialize -- --route=/pricing --unpublish
 ```
 
-### Проверить готовность рабочего `Strapi` после будущего deploy
+## AI-команды
+
+AI пока должен создавать только drafts:
 
 ```powershell
-npm run page-v2:live:ready
+npm.cmd run page-v2:generate:report
+npm.cmd run page-v2:generate:queued -- --job-type=manual_request
+npm.cmd run page-v2:generate:scheduled
 ```
 
-### Подготовить один legacy route к переносу
+Правило: AI не включает `migration_ready` и не делает auto-publish для старых маршрутов.
 
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo
-```
+## Что относится к серверному этапу
 
-### Создать или обновить draft для одного route
+Это не локальная доделка:
 
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo --apply
-```
+- deploy нового `cms`;
+- deploy нового `portal`;
+- синхронизация blueprints на live Strapi;
+- materialize live drafts;
+- live cutover по одному route;
+- production smoke;
+- ротация секретов.
 
-После этого:
+## Если что-то пошло не так
 
-- откройте draft в `Strapi`
-- проверьте parity с legacy route
-- проверьте hero, CTA, nav/footer/mobile nav, sitemap, breadcrumbs и internal links
+| Проблема | Что сделать |
+| --- | --- |
+| Страница открывается, но выглядит плохо | `--mark-not-ready` и проверить bridge/sections. |
+| Страница не открывается | Проверить `route_path`, publish, safety gate и build. |
+| Таблица пустая | Проверить block `comparison-table` и bridge mapping. |
+| Блок есть в Strapi, но его нет на сайте | Запустить `page-v2:rendered-coverage`. |
+| Страница пропала из меню | Проверить `show_in_header`, `show_in_footer`, `nav_group`, `nav_order`. |
+| Страница попала в sitemap ошибочно | Проверить `show_in_sitemap`, `robots`, `canonical`. |
 
-### Опубликовать route только после parity smoke-проверки
+## Памятка безопасности
 
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo --apply --publish
-```
-
-### Быстрый откат на legacy-источник
-
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo --unpublish
-```
-
-### Проверить резервную копию перед восстановлением
-
-```bash
-./deploy/scripts/restore.sh --check /path/to/backup-directory
-```
-
-## Локальная проверка перед релизом
-
-```powershell
-npm run test:contracts
-npm run check:docs-consistency
-npm --prefix portal run build
-```
-
-## Что не надо делать
-
-- не править imported catalog и SEO-записи руками как основной способ работы
-- не менять `content_origin` вручную без понимания migration logic
-- не использовать `force-sync` как обычный publish flow
-- не считать frontend источником истины для copy и SEO
-- не создавать новые managed routes через legacy `landing-page`, если подходит `page_v2`
-- не включать auto-publish для AI-генерации черновиков
-
-## Политика безопасной миграции
-
-Migration managed routes идёт только через bridge.
-
-Правила:
-
-- legacy wrappers остаются на месте
-- route сначала проходит parity smoke
-- только после этого published `page_v2` может заменить legacy source
-- rollback делается снятием published state у `page_v2`
-
-То есть:
-
-- `page_v2 published` -> render `page_v2`
-- otherwise -> render legacy source
-
-## Если нужно объяснение без технички
-
-Для владельца проекта:
-
-- [owner-quickstart.md](owner-quickstart.md)
-
-Для общей модели:
-
-- [cms-model.md](cms-model.md)
-- [content-workflow.md](content-workflow.md)
-- [managed-route-migration.md](managed-route-migration.md)
-- [manual-first-production-handoff.md](manual-first-production-handoff.md)
-
-Для первого боевого запуска:
-
-- [production-setup-checklist.md](production-setup-checklist.md)
-
+- Не включать `migration_ready` без проверки.
+- Не делать массовый cutover на сервере.
+- Не удалять legacy wrappers до отдельного cleanup-этапа.
+- Не менять секреты без backup базы и `.env`.

@@ -1,7 +1,7 @@
 ---
 import StructuredLandingPage from '../../../components/StructuredLandingPage.astro';
 import { adaptBusinessTypeIndustryPage } from '../../../lib/page-adapters';
-import { getBusinessTypes, getIndustries, getIntegrations, getChannels, getSiteSettings } from '../../../lib/strapi';
+import { getBusinessTypes, getIndustries, getIntegrations, getChannels, getPageV2ByRouteForLegacyRenderer, getSiteSettings } from '../../../lib/strapi';
 
 export async function getStaticPaths() {
   const [businessTypes, industries] = await Promise.all([getBusinessTypes(), getIndustries()]);
@@ -14,13 +14,14 @@ export async function getStaticPaths() {
 }
 
 const { businessType, industry } = Astro.props;
+const bridgedPage = await getPageV2ByRouteForLegacyRenderer(`/for/${businessType.slug}/${industry.slug}`, 'structured');
 const [settings, integrations, channels, industriesList] = await Promise.all([
   getSiteSettings(),
   getIntegrations(),
   getChannels(),
   getIndustries(),
 ]);
-const page = adaptBusinessTypeIndustryPage(businessType, industry, { settings, integrations, channels, industries: industriesList });
+const page = bridgedPage || adaptBusinessTypeIndustryPage(businessType, industry, { settings, integrations, channels, industries: industriesList });
 ---
 
 <StructuredLandingPage page={page} />

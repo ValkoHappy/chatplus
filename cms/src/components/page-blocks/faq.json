@@ -1,19 +1,23 @@
 {
   "collectionName": "components_page_blocks_faqs",
   "info": {
-    "displayName": "FAQ Block"
+    "displayName": "FAQ Block",
+    "description": "Блок частых вопросов."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока. Пример: Частые вопросы."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Дополнительное пояснение перед вопросами, если нужно."
     },
     "items": {
       "type": "component",
       "component": "page-blocks.faq-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Список вопросов и ответов."
     }
   }
 }

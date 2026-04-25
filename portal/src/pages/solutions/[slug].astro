@@ -1,7 +1,7 @@
 ---
 import StructuredLandingPage from '../../components/StructuredLandingPage.astro';
 import { adaptSolutionPage } from '../../lib/page-adapters';
-import { getChannels, getIndustries, getIntegrations, getSiteSettings, getSolutions } from '../../lib/strapi';
+import { getChannels, getIndustries, getIntegrations, getPageV2ByRouteForLegacyRenderer, getSiteSettings, getSolutions } from '../../lib/strapi';
 
 export async function getStaticPaths() {
   const solutions = await getSolutions();
@@ -14,6 +14,7 @@ export async function getStaticPaths() {
 }
 
 const { solution } = Astro.props;
+const bridgedPage = await getPageV2ByRouteForLegacyRenderer(`/solutions/${solution.slug}`, 'structured');
 const [settings, channels, industries, integrations, solutions] = await Promise.all([
   getSiteSettings(),
   getChannels(),
@@ -21,7 +22,7 @@ const [settings, channels, industries, integrations, solutions] = await Promise.
   getIntegrations(),
   getSolutions(),
 ]);
-const page = adaptSolutionPage(solution, { settings, channels, industries, integrations, solutions });
+const page = bridgedPage || adaptSolutionPage(solution, { settings, channels, industries, integrations, solutions });
 ---
 
 <StructuredLandingPage page={page} />

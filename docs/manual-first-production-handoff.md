@@ -1,208 +1,142 @@
 # Передача следующего production-этапа
 
-Этот документ нужен для следующего шага после текущего `commit-ready` состояния.
+Этот документ отделяет локальную готовность от серверного cutover.
 
-Сейчас в репозитории уже готовы:
+## Что уже должно быть готово локально
 
-- `page_v2` как новый page-first слой для ручных managed pages
-- safe bridge `published page_v2 -> render page_v2`, иначе legacy source
-- migration CLI для route-by-route переноса managed routes
-- `generation_job` и AI draft flow
+- `page_v2` работает как основной page-layer.
+- `page_blueprint` существует в Strapi.
+- `page_version` существует в Strapi.
+- Materializer умеет создавать страницы для managed, directory, detail, comparison и intersection routes.
+- Safety gate защищает старые маршруты.
+- Layout-preserving bridge сохраняет старые family-макеты.
+- AI работает только как draft-flow.
+- Локальные проверки зеленые.
 
-В этот этап **не входят**:
+## Что это НЕ означает
 
-- commit / push
-- deploy нового CMS-кода в production
-- live migration waves
-- live AI cutover
+Это не означает, что сервер уже переключен.
 
-Ниже описан именно handoff для следующего прод-этапа.
+До серверного этапа нельзя говорить:
 
-## 1. Что сделать сразу после будущего деплоя
+- “все на проде уже перенесено”;
+- “legacy можно удалить”;
+- “можно делать массовый cutover”;
+- “секреты уже ротированы”.
 
-После того как новый код `cms` и `portal` окажется на VPS, нужно проверить, что live `Strapi` уже видит новые content types и готов к migration.
+## Серверный порядок работ
 
-Локально или на сервере с выставленными `STRAPI_URL` и `STRAPI_TOKEN` выполните:
-
-```powershell
-npm run page-v2:live:ready
-```
-
-Проверка должна подтвердить:
-
-- открывается live `Strapi admin`
-- доступен `/api/page-v2s`
-- доступен `/api/generation-jobs`
-
-Если нужен машиночитаемый отчёт:
-
-```powershell
-npm run page-v2:live:ready -- --json
-```
-
-## 2. Что делать, если проверка готовности не прошла
-
-### Не открывается `/admin`
-
-Проверьте:
-
-- контейнер `strapi`
-- `nginx`
-- SSL и домен `strapi.<domain>`
-
-### Не открывается `/api/page-v2s`
-
-Это обычно значит одно из трёх:
-
-- новый CMS-код ещё не задеплоен
-- `Strapi` не пересобран после обновления
-- используется невалидный `STRAPI_TOKEN`
-
-### Не открывается `/api/generation-jobs`
-
-Проверьте те же вещи, что и для `page_v2`, но уже применительно к `generation_job`.
-
-Пока readiness-check не зелёный, **не начинайте live migration routes**.
-
-## 3. Волны контролируемой миграции
-
-После зелёного readiness-check идём только route-by-route.
-
-Сначала смотрим план:
+1. Сделать backup базы.
+2. Сделать backup `.env`.
+3. Задеплоить новый `cms`.
+4. Проверить API:
+   - `/api/page-v2s`;
+   - `/api/page-blueprints`;
+   - `/api/page-versions`;
+   - `/api/generation-jobs`.
+5. Задеплоить новый `portal`.
+6. Синхронизировать blueprints:
 
 ```powershell
-npm run page-v2:migrate:managed:report
+npm.cmd run page-v2:sync-blueprints
 ```
 
-### Волна 1
-
-- `/promo`
-- `/prozorro`
-- `/media`
-- `/team`
-- `/conversation`
-- `/tv`
-- `/docs`
-- `/help`
-- `/academy`
-- `/blog`
-- `/status`
-
-### Волна 2
-
-- `/pricing`
-- `/partnership`
-
-### Волна 3
-
-- `/`
-- `/demo`
-- `/solutions/tenders`
-
-## 4. Перенос по одному маршруту
-
-Для каждого route порядок один и тот же:
-
-1. Снять baseline текущей live страницы.
-2. Подготовить draft через migration CLI:
+7. Снять report:
 
 ```powershell
-npm run page-v2:migrate:managed -- --route=/promo
+npm.cmd run page-v2:materialize:report
 ```
 
-3. Создать или обновить draft в `Strapi`:
+8. Создать live drafts:
 
 ```powershell
-npm run page-v2:migrate:managed -- --route=/promo --apply
+npm.cmd run page-v2:materialize -- --apply --all
 ```
 
-4. Проверить draft в `Strapi`.
-5. Проверить parity:
-   - hero
-   - CTA
-   - nav/footer/mobile nav
-   - sitemap
-   - breadcrumbs
-   - internal links
-6. Только после этого публиковать route:
+9. Публиковать и approve только по одному route.
+
+## Как переключать route на сервере
+
+Пример для `/promo`:
 
 ```powershell
-npm run page-v2:migrate:managed -- --route=/promo --apply --publish
+npm.cmd run page-v2:materialize -- --route=/promo --apply --publish
+npm.cmd run page-v2:materialize -- --route=/promo --approve
 ```
 
-7. Подтвердить, что route реально рендерится из `page_v2`, а не из legacy fallback.
+После этого:
 
-## 5. Быстрый откат
-
-Если после publish route ведёт себя не так, как ожидалось:
+1. Запустить rebuild/deploy.
+2. Открыть страницу в браузере.
+3. Проверить макет.
+4. Проверить меню, footer, sitemap.
+5. Если плохо — откатить:
 
 ```powershell
-npm run page-v2:migrate:managed -- --route=/promo --unpublish
+npm.cmd run page-v2:materialize -- --route=/promo --mark-not-ready
 ```
 
-После этого ownership route возвращается к legacy source через bridge.
+## Почему нельзя массово включать все routes
 
-Отдельный emergency code rollback для такой ситуации не нужен.
+У разных страниц разные макеты. Даже если данные заполнены, конкретный family-renderer может требовать особое поле.
 
-## 6. Проверочная live AI smoke-сессия
+Поэтому:
 
-AI включаем только после ручной parity для разрешённых family:
+- materialize all — можно;
+- publish all — осторожно и только как техническая подготовка;
+- approve all на сервере — нельзя без отдельного контролируемого решения.
 
-- `campaign`
-- `brand`
-- `resource`
+## Scheduled AI
 
-Не включаем в первом live AI этапе:
+Cron-файл:
 
-- `pricing`
-- `comparison`
-- `home`
-- `demo`
-- `tenders`
+- `deploy/system/cron.page-v2-ai.example`
 
-### Ручной запрос
+Нужные env:
 
-1. Создайте `generation_job` в `Strapi`
-2. Укажите `job_type=manual_request`
-3. Запустите:
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `STRAPI_URL`
+- `STRAPI_TOKEN`
 
-```powershell
-npm run page-v2:generate -- --job-id=JOB_ID
-```
+Правило:
 
-Ожидаемое поведение:
+- AI создает drafts;
+- AI не включает `migration_ready`;
+- AI не удаляет ручные изменения;
+- auto-publish для старых маршрутов запрещен.
 
-- создаётся только `page_v2 draft`
-- ничего не публикуется автоматически
+## Ротация секретов
 
-### Плановая smoke-проверка
+Перед ротацией:
 
-```powershell
-npm run page-v2:generate:scheduled
-```
+1. Backup базы.
+2. Backup `.env`.
+3. Проверить, какие токены реально используются.
+4. Подготовить maintenance window для Strapi salts.
 
-Ожидаемое поведение:
+Ротировать:
 
-- queued scheduled jobs переходят в обработку
-- создаются только drafts
-- редактор дальше решает, публиковать их или нет
+- `POSTGRES_PASSWORD`;
+- `WEBHOOK_TOKEN`;
+- `STRAPI_API_TOKEN`;
+- GitHub/relay tokens;
+- Strapi session/JWT salts.
 
-## 7. Что считается успешным следующим этапом
+`ENCRYPTION_KEY` менять только после отдельной preflight-проверки, иначе можно потерять доступ к зашифрованным данным.
 
-Можно считать следующий production-этап успешным, только если:
+После успешной проверки убрать:
 
-- readiness-check зелёный
-- хотя бы один route из каждой wave прошёл live parity smoke
-- rollback через `--unpublish` подтверждён
-- `manual_request` AI smoke создаёт только draft
-- `scheduled` AI smoke создаёт только draft
+- `ALLOW_PLACEHOLDER_SECRETS=true`
 
-## 8. Что остаётся legacy даже после этого
+## Когда можно думать об удалении legacy
 
-Даже после успешного прод-этапа это нормально:
+Только после:
 
-- legacy wrappers остаются compatibility layer
-- imported catalog и SEO families не переезжают в `page_v2`
-- `/site-map` остаётся utility route
+- live cutover всех нужных routes;
+- успешного browser smoke;
+- успешного rollback smoke;
+- подтверждения, что `page_v2` полностью покрывает нужный page contract;
+- отдельного cleanup-плана.
 
-Удаление legacy слоя — это отдельная будущая cleanup-задача, не часть текущего безопасного перехода.
+До этого legacy wrappers — это страховка, а не мусор.

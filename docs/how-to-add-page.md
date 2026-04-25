@@ -1,193 +1,118 @@
-# Как добавлять страницы
+# Как добавить страницу
 
-Этот документ разделяет реальные сценарии создания страниц в `CHATPLUS`.
+Главное правило: новые публичные страницы создаются через `page_v2` в Strapi. Старые `landing-page` и другие legacy-модели остаются только для совместимости и fallback.
 
-## Главное правило
+## Вариант 1. Новая страница без старого URL
 
-Если вам нужна новая публичная managed page, создавайте её через `page_v2`.
+Используйте этот вариант для новых промо-страниц, лендингов, брендовых страниц, ресурсов и любых новых ручных маршрутов.
 
-Не продолжайте по умолчанию расширять legacy `landing-page` как основную модель новых routes.
+### Шаги в Strapi
 
-## Сценарий 1. Новая managed page через `page_v2`
+1. Откройте `page_v2`.
+2. Нажмите `Create new entry`.
+3. Заполните:
+   - `title` — внутреннее название.
+   - `slug` — короткий ключ, например `spring-promo`.
+   - `route_path` — публичный адрес, например `/spring-promo`.
+   - `page_kind` — тип страницы.
+   - `blueprint` — стартовая схема страницы.
+   - `seo_title` — title для поисковиков.
+   - `seo_description` — description для поисковиков.
+4. Соберите страницу из блоков в `sections`.
+5. Заполните настройки меню и sitemap, если они нужны.
+6. Поставьте `editorial_status = approved`.
+7. Нажмите `Publish`.
 
-Используйте этот путь для:
+Новый route не требует отдельного `.astro` файла. Его подхватит общий page-layer.
 
-- новых campaign pages
-- новых brand pages
-- новых resource pages
-- любых новых manual routes вне imported catalog families
+Для новой native-страницы не включайте `migration_ready`: она станет видимой после `Publish` и `editorial_status = approved`. `migration_ready` нужен только для старых URL, где мы защищаем старый макет.
 
-### Шаги
+## Вариант 2. Перенос существующей старой страницы
 
-1. Создайте запись `page-v2` в `Strapi`
-2. Заполните минимум:
-   - `slug`
-   - `route_path`
-   - `title`
-   - `page_kind`
-   - `template_variant`
-   - `seo_title`
-   - `seo_description`
-3. Если страница должна участвовать в структуре сайта, дополнительно задайте:
-   - `show_in_header`
-   - `show_in_footer`
-   - `show_in_sitemap`
-   - `nav_group`
-   - `nav_label`
-   - `nav_order`
-   - `parent_page`
-4. Соберите страницу через dynamic zone `sections`
-5. При необходимости свяжите её с entities
-6. Сохраните как draft
-7. Прогоните локальную сборку:
+Используйте этот вариант, если URL уже существует: `/pricing`, `/partnership`, `/features`, `/compare/respond-io` и похожие.
 
-```powershell
-npm --prefix portal run build
-```
+### Почему тут осторожнее
 
-8. Опубликуйте страницу
-9. Убедитесь, что сайт пересобрался
+У старой страницы уже есть свой макет. Поэтому одной публикации в Strapi недостаточно. Сначала нужно убедиться, что новая запись сохранила:
 
-### Важно
+- hero;
+- CTA;
+- таблицы;
+- карточки;
+- FAQ;
+- внутренние ссылки;
+- SEO;
+- старую family-структуру.
 
-- `route_path` не должен конфликтовать с immutable reserved routes вроде `/admin`, `/api`, `/site-map`, `/compare` и imported catalog roots
-- для новых `page_v2` routes не нужен новый `.astro` файл
-- navigation и sitemap управляются из самой CMS-записи
+### Правило показа старого route
 
-## Сценарий 2. Миграция существующего legacy managed-маршрута
+Старая страница переключается на `page_v2` только если одновременно выполнено:
 
-Используйте этот путь, когда route уже существует в legacy wrapper-ах и вы хотите передать ownership `page_v2`, не удаляя wrapper.
+- запись опубликована;
+- `editorial_status = approved`;
+- `migration_ready = true`;
+- `parity_status = approved`.
 
-Поддерживаемые migratable exact routes:
+Если хотя бы одно условие не выполнено, сайт показывает старый fallback.
 
-- `/`
-- `/pricing`
-- `/partnership`
-- `/docs`
-- `/help`
-- `/academy`
-- `/blog`
-- `/status`
-- `/media`
-- `/team`
-- `/conversation`
-- `/tv`
-- `/promo`
-- `/prozorro`
-- `/demo`
-- `/solutions/tenders`
+## Вариант 3. Каталоговая или SEO-страница
 
-### Правило выбора источника
+Каталожные страницы тоже материализуются в `page_v2`, но факты остаются в сущностях:
 
-- если published `page_v2` существует на exact route, frontend рендерит `page_v2`
-- иначе frontend остаётся на legacy source
+- `channel`;
+- `industry`;
+- `integration`;
+- `solution`;
+- `feature`;
+- `business_type`;
+- `competitor`.
 
-Draft не может перехватить legacy route.
+Это значит:
 
-### Рекомендуемый сценарий миграции
+- сущность хранит факты;
+- `page_v2` хранит публичную страницу, блоки, SEO, ссылки и route.
 
-1. Создайте `page_v2` с тем же `route_path`
-2. Воссоздайте content structure через blueprint и blocks
-3. Настройте nav, sitemap, breadcrumbs и internal links в `page_v2`
-4. Проверьте страницу локально
-5. Только потом публикуйте
-6. После publish подтвердите, что route реально рендерится из `page_v2`
+## Как выбрать `page_kind`
 
-### Правило защиты от поломок
+| Если нужна страница | Используйте |
+| --- | --- |
+| Обычный лендинг | `landing` |
+| Промо или спецстраница | `campaign` |
+| Страница компании, медиа, команды | `brand` |
+| Документация, блог, помощь | `resource` |
+| Корень каталога | `directory` |
+| Карточка сущности | `entity_detail` |
+| Пересечение сущностей | `entity_intersection` |
+| Сравнение | `comparison` |
+| Служебная страница | `system` |
 
-Нельзя считать route migrated только потому, что `page_v2` создан.
+## Минимальный набор перед публикацией
 
-Route считается migrated только если:
+Перед `Publish` проверьте:
 
-- сохранены ключевые section patterns
-- nav и sitemap не сломаны
-- breadcrumbs корректны
-- parity smoke пройден
+- `route_path` заполнен и начинается с `/`;
+- `seo_title` заполнен;
+- `seo_description` заполнен;
+- есть хотя бы один содержательный блок в `sections`;
+- CTA ведет на рабочий URL;
+- internal links не пустые, если блок добавлен;
+- `show_in_sitemap` включен только для страниц, которые нужно индексировать.
 
-Если parity ломается, route остаётся на legacy source.
+## Что делать после создания
 
-## Сценарий 3. Новая imported page
-
-Используйте этот путь для imported catalog и SEO entities:
-
-- `solution`
-- `feature`
-- `industry`
-- `integration`
-- `channel`
-- `business-type`
-- `competitor`
-
-### Шаги
-
-1. Обновите source seed или generation payload
-2. Запустите importer:
+Локально или на сервере технический оператор должен проверить:
 
 ```powershell
-npm run seed-content
+npm.cmd --prefix portal run build
+npm.cmd run page-v2:data-quality -- --problems --json
+npm.cmd run page-v2:rendered-coverage -- --problems --json
 ```
 
-3. Убедитесь, что запись появилась в `Strapi` как `record_mode = imported`
-4. Соберите frontend:
+Если отчеты пустые, страница не потеряла обязательный контент.
 
-```powershell
-npm --prefix portal run build
-```
+## Что нельзя делать
 
-5. Проверьте публичный route локально
-
-## Сценарий 4. Поддержка старой legacy singleton-страницы
-
-Используйте это только когда надо поддерживать уже существующую legacy family и вы пока не переводите её в `page_v2`.
-
-### Шаги
-
-1. Обновите legacy content type, например `landing-page` или `tenders-page`
-2. Сохраните текущий `slug`, `template_kind` и ownership contract
-3. Соберите проект и проверьте representative routes
-
-### Важно
-
-- не добавляйте новые manual route families через legacy `landing-page`
-- legacy content types — это maintenance path, а не preferred future model
-
-## Сценарий 5. Добавление нового CMS-owned блока
-
-Это уже engineering change, а не только editor work.
-
-### Шаги
-
-1. Определите block contract
-2. Добавьте schema компонента в `Strapi`
-3. Добавьте normalization во frontend data layer
-4. Добавьте renderer
-5. Добавьте тесты
-6. Прогоните build и representative route checks
-
-## Сценарий 6. Изменение существующего template или page family
-
-Это тоже engineering change.
-
-### Шаги
-
-1. Определите, влияет ли изменение только на styling или ещё и на data contract
-2. Обновите нужные adapters или `page_v2` renderer
-3. Если меняется data contract, обновите schema и docs вместе
-4. Пересоберите проект и проверьте representative routes
-
-## Что проверять после добавления или migration страницы
-
-- route открывается локально
-- `npm --prefix portal run build` проходит
-- страница соблюдает managed/imported ownership rules
-- если это новая managed page, она использует `page_v2`
-- если это migrated route, `page_v2` выигрывает только после publish
-- sitemap и navigation корректны
-- breadcrumbs и internal links идут из page-owned data
-
-## Связанные документы
-
-- [Конструктор managed-страниц](page-v2-manual-builder.md)
-- [Миграция managed routes](managed-route-migration.md)
-- [Гайд оператора](operator-guide.md)
-
+- Не создавайте новые ручные страницы в legacy-моделях.
+- Не включайте `migration_ready` у старого маршрута без проверки макета.
+- Не удаляйте старый `.astro` wrapper на этом этапе.
+- Не переносите страницу в неподходящий generic-блок, если старый макет требует отдельный блок или variant.

@@ -11,6 +11,11 @@
 - fallback-и допустимы только как safety layer, а не как главный источник истины
 - imported catalog pages могут использовать безопасные data-derivation fallback-и из самих сущностей
 - managed singleton pages не должны держать hidden marketing copy в adapters или компонентах
+- повторяющиеся визуальные блоки должны использовать общий primitive-слой, а не локальную копию CSS внутри каждого шаблона
+- уникальные hero/pricing/tenders/structured-макеты нельзя заменять generic primitive без отдельной parity-проверки
+
+Общий primitive-слой живёт в `portal/src/components/blocks` и `portal/src/styles/block-primitives.css`.
+Статус миграции повторяющихся блоков фиксируется в [инвентаризации общих блоков](block-primitives-inventory.md).
 
 ## Быстрая матрица
 

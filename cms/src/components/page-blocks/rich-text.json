@@ -1,15 +1,18 @@
 {
   "collectionName": "components_page_blocks_rich_texts",
   "info": {
-    "displayName": "Rich Text Block"
+    "displayName": "Rich Text Block",
+    "description": "Текстовый редакционный блок."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок текстового блока."
     },
     "body": {
       "type": "richtext",
-      "required": true
+      "required": true,
+      "description": "Основной текст. Подходит для описаний, инструкций и редакционных страниц."
     }
   }
 }

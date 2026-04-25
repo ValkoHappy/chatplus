@@ -31,7 +31,7 @@ test('getHeaderLinks appends page_v2 links without replacing legacy navigation',
   assert.ok(!links.some((link) => link.href === '/campaigns/hidden'));
 });
 
-test('getHeaderLinks lets page_v2 own metadata for migrated legacy routes', () => {
+test('getHeaderLinks keeps legacy slot labels short for migrated routes', () => {
   const links = getHeaderLinks([], [
     {
       route_path: '/pricing',
@@ -43,7 +43,7 @@ test('getHeaderLinks lets page_v2 own metadata for migrated legacy routes', () =
   ]);
 
   const pricing = links.find((link) => link.href === '/pricing');
-  assert.equal(pricing?.label, 'Commercial model');
+  assert.equal(pricing?.label, 'Цены');
 });
 
 test('getFooterColumns groups page_v2 links by nav_group and keeps legacy columns', () => {
@@ -76,7 +76,42 @@ test('getFooterColumns groups page_v2 links by nav_group and keeps legacy column
   assert.ok(resources?.links.some((link) => link.href === '/docs'));
 });
 
-test('getSiteMapGroups includes published page_v2 sitemap entries once', () => {
+test('getFooterColumns keeps legacy catalog labels short when page_v2 has long SEO labels', () => {
+  const columns = getFooterColumns([], [
+    {
+      route_path: '/channels',
+      title: 'Все каналы коммуникации в одном окне',
+      nav_label: 'Все каналы коммуникации в одном окне',
+      nav_group: 'catalogs',
+      nav_order: 1,
+      show_in_footer: true,
+    },
+  ]);
+
+  const catalogs = columns.find((column) => column.title === 'Каталоги');
+  const channels = catalogs?.links.find((link) => link.href === '/channels');
+
+  assert.equal(channels?.label, 'Каналы');
+});
+
+test('getFooterColumns does not duplicate dynamic footer pages already present in legacy columns', () => {
+  const columns = getFooterColumns([], [
+    {
+      route_path: '/compare',
+      title: 'Сравнения Chat Plus',
+      nav_label: 'Все сравнения',
+      nav_group: 'catalog',
+      show_in_footer: true,
+    },
+  ]);
+  const compareLinks = columns
+    .flatMap((column) => column.links)
+    .filter((link) => link.href === '/compare');
+
+  assert.equal(compareLinks.length, 1);
+});
+
+test('getSiteMapGroups includes safe-approved page_v2 sitemap entries once', () => {
   const footerColumns = getFooterColumns([], [
     {
       route_path: '/academy/ai-playbooks',

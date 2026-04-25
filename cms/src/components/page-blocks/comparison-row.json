@@ -1,21 +1,26 @@
 {
   "collectionName": "components_page_blocks_comparison_rows",
   "info": {
-    "displayName": "Comparison Row"
+    "displayName": "Comparison Row",
+    "description": "Одна строка таблицы сравнения."
   },
   "attributes": {
     "parameter": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Что сравниваем. Пример: Стоимость масштабирования."
     },
     "option_one": {
-      "type": "text"
+      "type": "text",
+      "description": "Значение в первой колонке."
     },
     "option_two": {
-      "type": "text"
+      "type": "text",
+      "description": "Значение во второй колонке."
     },
     "option_highlight": {
-      "type": "text"
+      "type": "text",
+      "description": "Вывод или подсветка преимущества, если нужна."
     }
   }
 }

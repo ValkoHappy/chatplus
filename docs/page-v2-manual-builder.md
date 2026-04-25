@@ -1,399 +1,145 @@
-# Конструктор managed-страниц
-
-`page_v2` — это новая page-first модель для ручных managed pages в `CHATPLUS`.
-
-Она даёт один CMS-owned объект, который определяет:
-
-- публичный route
-- тип страницы и layout hint
-- упорядоченный список sections
-- SEO metadata
-- участие страницы в navigation и sitemap
-- breadcrumb hierarchy
-
-Публичный сайт по-прежнему использует существующий production flow:
-
-`Publish -> webhook -> relay -> rebuild -> deploy`
-
-## Для чего нужен `page_v2`
-
-Используйте `page_v2` для:
-
-- всех новых managed pages
-- постепенной миграции существующих legacy managed routes
-- будущей AI-assisted draft generation
+# Конструктор страниц в Strapi
 
-Не используйте `page_v2` в этом этапе для:
-
-- imported catalog и SEO families
-- utility routes вроде `/site-map`
-- system-owned routes вроде `/admin` и `/api`
-
-## Безопасный bridge для legacy-маршрутов
-
-Для legacy managed routes действует bridge-модель.
-
-Разрешение route работает так:
-
-1. если на exact route есть published `page_v2`, рендерится `page_v2`
-2. иначе рендерится legacy source
+`page_v2` — это основной слой публичных страниц. Его задача простая: страница должна быть самостоятельной записью в Strapi, которую можно создать, изменить, опубликовать, откатить и позже сгенерировать через AI.
 
-Draft `page_v2` никогда не перехватывает legacy route.
-
-### Переносимые managed-маршруты
-
-Следующие exact routes могут перейти под `page_v2`:
-
-- `/`
-- `/pricing`
-- `/partnership`
-- `/docs`
-- `/help`
-- `/academy`
-- `/blog`
-- `/status`
-- `/media`
-- `/team`
-- `/conversation`
-- `/tv`
-- `/promo`
-- `/prozorro`
-- `/demo`
-- `/solutions/tenders`
-
-### Непереносимые зарезервированные маршруты
-
-`page_v2` не может занимать:
-
-- `/admin`
-- `/api`
-- `/site-map`
-- `/compare`
-- importer-owned catalog roots и другие system-owned family
-
-## Главный контракт `page_v2`
-
-Основные поля:
-
-- `slug`
-- `route_path`
-- `locale`
-- `title`
-- `page_kind`
-- `template_variant`
-- `generation_mode`
-- `source_mode`
-- `sections`
-- `seo_title`
-- `seo_description`
-- `canonical`
-- `robots`
-- `og_image`
-- `hreflang_policy`
-- `show_in_header`
-- `show_in_footer`
-- `show_in_sitemap`
-- `nav_group`
-- `nav_label`
-- `nav_description`
-- `nav_order`
-- `parent_page`
-- `breadcrumbs`
-- `internal_links`
-- `editorial_status`
-- `owner`
-- `reviewer`
-
-AI-ready поля:
+## Что хранит страница
 
-- `generation_prompt`
-- `ai_metadata`
-- `human_review_required`
+Одна запись `page_v2` хранит:
 
-### Важные значения по умолчанию
+- публичный адрес `route_path`;
+- тип страницы `page_kind`;
+- blueprint;
+- SEO;
+- блоки `sections`;
+- навигацию;
+- sitemap;
+- breadcrumbs;
+- internal links;
+- связи с сущностями;
+- статус редакторской готовности;
+- safety-поля миграции.
 
-- `slug` — это human key
-- `route_path` — реальный публичный route
-- иерархию лучше выражать через `parent_page`, а не кодировать в `slug`
-- `template_variant` — это display hint, а не отдельный data contract
+## Как устроены старые и новые страницы
 
-## Виды страниц
+### Новая страница
 
-Поддерживаемые `page_kind`:
+Новая страница без старого route рендерится через общий page-layer.
 
-- `landing`
-- `directory`
-- `entity_detail`
-- `entity_intersection`
-- `comparison`
-- `campaign`
-- `resource`
-- `brand`
-- `system`
+Пример: `/new-campaign`.
 
-Это taxonomy страниц, а не жёсткая route-template таблица.
+### Старая перенесенная страница
 
-## Реестр секций
+Старая страница продолжает использовать свой старый renderer family. `page_v2` становится владельцем контента, но макет сохраняется.
 
-`page_v2` использует block-based dynamic zone. Текущий список поддерживаемых block types:
+Пример:
 
-- `hero`
-- `rich-text`
-- `proof-stats`
-- `cards-grid`
-- `feature-list`
-- `steps`
-- `faq`
-- `testimonial`
-- `related-links`
-- `final-cta`
-- `pricing-plans`
-- `comparison-table`
-- `before-after`
-- `internal-links`
+- `/pricing` использует pricing-макет;
+- `/partnership` использует partnership-макет;
+- `/features` использует directory-макет;
+- `/compare/respond-io` использует comparison-макет.
 
-### Зачем добавлены новые блоки возможностей
+Так мы не теряем уникальные шаблоны старого сайта.
 
-- `pricing-plans` закрывает parity для legacy pricing tiers и plan cards
-- `comparison-table` закрывает parity для comparison rows и compare pages
-- `before-after` закрывает ROI и dual-column pattern
-- `internal-links` переносит скрытую page-level перелинковку в явный CMS-owned section
+## Safety gate
 
-### Важные parity-поля
+Для старых маршрутов работает защита:
 
-Текущий block registry уже поддерживает:
-
-- `hero.variant`
-- hero trust facts
-- hero panel items
-- hero context title и context text
-- `proof-stats.variant`
-- `cards-grid.variant`
-- `steps.variant`
-- `faq.intro`
-- icons и secondary text в cards и features
-
-## Матрица blueprints
-
-Blueprints пока code-managed, но в migration phase они уже являются конкретной матрицей page families.
-
-### `campaign`
-
-Основные blocks:
-
-- `hero`
-- `proof-stats`
-- `cards-grid`
-- `steps`
-- `faq`
-- `related-links`
-- `final-cta`
-
-### `brand`
-
-Основные blocks:
-
-- `hero`
-- `cards-grid`
-- `steps`
-- `faq`
-- `internal-links`
-- `final-cta`
-
-Опционально:
-
-- `testimonial`
-
-### `resource`
-
-Основные blocks:
-
-- `hero`
-- `rich-text`
-- `cards-grid`
-- `faq`
-- `internal-links`
-- `final-cta`
-
-### `landing`
-
-Основные blocks:
-
-- `hero`
-- `proof-stats`
-- `cards-grid`
-- `feature-list`
-- `steps`
-- `before-after`
-- `faq`
-- `internal-links`
-- `final-cta`
-
-### `comparison`
-
-Основные blocks:
-
-- `hero`
-- `cards-grid`
-- `steps`
-- `comparison-table`
-- `faq`
-- `internal-links`
-- `final-cta`
-
-### Что пока не входит в этот этап
-
-- `directory`
-- imported catalog families
-- importer-driven detail и intersection families
-
-## Навигация, sitemap и breadcrumbs
-
-Для migrated routes `page_v2` становится источником истины для:
-
-- header navigation
-- footer navigation
-- mobile navigation
-- sitemap inclusion
-- breadcrumb hierarchy
-- internal и related links
-
-Главное правило:
-
-- если migrated route опубликован через `page_v2`, nav metadata должна идти из `page_v2`
-- legacy nav остаётся fallback только для ещё не migrated routes
-
-Breadcrumb resolution:
-
-1. explicit `breadcrumbs`, если они заданы
-2. иначе вывод от `parent_page`
-
-## Волны миграции
-
-Big-bang migration не делаем.
-
-### Волна 1
-
-- `/promo`
-- `/prozorro`
-- `/media`
-- `/team`
-- `/conversation`
-- `/tv`
-- `/docs`
-- `/help`
-- `/academy`
-- `/blog`
-- `/status`
-
-Почему:
-
-- минимальный route risk
-- эти family уже близки к текущему capability set `page_v2`
-
-### Волна 2
-
-- `/pricing`
-- `/partnership`
-
-Почему:
-
-- им нужны новые capability-blocks вроде `pricing-plans`, `comparison-table`, `before-after`
-
-### Волна 3
-
-- `/`
-- `/demo`
-- `/solutions/tenders`
-
-Почему:
-
-- максимальная плотность sections
-- переносить их стоит только после подтверждённой стабильности builder-а
-
-## CLI для контролируемой миграции
-
-Для реальной migration prepared route-by-route используйте отдельный CLI:
-
-```powershell
-npm run page-v2:migrate:managed:report
+```text
+published page_v2
++ editorial_status = approved
++ migration_ready = true
++ parity_status = approved
+= можно показывать page_v2-контент
 ```
 
-Проверить один route без записи:
+Если условие не выполнено, сайт показывает legacy fallback.
 
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo
-```
+## Доступные блоки
 
-Создать или обновить `page_v2`:
+| Блок | Для чего нужен |
+| --- | --- |
+| `hero` | Первый экран: заголовок, подзаголовок, CTA, факты, боковая панель. |
+| `rich-text` | Текстовый блок. |
+| `proof-stats` | Доказательства, цифры, короткие proof-карточки. |
+| `cards-grid` | Карточки преимуществ, проблем, сценариев, разделов. |
+| `feature-list` | Список возможностей. |
+| `steps` | Шаги процесса. |
+| `faq` | Вопросы и ответы. |
+| `testimonial` | Цитата или отзыв. |
+| `related-links` | Связанные ссылки старого типа. |
+| `internal-links` | Управляемые внутренние ссылки. |
+| `final-cta` | Финальный CTA. |
+| `pricing-plans` | Тарифные карточки. |
+| `comparison-table` | Таблица сравнения. |
+| `before-after` | Блок “до / после”. |
 
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo --apply
-```
+## Общие frontend-primitives
 
-Опубликовать migrated route:
+Для повторяющихся блоков используется единый frontend-слой:
 
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo --apply --publish
-```
+- `BlockFaq`;
+- `BlockLinkGrid`;
+- `BlockFinalCta`;
+- `BlockTable`;
+- `BlockCard`;
+- `BlockGrid`;
+- `BlockHeader`;
+- `BlockSection`.
 
-Откатить route на legacy source:
+Редактор по-прежнему работает с блоками в Strapi. Frontend adapter переводит эти данные в общий primitive. Это важно, чтобы FAQ, внутренние ссылки, финальные CTA и таблицы не жили в нескольких разных CSS-копиях.
 
-```powershell
-npm run page-v2:migrate:managed -- --route=/promo --unpublish
-```
+Новый блок нельзя считать готовым, если у него есть только Strapi-поля или только Astro-компонент. Нужен полный путь: schema, normalization, renderer/adapter, primitive, tests и документация.
 
-## Редакторский процесс
+## Blueprints
 
-1. Создать запись `page_v2` в `Strapi`
-2. Выбрать `page_kind`
-3. Выбрать подходящий blueprint
-4. Заполнить `route_path`, SEO и nav/sitemap fields
-5. При необходимости связать страницу с entities
-6. Собрать страницу через `sections`
-7. Сохранить как draft
-8. Проверить preview-safe flow или локальную сборку
-9. Перевести страницу в `review` и затем в `approved`
-10. Нажать `Publish`
+Blueprint задает рекомендуемый набор блоков. Он не запрещает редактировать страницу, но помогает не забыть важные секции.
 
-## Политика защиты от поломок
+Основные blueprints:
 
-В этом этапе нельзя ломать legacy templates ради migration.
+- `landing`;
+- `directory`;
+- `entity_detail`;
+- `entity_intersection`;
+- `comparison`;
+- `campaign`;
+- `resource`;
+- `brand`;
+- `system`.
 
-Правила:
+## Как понять, что страница готова
 
-- legacy wrappers не удаляются
-- legacy templates не переписываются “вслепую”
-- каждый route мигрируется отдельно
-- route считается migrated только после parity smoke
-- rollback делается быстро: снятием published state у `page_v2`
+Страница готова к публикации, если:
 
-То есть:
+- заполнены `route_path`, `title`, `page_kind`, `blueprint`;
+- заполнены `seo_title` и `seo_description`;
+- есть блок `hero`;
+- есть основной контентный блок;
+- есть CTA или понятный следующий шаг;
+- ссылки ведут на существующие страницы;
+- у старого маршрута сохранен старый макет.
 
-- `page_v2 published` -> render `page_v2`
-- otherwise -> render legacy source
+## Как откатить
 
-## Политика AI
+Для новой страницы:
 
-AI — это второй способ заполнить тот же `page_v2`, а не отдельная page system.
+1. Откройте запись.
+2. Нажмите `Unpublish`.
 
-Правила:
+Для старой перенесенной страницы:
 
-- AI создаёт только `page_v2 draft`
-- AI никогда не публикует напрямую
-- `human_review_required` включён по умолчанию
-- scheduled jobs тоже создают только drafts
-- AI разрешён только для:
-  - `campaign`
-  - `brand`
-  - `resource`
+1. Откройте запись.
+2. Выключите `migration_ready`.
+3. Сохраните.
+4. После rebuild сайт снова покажет legacy fallback.
 
-## Связанные документы
+## AI в будущем
 
-- [Как добавлять страницы](how-to-add-page.md)
-- [Миграция managed routes](managed-route-migration.md)
-- [Передача следующего production-этапа](manual-first-production-handoff.md)
-- [Матрица маршрутов и ownership](route-ownership-matrix.md)
-- [Контракты шаблонов](template-contracts.md)
-- [CMS-модель](cms-model.md)
-- [AI-генерация черновиков](ai-page-generation.md)
+AI не создает другой тип страниц. Он должен заполнять тот же `page_v2`:
+
+- создает draft;
+- выбирает blueprint;
+- заполняет sections;
+- пишет SEO;
+- не должен ломать safety gate.
+
+Пока главное правило: AI не должен автоматически включать `migration_ready` для старых маршрутов.

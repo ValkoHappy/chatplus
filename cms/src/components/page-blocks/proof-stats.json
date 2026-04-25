@@ -1,7 +1,8 @@
 {
   "collectionName": "components_page_blocks_proof_stats",
   "info": {
-    "displayName": "Proof Stats Block"
+    "displayName": "Proof Stats Block",
+    "description": "Блок доказательств, цифр и коротких фактов."
   },
   "attributes": {
     "variant": {
@@ -11,18 +12,22 @@
         "cards",
         "sidebar"
       ],
-      "default": "cards"
+      "default": "cards",
+      "description": "Вариант отображения: band - полоса, cards - карточки, sidebar - боковой блок."
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Пояснение перед цифрами."
     },
     "items": {
       "type": "component",
       "component": "page-blocks.stat-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Факты или метрики."
     }
   }
 }

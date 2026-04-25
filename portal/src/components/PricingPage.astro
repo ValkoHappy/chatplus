@@ -358,6 +358,27 @@ const pricingHighlights = Array.isArray(page.hero_panel_items) ? page.hero_panel
     </section>
   )}
 
+  {page.integrations_title && page.integration_blocks && page.integration_blocks.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.integrations_title}</h2>
+        </div>
+        <div class="audience-grid">
+          {page.integration_blocks.map((item, index) => (
+            <article class="audience-card">
+              <div class="audience-icon">
+                <Icon name={['lucide:plug-zap', 'lucide:workflow', 'lucide:database-zap', 'lucide:messages-square'][index % 4]} />
+              </div>
+              <h3>{item.label}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
   <FaqSection title={page.faq_title} faqs={page.faqs} />
 
   <InternalLinksSection page={page} />

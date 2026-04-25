@@ -29,12 +29,14 @@ export interface InternalLinksContext {
   entityType?: InternalLinksEntityType;
   entityName?: string;
   pageSlug?: string;
+  preserveTitle?: boolean;
 }
 
 export interface LinkSectionPageData {
   navigation_groups_title?: string;
   navigation_groups_intro?: string;
   navigation_groups?: NavigationGroup[];
+  internal_links_eyebrow?: string;
   internal_links_title?: string;
   internal_links_intro?: string;
   internal_links?: LinkItem[];
@@ -236,6 +238,10 @@ export function resolveInternalLinksTitle(page: LinkSectionPageData) {
     return '';
   }
 
+  if (page.internal_links_context?.preserveTitle && page.internal_links_title?.trim()) {
+    return page.internal_links_title.trim();
+  }
+
   if (!isLegacyLinkSectionTitle(page.internal_links_title)) {
     return page.internal_links_title?.trim() || '';
   }
@@ -296,6 +302,10 @@ export function resolveInternalLinksIntro(page: LinkSectionPageData) {
 export function resolveInternalLinksEyebrow(page: LinkSectionPageData) {
   if (!hasItems(page.internal_links)) {
     return '';
+  }
+
+  if (page.internal_links_eyebrow?.trim()) {
+    return page.internal_links_eyebrow.trim();
   }
 
   const variant = page.internal_links_variant || 'related';

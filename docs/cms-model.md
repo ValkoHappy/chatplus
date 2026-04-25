@@ -1,205 +1,132 @@
 # CMS-модель CHATPLUS
 
+Этот документ объясняет, какие сущности живут в `Strapi` и кто за что отвечает.
+
 ## Главное правило
 
-`Strapi` — главная редакторская система проекта.
+`Strapi` должен быть главным источником контента: страницы, SEO, навигация, sitemap, breadcrumbs и редакторские статусы хранятся в CMS.
 
-Frontend рендерит публичные страницы, но не должен становиться вторым источником истины для copy, SEO или navigation decisions.
+Frontend отвечает за рендер, стили, layout и безопасную нормализацию данных. Он не должен быть вторым скрытым местом, где живёт основной текст страницы.
 
-## Модель ownership для записей
+## `page_v2`
 
-Активная operational model:
+`page_v2` — главный content type для публичных страниц.
 
-- `managed` — запись создаётся и редактируется вручную в `Strapi`
-- `imported` — запись создаётся importer-ом и затем живёт в `Strapi` с safe merge-поведением
-- `settings` — singleton и system records
+В нём хранится:
 
-`content_origin` остаётся legacy compatibility-полем для старых frontend paths, но больше не считается основной редакторской моделью.
+- `route_path` — публичный URL;
+- `slug` — человекочитаемый ключ;
+- `title` — внутреннее название страницы;
+- `page_kind` — тип страницы;
+- `template_variant` — вариант отображения;
+- `source_mode` — `managed`, `generated` или `hybrid`;
+- `generation_mode` — `manual`, `ai_assisted` или `ai_generated`;
+- `blueprint` — связь с шаблоном-схемой;
+- `sections` — блоки страницы;
+- SEO-поля;
+- nav/sitemap-флаги;
+- `parent_page`, `breadcrumbs`, `internal_links`;
+- `editorial_status`;
+- safety-gate поля миграции.
 
-## Что живёт в `Strapi`
+## Safety gate
 
-В `Strapi` живут:
+Старая страница не должна переключаться на новый слой только потому, что запись опубликована.
 
-- legacy managed pages
-- новые `page_v2` managed pages
-- singleton pages
-- site settings
-- imported catalog и SEO entities после импорта
+Для cutover нужны все условия:
 
-## Чем владеет importer
+- `page_v2` опубликована;
+- `editorial_status=approved`;
+- `migration_ready=true`;
+- `parity_status=approved`.
 
-Importer больше не является постоянным владельцем live site content.
+Если хотя бы одно условие не выполнено, route остаётся на legacy fallback.
 
-Он отвечает за:
+Ключевые поля:
 
-- чтение seed или generated source data
-- выполнение `plan`, `apply`, `force-sync` и `report`
-- обновление только system-owned полей imported records
-- сохранение manual overrides, если этого требует policy
+- `migration_ready` — можно ли публично использовать запись;
+- `parity_status` — прошла ли страница проверку на сохранение макета;
+- `legacy_template_family` — какая старая family отвечает за рендер;
+- `legacy_layout_signature` — снимок важных макетных требований;
+- `parity_notes` — заметки о проверке или проблемах.
 
-Importer не имеет права молча перезаписывать editor-owned content.
+## `page_blueprint`
 
-## Чем владеет фронтенд
+`page_blueprint` — CMS-сущность, которая описывает допустимую структуру страницы.
 
-Frontend владеет:
+Поля:
 
-- rendering logic
-- layout
-- styling
-- safe shape normalization
+- `blueprint_id`;
+- `page_kind`;
+- `template_variant`;
+- `required_blocks`;
+- `allowed_blocks`;
+- `default_sections`;
+- `description`;
+- `is_active`.
 
-Frontend не должен придумывать скрытый marketing text и не должен дублировать SEO-content, который должен редактироваться в `Strapi`.
+Blueprint помогает редактору и AI понимать, какие блоки нужны для страницы. Code registry остаётся bootstrap/fallback-слоем.
 
-## Managed-типы контента
+## `page_version`
 
-Текущие managed editorial types:
+`page_version` хранит снимки страницы для истории и rollback.
 
-- `page-v2`
-- `landing-page` как legacy managed singleton layer
-- `tenders-page`
-- `business-types-page`
+Поля:
 
-## Settings-типы контента
+- связь с `page_v2`;
+- `version_number`;
+- `route_path`;
+- `editorial_status`;
+- `published_at_snapshot`;
+- `snapshot`;
+- `checksum`;
+- `source_action`;
+- `created_by_label`.
 
-- `site-setting`
+Lifecycle `page_v2` создаёт версии на ключевые изменения. Для быстрого публичного rollback всё равно используется безопасное правило: снять publish или отключить `migration_ready`.
 
-## Imported-типы контента
+## Entities
 
-- `channel`
-- `industry`
-- `integration`
-- `feature`
-- `solution`
-- `business-type`
-- `competitor`
+Предметные сущности остаются в `Strapi` как источник фактов:
 
-## Метаданные imported-записей
+- `channel`;
+- `industry`;
+- `integration`;
+- `solution`;
+- `feature`;
+- `business-type`;
+- `competitor`.
 
-Imported catalog и SEO entities используют:
+Они больше не должны быть единственным владельцем публичной страницы. Их задача — хранить факты, связи и данные, из которых materializer может собрать `page_v2`.
 
-- `record_mode`
-- `external_id`
-- `import_batch_id`
-- `last_imported_at`
-- `sync_strategy`
-- `manual_override_fields`
-- `last_import_diff`
-- `last_import_payload`
+## `source_mode`
 
-Эти поля нужны для safe sync и защиты ручных правок.
+`managed` — страница создана и ведётся человеком.
 
-## Жизненный цикл публикации
+`generated` — страница создана materializer/importer на основе сущностей.
 
-Editor-facing types используют `draftAndPublish`:
+`hybrid` — страница началась как generated, но затем была доработана редактором или AI.
 
-- `page-v2`
-- `landing-page`
-- `tenders-page`
-- `business-types-page`
-- `site-setting`
+## `generation_job`
 
-Это поддерживает production flow:
-
-`Strapi Publish -> webhook -> relay -> rebuild -> deploy`
-
-## `page_v2` как будущая модель managed-страниц
-
-`page_v2` — основная модель для всех новых ручных managed pages.
-
-Она нужна для того, чтобы page creation стала page-first, а не route-template-first.
-
-`page_v2` владеет:
-
-- `route_path`
-- section composition
-- SEO metadata
-- navigation flags
-- sitemap flags
-- breadcrumb hierarchy
-- internal linking
-
-## Модель legacy-bridge
-
-Для selected managed routes поддерживается bridge resolution:
-
-- если на exact route есть published `page_v2`, frontend рендерит `page_v2`
-- иначе frontend рендерит legacy source
-
-Это позволяет мигрировать routes без удаления legacy wrappers.
-
-### Переносимые точные managed-routes
-
-- `/`
-- `/pricing`
-- `/partnership`
-- `/docs`
-- `/help`
-- `/academy`
-- `/blog`
-- `/status`
-- `/media`
-- `/team`
-- `/conversation`
-- `/tv`
-- `/promo`
-- `/prozorro`
-- `/demo`
-- `/solutions/tenders`
-
-### Непереносимые зарезервированные routes
-
-Для `page_v2` остаются заблокированными:
-
-- `/admin`
-- `/api`
-- `/site-map`
-- `/compare`
-- importer-owned catalog roots и другие system-owned route families
-
-## Manual-first подход до AI
-
-Будущая AI generation не создаёт отдельную page system.
-
-AI пишет только в `page_v2 draft` после того, как manual builder уже стабилен.
+`generation_job` нужен для AI draft flow.
 
 Правила:
 
-- никакого direct publish от AI
-- никакого route ownership поверх immutable reserved paths
-- AI проходит те же validation rules для blocks и blueprints, что и человек
-- AI включён только для подтверждённых manual families
+- AI создаёт только draft;
+- AI не включает `migration_ready`;
+- AI не публикует страницу напрямую;
+- человек или оператор проверяет draft перед публичным cutover.
 
-## Решения по strict parity
+## Legacy templates
 
-Чтобы между ранним архитектурным документом и текущей реализацией не оставалось двусмысленности, фиксируем текущие решения прямо в CMS-модели.
+Legacy templates пока остаются в коде.
 
-### `page_blueprint`
+Это не ошибка и не недоделка. Они нужны как:
 
-Отдельный CMS content type для `page_blueprint` в этом этапе не вводится.
+- защита от потери старого макета;
+- fallback при ошибке в `page_v2`;
+- быстрый rollback без emergency code deploy;
+- эталон для visual parity.
 
-Сейчас:
-
-- blueprints живут в code registry
-- источник истины по ним — `config/page-v2-blueprints.mjs`
-- редактор использует готовый page contract, а не конфигурирует blueprints вручную в `Strapi`
-
-### `page_version`
-
-Отдельный `page_version` content type тоже не вводится в этом этапе.
-
-Сейчас:
-
-- версияция опирается на историю `Strapi`
-- рабочая дисциплина идёт через `draft -> review -> approved -> publish`
-- route-level rollback делается через `unpublish` published `page_v2`, после чего ownership возвращается к legacy source
-
-Это осознанное решение текущего этапа, а не забытый архитектурный хвост.
-
-## Связанные документы
-
-- [Конструктор managed-страниц](page-v2-manual-builder.md)
-- [Миграция managed routes](managed-route-migration.md)
-- [Как добавлять страницы](how-to-add-page.md)
-- [Матрица маршрутов и ownership](route-ownership-matrix.md)
-- [Контентный workflow](content-workflow.md)
-- [Политика импорта](import-policy.md)
+Удалять legacy templates можно только отдельным cleanup-этапом после подтверждённого live parity.

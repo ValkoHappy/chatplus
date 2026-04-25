@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "page_versions",
+  "info": {
+    "singularName": "page-version",
+    "pluralName": "page-versions",
+    "displayName": "Page Version",
+    "description": "Snapshot history for page records and rollback."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "page": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::page-v2.page-v2"
+    },
+    "version_number": {
+      "type": "integer",
+      "required": true
+    },
+    "route_path": {
+      "type": "string",
+      "required": true
+    },
+    "editorial_status": {
+      "type": "string"
+    },
+    "published_at_snapshot": {
+      "type": "datetime"
+    },
+    "snapshot": {
+      "type": "json",
+      "required": true
+    },
+    "checksum": {
+      "type": "string",
+      "required": true
+    },
+    "source_action": {
+      "type": "enumeration",
+      "enum": [
+        "create",
+        "update",
+        "publish",
+        "rollback"
+      ],
+      "default": "update"
+    },
+    "created_by_label": {
+      "type": "string"
+    }
+  }
+}

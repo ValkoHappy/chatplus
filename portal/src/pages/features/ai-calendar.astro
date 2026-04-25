@@ -1,88 +1,135 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { Icon } from 'astro-icon/components';
+import { getPageV2ByRouteForLegacyRenderer } from '../../lib/strapi';
 import { withBasePath } from '../../lib/urls';
 
-const meta = {
-  title: "AI Календарь | Синхронизация записей из чата | Chat Plus",
-  description: "Автоматическая запись клиентов из WhatsApp, Telegram и Instagram напрямую в ваш Google Calendar или CRM-систему с помощью AI.",
+const fallbackMeta = {
+  title: 'AI Календарь | Синхронизация записей из чата | Chat Plus',
+  description:
+    'Автоматическая запись клиентов из WhatsApp, Telegram и Instagram напрямую в ваш Google Calendar или CRM-систему с помощью AI.',
 };
 
-const steps = [
+const fallbackSteps = [
   {
-    title: "Клиент пишет в мессенджер",
-    desc: "Клиент отправляет сообщение в WhatsApp, Telegram или Instagram с желанием записаться.",
-    icon: "lucide:message-circle"
+    title: 'Клиент пишет в мессенджер',
+    desc: 'Клиент отправляет сообщение в WhatsApp, Telegram или Instagram с желанием записаться.',
+    icon: 'lucide:message-circle',
   },
   {
-    title: "AI понимает контекст",
-    desc: "Нейросеть распознает услугу, желаемое время и специалиста прямо из текста.",
-    icon: "lucide:brain"
+    title: 'AI понимает контекст',
+    desc: 'Нейросеть распознает услугу, желаемое время и специалиста прямо из текста.',
+    icon: 'lucide:brain',
   },
   {
-    title: "Проверка свободного времени",
-    desc: "Система мгновенно сверяется с вашим расписанием в Google Calendar или CRM.",
-    icon: "lucide:calendar-search"
+    title: 'Проверка свободного времени',
+    desc: 'Система мгновенно сверяется с вашим расписанием в Google Calendar или CRM.',
+    icon: 'lucide:calendar-search',
   },
   {
-    title: "Подтверждение записи",
-    desc: "AI отправляет клиенту доступные слоты и фиксирует окончательное время.",
-    icon: "lucide:calendar-check-2"
+    title: 'Подтверждение записи',
+    desc: 'AI отправляет клиенту доступные слоты и фиксирует окончательное время.',
+    icon: 'lucide:calendar-check-2',
   },
   {
-    title: "Интеграция в календарь",
-    desc: "Событие автоматически создается в вашем календаре со всеми контактными данными.",
-    icon: "lucide:database"
+    title: 'Интеграция в календарь',
+    desc: 'Событие автоматически создается в вашем календаре со всеми контактными данными.',
+    icon: 'lucide:database',
   },
   {
-    title: "Авто-напоминания",
-    desc: "Система сама отправит клиенту напоминание за 24 часа и за час до визита.",
-    icon: "lucide:bell-ring"
-  }
+    title: 'Авто-напоминания',
+    desc: 'Система сама отправит клиенту напоминание за 24 часа и за час до визита.',
+    icon: 'lucide:bell-ring',
+  },
 ];
 
-const industries = [
+const fallbackIndustries = [
   {
-    name: "Салоны красоты",
-    desc: "Автоматизация записи на стрижку, маникюр и другие процедуры. Сокращение неявок на 40% благодаря автонапоминаниям.",
-    icon: "lucide:scissors"
+    name: 'Салоны красоты',
+    desc: 'Автоматизация записи на стрижку, маникюр и другие процедуры. Сокращение неявок благодаря автонапоминаниям.',
+    icon: 'lucide:scissors',
   },
   {
-    name: "Медицина",
-    desc: "Запись пациентов к нужным врачам 24/7 без участия администраторов клиники.",
-    icon: "lucide:stethoscope"
+    name: 'Медицина',
+    desc: 'Запись пациентов к нужным врачам 24/7 без участия администратора клиники.',
+    icon: 'lucide:stethoscope',
   },
   {
-    name: "HR и Рекрутинг",
-    desc: "Планирование собеседований напрямую из переписки с кандидатами.",
-    icon: "lucide:users"
+    name: 'HR и рекрутинг',
+    desc: 'Планирование собеседований напрямую из переписки с кандидатами.',
+    icon: 'lucide:users',
   },
   {
-    name: "Обучение",
-    desc: "Запись на пробные уроки, курсы и консультации прямо из Instagram-директа.",
-    icon: "lucide:graduation-cap"
-  }
+    name: 'Обучение',
+    desc: 'Запись на пробные уроки, курсы и консультации прямо из чатов и директов.',
+    icon: 'lucide:graduation-cap',
+  },
 ];
+
+const fallbackIntegrations = [
+  {
+    title: 'Google Calendar',
+    text: 'Мгновенная двусторонняя синхронизация',
+    icon: 'simple-icons:googlecalendar',
+  },
+  {
+    title: 'Outlook Calendar',
+    text: 'Для корпоративных клиентов',
+    icon: 'simple-icons:microsoftoutlook',
+  },
+  {
+    title: 'Интеграция с CRM',
+    text: 'AmoCRM, Altegio, Yclients и другие',
+    icon: 'lucide:briefcase',
+  },
+];
+
 const toHref = (href?: string) => withBasePath(href);
+const pageV2 = await getPageV2ByRouteForLegacyRenderer('/features/ai-calendar', 'ai_calendar');
+const title = pageV2?.title || fallbackMeta.title;
+const description = pageV2?.description || fallbackMeta.description;
+const eyebrow = pageV2?.eyebrow || 'Флагманская функция Chat Plus';
+const heroTitle = pageV2?.heroTitle || 'AI Календарь: синхронизация записей из любого чата';
+const heroSubtitle =
+  pageV2?.heroSubtitle ||
+  'Перестаньте вручную переносить записи из мессенджеров. Наш AI агент читает контекст переписки, сверяется с расписанием и автоматически создает события в вашем календаре.';
+const primaryLabel = pageV2?.primaryLabel || 'Попробовать бесплатно';
+const primaryUrl = pageV2?.primaryUrl || '/demo';
+const secondaryLabel = pageV2?.secondaryLabel || 'Как это работает';
+const secondaryUrl = pageV2?.secondaryUrl || '#how-it-works';
+const stepsTitle = pageV2?.stepsTitle || 'Магия автоматизации';
+const stepsIntro = pageV2?.stepsIntro || 'Как Chat Plus превращает простые сообщения в подтвержденные записи в 6 шагов.';
+const steps = pageV2?.steps?.length ? pageV2.steps : fallbackSteps;
+const integrationsTitle = pageV2?.integrationsTitle || 'Работает с вашим расписанием';
+const integrationsIntro =
+  pageV2?.integrationsIntro ||
+  'Вам не нужно менять свои привычки или переходить на новую CRM. AI Календарь нативно интегрируется с популярными системами управления временем.';
+const integrations = pageV2?.integrations?.length ? pageV2.integrations : fallbackIntegrations;
+const industriesTitle = pageV2?.industriesTitle || 'Идеально для бизнеса услуг';
+const industries = pageV2?.industries?.length ? pageV2.industries : fallbackIndustries;
+const finalTitle = pageV2?.finalTitle || 'Готовы автоматизировать записи?';
+const finalText =
+  pageV2?.finalText || 'Постройте бесшовный процесс от первого сообщения до подтвержденного визита.';
+const finalPrimaryLabel = pageV2?.finalPrimaryLabel || 'Записаться на демо';
+const finalPrimaryUrl = pageV2?.finalPrimaryUrl || '/demo';
+const finalSecondaryLabel = pageV2?.finalSecondaryLabel || 'Смотреть цены';
+const finalSecondaryUrl = pageV2?.finalSecondaryUrl || '/pricing';
 ---
 
-<Base title={meta.title} description={meta.description} hideGlobalStickyCta={true}>
-  
+<Base title={title} description={description} canonical={pageV2?.canonical} hideGlobalStickyCta={true}>
   <section class="hero-section">
     <div class="hero-bg-dots"></div>
     <div class="container hero-container">
       <div class="hero-content">
-        <div class="eyebrow">Флагманская функция Chat Plus</div>
+        <div class="eyebrow">{eyebrow}</div>
         <h1 class="hero-title">
-          <span class="text-gradient">AI Календарь:</span><br/>
-          Синхронизация записей из любого чата
+          <span class="text-gradient">{heroTitle.split(':')[0]}:</span><br />
+          {heroTitle.split(':').slice(1).join(':').trim() || heroTitle}
         </h1>
-        <p class="hero-desc">
-          Перестаньте вручную переносить записи из мессенджеров. Наш AI агент читает контекст переписки, сверяется с расписанием и автоматически создает события в вашем календаре.
-        </p>
+        <p class="hero-desc">{heroSubtitle}</p>
         <div class="hero-actions">
-          <a href={toHref('/demo')} class="btn-primary">Попробовать бесплатно</a>
-          <a href="#how-it-works" class="btn-outline">Как это работает</a>
+          <a href={toHref(primaryUrl)} class="btn-primary">{primaryLabel}</a>
+          <a href={secondaryUrl} class="btn-outline">{secondaryLabel}</a>
         </div>
       </div>
     </div>
@@ -91,10 +138,10 @@ const toHref = (href?: string) => withBasePath(href);
   <section id="how-it-works" class="section section-tinted">
     <div class="container">
       <div class="section-header center">
-        <h2 class="section-title">Магия автоматизации</h2>
-        <p class="section-intro center">Как Chat Plus превращает простые сообщения в подтвержденные записи в 6 шагов.</p>
+        <h2 class="section-title">{stepsTitle}</h2>
+        <p class="section-intro center">{stepsIntro}</p>
       </div>
-      
+
       <div class="steps-grid">
         {steps.map((step, index) => (
           <div class="step-card">
@@ -115,37 +162,22 @@ const toHref = (href?: string) => withBasePath(href);
   <section class="section">
     <div class="container two-col">
       <div class="integration-info">
-        <h2 class="section-title">Работает с вашим расписанием</h2>
-        <p class="section-intro">
-          Вам не нужно менять свои привычки или переходить на новую CRM. 
-          Наш AI Календарь нативно интегрируется с самыми популярными системами управления временем.
-        </p>
-        
+        <h2 class="section-title">{integrationsTitle}</h2>
+        <p class="section-intro">{integrationsIntro}</p>
+
         <ul class="integration-list">
-          <li>
-            <div class="int-icon"><Icon name="simple-icons:googlecalendar" /></div>
-            <div>
-              <strong>Google Calendar</strong>
-              <span>Мгновенная двусторонняя синхронизация</span>
-            </div>
-          </li>
-          <li>
-            <div class="int-icon"><Icon name="simple-icons:microsoftoutlook" /></div>
-            <div>
-              <strong>Outlook Calendar</strong>
-              <span>Для корпоративных клиентов</span>
-            </div>
-          </li>
-          <li>
-            <div class="int-icon"><Icon name="lucide:briefcase" /></div>
-            <div>
-              <strong>Интеграция с CRM</strong>
-              <span>AmoCRM, Altegio, Yclients и другие</span>
-            </div>
-          </li>
+          {integrations.map((item) => (
+            <li>
+              <div class="int-icon"><Icon name={item.icon} /></div>
+              <div>
+                <strong>{item.title}</strong>
+                <span>{item.text}</span>
+              </div>
+            </li>
+          ))}
         </ul>
       </div>
-      
+
       <div class="integration-visual">
         <div class="mockup-card">
           <div class="mockup-header">
@@ -159,12 +191,10 @@ const toHref = (href?: string) => withBasePath(href);
           <div class="chat-bubble right">
             Здравствуйте! У Анны в эту пятницу есть свободное время в 18:00 и 19:30. Какое время вам удобнее?
           </div>
-          <div class="chat-bubble left">
-            Давайте на 18:00.
-          </div>
+          <div class="chat-bubble left">Давайте на 18:00.</div>
           <div class="chat-bubble system">
             <Icon name="lucide:calendar-check-2" />
-            Событие &quot;Маникюр — Анна&quot; добавлено в Google Calendar на пятницу, 18:00.
+            Событие "Маникюр — Анна" добавлено в Google Calendar на пятницу, 18:00.
           </div>
         </div>
       </div>
@@ -174,11 +204,11 @@ const toHref = (href?: string) => withBasePath(href);
   <section class="section section-tinted">
     <div class="container">
       <div class="section-header center">
-        <h2 class="section-title">Идеально для бизнеса услуг</h2>
+        <h2 class="section-title">{industriesTitle}</h2>
       </div>
-      
+
       <div class="industries-grid">
-        {industries.map(ind => (
+        {industries.map((ind) => (
           <div class="industry-card">
             <div class="ind-icon-wrap">
               <Icon name={ind.icon} class="ind-icon" />
@@ -196,29 +226,26 @@ const toHref = (href?: string) => withBasePath(href);
       <div class="cta-banner">
         <div class="cta-bg-glow"></div>
         <div class="cta-content">
-          <h2>Готовы автоматизировать записи?</h2>
-          <p>Постройте бесшовный процесс от первого сообщения до подтвержденного визита.</p>
+          <h2>{finalTitle}</h2>
+          <p>{finalText}</p>
           <div class="cta-actions">
-            <a href={toHref('/demo')} class="btn-primary">Записаться на демо</a>
-            <a href={toHref('/pricing')} class="btn-white">Смотреть цены</a>
+            <a href={toHref(finalPrimaryUrl)} class="btn-primary">{finalPrimaryLabel}</a>
+            <a href={toHref(finalSecondaryUrl)} class="btn-white">{finalSecondaryLabel}</a>
           </div>
         </div>
       </div>
     </div>
   </section>
-
 </Base>
 
 <style>
-  /* ── Page Specific Layout ── */
   .center {
     text-align: center;
     align-items: center;
     display: flex;
     flex-direction: column;
   }
-  
-  /* ── Hero ── */
+
   .hero-section {
     position: relative;
     padding: clamp(4rem, 8vw, 7rem) 0;
@@ -269,7 +296,6 @@ const toHref = (href?: string) => withBasePath(href);
     justify-content: center;
   }
 
-  /* ── Steps ── */
   .steps-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -319,7 +345,6 @@ const toHref = (href?: string) => withBasePath(href);
     line-height: 1.6;
   }
 
-  /* ── Integration ── */
   .integration-info {
     display: flex;
     flex-direction: column;
@@ -356,8 +381,7 @@ const toHref = (href?: string) => withBasePath(href);
     color: var(--text-muted);
     font-size: 0.95rem;
   }
-  
-  /* Mockup Card */
+
   .integration-visual {
     display: flex;
     align-items: center;
@@ -384,7 +408,7 @@ const toHref = (href?: string) => withBasePath(href);
   .dot:nth-child(1) { background: #fca5a5; }
   .dot:nth-child(2) { background: #fde047; }
   .dot:nth-child(3) { background: #86efac; }
-  
+
   .chat-bubble {
     padding: 0.75rem 1rem;
     border-radius: 18px;
@@ -418,7 +442,6 @@ const toHref = (href?: string) => withBasePath(href);
   }
   .chat-bubble.system svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-  /* ── Industries ── */
   .industries-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -450,7 +473,6 @@ const toHref = (href?: string) => withBasePath(href);
     line-height: 1.6;
   }
 
-  /* ── CTA Banner ── */
   .cta-banner {
     position: relative;
     padding: 3.5rem 2rem;
@@ -489,7 +511,6 @@ const toHref = (href?: string) => withBasePath(href);
     justify-content: center;
   }
 
-  /* ── Responsive overrides ── */
   @media (max-width: 768px) {
     .integration-visual { margin-top: 1rem; }
     .hero-title { font-size: 2.25rem; }

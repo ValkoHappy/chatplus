@@ -83,7 +83,19 @@ function makeRoiItems(items: any[] = []) {
   });
 }
 
-function makeIntegrationBlocks(items: any[] = [], limit = 6) {
+function prioritizeBySlugs(items: any[] = [], preferredSlugs: string[] = []) {
+  const preferred = preferredSlugs
+    .map((slug) => items.find((item) => item?.slug === slug))
+    .filter(Boolean);
+  const preferredSet = new Set(preferred.map((item) => item.slug));
+
+  return [
+    ...preferred,
+    ...items.filter((item) => !preferredSet.has(item?.slug)),
+  ];
+}
+
+function makeIntegrationBlocks(items: any[] = [], limit = 16) {
   return items.slice(0, limit).map((item) => ({
     label: item?.name || '',
     text: compactSecondaryText(item?.description || '', 72),
@@ -118,7 +130,7 @@ function makeNavigationGroups(groups: any[] = []) {
     .filter((group) => group.title && group.items.length > 0);
 }
 
-function makeUseCaseItems(items: any[] = [], limit = 4) {
+function makeUseCaseItems(items: any[] = [], limit = 10) {
   return items.slice(0, limit).map((item) => ({
     title: item?.title || item?.label || item?.name || '',
     text: compactSecondaryText(item?.text || item?.desc || item?.description || '', 76),
@@ -150,4 +162,5 @@ export {
   makeSteps,
   makeUseCaseItems,
   pickFirstMeaningfulString,
+  prioritizeBySlugs,
 };

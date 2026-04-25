@@ -1,9 +1,8 @@
 ---
-import PageV2Page from '../components/PageV2Page.astro';
 import BrandContentPage from '../components/BrandContentPage.astro';
-import { getLandingPage, getManagedRoutePage } from '../lib/strapi';
+import { getLandingPage, getManagedRoutePageForLegacyRenderer } from '../lib/strapi';
 
-const resolved = await getManagedRoutePage('/tv', () => getLandingPage('tv'));
+const page = await getManagedRoutePageForLegacyRenderer('/tv', () => getLandingPage('tv'), 'brand');
 ---
 
-{resolved.kind === 'page_v2' ? <PageV2Page page={resolved.page} /> : <BrandContentPage page={resolved.page} />}
+<BrandContentPage page={page} />

@@ -1,19 +1,23 @@
 {
   "collectionName": "components_page_blocks_feature_lists",
   "info": {
-    "displayName": "Feature List Block"
+    "displayName": "Feature List Block",
+    "description": "Список возможностей или преимуществ."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок списка."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое описание перед списком."
     },
     "items": {
       "type": "component",
       "component": "page-blocks.card-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Пункты списка. Можно использовать карточки с иконками."
     }
   }
 }

@@ -5,7 +5,7 @@
     "singularName": "page-v2",
     "pluralName": "page-v2s",
     "displayName": "Page",
-    "description": "Manual-first managed page record."
+    "description": "Главная запись страницы. Здесь задаются URL, SEO, навигация, блоки и статус миграции. Для старых URL включайте migration_ready только после проверки макета."
   },
   "options": {
     "draftAndPublish": true
@@ -15,20 +15,24 @@
       "type": "uid",
       "targetField": "title",
       "required": true,
-      "unique": true
+      "unique": true,
+      "description": "Внутренний ключ страницы. Обычно создаётся из title. Пример: pricing или compare-respond-io."
     },
     "route_path": {
       "type": "string",
       "required": true,
-      "unique": true
+      "unique": true,
+      "description": "Публичный URL страницы на сайте. Всегда начинается с /. Примеры: /pricing, /promo, /compare/respond-io, /test-page."
     },
     "locale": {
       "type": "string",
-      "default": "ru"
+      "default": "ru",
+      "description": "Язык страницы. Сейчас для основного сайта обычно ru."
     },
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Внутреннее название записи в Strapi. Помогает найти страницу редактору. Пример: Цены Chat Plus."
     },
     "page_kind": {
       "type": "enumeration",
@@ -43,7 +47,8 @@
         "brand",
         "system"
       ],
-      "required": true
+      "required": true,
+      "description": "Тип страницы. landing - обычный лендинг, campaign - промо, brand - компания/медиа, resource - docs/help/blog, comparison - сравнение, directory - каталог, entity_detail/entity_intersection - SEO-страницы каталога, system - служебная."
     },
     "template_variant": {
       "type": "enumeration",
@@ -51,9 +56,13 @@
         "default",
         "editorial",
         "showcase",
-        "minimal"
+        "minimal",
+        "directory",
+        "comparison",
+        "sitemap"
       ],
-      "default": "default"
+      "default": "default",
+      "description": "Вариант отображения страницы. Для обычных страниц чаще default/editorial/showcase. Для каталогов directory, для сравнений comparison, для карты сайта sitemap."
     },
     "generation_mode": {
       "type": "enumeration",
@@ -62,15 +71,25 @@
         "ai_assisted",
         "ai_generated"
       ],
-      "default": "manual"
+      "default": "manual",
+      "description": "Как создана страница: manual - руками, ai_assisted - AI помогал, ai_generated - AI создал черновик."
     },
     "source_mode": {
       "type": "enumeration",
       "enum": [
         "managed",
+        "generated",
         "hybrid"
       ],
-      "default": "managed"
+      "default": "managed",
+      "description": "Источник страницы: managed - ручная, generated - сгенерирована из сущностей, hybrid - была сгенерирована, но потом редактировалась человеком."
+    },
+    "blueprint": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::page-blueprint.page-blueprint",
+      "inversedBy": "pages",
+      "description": "Blueprint задаёт рекомендуемый набор блоков и ограничения. Для новой страницы выберите подходящий тип: campaign, brand, resource и т.д."
     },
     "editorial_status": {
       "type": "enumeration",
@@ -80,7 +99,36 @@
         "approved",
         "archived"
       ],
-      "default": "draft"
+      "default": "draft",
+      "description": "Редакторский статус: draft, review, approved, archived. Для публичного cutover нужен approved."
+    },
+    "migration_ready": {
+      "type": "boolean",
+      "default": false,
+      "description": "Главный safety-переключатель. Пока false, старый URL продолжит рендериться legacy-шаблоном даже при published Page."
+    },
+    "parity_status": {
+      "type": "enumeration",
+      "enum": [
+        "unchecked",
+        "needs_work",
+        "approved",
+        "failed"
+      ],
+      "default": "unchecked",
+      "description": "Статус совпадения со старым макетом: unchecked, needs_work, approved, failed. Для замены legacy нужен approved."
+    },
+    "legacy_template_family": {
+      "type": "string",
+      "description": "Семейство старого шаблона: home, pricing, brand, resource, comparison, directory, structured и т.д."
+    },
+    "legacy_layout_signature": {
+      "type": "json",
+      "description": "Технический снимок ожидаемого старого макета. Нужен для parity-report."
+    },
+    "parity_notes": {
+      "type": "json",
+      "description": "Заметки проверки: что совпало, что нужно доделать, какие блоки нельзя потерять."
     },
     "channels": {
       "type": "relation",
@@ -134,42 +182,52 @@
         "page-blocks.comparison-table",
         "page-blocks.before-after",
         "page-blocks.internal-links"
-      ]
+      ],
+      "description": "Основной конструктор страницы. Добавляйте блоки в том порядке, в котором они должны идти на сайте: hero, cards, FAQ, CTA и другие."
     },
     "seo_title": {
-      "type": "string"
+      "type": "string",
+      "description": "SEO title для браузера и поисковиков. Заполните перед публикацией."
     },
     "seo_description": {
-      "type": "text"
+      "type": "text",
+      "description": "SEO description. Коротко объясните пользу страницы для поисковика и пользователя."
     },
     "canonical": {
-      "type": "string"
+      "type": "string",
+      "description": "Canonical URL, если нужен. Обычно совпадает с route_path на основном домене."
     },
     "robots": {
       "type": "string",
-      "default": "index,follow"
+      "default": "index,follow",
+      "description": "Правила индексации. Обычно index,follow. Для черновых/служебных страниц можно noindex,nofollow."
     },
     "og_image": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
         "images"
-      ]
+      ],
+      "description": "Картинка для соцсетей и превью ссылок."
     },
     "hreflang_policy": {
-      "type": "json"
+      "type": "json",
+      "description": "Правило hreflang для мультиязычности. Если не уверены, оставьте пустым."
     },
     "show_in_header": {
       "type": "boolean",
-      "default": false
+      "default": false,
+      "description": "Показывать страницу в верхнем меню. Включайте только для важных публичных разделов."
     },
     "show_in_footer": {
       "type": "boolean",
-      "default": false
+      "default": false,
+      "description": "Показывать страницу в футере. Удобно для разделов, ресурсов и служебных страниц."
     },
     "show_in_sitemap": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "description": "Добавлять страницу в sitemap. Для публичных страниц обычно включено."
     },
     "nav_group": {
       "type": "enumeration",
@@ -181,23 +239,28 @@
         "company",
         "special"
       ],
-      "default": "resources"
+      "default": "resources",
+      "description": "Группа навигации. Примеры: product, catalogs, resources, company, special."
     },
     "nav_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Название ссылки в меню. Пример: Цены, Документация, Сравнения."
     },
     "nav_description": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое пояснение для расширенного меню или футера."
     },
     "nav_order": {
       "type": "integer",
-      "default": 100
+      "default": 100,
+      "description": "Порядок внутри группы. Чем меньше число, тем выше ссылка."
     },
     "parent_page": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::page-v2.page-v2",
-      "inversedBy": "child_pages"
+      "inversedBy": "child_pages",
+      "description": "Родительская страница для хлебных крошек и иерархии. Например, /compare для /compare/respond-io."
     },
     "child_pages": {
       "type": "relation",
@@ -208,12 +271,14 @@
     "breadcrumbs": {
       "type": "component",
       "component": "page-blocks.link-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Ручные хлебные крошки, если автоматических от parent_page недостаточно."
     },
     "internal_links": {
       "type": "component",
       "component": "page-blocks.link-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Внутренние ссылки страницы. Используйте для блока “Что ещё посмотреть” и перелинковки."
     },
     "sitemap_priority": {
       "type": "decimal",
@@ -233,20 +298,25 @@
       "default": "weekly"
     },
     "generation_prompt": {
-      "type": "text"
+      "type": "text",
+      "description": "Исходный prompt, если страницу создавали или дорабатывали через AI."
     },
     "ai_metadata": {
-      "type": "json"
+      "type": "json",
+      "description": "Техническая информация AI: выбранные блоки, отчёт генерации, ограничения."
     },
     "human_review_required": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "description": "Требовать ручную проверку. Для AI-страниц обычно должно быть включено."
     },
     "owner": {
-      "type": "string"
+      "type": "string",
+      "description": "Ответственный за страницу. Пример: content, marketing, Alex."
     },
     "reviewer": {
-      "type": "string"
+      "type": "string",
+      "description": "Кто проверяет страницу перед публикацией."
     }
   }
 }

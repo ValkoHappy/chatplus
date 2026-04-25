@@ -1,67 +1,15 @@
 ---
-import { withBasePath } from '../../lib/urls';
+import BlockFinalCta from '../blocks/BlockFinalCta.astro';
 
 const { section } = Astro.props as { section: Record<string, any> };
-const toHref = (href?: string) => withBasePath(href);
 ---
 
-<section class="section">
-  <div class="container">
-    <div class="pagev2-final-cta">
-      <div>
-        {section.title && <h2>{section.title}</h2>}
-        {section.text && <p>{section.text}</p>}
-      </div>
-      {(section.primary_label || section.secondary_label) && (
-        <div class="pagev2-final-cta__actions">
-          {section.primary_label && section.primary_url && (
-            <a href={toHref(section.primary_url)} class="btn-primary">{section.primary_label}</a>
-          )}
-          {section.secondary_label && section.secondary_url && (
-            <a href={toHref(section.secondary_url)} class="btn-outline">{section.secondary_label}</a>
-          )}
-        </div>
-      )}
-    </div>
-  </div>
-</section>
-
-<style>
-  .pagev2-final-cta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.2rem;
-    padding: 1.3rem 1.4rem;
-    border-radius: 28px;
-    background: linear-gradient(135deg, rgba(238, 242, 255, .92), rgba(255, 255, 255, .98));
-    border: 1px solid rgba(165, 180, 252, .28);
-  }
-
-  .pagev2-final-cta h2 {
-    margin: 0;
-    color: #0f172a;
-    font-size: clamp(1.7rem, 3vw, 2.3rem);
-    letter-spacing: -.04em;
-  }
-
-  .pagev2-final-cta p {
-    margin: .7rem 0 0;
-    color: #475569;
-    line-height: 1.7;
-    max-width: 58ch;
-  }
-
-  .pagev2-final-cta__actions {
-    display: flex;
-    gap: .75rem;
-    flex-wrap: wrap;
-  }
-
-  @media (max-width: 900px) {
-    .pagev2-final-cta {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  }
-</style>
+<BlockFinalCta
+  title={section.title}
+  text={section.text}
+  primary_label={section.primary_label}
+  primary_url={section.primary_url}
+  secondary_label={section.secondary_label}
+  secondary_url={section.secondary_url}
+  variant={section.variant || 'light'}
+/>

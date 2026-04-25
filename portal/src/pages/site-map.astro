@@ -1,24 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getPageV2Pages, getSiteSettings } from '../lib/strapi';
+import { getPageV2ByRouteForLegacyRenderer, getPageV2Pages, getSiteSettings } from '../lib/strapi';
 import { getFooterColumns, getSiteMapGroups } from '../lib/navigation';
 import { withBasePath } from '../lib/urls';
 
+const pageV2 = await getPageV2ByRouteForLegacyRenderer('/site-map', 'site_map');
 const settings = await getSiteSettings();
 const pageV2Pages = await getPageV2Pages();
 const footerColumns = getFooterColumns(settings.footer_columns, pageV2Pages);
 const groups = getSiteMapGroups(footerColumns, pageV2Pages);
 const toHref = (href?: string) => withBasePath(href);
+const title = pageV2?.metaTitle || 'Карта сайта';
+const description =
+  pageV2?.metaDescription ||
+  'HTML-карта сайта Chat Plus для быстрого перехода по ключевым разделам, ресурсам и специальным страницам.';
+const eyebrow = pageV2?.eyebrow || 'Навигация';
+const heading = pageV2?.heading || 'Карта сайта';
+const subtitle =
+  pageV2?.subtitle ||
+  'Быстрый доступ к продуктовым разделам, каталогам, ресурсам, страницам компании и специальным маршрутам Chat Plus.';
 ---
 
-<Base title="Карта сайта" description="HTML-карта сайта Chat Plus для быстрого перехода по ключевым разделам, ресурсам и специальным страницам.">
+<Base title={title} description={description} canonical={pageV2?.canonical}>
   <section class="site-map-hero">
     <div class="container">
-      <p class="site-map-eyebrow">Навигация</p>
-      <h1 class="site-map-title">Карта сайта</h1>
-      <p class="site-map-subtitle">
-        Быстрый доступ к продуктовым разделам, каталогам, ресурсам, страницам компании и специальным маршрутам Chat Plus.
-      </p>
+      <p class="site-map-eyebrow">{eyebrow}</p>
+      <h1 class="site-map-title">{heading}</h1>
+      <p class="site-map-subtitle">{subtitle}</p>
     </div>
   </section>
 

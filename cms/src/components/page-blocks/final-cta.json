@@ -1,26 +1,33 @@
 {
   "collectionName": "components_page_blocks_final_ctas",
   "info": {
-    "displayName": "Final CTA Block"
+    "displayName": "Final CTA Block",
+    "description": "Финальный CTA-блок внизу страницы."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Главный призыв. Пример: Посмотрите реальную модель стоимости Chat Plus."
     },
     "text": {
-      "type": "text"
+      "type": "text",
+      "description": "Пояснение под заголовком."
     },
     "primary_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Текст главной кнопки. Пример: Попробовать бесплатно."
     },
     "primary_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Ссылка главной кнопки. Пример: /demo."
     },
     "secondary_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Текст второй кнопки."
     },
     "secondary_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Ссылка второй кнопки."
     }
   }
 }

@@ -1,102 +1,15 @@
 ---
-import { Icon } from 'astro-icon/components';
-import { withBasePath } from '../../lib/urls';
+import BlockLinkGrid from '../blocks/BlockLinkGrid.astro';
 
 const { section } = Astro.props as { section: Record<string, any> };
 const links = Array.isArray(section.links) ? section.links : [];
-const toHref = (href?: string) => withBasePath(href);
 ---
 
-{links.length > 0 && (
-  <section class="section pagev2-internal-links">
-    <div class="container">
-      <div class="section-header">
-        {section.eyebrow && <p class="pagev2-internal-links__eyebrow">{section.eyebrow}</p>}
-        {section.title && <h2>{section.title}</h2>}
-        {section.intro && <p>{section.intro}</p>}
-      </div>
-
-      <div class="pagev2-internal-links__grid">
-        {links.map((link) => (
-          <a href={toHref(link.href)} class="pagev2-internal-links__card">
-            <div class="pagev2-internal-links__icon">
-              <Icon name="lucide:arrow-right" />
-            </div>
-            <div>
-              <span class="pagev2-internal-links__label">{link.label}</span>
-              {link.description && <span class="pagev2-internal-links__description">{link.description}</span>}
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-)}
-
-<style>
-  .pagev2-internal-links {
-    background: linear-gradient(180deg, rgba(248, 250, 252, .72), rgba(255, 255, 255, .96));
-  }
-
-  .pagev2-internal-links__eyebrow {
-    margin: 0 0 .55rem;
-    color: #6366f1;
-    font-size: .78rem;
-    font-weight: 800;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-
-  .pagev2-internal-links__grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .pagev2-internal-links__card {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: .95rem;
-    align-items: start;
-    padding: 1.1rem 1.15rem;
-    border-radius: 20px;
-    border: 1px solid rgba(226, 232, 240, .9);
-    background: rgba(255, 255, 255, .95);
-    color: inherit;
-    text-decoration: none;
-    box-shadow: 0 10px 26px rgba(15, 23, 42, .05);
-  }
-
-  .pagev2-internal-links__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #eef2ff, #ede9fe);
-    color: #4f46e5;
-  }
-
-  .pagev2-internal-links__label {
-    display: block;
-    color: #0f172a;
-    font-size: 1.02rem;
-    font-weight: 800;
-    line-height: 1.24;
-  }
-
-  .pagev2-internal-links__description {
-    display: block;
-    margin-top: .38rem;
-    color: #64748b;
-    font-size: .94rem;
-    line-height: 1.58;
-  }
-
-  @media (max-width: 980px) {
-    .pagev2-internal-links__grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+<BlockLinkGrid
+  eyebrow={section.eyebrow}
+  title={section.title}
+  intro={section.intro}
+  links={links}
+  variant="internal"
+  sectionClass="section block-section--quiet"
+/>

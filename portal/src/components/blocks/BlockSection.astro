@@ -1,0 +1,15 @@
+---
+interface Props {
+  variant?: 'default' | 'tonal' | 'quiet' | 'dark';
+  className?: string;
+}
+
+const { variant = 'default', className = '' } = Astro.props as Props;
+const classes = ['block-section', variant !== 'default' ? `block-section--${variant}` : '', className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<section class={classes}>
+  <slot />
+</section>

@@ -1,10 +1,12 @@
 ---
 import DirectoryPage from '../../components/DirectoryPage.astro';
 import { adaptDirectoryPage } from '../../lib/page-adapters';
-import { getIntegrations, getSiteSettings } from '../../lib/strapi';
+import { getIntegrations, getManagedRoutePageForLegacyRenderer, getSiteSettings } from '../../lib/strapi';
 
-const [settings, integrations] = await Promise.all([getSiteSettings(), getIntegrations()]);
-const page = adaptDirectoryPage('integrations', settings, integrations);
+const page = await getManagedRoutePageForLegacyRenderer('/integrations', async () => {
+  const [settings, integrations] = await Promise.all([getSiteSettings(), getIntegrations()]);
+  return adaptDirectoryPage('integrations', settings, integrations);
+}, 'directory');
 ---
 
 <DirectoryPage {...page} />

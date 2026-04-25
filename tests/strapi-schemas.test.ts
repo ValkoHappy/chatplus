@@ -9,6 +9,18 @@ import {
   parseSingleData,
 } from '../portal/src/lib/strapi-schemas.ts';
 
+function readJson(path: string) {
+  return JSON.parse(readFileSync(path, 'utf8'));
+}
+
+function assertRussianHelpText(schema: any, attributeNames: string[]) {
+  for (const attributeName of attributeNames) {
+    const description = schema.attributes?.[attributeName]?.description;
+    assert.equal(typeof description, 'string', `${attributeName} should have editor help text`);
+    assert.match(description, /[А-Яа-яЁё]/, `${attributeName} help text should be Russian`);
+  }
+}
+
 test('parseCollectionData validates collection payloads', () => {
   const data = parseCollectionData(
     {
@@ -105,21 +117,78 @@ test('normalizeSiteSettingsRecord guarantees array and object boundaries', () =>
 });
 
 test('editorial schemas enable draftAndPublish for publish lifecycle', () => {
-  const landingPageSchema = JSON.parse(
-    readFileSync('cms/src/api/landing-page/content-types/landing-page/schema.json', 'utf8')
+  const landingPageSchema = readJson('cms/src/api/landing-page/content-types/landing-page/schema.json');
+  const tendersPageSchema = readJson('cms/src/api/tenders-page/content-types/tenders-page/schema.json');
+  const businessTypesPageSchema = readJson(
+    'cms/src/api/business-types-page/content-types/business-types-page/schema.json'
   );
-  const tendersPageSchema = JSON.parse(
-    readFileSync('cms/src/api/tenders-page/content-types/tenders-page/schema.json', 'utf8')
-  );
-  const businessTypesPageSchema = JSON.parse(
-    readFileSync('cms/src/api/business-types-page/content-types/business-types-page/schema.json', 'utf8')
-  );
-  const siteSettingSchema = JSON.parse(
-    readFileSync('cms/src/api/site-setting/content-types/site-setting/schema.json', 'utf8')
-  );
+  const siteSettingSchema = readJson('cms/src/api/site-setting/content-types/site-setting/schema.json');
 
   assert.equal(landingPageSchema.options.draftAndPublish, true);
   assert.equal(tendersPageSchema.options.draftAndPublish, true);
   assert.equal(businessTypesPageSchema.options.draftAndPublish, true);
   assert.equal(siteSettingSchema.options.draftAndPublish, true);
+});
+
+test('page_v2 card items preserve route links needed by legacy directory renderers', () => {
+  const cardItemSchema = readJson('cms/src/components/page-blocks/card-item.json');
+
+  assert.equal(cardItemSchema.attributes.href.type, 'string');
+  assert.equal(cardItemSchema.attributes.cta_label.type, 'string');
+  assert.equal(cardItemSchema.attributes.badges.type, 'json');
+});
+
+test('generation_job supports AI block planning controls', () => {
+  const generationJobSchema = readJson('cms/src/api/generation-job/content-types/generation-job/schema.json');
+
+  assert.deepEqual(generationJobSchema.attributes.block_strategy.enum, ['auto', 'blueprint_default', 'custom']);
+  assert.equal(generationJobSchema.attributes.block_strategy.default, 'auto');
+  assert.equal(generationJobSchema.attributes.target_blocks.type, 'json');
+});
+
+test('page editor schema exposes Russian help text for high-risk fields', () => {
+  const pageSchema = readJson('cms/src/api/page-v2/content-types/page-v2/schema.json');
+
+  assert.match(pageSchema.info.description, /[А-Яа-яЁё]/);
+  assertRussianHelpText(pageSchema, [
+    'route_path',
+    'page_kind',
+    'blueprint',
+    'sections',
+    'seo_title',
+    'show_in_sitemap',
+    'migration_ready',
+    'parity_status',
+  ]);
+});
+
+test('AI generation job schema explains controls in Russian', () => {
+  const generationJobSchema = readJson('cms/src/api/generation-job/content-types/generation-job/schema.json');
+
+  assert.match(generationJobSchema.info.description, /[А-Яа-яЁё]/);
+  assertRussianHelpText(generationJobSchema, [
+    'job_type',
+    'target_blueprint',
+    'block_strategy',
+    'target_blocks',
+    'request_prompt',
+    'run_report',
+  ]);
+});
+
+test('page block components include Russian editor examples', () => {
+  const components = [
+    ['cms/src/components/page-blocks/hero.json', ['variant', 'title', 'primary_url', 'trust_facts']],
+    ['cms/src/components/page-blocks/cards-grid.json', ['variant', 'title', 'items']],
+    ['cms/src/components/page-blocks/faq.json', ['title', 'intro', 'items']],
+    ['cms/src/components/page-blocks/final-cta.json', ['title', 'primary_label', 'primary_url']],
+    ['cms/src/components/page-blocks/comparison-table.json', ['option_one_label', 'option_two_label', 'rows']],
+    ['cms/src/components/page-blocks/internal-links.json', ['eyebrow', 'title', 'links']],
+  ] as const;
+
+  for (const [path, attributes] of components) {
+    const componentSchema = readJson(path);
+    assert.match(componentSchema.info.description, /[А-Яа-яЁё]/, `${path} should explain the block in Russian`);
+    assertRussianHelpText(componentSchema, [...attributes]);
+  }
 });

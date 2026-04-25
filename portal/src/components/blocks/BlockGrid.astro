@@ -1,0 +1,13 @@
+---
+interface Props {
+  columns?: 'two' | 'three' | 'auto';
+  className?: string;
+}
+
+const { columns = 'auto', className = '' } = Astro.props as Props;
+const classes = ['block-grid', `block-grid--${columns}`, className].filter(Boolean).join(' ');
+---
+
+<div class={classes}>
+  <slot />
+</div>

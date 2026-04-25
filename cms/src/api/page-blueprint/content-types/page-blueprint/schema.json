@@ -1,0 +1,78 @@
+{
+  "kind": "collectionType",
+  "collectionName": "page_blueprints",
+  "info": {
+    "singularName": "page-blueprint",
+    "pluralName": "page-blueprints",
+    "displayName": "Page Blueprint",
+    "description": "Blueprint страницы. Это шаблон-правило: какие блоки обязательны, какие разрешены и какой стартовый набор дать редактору или AI."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "blueprint_id": {
+      "type": "uid",
+      "required": true,
+      "unique": true,
+      "description": "Уникальный ключ blueprint. Примеры: campaign, brand, resource, comparison."
+    },
+    "page_kind": {
+      "type": "enumeration",
+      "enum": [
+        "landing",
+        "directory",
+        "entity_detail",
+        "entity_intersection",
+        "comparison",
+        "campaign",
+        "resource",
+        "brand",
+        "system"
+      ],
+      "required": true,
+      "description": "Для какого типа страниц используется blueprint."
+    },
+    "template_variant": {
+      "type": "enumeration",
+      "enum": [
+        "default",
+        "editorial",
+        "showcase",
+        "minimal",
+        "directory",
+        "comparison",
+        "sitemap"
+      ],
+      "default": "default",
+      "description": "Рекомендуемый вариант отображения для страниц этого blueprint."
+    },
+    "required_blocks": {
+      "type": "json",
+      "description": "JSON-массив обязательных блоков. Пример: [\"hero\", \"faq\", \"final-cta\"]."
+    },
+    "allowed_blocks": {
+      "type": "json",
+      "description": "JSON-массив разрешённых блоков. AI и редактор не должны выходить за этот список без решения разработчика."
+    },
+    "default_sections": {
+      "type": "json",
+      "description": "Стартовый набор секций для новой страницы. Можно использовать как пример заполнения."
+    },
+    "description": {
+      "type": "text",
+      "description": "Пояснение для редакторов: когда использовать этот blueprint и какие страницы он покрывает."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Если выключить, blueprint не должен использоваться для новых страниц и AI-заданий."
+    },
+    "pages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::page-v2.page-v2",
+      "mappedBy": "blueprint"
+    }
+  }
+}

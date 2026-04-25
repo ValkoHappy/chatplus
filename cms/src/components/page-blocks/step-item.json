@@ -1,16 +1,19 @@
 {
   "collectionName": "components_page_blocks_step_items",
   "info": {
-    "displayName": "Step Item"
+    "displayName": "Step Item",
+    "description": "Один шаг процесса."
   },
   "attributes": {
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Название шага."
     },
     "text": {
       "type": "text",
-      "required": true
+      "required": true,
+      "description": "Что происходит на этом шаге."
     }
   }
 }

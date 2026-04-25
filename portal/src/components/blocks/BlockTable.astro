@@ -1,0 +1,66 @@
+---
+import BlockHeader from './BlockHeader.astro';
+
+interface Row {
+  parameter?: string;
+  option_one?: string;
+  option_two?: string;
+  option_highlight?: string;
+}
+
+interface Props {
+  title?: string;
+  intro?: string;
+  rows?: Row[];
+  parameter_label?: string;
+  option_one_label?: string;
+  option_two_label?: string;
+  option_highlight_label?: string;
+  sectionClass?: string;
+  variant?: 'default' | 'comparison';
+}
+
+const {
+  title,
+  intro,
+  rows = [],
+  parameter_label = 'Parameter',
+  option_one_label = 'Option one',
+  option_two_label = 'Option two',
+  option_highlight_label = 'Chat Plus',
+  sectionClass = 'section section-tonal',
+  variant = 'comparison',
+} = Astro.props as Props;
+
+const items = rows.filter((row) => row?.parameter);
+---
+
+{items.length > 0 && (
+  <section class={`${sectionClass} block-table-section block-table-section--${variant}`}>
+    <div class="container">
+      {(title || intro) && <BlockHeader title={title} intro={intro} />}
+      <div class="block-table-wrap">
+        <table class="block-table">
+          <thead>
+            <tr>
+              <th>{parameter_label}</th>
+              <th>{option_one_label}</th>
+              <th>{option_two_label}</th>
+              <th class="block-table__accent">{option_highlight_label}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((row) => (
+              <tr>
+                <td class="block-table__param">{row.parameter}</td>
+                <td>{row.option_one}</td>
+                <td>{row.option_two}</td>
+                <td class="block-table__accent">{row.option_highlight}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+)}

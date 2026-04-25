@@ -34,6 +34,8 @@ interface PageData {
   features?: { title?: string; text?: string }[];
   use_cases_title?: string;
   use_cases?: { title?: string; audience?: string; text?: string }[];
+  integrations_title?: string;
+  integration_blocks?: { label?: string; text?: string }[];
   faq_title?: string;
   faqs?: { question?: string; answer?: string }[];
   internal_links_title?: string;
@@ -170,7 +172,30 @@ const sectionLabels = page.section_labels || {};
     </section>
   )}
 
-  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section section-tonal" containerClass="container container-narrow" />
+  {page.integrations_title && page.integration_blocks && page.integration_blocks.length > 0 && (
+    <section class="section section-tonal">
+      <div class="container">
+        <div class="section-header">
+          <h2>{page.integrations_title}</h2>
+        </div>
+        <div class="editorial-grid">
+          {page.integration_blocks.map((item, index) => (
+            <article class="editorial-card editorial-card--light">
+              <div class="editorial-top">
+                <div class="editorial-icon">
+                  <Icon name={['lucide:plug-zap', 'lucide:workflow', 'lucide:database-zap', 'lucide:messages-square'][index % 4]} />
+                </div>
+                <h3>{item.label}</h3>
+              </div>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FaqSection title={page.faq_title} faqs={page.faqs} sectionClass="section section-tonal" />
   <InternalLinksSection page={page} />
 
   {(page.sticky_cta_title || page.sticky_cta_text) && (
@@ -212,8 +237,10 @@ const sectionLabels = page.section_labels || {};
   .editorial-stack { display:grid; gap:1rem; }
   .editorial-card { padding:1.15rem; }
   .editorial-card--light { background:rgba(248,250,252,.98); }
-  .editorial-top { display:flex; align-items:center; gap:.8rem; }
+  .editorial-top { display:flex; align-items:flex-start; gap:.8rem; }
+  .editorial-top h3 { padding-top:.28rem; }
   .editorial-index, .editorial-step { display:inline-flex; width:2rem; height:2rem; align-items:center; justify-content:center; border-radius:999px; background:linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-size:.8rem; font-weight:800; flex-shrink:0; }
+  .editorial-step { margin-bottom:.75rem; }
   .editorial-icon { width:2.45rem; height:2.45rem; border-radius:16px; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #eef2ff, #ddd6fe); color:#4f46e5; flex-shrink:0; }
   .editorial-card h3 { margin:0; color:#0f172a; font-size:1.04rem; line-height:1.28; }
   .editorial-card p { margin:.7rem 0 0; color:#475569; line-height:1.7; }

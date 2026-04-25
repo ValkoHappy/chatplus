@@ -1,4 +1,5 @@
 import { getPageV2Blueprint, validatePageV2BlueprintSections } from '../../config/page-v2-blueprints.mjs';
+import { validatePageV2LayoutParity } from '../../config/page-v2-layout-parity.mjs';
 import { isReservedPageV2Route, normalizePageV2RoutePath } from '../../config/page-v2-routes.mjs';
 
 export const AI_ALLOWED_PAGE_V2_BLUEPRINTS = Object.freeze(['campaign', 'brand', 'resource']);
@@ -455,7 +456,7 @@ export function buildSafePageV2RoutePath({
   };
 }
 
-export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existingRoutes = [] }) {
+export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existingRoutes = [], blueprintDocumentId = null, blockPlan = null }) {
   const blueprintId = asString(job.target_blueprint) || 'landing';
   const blueprint = getPageV2Blueprint(blueprintId);
   if (!blueprint) {
@@ -502,6 +503,12 @@ export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existing
   if (!validation.ok) {
     throw new Error(validation.errors.join(' '));
   }
+  const parity = validatePageV2LayoutParity({
+    family: blueprintId,
+    routePath,
+    sections,
+    templateVariant: asString(aiDraft.template_variant) || blueprint.templateVariant,
+  });
 
   const relationMapping = Object.freeze({
     target_channels: 'channels',
@@ -522,6 +529,7 @@ export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existing
 
   return {
     data: {
+      ...(blueprintDocumentId ? { blueprint: blueprintDocumentId } : {}),
       title,
       slug: slugifySegment(asString(aiDraft.slug) || title) || 'draft-page',
       route_path: routePath,
@@ -531,6 +539,15 @@ export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existing
       generation_mode: job.job_type === 'scheduled' ? 'ai_generated' : 'ai_assisted',
       source_mode: 'hybrid',
       editorial_status: 'review',
+      migration_ready: false,
+      parity_status: parity.status,
+      legacy_template_family: blueprintId,
+      legacy_layout_signature: parity.signature,
+      parity_notes: {
+        errors: parity.errors,
+        missing_blocks: parity.missing_blocks,
+        warnings,
+      },
       seo_title: asString(aiDraft.seo_title) || title,
       seo_description: asString(aiDraft.seo_description) || summary || 'AI draft page waiting for editorial review.',
       canonical: asString(aiDraft.canonical),
@@ -547,6 +564,14 @@ export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existing
       generation_prompt: asString(job.request_prompt),
       ai_metadata: {
         blueprint: blueprintId,
+        blueprint_document_id: blueprintDocumentId || null,
+        block_plan: blockPlan
+          ? {
+              strategy: blockPlan.strategy,
+              preferred_blocks: blockPlan.preferredBlocks,
+              rejected_blocks: blockPlan.rejectedBlocks,
+            }
+          : null,
         generated_from_job_id: job.id || null,
         generated_at: new Date().toISOString(),
         requested_by: asString(job.requested_by),
@@ -565,7 +590,7 @@ export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existing
   };
 }
 
-export function buildGenerationReport({ job = {}, pageDraft, warnings = [], model = '', dryRun = false }) {
+export function buildGenerationReport({ job = {}, pageDraft, warnings = [], model = '', dryRun = false, blockPlan = null }) {
   return {
     ok: true,
     dry_run: dryRun,
@@ -577,6 +602,13 @@ export function buildGenerationReport({ job = {}, pageDraft, warnings = [], mode
     template_variant: pageDraft.data.template_variant,
     generation_mode: pageDraft.data.generation_mode,
     section_types: pageDraft.data.sections.map((section) => section.__component),
+    block_plan: blockPlan
+      ? {
+          strategy: blockPlan.strategy,
+          preferred_blocks: blockPlan.preferredBlocks,
+          rejected_blocks: blockPlan.rejectedBlocks,
+        }
+      : null,
     warnings,
     model,
     generated_at: new Date().toISOString(),

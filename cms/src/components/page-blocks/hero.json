@@ -1,7 +1,8 @@
 {
   "collectionName": "components_page_blocks_heroes",
   "info": {
-    "displayName": "Hero Block"
+    "displayName": "Hero Block",
+    "description": "Первый экран страницы: заголовок, подзаголовок, CTA и важные факты."
   },
   "attributes": {
     "variant": {
@@ -9,45 +10,58 @@
       "enum": [
         "default",
         "showcase",
-        "panel"
+        "panel",
+        "editorial"
       ],
-      "default": "default"
+      "default": "default",
+      "description": "Вариант hero: default - обычный, showcase - большой визуальный, panel - с правой панелью, editorial - текстовый."
     },
     "eyebrow": {
-      "type": "string"
+      "type": "string",
+      "description": "Маленькая подпись над заголовком. Пример: PROMO или Сравнение платформ."
     },
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Главный заголовок первого экрана. Самый важный текст страницы."
     },
     "subtitle": {
-      "type": "text"
+      "type": "text",
+      "description": "Подзаголовок: 1-2 предложения, объясняющие пользу страницы."
     },
     "primary_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Текст главной кнопки. Пример: Попробовать бесплатно."
     },
     "primary_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Ссылка главной кнопки. Пример: /demo."
     },
     "secondary_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Текст второй кнопки. Пример: Записаться на демо."
     },
     "secondary_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Ссылка второй кнопки. Пример: /pricing или /demo."
     },
     "context_title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок дополнительной панели/контекста, если нужен."
     },
     "context_text": {
-      "type": "text"
+      "type": "text",
+      "description": "Текст дополнительной панели/контекста."
     },
     "panel_items": {
       "type": "component",
       "component": "page-blocks.card-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Карточки внутри hero-панели: факты, сценарии, короткие преимущества."
     },
     "trust_facts": {
-      "type": "json"
+      "type": "json",
+      "description": "Список коротких фактов JSON-массивом. Пример: [\"AI 24/7\", \"Подключение за 15 минут\"]."
     }
   }
 }

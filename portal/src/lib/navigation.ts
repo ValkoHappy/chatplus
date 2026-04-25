@@ -129,15 +129,25 @@ function sortDynamicLinks(links: NavLink[]) {
   });
 }
 
-function appendUniqueLinks(baseLinks: NavLink[], extraLinks: NavLink[]) {
+function appendUniqueLinks(
+  baseLinks: NavLink[],
+  extraLinks: NavLink[],
+  options: { preserveExistingLabels?: boolean } = {},
+) {
   const merged = [...baseLinks];
 
   for (const link of extraLinks) {
     const existingIndex = merged.findIndex((current) => current.href === link.href);
     if (existingIndex >= 0) {
+      const existing = merged[existingIndex];
       merged[existingIndex] = {
-        ...merged[existingIndex],
+        ...existing,
         ...link,
+        label: options.preserveExistingLabels ? existing.label : link.label,
+        href: existing.href,
+        description: options.preserveExistingLabels
+          ? existing.description || link.description
+          : link.description || existing.description,
       };
       continue;
     }
@@ -178,7 +188,7 @@ export function getHeaderLinks(provided: Partial<NavLink>[] = [], dynamicPages: 
       .map((page) => mapPageV2Link(page)),
   );
 
-  return appendUniqueLinks(baseLinks, dynamicLinks);
+  return appendUniqueLinks(baseLinks, dynamicLinks, { preserveExistingLabels: true });
 }
 
 export function getFooterColumns(
@@ -192,12 +202,16 @@ export function getFooterColumns(
       ...lookup.get(link.href),
       label: link.label,
       href: link.href,
-      description: lookup.get(link.href)?.description || link.description,
+      description: link.description || lookup.get(link.href)?.description,
     })),
   }));
+  const baseFooterHrefs = new Set(columns.flatMap((column) => column.links.map((link) => link.href)));
 
   const dynamicByTitle = new Map<string, NavLink[]>();
   for (const page of dynamicPages.filter((item) => item.show_in_footer)) {
+    if (baseFooterHrefs.has(page.route_path)) {
+      continue;
+    }
     const title = footerTitleForGroup(page.nav_group);
     const current = dynamicByTitle.get(title) || [];
     current.push(mapPageV2Link(page));
@@ -206,7 +220,7 @@ export function getFooterColumns(
 
   for (const column of columns) {
     const dynamicLinks = sortDynamicLinks(dynamicByTitle.get(column.title) || []);
-    column.links = appendUniqueLinks(column.links, dynamicLinks);
+    column.links = appendUniqueLinks(column.links, dynamicLinks, { preserveExistingLabels: true });
     dynamicByTitle.delete(column.title);
   }
 
@@ -224,7 +238,7 @@ export function getMobileNavSections(headerLinks: NavLink[], footerColumns: NavC
   const footerMap = new Map(footerColumns.map((column) => [column.title, column.links]));
 
   return [
-    { title: PAGE_V2_NAV_GROUPS.primary, links: headerLinks },
+    { title: 'Основное', links: headerLinks },
     { title: 'Ресурсы', links: footerMap.get('Ресурсы') || [] },
     { title: 'Компания', links: footerMap.get('Компания') || [] },
     { title: 'Спецразделы', links: footerMap.get('Спецразделы') || [] },

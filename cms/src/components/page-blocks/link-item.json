@@ -1,19 +1,23 @@
 {
   "collectionName": "components_page_blocks_link_items",
   "info": {
-    "displayName": "Link Item"
+    "displayName": "Link Item",
+    "description": "Одна внутренняя ссылка."
   },
   "attributes": {
     "label": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Название ссылки."
     },
     "href": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "URL ссылки. Пример: /pricing."
     },
     "description": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое описание ссылки."
     }
   }
 }

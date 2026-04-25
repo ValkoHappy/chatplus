@@ -1,46 +1,59 @@
 {
   "collectionName": "components_page_blocks_pricing_plan_items",
   "info": {
-    "displayName": "Pricing Plan Item"
+    "displayName": "Pricing Plan Item",
+    "description": "Одна карточка тарифа или пакета."
   },
   "attributes": {
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Название тарифа."
     },
     "label": {
-      "type": "string"
+      "type": "string",
+      "description": "Метка тарифа. Пример: Популярный."
     },
     "price": {
-      "type": "string"
+      "type": "string",
+      "description": "Цена или формулировка стоимости."
     },
     "period": {
-      "type": "string"
+      "type": "string",
+      "description": "Период оплаты. Пример: в месяц."
     },
     "note": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткая сноска под ценой."
     },
     "text": {
-      "type": "text"
+      "type": "text",
+      "description": "Описание тарифа."
     },
     "cta_label": {
-      "type": "string"
+      "type": "string",
+      "description": "Текст кнопки тарифа."
     },
     "cta_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Ссылка кнопки тарифа."
     },
     "icon": {
-      "type": "string"
+      "type": "string",
+      "description": "Иконка тарифа, если нужна."
     },
     "kicker": {
-      "type": "string"
+      "type": "string",
+      "description": "Маленький акцент над названием."
     },
     "accent": {
       "type": "boolean",
-      "default": false
+      "default": false,
+      "description": "Включите, если тариф нужно визуально выделить."
     },
     "features": {
-      "type": "json"
+      "type": "json",
+      "description": "JSON-массив возможностей тарифа."
     }
   }
 }

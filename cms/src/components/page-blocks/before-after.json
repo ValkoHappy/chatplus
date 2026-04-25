@@ -1,32 +1,41 @@
 {
   "collectionName": "components_page_blocks_before_afters",
   "info": {
-    "displayName": "Before After Block"
+    "displayName": "Before After Block",
+    "description": "Блок “до/после” или ROI. Подходит для сравнения старого процесса и результата после Chat Plus."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое вступление перед сравнением."
     },
     "before_title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок левой колонки. Пример: Сейчас."
     },
     "after_title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок правой колонки. Пример: После Chat Plus."
     },
     "before_items": {
-      "type": "json"
+      "type": "json",
+      "description": "Список проблем или текущих ограничений."
     },
     "after_items": {
-      "type": "json"
+      "type": "json",
+      "description": "Список улучшений после внедрения."
     },
     "quote": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткая цитата или вывод под блоком."
     },
     "quote_author": {
-      "type": "string"
+      "type": "string",
+      "description": "Автор цитаты, если нужен."
     }
   }
 }

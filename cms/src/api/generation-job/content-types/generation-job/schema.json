@@ -5,12 +5,13 @@
     "singularName": "generation-job",
     "pluralName": "generation-jobs",
     "displayName": "Generation Job",
-    "description": "AI generation queue item for future page_v2 draft workflows."
+    "description": "Задание для AI. Создаёт или обновляет черновик Page, но не публикует страницу само."
   },
   "attributes": {
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Понятное название задания. Пример: AI черновик страницы про WhatsApp для салонов."
     },
     "job_type": {
       "type": "enumeration",
@@ -18,7 +19,8 @@
         "manual_request",
         "scheduled"
       ],
-      "required": true
+      "required": true,
+      "description": "manual_request - запустить по запросу редактора. scheduled - задание по расписанию."
     },
     "status": {
       "type": "enumeration",
@@ -30,59 +32,86 @@
         "approved",
         "published"
       ],
-      "default": "queued"
+      "default": "queued",
+      "description": "Статус выполнения: queued - ждёт, running - в работе, draft_ready - черновик готов, failed - ошибка."
     },
     "target_blueprint": {
-      "type": "string"
+      "type": "string",
+      "description": "Какой тип страницы сделать. Сейчас безопасные варианты: campaign, brand, resource. Пример: campaign."
+    },
+    "block_strategy": {
+      "type": "enumeration",
+      "enum": [
+        "auto",
+        "blueprint_default",
+        "custom"
+      ],
+      "default": "auto",
+      "description": "Как AI выбирает блоки: auto - сам по задаче, blueprint_default - строго по blueprint, custom - использовать target_blocks."
+    },
+    "target_blocks": {
+      "type": "json",
+      "description": "Список нужных блоков для custom-режима. Пример JSON: [\"hero\", \"cards-grid\", \"faq\", \"final-cta\"]. Неподдержанные блоки будут отклонены."
     },
     "request_prompt": {
-      "type": "text"
+      "type": "text",
+      "description": "Задание для AI. Опишите тему, аудиторию, цель страницы, нужные CTA, SEO и ограничения."
     },
     "requested_by": {
-      "type": "string"
+      "type": "string",
+      "description": "Кто создал задание. Пример: Alex или content-manager."
     },
     "target_page": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::page-v2.page-v2"
+      "target": "api::page-v2.page-v2",
+      "description": "Если AI должен доработать существующую страницу, выберите её здесь. Для новой страницы оставьте пустым."
     },
     "target_channels": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::channel.channel"
+      "target": "api::channel.channel",
+      "description": "Каналы для контекста генерации. Пример: WhatsApp, Telegram."
     },
     "target_industries": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::industry.industry"
+      "target": "api::industry.industry",
+      "description": "Отрасли для контекста. Пример: медицина, ритейл."
     },
     "target_integrations": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::integration.integration"
+      "target": "api::integration.integration",
+      "description": "Интеграции для контекста. Пример: AmoCRM, Bitrix24."
     },
     "target_solutions": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::solution.solution"
+      "target": "api::solution.solution",
+      "description": "Решения для контекста. Пример: продажи, поддержка."
     },
     "target_features": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::feature.feature"
+      "target": "api::feature.feature",
+      "description": "Функции для контекста. Пример: AI-ответы, аналитика."
     },
     "target_business_types": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::business-type.business-type"
+      "target": "api::business-type.business-type",
+      "description": "Типы бизнеса для контекста. Пример: агентства, салоны."
     },
     "target_competitors": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::competitor.competitor"
+      "target": "api::competitor.competitor",
+      "description": "Конкуренты для сравнений. Для AI это важно, если генерируется comparison-страница."
     },
     "run_report": {
-      "type": "json"
+      "type": "json",
+      "description": "Отчёт после запуска: что создано, какие блоки выбрал AI, ошибки, ссылка на черновик."
     }
   }
 }

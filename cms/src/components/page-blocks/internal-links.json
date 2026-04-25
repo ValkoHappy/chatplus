@@ -1,22 +1,27 @@
 {
   "collectionName": "components_page_blocks_internal_links",
   "info": {
-    "displayName": "Internal Links Block"
+    "displayName": "Internal Links Block",
+    "description": "Блок внутренних ссылок “Что ещё посмотреть”."
   },
   "attributes": {
     "eyebrow": {
-      "type": "string"
+      "type": "string",
+      "description": "Маленькая подпись над блоком. Пример: По теме страницы."
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое пояснение, почему эти ссылки полезны."
     },
     "links": {
       "type": "component",
       "component": "page-blocks.link-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Ссылки на другие страницы сайта."
     }
   }
 }

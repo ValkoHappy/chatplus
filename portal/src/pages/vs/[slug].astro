@@ -1,7 +1,7 @@
 ---
 import ComparisonPage from '../../components/ComparisonPage.astro';
 import { adaptCompetitorPage } from '../../lib/page-adapters';
-import { getCompetitors, getSiteSettings } from '../../lib/strapi';
+import { getCompetitors, getPageV2ByRouteForLegacyRenderer, getSiteSettings } from '../../lib/strapi';
 
 export async function getStaticPaths() {
   const competitors = await getCompetitors();
@@ -12,9 +12,10 @@ export async function getStaticPaths() {
 }
 
 const { competitor } = Astro.props;
+const bridgedPage = await getPageV2ByRouteForLegacyRenderer(`/vs/${competitor.slug}`, 'comparison');
 const [settings, competitors] = await Promise.all([getSiteSettings(), getCompetitors()]);
 const currentCompetitor = competitors.find((item) => item.slug === competitor.slug) || competitor;
-const page = adaptCompetitorPage(currentCompetitor, { settings, competitors }, 'vs');
+const page = bridgedPage || adaptCompetitorPage(currentCompetitor, { settings, competitors }, 'vs');
 ---
 
 <ComparisonPage page={page} />

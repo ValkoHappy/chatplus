@@ -1,19 +1,23 @@
 {
   "collectionName": "components_page_blocks_related_links",
   "info": {
-    "displayName": "Related Links Block"
+    "displayName": "Related Links Block",
+    "description": "Блок связанных страниц."
   },
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое пояснение."
     },
     "links": {
       "type": "component",
       "component": "page-blocks.link-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Ссылки на связанные страницы."
     }
   }
 }

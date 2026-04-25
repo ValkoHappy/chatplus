@@ -11,11 +11,21 @@ import {
   makeRoiItems,
   makeSteps,
   makeUseCaseItems,
+  prioritizeBySlugs,
 } from './shared.ts';
+
+const PRIORITY_USE_CASE_INDUSTRIES = ['retail', 'travel', 'med', 'education', 'horeca', 'real-estate'];
+const PRIORITY_RELATED_CHANNELS = ['viber', 'sms', 'whatsapp', 'voip'];
+const PRIORITY_RELATED_FEATURES = ['white-label', 'reactive', 'api'];
+const PRIORITY_RELATED_SOLUTIONS = ['crm', 'onboarding', 'nps', 'support'];
+const PRIORITY_SOLUTION_CHANNELS = ['viber', 'sms', 'whatsapp'];
 
 export function adaptChannelPage(channel: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'channels');
-  const relatedChannels = context.channels.filter((item: any) => item.slug !== channel.slug).slice(0, 3);
+  const relatedChannels = prioritizeBySlugs(
+    context.channels.filter((item: any) => item.slug !== channel.slug),
+    PRIORITY_RELATED_CHANNELS,
+  ).slice(0, 3);
   const relatedIndustries = context.industries.slice(0, 3);
 
   return {
@@ -91,7 +101,10 @@ export function adaptChannelPage(channel: any, context: any) {
 
 export function adaptIndustryPage(industry: any, context: any) {
   const template = getPageTemplate(context.settings, 'details', 'industries');
-  const relatedIndustries = context.industries.filter((item: any) => item.slug !== industry.slug).slice(0, 3);
+  const relatedIndustries = prioritizeBySlugs(
+    context.industries.filter((item: any) => item.slug !== industry.slug),
+    PRIORITY_USE_CASE_INDUSTRIES,
+  ).slice(0, 3);
   const topChannels = context.channels.slice(0, 3);
 
   return {
@@ -247,7 +260,7 @@ export function adaptFeaturePage(feature: any, context: any) {
     integrations_title: feature.integrations_title || `С какими сервисами работает функция «${feature.name}»`,
     integration_blocks: makeIntegrationBlocks(context.integrations),
     use_cases_title: feature.use_cases_title || `Где функция «${feature.name}» даёт результат`,
-    use_cases: makeUseCaseItems(context.industries),
+    use_cases: makeUseCaseItems(prioritizeBySlugs(context.industries, PRIORITY_USE_CASE_INDUSTRIES)),
     breadcrumbs: makeBreadcrumbs([
       { label: 'Главная', href: '/' },
       { label: 'Возможности', href: '/features' },
@@ -261,7 +274,10 @@ export function adaptFeaturePage(feature: any, context: any) {
       pageSlug: feature.slug,
     },
     internal_links: makeLinks([
-      ...context.features.filter((item: any) => item.slug !== feature.slug).slice(0, 4).map((item: any) => ({ label: item.name, href: `/features/${item.slug}`, description: item.description })),
+      ...prioritizeBySlugs(
+        context.features.filter((item: any) => item.slug !== feature.slug),
+        PRIORITY_RELATED_FEATURES,
+      ).slice(0, 4).map((item: any) => ({ label: item.name, href: `/features/${item.slug}`, description: item.description })),
       { label: template.docs_label, href: '/docs', description: template.docs_description },
     ]),
     sticky_cta_title: feature.sticky_cta_title || fill(template.sticky_cta_title, { name: feature.name }),
@@ -298,7 +314,7 @@ export function adaptSolutionPage(solution: any, context: any) {
     faq_title: solution.faq_title || fill(template.faq_title, { name: solution.name }),
     faqs: makeFaq(solution.faq),
     use_cases_title: fill(template.use_cases_title, { name: solution.name }),
-    use_cases: makeUseCaseItems(context.industries),
+    use_cases: makeUseCaseItems(prioritizeBySlugs(context.industries, PRIORITY_USE_CASE_INDUSTRIES)),
     breadcrumbs: makeBreadcrumbs([
       { label: 'Главная', href: '/' },
       { label: 'Решения', href: '/solutions' },
@@ -312,8 +328,11 @@ export function adaptSolutionPage(solution: any, context: any) {
       pageSlug: solution.slug,
     },
     internal_links: makeLinks([
-      ...context.solutions.filter((item: any) => item.slug !== solution.slug).slice(0, 4).map((item: any) => ({ label: item.name, href: `/solutions/${item.slug}`, description: item.description })),
-      ...context.channels.slice(0, 3).map((item: any) => ({ label: item.name, href: `/channels/${item.slug}`, description: item.description })),
+      ...prioritizeBySlugs(
+        context.solutions.filter((item: any) => item.slug !== solution.slug),
+        PRIORITY_RELATED_SOLUTIONS,
+      ).slice(0, 4).map((item: any) => ({ label: item.name, href: `/solutions/${item.slug}`, description: item.description })),
+      ...prioritizeBySlugs(context.channels, PRIORITY_SOLUTION_CHANNELS).slice(0, 3).map((item: any) => ({ label: item.name, href: `/channels/${item.slug}`, description: item.description })),
     ]),
     sticky_cta_title: solution.sticky_cta_title || fill(template.sticky_cta_title, { name: solution.name }),
     sticky_cta_text: solution.sticky_cta_text || fill(template.sticky_cta_text, { name: solution.name }),
@@ -375,7 +394,7 @@ export function adaptBusinessTypePage(bt: any, context: any) {
     },
     internal_links: makeLinks([
       ...relatedTypes.map((item: any) => ({ label: item.name, href: `/for/${item.slug}`, description: item.description })),
-      ...context.industries.slice(0, 3).map((item: any) => ({ label: item.name, href: `/industries/${item.slug}`, description: item.description })),
+      ...prioritizeBySlugs(context.industries, PRIORITY_USE_CASE_INDUSTRIES).slice(0, 3).map((item: any) => ({ label: item.name, href: `/industries/${item.slug}`, description: item.description })),
       ...context.channels.slice(0, 3).map((item: any) => ({ label: item.name, href: `/channels/${item.slug}`, description: item.description })),
       { label: bt.pricing_link_label, href: '/pricing', description: '' },
     ]),

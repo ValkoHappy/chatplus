@@ -1,9 +1,11 @@
 import {
   LEGACY_MANAGED_WAVES,
   buildLegacyManagedPageDraft,
+  buildManagedPageDraftFromExistingPage,
   getLegacyManagedRouteConfig,
   listLegacyManagedRoutesByWave,
 } from './page-v2-generation/legacy-managed-migration.mjs';
+import { isLocalStrapiUrl, unpublishPageDocumentLocal, withLocalStrapi } from './lib/page-v2-document-service.mjs';
 
 const STRAPI_URL = process.env.STRAPI_URL || '';
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN || '';
@@ -75,10 +77,35 @@ async function fetchPageV2ByRoute(routePath) {
   return result?.data?.[0] || null;
 }
 
+function unwrapRecord(record) {
+  if (!record || typeof record !== 'object') {
+    return {};
+  }
+
+  return {
+    id: record.id,
+    documentId: record.documentId,
+    ...(record.attributes && typeof record.attributes === 'object' ? record.attributes : record),
+  };
+}
+
+async function fetchBlueprintById(blueprintId) {
+  const result = await request(`/api/page-blueprints?filters[blueprint_id][$eq]=${encodeURIComponent(blueprintId)}`);
+  const record = result?.data?.[0] || null;
+  return record ? record.documentId || record.id : null;
+}
+
 async function upsertPageV2(routePath, payload, options = {}) {
   const now = new Date().toISOString();
   const existing = await fetchPageV2ByRoute(routePath);
-  const data = options.publish ? { ...payload, publishedAt: now } : payload;
+  const blueprintId = payload.blueprint_id || payload.blueprint;
+  const blueprint = blueprintId ? await fetchBlueprintById(blueprintId) : null;
+  const data = {
+    ...payload,
+    ...(blueprint ? { blueprint } : {}),
+    ...(options.publish ? { publishedAt: now } : {}),
+  };
+  delete data.blueprint_id;
 
   if (!existing) {
     const created = await request('/api/page-v2s', {
@@ -106,8 +133,13 @@ async function upsertPageV2(routePath, payload, options = {}) {
   };
 }
 
-async function unpublishPageV2(routePath) {
-  const existing = await fetchPageV2ByRoute(routePath);
+async function unpublishPageV2(routePath, localService = null) {
+  const existing = localService
+    ? (await localService.findMany({
+        filters: { route_path: { $eq: routePath } },
+        status: 'published',
+      }))?.[0] || null
+    : await fetchPageV2ByRoute(routePath);
   if (!existing) {
     return {
       action: 'noop-unpublish',
@@ -116,16 +148,24 @@ async function unpublishPageV2(routePath) {
     };
   }
 
-  const key = existing.documentId || existing.id;
-  await request(`/api/page-v2s/${key}`, {
-    method: 'PUT',
-    body: JSON.stringify({ data: { publishedAt: null } }),
-  });
+  if (!isLocalStrapiUrl(STRAPI_URL)) {
+    throw new Error(
+      `True unpublish for ${routePath} requires a local Strapi workspace. Current STRAPI_URL is not local: ${STRAPI_URL}`,
+    );
+  }
+
+  const documentId = existing.documentId || existing.id;
+  if (localService) {
+    await localService.unpublish({ documentId });
+  } else {
+    const locale = typeof existing.locale === 'string' && existing.locale.trim() ? existing.locale : 'ru';
+    await unpublishPageDocumentLocal({ documentId, locale });
+  }
 
   return {
     action: 'unpublished',
     routePath,
-    documentId: key,
+    documentId,
   };
 }
 
@@ -167,28 +207,48 @@ async function reportRoutes(routes) {
 
 async function migrateRoute(routePath, options) {
   const config = getLegacyManagedRouteConfig(routePath);
-  const legacyPage = await fetchLegacyRecord(config);
+  const existingPage = unwrapRecord(await fetchPageV2ByRoute(routePath));
+  let resolvedDraft = null;
 
-  if (!legacyPage) {
-    throw new Error(`Legacy record not found for ${routePath}`);
+  if (existingPage && Object.keys(existingPage).length) {
+    resolvedDraft = buildManagedPageDraftFromExistingPage({
+      routePath,
+      existingPage,
+      overrides: {
+        blueprint_id: config.blueprint,
+      },
+    });
+  } else {
+    const legacyPage = await fetchLegacyRecord(config);
+    if (!legacyPage) {
+      throw new Error(`Neither page_v2 nor legacy record found for ${routePath}`);
+    }
+
+    resolvedDraft = buildLegacyManagedPageDraft({
+      routePath,
+      legacyPage,
+      overrides: {
+        blueprint_id: config.blueprint,
+      },
+    });
   }
-
-  const draft = buildLegacyManagedPageDraft({
-    routePath,
-    legacyPage,
-  });
 
   if (!options.apply) {
     return {
       action: 'planned',
       routePath,
       blueprint: config.blueprint,
-      sectionTypes: draft.data.sections.map((section) => section.__component),
+      source: existingPage && Object.keys(existingPage).length ? 'page_v2' : 'legacy',
+      sectionTypes: resolvedDraft.data.sections.map((section) => section.__component),
       publish: options.publish,
     };
   }
 
-  return upsertPageV2(routePath, draft.data, options);
+  const result = await upsertPageV2(routePath, resolvedDraft.data, options);
+  return {
+    ...result,
+    source: existingPage && Object.keys(existingPage).length ? 'page_v2' : 'legacy',
+  };
 }
 
 async function main() {
@@ -202,15 +262,28 @@ async function main() {
 
   requireEnv();
 
-  const results = [];
-  for (const routePath of routes) {
-    const result = options.unpublish
-      ? await unpublishPageV2(routePath)
-      : await migrateRoute(routePath, options);
-
-    results.push(result);
-    console.log(JSON.stringify(result));
-  }
+  const results = options.unpublish && isLocalStrapiUrl(STRAPI_URL)
+    ? await withLocalStrapi({ appDir: 'cms' }, async (strapi) => {
+        const service = strapi.documents('api::page-v2.page-v2');
+        const batchResults = [];
+        for (const routePath of routes) {
+          const result = await unpublishPageV2(routePath, service);
+          batchResults.push(result);
+          console.log(JSON.stringify(result));
+        }
+        return batchResults;
+      })
+    : await (async () => {
+        const batchResults = [];
+        for (const routePath of routes) {
+          const result = options.unpublish
+            ? await unpublishPageV2(routePath)
+            : await migrateRoute(routePath, options);
+          batchResults.push(result);
+          console.log(JSON.stringify(result));
+        }
+        return batchResults;
+      })();
 
   console.log(JSON.stringify({
     ok: true,

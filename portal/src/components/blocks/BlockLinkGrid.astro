@@ -1,0 +1,85 @@
+---
+import { Icon } from 'astro-icon/components';
+import { withBasePath } from '../../lib/urls';
+import BlockHeader from './BlockHeader.astro';
+
+interface LinkItem {
+  label?: string;
+  title?: string;
+  href?: string;
+  url?: string;
+  description?: string;
+  icon?: string;
+}
+
+interface Props {
+  links?: LinkItem[];
+  title?: string;
+  intro?: string;
+  eyebrow?: string;
+  sectionClass?: string;
+  variant?: 'internal' | 'related' | 'plain';
+  showIcons?: boolean;
+}
+
+const {
+  links = [],
+  title,
+  intro,
+  eyebrow,
+  sectionClass = 'section block-section--quiet',
+  variant = 'internal',
+  showIcons = variant !== 'plain',
+} = Astro.props as Props;
+
+const normalizeEyebrow = (value?: string) => {
+  const normalized = value?.trim();
+  if (!normalized) return normalized;
+  if (normalized.toLowerCase() === 'continue') return 'По теме страницы';
+  return normalized;
+};
+
+const items = links
+  .map((link) => ({
+    label: link.label || link.title,
+    href: link.href || link.url,
+    description: link.description,
+    icon: link.icon || 'lucide:arrow-right',
+  }))
+  .filter((link) => link.label && link.href);
+
+const gridClass = [
+  'block-link-grid',
+  variant === 'related' || variant === 'plain' ? 'block-link-grid--auto' : '',
+].filter(Boolean).join(' ');
+const cardClass = [
+  'block-card',
+  'block-card--interactive',
+  'block-link-card',
+  !showIcons ? 'block-link-card--plain' : '',
+].filter(Boolean).join(' ');
+---
+
+{items.length > 0 && (
+  <section class={sectionClass}>
+    <div class="container">
+      {(title || intro || eyebrow) && <BlockHeader eyebrow={normalizeEyebrow(eyebrow)} title={title} intro={intro} />}
+      <div class={gridClass}>
+        {items.map((item) => (
+          <a href={withBasePath(item.href)} class={cardClass}>
+            {showIcons && (
+              <div class="block-card__icon">
+                <Icon name={item.icon} />
+              </div>
+            )}
+            <div>
+              <span class="block-card__label">{item.label}</span>
+              {item.description && <span class="block-card__description">{item.description}</span>}
+            </div>
+            {showIcons && <Icon name="lucide:arrow-right" class="block-card__arrow" />}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

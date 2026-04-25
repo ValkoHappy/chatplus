@@ -1,7 +1,8 @@
 {
   "collectionName": "components_page_blocks_steps",
   "info": {
-    "displayName": "Steps Block"
+    "displayName": "Steps Block",
+    "description": "Блок шагов или процесса."
   },
   "attributes": {
     "variant": {
@@ -10,18 +11,22 @@
         "cards",
         "timeline"
       ],
-      "default": "cards"
+      "default": "cards",
+      "description": "Вариант отображения: cards - карточки, timeline - последовательность."
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок блока."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое описание процесса."
     },
     "items": {
       "type": "component",
       "component": "page-blocks.step-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Шаги процесса."
     }
   }
 }

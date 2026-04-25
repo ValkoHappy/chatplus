@@ -13,17 +13,32 @@ import {
   normalizePageV2RoutePath,
   shouldGeneratePageV2CatchAllRoute,
 } from '../../../config/page-v2-routes.mjs';
+import { mapPageV2ToLegacyPage, type LegacyPageFamily } from './page-v2-legacy-bridge.ts';
 
-const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://127.0.0.1:1337';
-const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
+const ASTRO_ENV = import.meta.env || {};
+const STRAPI_URL = ASTRO_ENV.STRAPI_URL || 'http://127.0.0.1:1337';
+const STRAPI_TOKEN = ASTRO_ENV.STRAPI_TOKEN || '';
 
 let siteSettingsPromise: Promise<ReturnType<typeof normalizeSiteSettingsRecord>> | undefined;
 let pageV2Promise: Promise<ReturnType<typeof normalizePageV2Record>[]> | undefined;
 
+const PAGE_V2_POPULATE_QUERY = [
+  'populate[sections][populate]=*',
+  'populate[breadcrumbs][populate]=*',
+  'populate[internal_links][populate]=*',
+  'populate[parent_page][populate]=*',
+].join('&');
+
+export function isPageV2Renderable(page: ReturnType<typeof normalizePageV2Record>) {
+  return page.is_migration_visible === true;
+}
+
 async function request(path: string): Promise<unknown> {
   try {
+    const hasPopulate = /(?:\?|&)populate(?:=|\[)/.test(path);
     const separator = path.includes('?') ? '&' : '?';
-    const res = await fetch(`${STRAPI_URL}/api${path}${separator}populate=*`, {
+    const populateSuffix = hasPopulate ? '' : `${separator}populate=*`;
+    const res = await fetch(`${STRAPI_URL}/api${path}${populateSuffix}`, {
       headers: STRAPI_TOKEN ? { Authorization: `Bearer ${STRAPI_TOKEN}` } : {},
     });
 
@@ -41,17 +56,30 @@ async function request(path: string): Promise<unknown> {
 }
 
 async function fetchCollection(path: string, pageSize = 100, options?: { allowEmpty?: boolean }) {
-  const json = await request(`${path}${path.includes('?') ? '&' : '?'}pagination[pageSize]=${pageSize}`);
+  const safePageSize = Math.min(pageSize, 100);
+  const records: StrapiRecord[] = [];
+  let page = 1;
+  let pageCount = 1;
 
-  if (!json) {
-    if (options?.allowEmpty) {
-      return [];
+  do {
+    const json = await request(`${path}${path.includes('?') ? '&' : '?'}pagination[page]=${page}&pagination[pageSize]=${safePageSize}`);
+
+    if (!json) {
+      if (options?.allowEmpty && page === 1) {
+        return [];
+      }
+
+      throw new Error(`Strapi returned no data for ${path}`);
     }
 
-    throw new Error(`Strapi returned no data for ${path}`);
-  }
+    records.push(...parseCollectionData(json, path, options));
 
-  return parseCollectionData(json, path, options);
+    const meta = json && typeof json === 'object' && 'meta' in json ? (json as { meta?: { pagination?: { pageCount?: number } } }).meta : undefined;
+    pageCount = Number(meta?.pagination?.pageCount || 1);
+    page += 1;
+  } while (page <= pageCount);
+
+  return records;
 }
 
 async function fetchSingle(path: string) {
@@ -183,7 +211,7 @@ export async function getLandingPage(slug: string) {
 }
 
 export async function getSiteSettings() {
-  if (import.meta.env.DEV) {
+  if (ASTRO_ENV.DEV) {
     return normalizeSiteSettingsRecord(await fetchSingle('/site-setting'));
   }
 
@@ -200,15 +228,15 @@ export async function getSiteSettings() {
 }
 
 export async function getPageV2Pages() {
-  if (import.meta.env.DEV) {
-    return (await fetchCollection('/page-v2s', 500, { allowEmpty: true }))
+  if (ASTRO_ENV.DEV) {
+    return (await fetchCollection(`/page-v2s?${PAGE_V2_POPULATE_QUERY}`, 100, { allowEmpty: true }))
       .map((item) => normalizePageV2Record(item))
-      .filter((item) => item.is_published);
+      .filter((item) => isPageV2Renderable(item));
   }
 
   if (!pageV2Promise) {
-    pageV2Promise = fetchCollection('/page-v2s', 500, { allowEmpty: true })
-      .then((data) => data.map((item) => normalizePageV2Record(item)).filter((item) => item.is_published))
+    pageV2Promise = fetchCollection(`/page-v2s?${PAGE_V2_POPULATE_QUERY}`, 100, { allowEmpty: true })
+      .then((data) => data.map((item) => normalizePageV2Record(item)).filter((item) => isPageV2Renderable(item)))
       .catch((err) => {
         pageV2Promise = undefined;
         throw err;
@@ -237,6 +265,28 @@ export async function getManagedRoutePage<T>(routePath: string, legacyLoader: ()
     kind: 'legacy' as const,
     page: await legacyLoader(),
   };
+}
+
+export async function getPageV2ByRouteForLegacyRenderer<T>(routePath: string, family: LegacyPageFamily) {
+  const pageV2 = await getPageV2ByRoute(routePath);
+  if (!pageV2) {
+    return null;
+  }
+
+  return mapPageV2ToLegacyPage(pageV2, family) as T;
+}
+
+export async function getManagedRoutePageForLegacyRenderer<T>(
+  routePath: string,
+  legacyLoader: () => Promise<T>,
+  family: LegacyPageFamily,
+) {
+  const pageV2 = await getPageV2ByRoute(routePath);
+  if (pageV2) {
+    return mapPageV2ToLegacyPage(pageV2, family) as T;
+  }
+
+  return legacyLoader();
 }
 
 export async function getPublishedPageV2Routes() {

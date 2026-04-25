@@ -975,7 +975,7 @@ export interface ApiGenerationJobGenerationJob
   extends Struct.CollectionTypeSchema {
   collectionName: 'generation_jobs';
   info: {
-    description: 'AI generation queue item for future page_v2 draft workflows.';
+    description: '\u0417\u0430\u0434\u0430\u043D\u0438\u0435 \u0434\u043B\u044F AI. \u0421\u043E\u0437\u0434\u0430\u0451\u0442 \u0438\u043B\u0438 \u043E\u0431\u043D\u043E\u0432\u043B\u044F\u0435\u0442 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A Page, \u043D\u043E \u043D\u0435 \u043F\u0443\u0431\u043B\u0438\u043A\u0443\u0435\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0441\u0430\u043C\u043E.';
     displayName: 'Generation Job';
     pluralName: 'generation-jobs';
     singularName: 'generation-job';
@@ -984,6 +984,10 @@ export interface ApiGenerationJobGenerationJob
     draftAndPublish: false;
   };
   attributes: {
+    block_strategy: Schema.Attribute.Enumeration<
+      ['auto', 'blueprint_default', 'custom']
+    > &
+      Schema.Attribute.DefaultTo<'auto'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1003,6 +1007,7 @@ export interface ApiGenerationJobGenerationJob
       ['queued', 'running', 'draft_ready', 'failed', 'approved', 'published']
     > &
       Schema.Attribute.DefaultTo<'queued'>;
+    target_blocks: Schema.Attribute.JSON;
     target_blueprint: Schema.Attribute.String;
     target_business_types: Schema.Attribute.Relation<
       'manyToMany',
@@ -1418,10 +1423,74 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPageBlueprintPageBlueprint
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'page_blueprints';
+  info: {
+    description: 'Blueprint \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B. \u042D\u0442\u043E \u0448\u0430\u0431\u043B\u043E\u043D-\u043F\u0440\u0430\u0432\u0438\u043B\u043E: \u043A\u0430\u043A\u0438\u0435 \u0431\u043B\u043E\u043A\u0438 \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B, \u043A\u0430\u043A\u0438\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u044B \u0438 \u043A\u0430\u043A\u043E\u0439 \u0441\u0442\u0430\u0440\u0442\u043E\u0432\u044B\u0439 \u043D\u0430\u0431\u043E\u0440 \u0434\u0430\u0442\u044C \u0440\u0435\u0434\u0430\u043A\u0442\u043E\u0440\u0443 \u0438\u043B\u0438 AI.';
+    displayName: 'Page Blueprint';
+    pluralName: 'page-blueprints';
+    singularName: 'page-blueprint';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    allowed_blocks: Schema.Attribute.JSON;
+    blueprint_id: Schema.Attribute.UID &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    default_sections: Schema.Attribute.JSON;
+    description: Schema.Attribute.Text;
+    is_active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::page-blueprint.page-blueprint'
+    > &
+      Schema.Attribute.Private;
+    page_kind: Schema.Attribute.Enumeration<
+      [
+        'landing',
+        'directory',
+        'entity_detail',
+        'entity_intersection',
+        'comparison',
+        'campaign',
+        'resource',
+        'brand',
+        'system',
+      ]
+    > &
+      Schema.Attribute.Required;
+    pages: Schema.Attribute.Relation<'oneToMany', 'api::page-v2.page-v2'>;
+    publishedAt: Schema.Attribute.DateTime;
+    required_blocks: Schema.Attribute.JSON;
+    template_variant: Schema.Attribute.Enumeration<
+      [
+        'default',
+        'editorial',
+        'showcase',
+        'minimal',
+        'directory',
+        'comparison',
+        'sitemap',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'default'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPageV2PageV2 extends Struct.CollectionTypeSchema {
   collectionName: 'page_v2s';
   info: {
-    description: 'Manual-first managed page record.';
+    description: '\u0413\u043B\u0430\u0432\u043D\u0430\u044F \u0437\u0430\u043F\u0438\u0441\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B. \u0417\u0434\u0435\u0441\u044C \u0437\u0430\u0434\u0430\u044E\u0442\u0441\u044F URL, SEO, \u043D\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u044F, \u0431\u043B\u043E\u043A\u0438 \u0438 \u0441\u0442\u0430\u0442\u0443\u0441 \u043C\u0438\u0433\u0440\u0430\u0446\u0438\u0438. \u0414\u043B\u044F \u0441\u0442\u0430\u0440\u044B\u0445 URL \u0432\u043A\u043B\u044E\u0447\u0430\u0439\u0442\u0435 migration_ready \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E\u0441\u043B\u0435 \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0438 \u043C\u0430\u043A\u0435\u0442\u0430.';
     displayName: 'Page';
     pluralName: 'page-v2s';
     singularName: 'page-v2';
@@ -1431,6 +1500,10 @@ export interface ApiPageV2PageV2 extends Struct.CollectionTypeSchema {
   };
   attributes: {
     ai_metadata: Schema.Attribute.JSON;
+    blueprint: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::page-blueprint.page-blueprint'
+    >;
     breadcrumbs: Schema.Attribute.Component<'page-blocks.link-item', true>;
     business_types: Schema.Attribute.Relation<
       'manyToMany',
@@ -1468,12 +1541,16 @@ export interface ApiPageV2PageV2 extends Struct.CollectionTypeSchema {
       'api::integration.integration'
     >;
     internal_links: Schema.Attribute.Component<'page-blocks.link-item', true>;
+    legacy_layout_signature: Schema.Attribute.JSON;
+    legacy_template_family: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::page-v2.page-v2'
     > &
       Schema.Attribute.Private;
+    migration_ready: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     nav_description: Schema.Attribute.Text;
     nav_group: Schema.Attribute.Enumeration<
       ['primary', 'product', 'catalogs', 'resources', 'company', 'special']
@@ -1498,6 +1575,11 @@ export interface ApiPageV2PageV2 extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Required;
     parent_page: Schema.Attribute.Relation<'manyToOne', 'api::page-v2.page-v2'>;
+    parity_notes: Schema.Attribute.JSON;
+    parity_status: Schema.Attribute.Enumeration<
+      ['unchecked', 'needs_work', 'approved', 'failed']
+    > &
+      Schema.Attribute.DefaultTo<'unchecked'>;
     publishedAt: Schema.Attribute.DateTime;
     reviewer: Schema.Attribute.String;
     robots: Schema.Attribute.String &
@@ -1544,16 +1626,66 @@ export interface ApiPageV2PageV2 extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::solution.solution'
     >;
-    source_mode: Schema.Attribute.Enumeration<['managed', 'hybrid']> &
+    source_mode: Schema.Attribute.Enumeration<
+      ['managed', 'generated', 'hybrid']
+    > &
       Schema.Attribute.DefaultTo<'managed'>;
     template_variant: Schema.Attribute.Enumeration<
-      ['default', 'editorial', 'showcase', 'minimal']
+      [
+        'default',
+        'editorial',
+        'showcase',
+        'minimal',
+        'directory',
+        'comparison',
+        'sitemap',
+      ]
     > &
       Schema.Attribute.DefaultTo<'default'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPageVersionPageVersion extends Struct.CollectionTypeSchema {
+  collectionName: 'page_versions';
+  info: {
+    description: 'Snapshot history for page records and rollback.';
+    displayName: 'Page Version';
+    pluralName: 'page-versions';
+    singularName: 'page-version';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    checksum: Schema.Attribute.String & Schema.Attribute.Required;
+    created_by_label: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    editorial_status: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::page-version.page-version'
+    > &
+      Schema.Attribute.Private;
+    page: Schema.Attribute.Relation<'manyToOne', 'api::page-v2.page-v2'>;
+    published_at_snapshot: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    route_path: Schema.Attribute.String & Schema.Attribute.Required;
+    snapshot: Schema.Attribute.JSON & Schema.Attribute.Required;
+    source_action: Schema.Attribute.Enumeration<
+      ['create', 'update', 'publish', 'rollback']
+    > &
+      Schema.Attribute.DefaultTo<'update'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    version_number: Schema.Attribute.Integer & Schema.Attribute.Required;
   };
 }
 
@@ -2382,7 +2514,9 @@ declare module '@strapi/strapi' {
       'api::industry.industry': ApiIndustryIndustry;
       'api::integration.integration': ApiIntegrationIntegration;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::page-blueprint.page-blueprint': ApiPageBlueprintPageBlueprint;
       'api::page-v2.page-v2': ApiPageV2PageV2;
+      'api::page-version.page-version': ApiPageVersionPageVersion;
       'api::site-setting.site-setting': ApiSiteSettingSiteSetting;
       'api::solution.solution': ApiSolutionSolution;
       'api::tenders-page.tenders-page': ApiTendersPageTendersPage;

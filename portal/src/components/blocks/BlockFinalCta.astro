@@ -1,0 +1,50 @@
+---
+import { withBasePath } from '../../lib/urls';
+
+interface Props {
+  title?: string;
+  text?: string;
+  primary_label?: string;
+  primary_url?: string;
+  secondary_label?: string;
+  secondary_url?: string;
+  sectionClass?: string;
+  variant?: 'light' | 'dark' | 'split';
+}
+
+const {
+  title,
+  text,
+  primary_label,
+  primary_url,
+  secondary_label,
+  secondary_url,
+  sectionClass = 'section',
+  variant = 'light',
+} = Astro.props as Props;
+
+const classes = ['block-final-cta', `block-final-cta--${variant}`].filter(Boolean).join(' ');
+---
+
+{(title || text || primary_label || secondary_label) && (
+  <section class={sectionClass}>
+    <div class="container">
+      <div class={classes}>
+        <div>
+          {title && <h2>{title}</h2>}
+          {text && <p>{text}</p>}
+        </div>
+        {(primary_label || secondary_label) && (
+          <div class="block-final-cta__actions">
+            {primary_label && primary_url && (
+              <a href={withBasePath(primary_url)} class="btn-primary">{primary_label}</a>
+            )}
+            {secondary_label && secondary_url && (
+              <a href={withBasePath(secondary_url)} class="btn-outline">{secondary_label}</a>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+)}

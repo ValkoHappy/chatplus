@@ -1,7 +1,8 @@
 {
   "collectionName": "components_page_blocks_cards_grids",
   "info": {
-    "displayName": "Cards Grid Block"
+    "displayName": "Cards Grid Block",
+    "description": "Сетка карточек. Используется для преимуществ, проблем, сценариев, ресурсов и редакционных подборок."
   },
   "attributes": {
     "variant": {
@@ -11,20 +12,25 @@
         "problems",
         "use_cases",
         "pillars",
-        "editorial"
+        "editorial",
+        "integrations"
       ],
-      "default": "default"
+      "default": "default",
+      "description": "Вариант карточек: problems, use_cases, pillars, editorial, resources, benefits."
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "description": "Заголовок секции."
     },
     "intro": {
-      "type": "text"
+      "type": "text",
+      "description": "Короткое описание секции."
     },
     "items": {
       "type": "component",
       "component": "page-blocks.card-item",
-      "repeatable": true
+      "repeatable": true,
+      "description": "Карточки внутри сетки. Добавляйте по одной карточке на смысловой пункт."
     }
   }
 }

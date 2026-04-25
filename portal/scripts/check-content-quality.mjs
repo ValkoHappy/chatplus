@@ -61,6 +61,38 @@ const bannedHtmlPhrases = [
   'Help-страница заведена',
 ];
 
+const bannedRenderedCopyPatterns = [
+  { label: 'technical FAQ question', regex: /Can this page be edited in Strapi/gi },
+  { label: 'technical FAQ answer', regex: /page record owns route, SEO, sections and links/gi },
+  { label: 'technical mobile nav title', regex: />\s*Primary\s*</gi },
+  { label: 'technical comparison eyebrow', regex: />\s*Comparison\s*</gi },
+  { label: 'technical comparison workflow column', regex: /EDITORIAL WORKFLOW/gi },
+  { label: 'technical comparison workflow value', regex: /Manual review in Strapi/gi },
+  { label: 'technical comparison formats title', regex: /Compare formats/gi },
+  { label: 'technical comparison operating-layer fallback', regex: /Chat Plus keeps channels, AI and CRM in one operating layer/gi },
+  { label: 'technical comparison workflow fallback', regex: /Chat Plus keeps the workflow in one operating layer/gi },
+  { label: 'technical comparison CTA', regex: /Compare the alternative with Chat Plus before publishing/gi },
+  { label: 'technical request demo CTA', regex: />\s*Request demo\s*</gi },
+  { label: 'technical request comparison CTA', regex: />\s*Request comparison\s*</gi },
+  { label: 'proof placeholder', regex: /Proof point/gi },
+  { label: 'home proof placeholder', regex: /Home page proof/gi },
+  { label: 'migration placeholder', regex: /migration parity check/gi },
+  { label: 'managed-page placeholder', regex: /Browse [^<]{0,80} managed through Strapi/gi },
+  { label: 'managed-page CTA placeholder', regex: /Create a managed page in Strapi/gi },
+];
+
+function listHtmlFiles(dir) {
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return listHtmlFiles(fullPath);
+    return entry.isFile() && entry.name.endsWith('.html') ? [fullPath] : [];
+  });
+}
+
 function routeToFile(route) {
   if (route === '/') {
     return path.join(distRoot, 'index.html');
@@ -85,6 +117,12 @@ function scanText(text, patterns, phrases) {
   }
 
   return findings;
+}
+
+function scanRenderedCopy(html) {
+  return bannedRenderedCopyPatterns
+    .filter(({ regex }) => regex.test(html))
+    .map(({ label }) => label);
 }
 
 function assertFile(filePath, issues, label) {
@@ -145,6 +183,14 @@ for (const route of representativeRoutes) {
   }
 }
 
+for (const file of listHtmlFiles(distRoot)) {
+  const html = fs.readFileSync(file, 'utf8');
+  const findings = scanRenderedCopy(html);
+  if (findings.length > 0) {
+    issues.push(`built html ${path.relative(distRoot, file)} -> ${findings.join(', ')}`);
+  }
+}
+
 const sitemapCandidates = [
   path.join(distRoot, 'sitemap-index.xml'),
   path.join(distRoot, 'sitemap-0.xml'),
@@ -163,4 +209,4 @@ if (issues.length > 0) {
   process.exit(1);
 }
 
-console.log(`[content-check] OK: ${representativeRoutes.length} representative routes and ${sourceFiles.length} source files look clean.`);
+console.log(`[content-check] OK: ${representativeRoutes.length} representative routes, ${sourceFiles.length} source files and full built HTML look clean.`);

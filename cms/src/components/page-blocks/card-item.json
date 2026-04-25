@@ -1,21 +1,46 @@
 {
   "collectionName": "components_page_blocks_card_items",
   "info": {
-    "displayName": "Card Item"
+    "displayName": "Card Item",
+    "description": "Карточка для сеток, hero-панелей и ссылок."
   },
   "attributes": {
     "eyebrow": {
-      "type": "string"
+      "type": "string",
+      "description": "Маленькая подпись над заголовком."
     },
     "title": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "Заголовок карточки."
     },
     "text": {
-      "type": "text"
+      "type": "text",
+      "description": "Основной текст карточки."
+    },
+    "secondary_text": {
+      "type": "text",
+      "description": "Дополнительный текст, если нужен второй уровень пояснения."
     },
     "icon": {
-      "type": "string"
+      "type": "string",
+      "description": "Ключ иконки. Пример: chat, crm, chart, play."
+    },
+    "href": {
+      "type": "string",
+      "description": "Ссылка карточки. Обычно внутренний URL вида /docs."
+    },
+    "url": {
+      "type": "string",
+      "description": "Альтернативное поле ссылки для старых данных. Если есть выбор, используйте href."
+    },
+    "cta_label": {
+      "type": "string",
+      "description": "Текст действия. Пример: Смотреть раздел."
+    },
+    "badges": {
+      "type": "json",
+      "description": "JSON со значками/метками, если макет их поддерживает."
     }
   }
 }
