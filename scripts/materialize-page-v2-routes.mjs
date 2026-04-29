@@ -539,7 +539,6 @@ function steps(title, items) {
     items: items.map((item) => ({
       title: asString(item.title),
       text: asString(item.text) || asString(item.description),
-      icon: asString(item.icon),
     })),
   };
 }
@@ -814,7 +813,6 @@ function createCommonDetailSections({
   const solutionSteps = asArray(entity.solution_steps || entity.steps).map((item) => ({
     title: asString(item.title) || asString(item.label),
     text: asString(item.text) || asString(item.desc) || asString(item.description),
-    icon: asString(item.icon),
   })).filter((item) => item.title || item.text);
   if (solutionSteps.length || asString(entity.solution_title) || asString(entity.solution_intro) || asString(entity.solution)) {
     sections.push(steps(
