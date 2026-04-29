@@ -16,6 +16,8 @@
 
 Вам не нужно читать команды, Docker, Git, импорт базы и техническую архитектуру.
 
+Не подключайтесь к серверу по SSH и не открывайте `docs/start-here-vps.md`, если ваша задача - поменять текст, блок, ссылку, FAQ, SEO или добавить страницу. Этот документ только для аварийного/первого запуска VPS.
+
 Вам нужны только эти документы:
 
 1. [Карта интерфейса Strapi](docs/strapi-ui-map.md)
@@ -110,12 +112,19 @@
 
 ## Что читать оператору и владельцу сервера
 
-1. [Быстрый запуск на VPS](docs/start-here-vps.md)
-2. [Production setup checklist](docs/production-setup-checklist.md)
-3. [Быстрый вход для владельца](docs/owner-quickstart.md)
+Если сайт уже работает, обычный владелец/редактор начинает не с VPS, а со Strapi:
+
+1. [Быстрый вход для владельца](docs/owner-quickstart.md)
+2. [Карта интерфейса Strapi](docs/strapi-ui-map.md)
+3. [Понятная инструкция для редактора Strapi](docs/strapi-editor-handbook.md)
 4. [Гайд оператора](docs/operator-guide.md)
 5. [Релизный поток](docs/release-flow.md)
-6. [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
+
+Только если сервер чистый, сайт не установлен или идёт аварийное восстановление:
+
+1. [Аварийный/первый запуск на VPS](docs/start-here-vps.md)
+2. [Production setup checklist](docs/production-setup-checklist.md)
+3. [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
 
 ## Быстрый локальный запуск
 
