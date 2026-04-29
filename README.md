@@ -41,22 +41,27 @@
 
 Рекомендуемый порядок:
 
-1. [Карта документации](docs/index.md)
-2. [Архитектура](docs/architecture.md)
-3. [CMS-модель](docs/cms-model.md)
-4. [Конструктор managed-страниц](docs/page-v2-manual-builder.md)
-5. [Миграция managed routes](docs/managed-route-migration.md)
-6. [Передача следующего production-этапа](docs/manual-first-production-handoff.md)
-6. [AI-генерация черновиков](docs/ai-page-generation.md)
-6. [Контентный workflow](docs/content-workflow.md)
-7. [Политика импорта](docs/import-policy.md)
-8. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
-9. [Контракты шаблонов](docs/template-contracts.md)
-10. [Карта файлов](docs/file-map.md)
-11. [Контракт безопасных изменений](docs/change-safety.md)
-12. [Диагностика неполадок](docs/troubleshooting.md)
-13. [Релизный поток](docs/release-flow.md)
-15. [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
+1. [Инструкции для AI/разработчика](AGENTS.md)
+2. [Карта документации](docs/index.md)
+3. [Контекст для AI и разработчика](docs/ai-agent-context.md)
+4. [Workflow Strapi content snapshot](docs/content-snapshot-workflow.md)
+5. [Архитектура](docs/architecture.md)
+6. [CMS-модель](docs/cms-model.md)
+7. [Конструктор managed-страниц](docs/page-v2-manual-builder.md)
+8. [Миграция managed routes](docs/managed-route-migration.md)
+9. [Передача следующего production-этапа](docs/manual-first-production-handoff.md)
+10. [AI-генерация черновиков](docs/ai-page-generation.md)
+11. [Контентный workflow](docs/content-workflow.md)
+12. [Политика импорта](docs/import-policy.md)
+13. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
+14. [Контракты шаблонов](docs/template-contracts.md)
+15. [Карта файлов](docs/file-map.md)
+16. [Контракт безопасных изменений](docs/change-safety.md)
+17. [Диагностика неполадок](docs/troubleshooting.md)
+18. [Релизный поток](docs/release-flow.md)
+19. [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
+
+Важно: Git commit сам по себе не является полной копией сайта. Для полного воспроизведения нужна связка `Git commit + Strapi content snapshot + env/секреты`. Подробно: [Workflow Strapi content snapshot](docs/content-snapshot-workflow.md).
 
 ## Что читать оператору, редактору и владельцу
 
@@ -193,6 +198,7 @@ npm --prefix portal run build
 - для `managed` и `settings` контента — `Strapi`
 - для batch generation — `cms/seed/*.json` как bootstrap/import layer
 - для шаблонов, layout и render logic — `portal/`
+- для передачи полного состояния между локалкой, сервером и другими разработчиками — `Strapi export/import` snapshot, см. [Workflow Strapi content snapshot](docs/content-snapshot-workflow.md)
 
 ## Важные ссылки
 
@@ -207,5 +213,4 @@ npm --prefix portal run build
 - [Гайд оператора](docs/operator-guide.md)
 - [Быстрый запуск на VPS](docs/start-here-vps.md)
 - [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
-
 

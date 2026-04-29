@@ -31,15 +31,19 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 
 Читайте в таком порядке:
 
-1. [Контекст для AI и разработчика](ai-agent-context.md)
-2. [CMS-модель](cms-model.md)
-3. [Единая система блоков](unified-block-system-plan.md)
-4. [Контракты шаблонов](template-contracts.md)
-5. [Миграция маршрутов](managed-route-migration.md)
-6. [Гайд оператора](operator-guide.md)
-7. [Production handoff](manual-first-production-handoff.md)
+1. [Инструкции для AI/разработчика](../AGENTS.md)
+2. [Контекст для AI и разработчика](ai-agent-context.md)
+3. [Workflow Strapi content snapshot](content-snapshot-workflow.md)
+4. [CMS-модель](cms-model.md)
+5. [Единая система блоков](unified-block-system-plan.md)
+6. [Контракты шаблонов](template-contracts.md)
+7. [Миграция маршрутов](managed-route-migration.md)
+8. [Гайд оператора](operator-guide.md)
+9. [Production handoff](manual-first-production-handoff.md)
 
 Главное правило для разработки: не переписывать старую страницу в generic `PageV2Page`, если у неё есть legacy family. Старый URL должен сохранять свой family-renderer, а `page_v2` становится владельцем контента и метаданных.
+
+Второе главное правило: полный сайт не равен одному Git commit. Если задача касается страниц, блоков, Strapi, SEO, навигации или sitemap, сначала синхронизируйте content snapshot по [Workflow Strapi content snapshot](content-snapshot-workflow.md).
 
 ## Если позже нужно будет работать с AI-генерацией
 
