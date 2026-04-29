@@ -2,6 +2,51 @@
 
 Главная точка входа в проект. Если вы впервые открыли репозиторий, начинайте отсюда.
 
+## Текущий статус
+
+Проект уже работает на VPS:
+
+- публичный сайт: `https://astro.integromat.ru`
+- Strapi admin: `https://strapi.integromat.ru/admin`
+- основной режим управления контентом: `Strapi -> Content Manager -> Page`
+
+Полная копия сайта это не один Git commit. Полное состояние = `Git commit + Strapi content snapshot + env/секреты`. Если сервер и локалка выглядят по-разному, сначала проверяйте синхронизацию Strapi-контента.
+
+## Если вы просто меняете контент
+
+Вам не нужно читать команды, Docker, Git, импорт базы и техническую архитектуру.
+
+Вам нужны только эти документы:
+
+1. [Карта интерфейса Strapi](docs/strapi-ui-map.md)
+2. [Понятная инструкция для редактора Strapi](docs/strapi-editor-handbook.md)
+3. [Рецепты заполнения страниц](docs/strapi-page-recipes.md)
+4. [Быстрый старт редактора](docs/editor-quickstart.md)
+
+Короткий рецепт:
+
+1. Откройте `https://strapi.integromat.ru/admin`.
+2. Войдите под своим Strapi-аккаунтом.
+3. Откройте `Content Manager`.
+4. Откройте коллекцию `Page`.
+5. Найдите страницу по `route_path`, например `/pricing`.
+6. Меняйте текст, кнопки, FAQ, таблицы и блоки в поле `sections`.
+7. Нажмите `Save`.
+8. Если всё готово, поставьте `editorial_status = approved` и нажмите `Publish`.
+
+Если нужно создать новую страницу, идите в `Content Manager -> Page -> Create new entry`. Подробно: [Понятная инструкция для редактора Strapi](docs/strapi-editor-handbook.md).
+
+## Если вы разработчик или AI-агент
+
+Сначала прочитайте:
+
+1. [Инструкции для AI/разработчика](AGENTS.md)
+2. [Карта документации](docs/index.md)
+3. [Контекст для AI и разработчика](docs/ai-agent-context.md)
+4. [Workflow Strapi content snapshot](docs/content-snapshot-workflow.md)
+
+Главное правило: Git хранит код, но не весь контент сайта. Перед задачами по страницам, блокам, SEO, navigation или sitemap синхронизируйте Strapi content snapshot.
+
 ## Что это
 
 `CHATPLUS` — это публичный сайт на `Astro` и контентный слой на `Strapi`.
@@ -37,7 +82,7 @@
 - importer загружает SEO и catalog-данные в `Strapi`, но не должен слепо перетирать ручные правки
 - все новые ручные managed pages должны создаваться через `page_v2`, а не через расширение legacy `landing-page`
 
-## Что читать инженеру
+## Полная инженерная документация
 
 Рекомендуемый порядок:
 
@@ -63,7 +108,7 @@
 
 Важно: Git commit сам по себе не является полной копией сайта. Для полного воспроизведения нужна связка `Git commit + Strapi content snapshot + env/секреты`. Подробно: [Workflow Strapi content snapshot](docs/content-snapshot-workflow.md).
 
-## Что читать оператору, редактору и владельцу
+## Что читать оператору и владельцу сервера
 
 1. [Быстрый запуск на VPS](docs/start-here-vps.md)
 2. [Production setup checklist](docs/production-setup-checklist.md)
@@ -213,4 +258,3 @@ npm --prefix portal run build
 - [Гайд оператора](docs/operator-guide.md)
 - [Быстрый запуск на VPS](docs/start-here-vps.md)
 - [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
-

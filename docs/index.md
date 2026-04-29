@@ -13,6 +13,13 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 - Для старых URL действует safety gate: страница заменяет legacy только после проверки `migration_ready=true` и `parity_status=approved`.
 - Для новых страниц можно сразу использовать Strapi-конструктор без добавления нового route в код.
 
+Проект уже работает на VPS:
+
+- публичный сайт: `https://astro.integromat.ru`
+- Strapi admin: `https://strapi.integromat.ru/admin`
+
+Если вы просто редактируете контент, вам не нужно читать команды, Docker, Git и server runbook-и. Идите сразу в раздел для редактора ниже.
+
 ## Если вы редактор
 
 Читайте в таком порядке:
@@ -22,10 +29,11 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 3. [Рецепты заполнения страниц](strapi-page-recipes.md)
 4. [Быстрый старт редактора](editor-quickstart.md)
 5. [Как добавлять страницы](how-to-add-page.md)
-6. [Конструктор страниц в Strapi](page-v2-manual-builder.md)
-7. [Глоссарий](glossary.md)
+6. [Глоссарий](glossary.md)
 
 Главная идея: чтобы изменить контент, откройте `Content Manager -> Page`, найдите страницу по `route_path`, измените блоки в `sections`, сохраните и опубликуйте.
+
+Редактору не нужно читать `content-snapshot-workflow`, `release-flow`, `deploy` и команды npm. Это документы для разработчика или оператора.
 
 ## Если вы разработчик или AI-агент
 
