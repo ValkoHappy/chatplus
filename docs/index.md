@@ -6,7 +6,7 @@
 
 CHATPLUS сейчас строится вокруг модели **Strapi-first**:
 
-- `Strapi` хранит страницы, блоки, SEO, навигацию, связи и AI-задачи.
+- `Strapi` хранит страницы, блоки, SEO, навигацию, связи и редакторские статусы.
 - `Astro` рендерит сайт из данных Strapi и собирает статический frontend.
 - Старые шаблоны пока не удаляются: они остаются защитным renderer/fallback-слоем, чтобы перенос не ломал внешний вид.
 - Новая универсальная сущность страницы технически называется `page_v2`, но в интерфейсе Strapi её можно воспринимать просто как `Page`.
@@ -17,11 +17,13 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 
 Читайте в таком порядке:
 
-1. [Понятная инструкция для редактора Strapi](strapi-editor-handbook.md)
-2. [Быстрый старт редактора](editor-quickstart.md)
-3. [Как добавлять страницы](how-to-add-page.md)
-4. [Конструктор страниц в Strapi](page-v2-manual-builder.md)
-5. [Глоссарий](glossary.md)
+1. [Карта интерфейса Strapi](strapi-ui-map.md)
+2. [Понятная инструкция для редактора Strapi](strapi-editor-handbook.md)
+3. [Рецепты заполнения страниц](strapi-page-recipes.md)
+4. [Быстрый старт редактора](editor-quickstart.md)
+5. [Как добавлять страницы](how-to-add-page.md)
+6. [Конструктор страниц в Strapi](page-v2-manual-builder.md)
+7. [Глоссарий](glossary.md)
 
 Главная идея: чтобы изменить контент, откройте `Content Manager -> Page`, найдите страницу по `route_path`, измените блоки в `sections`, сохраните и опубликуйте.
 
@@ -39,7 +41,7 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 
 Главное правило для разработки: не переписывать старую страницу в generic `PageV2Page`, если у неё есть legacy family. Старый URL должен сохранять свой family-renderer, а `page_v2` становится владельцем контента и метаданных.
 
-## Если нужно работать с AI-генерацией
+## Если позже нужно будет работать с AI-генерацией
 
 Читайте:
 
@@ -47,7 +49,7 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 2. [План AI-генерации и автопубликации](ai-scheduled-autopublish-plan.md)
 3. [Контекст для AI и разработчика](ai-agent-context.md)
 
-Текущее правило: AI создаёт страницы через тот же `page_v2` contract, что и человек. AI может выбирать блоки по blueprint, но не должен обходить ограничения blueprint, route policy и safety gate.
+Сейчас обычный редакторский процесс ручной: человек создаёт и меняет `Page` в Strapi. AI-генерация описана как будущий отдельный процесс и не нужна для ручного добавления страниц.
 
 ## Где что лежит
 
@@ -55,7 +57,7 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 CHATPLUS/
 |- portal/          # Astro frontend и renderer страниц
 |- cms/             # Strapi CMS, схемы content types и components
-|- scripts/         # materializer, проверки, importer, AI generation runner
+|- scripts/         # materializer, проверки, importer, будущий AI generation runner
 |- docs/            # документация и runbook-и
 |- deploy/          # серверные примеры, cron, env и runbook-и
 |- pages-preview/   # legacy/demo snapshot
@@ -70,7 +72,7 @@ CHATPLUS/
 - старые страницы сохраняют legacy family-renderer;
 - `page_blueprint` хранит правила допустимых блоков;
 - `page_version` хранит snapshots для истории и rollback;
-- `generation_job` готовит AI drafts;
+- `generation_job` подготовлен для будущих AI drafts, но ручной процесс не зависит от него;
 - проверки показывали целевое состояние `800/800` по materialized public pages, без bridge losses и без data quality issues.
 
 Важно: это не означает, что live server уже полностью cutover. Серверный перенос делается отдельно, по controlled waves, с smoke-проверками и rollback.
