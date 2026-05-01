@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import BlockFaq from '../../components/blocks/BlockFaq.astro';
 import { getCompetitors, getPageV2ByRouteForLegacyRenderer } from '../../lib/strapi';
 import { withBasePath } from '../../lib/urls';
 
@@ -162,19 +163,7 @@ const finalCtaPrimaryLabel = normalizeCompareText(pageV2?.sticky_cta_primary_lab
   )}
 
   {faqs.length > 0 && (
-    <section class="section">
-      <div class="container faq-container">
-        {pageV2.faq_title && <h2 class="compare-section-title">{pageV2.faq_title}</h2>}
-        <div class="faq-list">
-          {faqs.map((item) => (
-            <details class="faq-item">
-              <summary>{item.question}</summary>
-              <p>{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
+    <BlockFaq title={pageV2.faq_title} faqs={faqs} sectionClass="section" />
   )}
 
   {(pageV2?.sticky_cta_title || pageV2?.sticky_cta_text) && (
