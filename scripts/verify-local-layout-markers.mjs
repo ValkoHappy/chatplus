@@ -57,12 +57,16 @@ export function parseArgs(argv = []) {
 }
 
 export function routeToDistFile(route) {
+  const distRoot = existsSync(path.join('portal', 'dist', 'client'))
+    ? path.join('portal', 'dist', 'client')
+    : path.join('portal', 'dist');
+
   if (route === '/') {
-    return path.join('portal', 'dist', 'index.html');
+    return path.join(distRoot, 'index.html');
   }
 
   const clean = `${route || ''}`.replace(/^\/+/, '').replace(/\/+$/, '');
-  return path.join('portal', 'dist', clean, 'index.html');
+  return path.join(distRoot, clean, 'index.html');
 }
 
 function runCommand(command, args, cwd = process.cwd()) {

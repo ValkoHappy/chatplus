@@ -14,10 +14,11 @@ import {
   shouldGeneratePageV2CatchAllRoute,
 } from '../../../config/page-v2-routes.mjs';
 import { mapPageV2ToLegacyPage, type LegacyPageFamily } from './page-v2-legacy-bridge.ts';
+import { getRuntimeEnvValue, isPreviewTokenValid, normalizePreviewDocumentId } from './preview-auth.ts';
 
 const ASTRO_ENV = import.meta.env || {};
-const STRAPI_URL = ASTRO_ENV.STRAPI_URL || 'http://127.0.0.1:1337';
-const STRAPI_TOKEN = ASTRO_ENV.STRAPI_TOKEN || '';
+const STRAPI_URL = getRuntimeEnvValue('STRAPI_URL') || 'http://127.0.0.1:1337';
+const STRAPI_TOKEN = getRuntimeEnvValue('STRAPI_TOKEN');
 
 let siteSettingsPromise: Promise<ReturnType<typeof normalizeSiteSettingsRecord>> | undefined;
 let pageV2Promise: Promise<ReturnType<typeof normalizePageV2Record>[]> | undefined;
@@ -51,6 +52,27 @@ async function request(path: string): Promise<unknown> {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`Fetch to Strapi failed for ${path}:`, message);
+    return null;
+  }
+}
+
+export { isPreviewTokenValid };
+
+export async function getPageV2DraftByDocumentId(documentId: string) {
+  const safeDocumentId = normalizePreviewDocumentId(documentId);
+  if (!safeDocumentId) {
+    return null;
+  }
+
+  try {
+    const json = await request(`/page-v2s/${encodeURIComponent(safeDocumentId)}?status=draft&${PAGE_V2_POPULATE_QUERY}`);
+    if (!json) {
+      return null;
+    }
+
+    const record = parseSingleData(json, `/page-v2s/${safeDocumentId}`);
+    return normalizePageV2Record(record);
+  } catch {
     return null;
   }
 }

@@ -1,7 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const root = path.resolve(process.cwd(), 'dist');
+const portalRoot = process.cwd();
+const root = fs.existsSync(path.resolve(portalRoot, 'dist', 'client'))
+  ? path.resolve(portalRoot, 'dist', 'client')
+  : path.resolve(portalRoot, 'dist');
 const configuredBasePath = (process.env.PUBLIC_BASE_PATH || '').trim();
 const basePath = configuredBasePath && configuredBasePath !== '/'
   ? configuredBasePath.replace(/\/$/, '')

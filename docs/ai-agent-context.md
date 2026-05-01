@@ -12,7 +12,7 @@ CHATPLUS должен стать Strapi-first системой:
 - Strapi управляет route, SEO, блоками, навигацией, sitemap, internal links и AI jobs;
 - Astro остаётся renderer/build layer;
 - legacy templates не удаляются, пока не завершён отдельный cleanup;
-- AI создаёт страницы через тот же page contract, что и редактор.
+- AI заполняет выбранные `Page` через тот же page contract, что и редактор, но не создает свободный макет.
 
 ## Правило полного состояния
 
@@ -85,9 +85,9 @@ Snapshot страницы для истории и rollback.
 
 ### Generation Job
 
-Задача на AI-генерацию.
+Задача на AI-заполнение или доработку выбранной страницы.
 
-AI runner читает `generation_job`, выбирает разрешённые блоки, создаёт `page_v2` draft и пишет результат в `run_report`.
+AI runner читает `generation_job`, требует выбранную `target_page`, сохраняет `route_path`, `page_kind`, порядок блоков, `block_type` и `variant`, обновляет draft этой же `page_v2` и пишет результат в `run_report`.
 
 ## Route families
 
@@ -136,21 +136,22 @@ portal/src/styles/block-primitives.css
 - если блок повторяется на нескольких страницах, стиль должен жить в primitive/preset, а не копироваться в каждом шаблоне;
 - page-v2 renderer и legacy renderer должны быть адаптерами к одной UI-системе, а не двумя отдельными мирами.
 
-## AI block planner
+## AI content planner
 
-AI может выбирать блоки, но только внутри правил blueprint.
+AI не выбирает блоки в свободном режиме. Он получает текущий список секций выбранной `target_page` и может менять только контент внутри этих секций.
 
 Поля job:
 
-- `block_strategy = auto` - AI сам выбирает допустимые блоки.
-- `block_strategy = blueprint_default` - используется дефолт blueprint.
-- `block_strategy = custom` - оператор задаёт `target_blocks`.
-- `target_blocks` - явный список блоков для custom режима.
+- `target_page` - обязательная страница, которую AI заполняет.
+- `target_blueprint` - должен совпадать с `page_kind` выбранной страницы.
+- `block_strategy`, `target_blocks` - legacy-поля planner-а, не дают AI права менять каркас выбранной страницы.
 
 AI не должен:
 
 - создавать неизвестные block types;
 - добавлять блок, который запрещён blueprint;
+- добавлять, удалять или переставлять sections выбранной страницы;
+- менять `block_type` или `variant`;
 - включать `migration_ready`;
 - публиковать старый route без parity;
 - менять legacy family;

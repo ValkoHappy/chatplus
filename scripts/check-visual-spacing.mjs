@@ -74,7 +74,9 @@ function normalizeRoute(value = '') {
 export function parseArgs(argv = []) {
   const options = {
     routes: [...DEFAULT_ROUTES],
-    distRoot: path.resolve(process.cwd(), 'portal', 'dist'),
+    distRoot: existsSync(path.resolve(process.cwd(), 'portal', 'dist', 'client'))
+      ? path.resolve(process.cwd(), 'portal', 'dist', 'client')
+      : path.resolve(process.cwd(), 'portal', 'dist'),
     json: false,
   };
 

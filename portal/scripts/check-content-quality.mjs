@@ -3,7 +3,9 @@ import path from 'node:path';
 
 const portalRoot = process.cwd();
 const repoRoot = path.resolve(portalRoot, '..');
-const distRoot = path.join(portalRoot, 'dist');
+const distRoot = fs.existsSync(path.join(portalRoot, 'dist', 'client'))
+  ? path.join(portalRoot, 'dist', 'client')
+  : path.join(portalRoot, 'dist');
 const expectedPublicSiteUrl = (process.env.PUBLIC_SITE_URL || 'https://chatplus.ru').replace(/\/+$/, '');
 
 const sourceFiles = [
@@ -198,7 +200,7 @@ const sitemapCandidates = [
 ];
 
 if (!sitemapCandidates.some((candidate) => fs.existsSync(candidate))) {
-  issues.push('missing sitemap output in portal/dist');
+  issues.push(`missing sitemap output in ${path.relative(repoRoot, distRoot).replace(/\\/g, '/')}`);
 }
 
 if (issues.length > 0) {

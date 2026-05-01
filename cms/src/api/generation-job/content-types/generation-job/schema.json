@@ -5,7 +5,7 @@
     "singularName": "generation-job",
     "pluralName": "generation-jobs",
     "displayName": "Generation Job",
-    "description": "Задание для AI. Создаёт или обновляет черновик Page, но не публикует страницу само."
+    "description": "Основной интерфейс для AI-управления страницами. Создаёт или обновляет черновик Page, но не публикует страницу само."
   },
   "attributes": {
     "title": {
@@ -27,6 +27,7 @@
       "enum": [
         "queued",
         "running",
+        "needs_entity_review",
         "draft_ready",
         "failed",
         "approved",
@@ -37,7 +38,7 @@
     },
     "target_blueprint": {
       "type": "string",
-      "description": "Какой тип страницы сделать. Сейчас безопасные варианты: campaign, brand, resource. Пример: campaign."
+      "description": "Какой тип страницы сделать. Безопасные варианты для AI сейчас: campaign, brand, resource. Для comparison, landing, home, demo и tenders нужен отдельный технический этап."
     },
     "block_strategy": {
       "type": "enumeration",
@@ -47,15 +48,15 @@
         "custom"
       ],
       "default": "auto",
-      "description": "Как AI выбирает блоки: auto - сам по задаче, blueprint_default - строго по blueprint, custom - использовать target_blocks."
+      "description": "Как AI выбирает блоки: auto - сам по prompt и категориям, blueprint_default - строго по blueprint, custom - использовать target_blocks в рамках разрешённых блоков."
     },
     "target_blocks": {
       "type": "json",
-      "description": "Список нужных блоков для custom-режима. Пример JSON: [\"hero\", \"cards-grid\", \"faq\", \"final-cta\"]. Неподдержанные блоки будут отклонены."
+      "description": "Список нужных блоков для custom-режима. Пример JSON: [\"hero\", \"cards-grid\", \"faq\", \"final-cta\"]. Неподдержанные для blueprint блоки будут отклонены, новый тип блока через prompt создать нельзя."
     },
     "request_prompt": {
       "type": "text",
-      "description": "Задание для AI. Опишите тему, аудиторию, цель страницы, нужные CTA, SEO и ограничения."
+      "description": "Главное поле задачи для AI. Опишите тему, аудиторию, цель страницы, CTA, SEO, ограничения и что надо исправить, если это доработка."
     },
     "requested_by": {
       "type": "string",
@@ -65,53 +66,53 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::page-v2.page-v2",
-      "description": "Если AI должен доработать существующую страницу, выберите её здесь. Для новой страницы оставьте пустым."
+      "description": "Выберите Page здесь, если AI должен доработать уже созданный черновик. Runner передаст AI текущую страницу, сохранит её route_path и обновит эту же Page. Для новой страницы оставьте пустым."
     },
     "target_channels": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::channel.channel",
-      "description": "Каналы для контекста генерации. Пример: WhatsApp, Telegram."
+      "description": "Канал для контекста AI: WhatsApp, Telegram, Email. Если в списке видны не все варианты, начните печатать название в поле поиска. Для теста можно оставить пустым."
     },
     "target_industries": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::industry.industry",
-      "description": "Отрасли для контекста. Пример: медицина, ритейл."
+      "description": "Отрасль для контекста AI: медицина, ритейл, салоны, недвижимость. Если видны только первые варианты, начните печатать название. Для теста можно оставить пустым."
     },
     "target_integrations": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::integration.integration",
-      "description": "Интеграции для контекста. Пример: AmoCRM, Bitrix24."
+      "description": "Интеграция для контекста AI: AmoCRM, Bitrix24, YClients и другие. Если нужного варианта не видно, начните печатать часть названия. Для теста можно оставить пустым."
     },
     "target_solutions": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::solution.solution",
-      "description": "Решения для контекста. Пример: продажи, поддержка."
+      "description": "Сценарий/решение для контекста AI: продажи, поддержка, маркетинг, заявки. Ищите вводом текста, если список показывает только первые варианты."
     },
     "target_features": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::feature.feature",
-      "description": "Функции для контекста. Пример: AI-ответы, аналитика."
+      "description": "Функция продукта для контекста AI: AI-ответы, API, аналитика и другие. Ищите вводом текста, если список показывает только первые варианты."
     },
     "target_business_types": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::business-type.business-type",
-      "description": "Типы бизнеса для контекста. Пример: агентства, салоны."
+      "description": "Тип бизнеса для контекста AI: B2B, B2C, агентства, клиники, магазины. Ищите вводом текста, если список показывает только первые варианты."
     },
     "target_competitors": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::competitor.competitor",
-      "description": "Конкуренты для сравнений. Для AI это важно, если генерируется comparison-страница."
+      "description": "Конкуренты для контекста сравнений. Полноценные comparison-страницы пока не включены в safe AI flow. Ищите вводом текста, если список показывает только первые варианты."
     },
     "run_report": {
       "type": "json",
-      "description": "Отчёт после запуска: что создано, какие блоки выбрал AI, ошибки, ссылка на черновик."
+      "description": "Отчёт после запуска: создана новая Page или доработана target_page, какие блоки выбрал AI, какие warnings есть и какой документ получился."
     }
   }
 }

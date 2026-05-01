@@ -1,0 +1,61 @@
+{
+  "title": "WhatsApp для салонов красоты",
+  "route_path": "/campaigns/whatsapp-beauty-salons",
+  "seo_title": "WhatsApp для салонов красоты",
+  "seo_description": "Черновик страницы о том, как салонам красоты отвечать клиентам в WhatsApp и не терять заявки.",
+  "nav_group": "resources",
+  "nav_label": "WhatsApp для салонов",
+  "nav_description": "AI-черновик страницы для проверки редактором.",
+  "proposed_entities": {
+    "industries": [
+      {
+        "name": "Салоны красоты",
+        "slug": "beauty-salons",
+        "description": "Салоны красоты, барбершопы и студии услуг, которым важно быстро отвечать клиентам в мессенджерах.",
+        "reason": "Prompt asks for a salon-specific page and no existing industry was selected."
+      }
+    ]
+  },
+  "sections": [
+    {
+      "block_type": "hero",
+      "title": "WhatsApp для салонов красоты",
+      "subtitle": "Черновик для проверки: CHATPLUS помогает собрать обращения из мессенджеров и быстрее отвечать клиентам.",
+      "primary_label": "Записаться на демо",
+      "primary_url": "/demo"
+    },
+    {
+      "block_type": "cards-grid",
+      "title": "Где помогает CHATPLUS",
+      "items": [
+        {
+          "title": "Заявки не теряются",
+          "text": "Сообщения из каналов попадают в единый рабочий процесс."
+        },
+        {
+          "title": "Ответы быстрее",
+          "text": "Команда видит обращения и может распределять диалоги."
+        }
+      ]
+    },
+    {
+      "block_type": "faq",
+      "title": "Вопросы",
+      "faq": [
+        {
+          "question": "Можно ли публиковать страницу сразу?",
+          "answer": "Нет. Сначала редактор проверяет черновик и только потом публикует."
+        }
+      ]
+    },
+    {
+      "block_type": "final-cta",
+      "title": "Проверить сценарий на демо",
+      "text": "Оставьте заявку, чтобы обсудить работу с обращениями клиентов.",
+      "primary_label": "Записаться на демо",
+      "primary_url": "/demo"
+    }
+  ],
+  "breadcrumbs": [],
+  "internal_links": []
+}

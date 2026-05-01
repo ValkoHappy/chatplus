@@ -35,9 +35,12 @@ const BLOCKLIST_PATTERNS = [
 ];
 
 function parseArgs(argv = []) {
+  const defaultDist = existsSync(path.resolve(process.cwd(), 'portal', 'dist', 'client'))
+    ? path.resolve(process.cwd(), 'portal', 'dist', 'client')
+    : path.resolve(process.cwd(), 'portal', 'dist');
   const options = {
     oldOrigin: 'https://astro.integromat.ru',
-    localDist: path.resolve(process.cwd(), 'portal', 'dist'),
+    localDist: defaultDist,
     routes: [],
     allDist: false,
     maxRoutes: 0,

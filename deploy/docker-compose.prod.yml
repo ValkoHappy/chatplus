@@ -78,6 +78,28 @@ services:
     networks:
       - internal
 
+  portal-preview:
+    build:
+      context: ..
+      dockerfile: portal/Dockerfile.preview
+    restart: unless-stopped
+    depends_on:
+      strapi:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 4321
+      STRAPI_URL: ${STRAPI_INTERNAL_URL}
+      STRAPI_TOKEN: ${STRAPI_API_TOKEN}
+      PREVIEW_TOKEN: ${PREVIEW_TOKEN}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      PUBLIC_BASE_PATH: ${PUBLIC_BASE_PATH}
+    expose:
+      - "4321"
+    networks:
+      - internal
+
   tools:
     build:
       context: ..
@@ -125,6 +147,8 @@ services:
     restart: unless-stopped
     depends_on:
       strapi:
+        condition: service_started
+      portal-preview:
         condition: service_started
     ports:
       - "80:80"

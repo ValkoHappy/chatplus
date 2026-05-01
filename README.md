@@ -8,7 +8,7 @@
 
 - публичный сайт: `https://astro.integromat.ru`
 - Strapi admin: `https://strapi.integromat.ru/admin`
-- основной режим управления контентом: `Strapi -> Content Manager -> Page`
+- основной режим управления контентом: `Strapi -> Content Manager -> Page` для каркаса страницы и точечных правок, `Strapi -> Content Manager -> Generation Job` для AI-заполнения выбранной `target_page`
 
 Полная копия сайта это не один Git commit. Полное состояние = `Git commit + Strapi content snapshot + env/секреты`. Если сервер и локалка выглядят по-разному, сначала проверяйте синхронизацию Strapi-контента.
 
@@ -20,23 +20,27 @@
 
 Вам нужны только эти документы:
 
-1. [Карта интерфейса Strapi](docs/strapi-ui-map.md)
-2. [Понятная инструкция для редактора Strapi](docs/strapi-editor-handbook.md)
-3. [Рецепты заполнения страниц](docs/strapi-page-recipes.md)
-4. [Быстрый старт редактора](docs/editor-quickstart.md)
+1. [Быстрый старт редактора](docs/editor-quickstart.md)
+2. [AI-генерация черновиков](docs/ai-page-generation.md)
+3. [AI-черновик: проверка до публикации](docs/ai-draft-preview-workflow.md)
+4. [Справочники: каналы, отрасли, интеграции и страницы по ним](docs/entity-catalog-editor-workflow.md)
+5. [Карта интерфейса Strapi](docs/strapi-ui-map.md)
+6. [Понятная инструкция для редактора Strapi](docs/strapi-editor-handbook.md)
+7. [Рецепты заполнения страниц](docs/strapi-page-recipes.md)
 
 Короткий рецепт:
 
 1. Откройте `https://strapi.integromat.ru/admin`.
 2. Войдите под своим Strapi-аккаунтом.
 3. Откройте `Content Manager`.
-4. Откройте коллекцию `Page`.
-5. Найдите страницу по `route_path`, например `/pricing`.
-6. Меняйте текст, кнопки, FAQ, таблицы и блоки в поле `sections`.
-7. Нажмите `Save`.
-8. Если всё готово, поставьте `editorial_status = approved` и нажмите `Publish`.
+4. Для новой страницы сначала подготовьте `Page` с правильным типом и набором блоков.
+5. Для большой правки откройте `Generation Job`, выберите эту `Page` в `target_page`, заполните prompt и оставьте `status = queued`.
+6. После генерации откройте связанную `Page`, проверьте Astro preview и текст.
+7. Если надо доработать, создайте новый `Generation Job`, выберите эту же страницу в `target_page` и напишите, что исправить.
+8. Если всё готово, поставьте у `Page` `editorial_status = approved` и нажмите `Publish`.
+9. Для маленькой правки откройте коллекцию `Page`, найдите страницу по `route_path`, измените нужный блок в `sections`, затем `Save` и `Publish`.
 
-Если нужно создать новую страницу, идите в `Content Manager -> Page -> Create new entry`. Подробно: [Понятная инструкция для редактора Strapi](docs/strapi-editor-handbook.md).
+Если нужно создать новую страницу, сначала создайте или материализуйте `Page` с правильным макетом, затем используйте `Content Manager -> Generation Job` для заполнения текста этой страницы. Свободное AI-создание страниц без `target_page` отключено: AI не меняет порядок блоков, `block_type` и `variant`. Если нужно добавить новый канал, отрасль, интеграцию, сценарий, функцию, тип бизнеса или конкурента, создайте запись вручную в отдельном справочнике Strapi или проверьте AI-предложение в `run_report.proposed_entities`. AI не создает и не публикует справочники молча: задача сначала получает `status = needs_entity_review`, затем оператор подтверждает создание черновика. Публичную страницу по новой записи проверяйте отдельно как `Page`. Подробно: [Справочники: каналы, отрасли, интеграции и страницы по ним](docs/entity-catalog-editor-workflow.md).
 
 ## Если вы разработчик или AI-агент
 
@@ -98,15 +102,16 @@
 8. [Миграция managed routes](docs/managed-route-migration.md)
 9. [Передача следующего production-этапа](docs/manual-first-production-handoff.md)
 10. [AI-генерация черновиков](docs/ai-page-generation.md)
-11. [Контентный workflow](docs/content-workflow.md)
-12. [Политика импорта](docs/import-policy.md)
-13. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
-14. [Контракты шаблонов](docs/template-contracts.md)
-15. [Карта файлов](docs/file-map.md)
-16. [Контракт безопасных изменений](docs/change-safety.md)
-17. [Диагностика неполадок](docs/troubleshooting.md)
-18. [Релизный поток](docs/release-flow.md)
-19. [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
+11. [Справочники: каналы, отрасли, интеграции и страницы по ним](docs/entity-catalog-editor-workflow.md)
+12. [Контентный workflow](docs/content-workflow.md)
+13. [Политика импорта](docs/import-policy.md)
+14. [Матрица маршрутов и ownership](docs/route-ownership-matrix.md)
+15. [Контракты шаблонов](docs/template-contracts.md)
+16. [Карта файлов](docs/file-map.md)
+17. [Контракт безопасных изменений](docs/change-safety.md)
+18. [Диагностика неполадок](docs/troubleshooting.md)
+19. [Релизный поток](docs/release-flow.md)
+20. [Production Deploy](deploy/DEPLOY_PRODUCTION.md)
 
 Важно: Git commit сам по себе не является полной копией сайта. Для полного воспроизведения нужна связка `Git commit + Strapi content snapshot + env/секреты`. Подробно: [Workflow Strapi content snapshot](docs/content-snapshot-workflow.md).
 
@@ -206,7 +211,7 @@ npm run seed-content:force
 npm run seed-content:report
 ```
 
-### Запустить AI-генерацию черновика для одной задачи
+### Запустить AI-заполнение выбранной Page для одной задачи
 
 ```powershell
 npm run page-v2:generate -- --job-id=JOB_ID

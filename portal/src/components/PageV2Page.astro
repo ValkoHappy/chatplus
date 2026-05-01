@@ -1,5 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
+import CampaignPage from './CampaignPage.astro';
+import BrandContentPage from './BrandContentPage.astro';
+import ResourceHubPage from './ResourceHubPage.astro';
 import HeroBlock from './page-v2/HeroBlock.astro';
 import RichTextBlock from './page-v2/RichTextBlock.astro';
 import ProofStatsBlock from './page-v2/ProofStatsBlock.astro';
@@ -14,12 +17,16 @@ import PricingPlansBlock from './page-v2/PricingPlansBlock.astro';
 import ComparisonTableBlock from './page-v2/ComparisonTableBlock.astro';
 import BeforeAfterBlock from './page-v2/BeforeAfterBlock.astro';
 import InternalLinksBlock from './page-v2/InternalLinksBlock.astro';
+import { mapPageV2ToLegacyPage } from '../lib/page-v2-legacy-bridge';
 import { withBasePath } from '../lib/urls';
 
 const { page } = Astro.props as { page: Record<string, any> };
 const sections = Array.isArray(page.sections) ? page.sections : [];
 const firstBlockType = sections[0]?.block_type || '';
 const toHref = (href?: string) => withBasePath(href);
+const robots = typeof page.robots === 'string' && page.robots.trim()
+  ? page.robots.replace(',', ', ')
+  : 'index, follow';
 
 const blockComponents: Record<string, any> = {
   hero: HeroBlock,
@@ -38,14 +45,39 @@ const blockComponents: Record<string, any> = {
   'internal-links': InternalLinksBlock,
 };
 
-const breadcrumbs = Array.isArray(page.breadcrumbs) && page.breadcrumbs.length > 0
-  ? page.breadcrumbs
-  : page.parent_page?.route_path
-    ? [
-        { label: 'Главная', href: '/' },
-        { label: page.parent_page.nav_label || page.parent_page.title, href: page.parent_page.route_path },
-      ]
-    : [];
+const familyComponents: Record<string, any> = {
+  campaign: CampaignPage,
+  brand: BrandContentPage,
+  resource: ResourceHubPage,
+};
+const FamilyComponent = familyComponents[page.page_kind || ''];
+const familyPage = FamilyComponent
+  ? mapPageV2ToLegacyPage(page, page.page_kind as 'campaign' | 'brand' | 'resource')
+  : null;
+
+const pageKindBreadcrumbMap: Record<string, { label: string; href: string }> = {
+  campaign: { label: 'Кампании', href: '/site-map' },
+  brand: { label: 'Бренды', href: '/site-map' },
+  resource: { label: 'Ресурсы', href: '/site-map' },
+  landing: { label: 'Страницы', href: '/site-map' },
+  comparison: { label: 'Сравнения', href: '/site-map' },
+};
+
+const cleanLabel = (value?: string) => `${value || ''}`.trim();
+const pageKindBreadcrumb = pageKindBreadcrumbMap[page.page_kind || ''] || pageKindBreadcrumbMap[page.nav_group || ''];
+const parentBreadcrumb = page.parent_page?.route_path
+  ? {
+      label: cleanLabel(page.parent_page.nav_label || page.parent_page.title),
+      href: page.parent_page.route_path,
+    }
+  : null;
+const currentBreadcrumbLabel = cleanLabel(page.nav_label || page.title || page.seo_title);
+const breadcrumbs = [
+  { label: 'Главная', href: '/' },
+  parentBreadcrumb || pageKindBreadcrumb,
+  currentBreadcrumbLabel ? { label: currentBreadcrumbLabel } : null,
+].filter((item) => item?.label);
+const hasFinalCtaBlock = sections.some((section) => section?.block_type === 'final-cta');
 
 const hasInternalLinksBlock = sections.some((section) => section?.block_type === 'internal-links');
 const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.internal_links) && page.internal_links.length > 0
@@ -59,16 +91,33 @@ const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.inter
   : null;
 ---
 
-<Base title={page.seo_title || page.title} description={page.seo_description} canonical={page.canonical}>
-  <article class:list={['pagev2-shell', `pagev2-shell--${page.template_variant || 'default'}`]}>
+{FamilyComponent && familyPage ? (
+  <FamilyComponent page={familyPage} />
+) : (
+  <Base
+    title={page.seo_title || page.title}
+    description={page.seo_description}
+    canonical={page.canonical}
+    robots={robots}
+    hideGlobalStickyCta={hasFinalCtaBlock}
+  >
+    <article class:list={[
+      'pagev2-shell',
+      `pagev2-shell--${page.template_variant || 'default'}`,
+      `pagev2-shell--kind-${page.page_kind || 'page'}`,
+    ]}>
     {breadcrumbs.length > 0 && (
-      <section class="section pagev2-breadcrumbs">
+      <section class="pagev2-breadcrumbs">
         <div class="container container-narrow">
           <nav aria-label="Хлебные крошки">
             <ol>
-              {breadcrumbs.map((item) => (
+              {breadcrumbs.map((item, index) => (
                 <li>
-                  <a href={toHref(item.href)}>{item.label}</a>
+                  {item.href && index < breadcrumbs.length - 1 ? (
+                    <a href={toHref(item.href)}>{item.label}</a>
+                  ) : (
+                    <span aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}>{item.label}</span>
+                  )}
                 </li>
               ))}
             </ol>
@@ -106,8 +155,9 @@ const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.inter
         </div>
       </section>
     )}
-  </article>
-</Base>
+    </article>
+  </Base>
+)}
 
 <style>
   .pagev2-shell--editorial,
@@ -121,8 +171,35 @@ const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.inter
       linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   }
 
+  :global(.pagev2-shell--kind-campaign .section) {
+    padding: clamp(3.2rem, 6vw, 4.8rem) 0;
+  }
+
+  :global(.pagev2-shell--kind-campaign .section-tonal) {
+    background: linear-gradient(180deg, rgba(248, 250, 252, .92), rgba(255, 255, 255, .98));
+    border-top: 1px solid rgba(148, 163, 184, .1);
+    border-bottom: 1px solid rgba(148, 163, 184, .1);
+  }
+
+  :global(.pagev2-shell--kind-campaign .section-header) {
+    max-width: 760px;
+    margin-bottom: 1.45rem;
+  }
+
+  :global(.pagev2-shell--kind-campaign .section-header h2) {
+    font-size: clamp(1.8rem, 3vw, 2.45rem);
+    line-height: 1.05;
+  }
+
+  :global(.pagev2-shell--kind-resource .pagev2-hero),
+  :global(.pagev2-shell--kind-brand .pagev2-hero) {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 56%, #155e75 100%);
+  }
+
   .pagev2-breadcrumbs {
-    padding-bottom: 0;
+    padding: .9rem 0;
+    border-bottom: 1px solid rgba(226, 232, 240, .88);
+    background: rgba(255, 255, 255, .72);
   }
 
   .pagev2-breadcrumbs ol {
@@ -136,7 +213,8 @@ const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.inter
 
   .pagev2-breadcrumbs li {
     color: #64748b;
-    font-size: .9rem;
+    font-size: .82rem;
+    line-height: 1.4;
   }
 
   .pagev2-breadcrumbs li + li::before {
@@ -147,6 +225,11 @@ const fallbackInternalLinks = !hasInternalLinksBlock && Array.isArray(page.inter
 
   .pagev2-breadcrumbs a {
     color: inherit;
+  }
+
+  .pagev2-breadcrumbs span[aria-current='page'] {
+    color: #334155;
+    font-weight: 700;
   }
 
   .pagev2-intro {

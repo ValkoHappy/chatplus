@@ -11,10 +11,11 @@ const toHref = (href?: string) => withBasePath(href);
 const trustFacts = Array.isArray(section.trust_facts) ? section.trust_facts.filter(Boolean) : [];
 const panelItems = Array.isArray(section.panel_items) ? section.panel_items : [];
 const variant = section.variant || 'default';
+const hasPanel = panelItems.length > 0 || section.context_title || section.context_text;
 ---
 
 <section class:list={['pagev2-hero', `pagev2-hero--${templateVariant}`, `pagev2-hero--variant-${variant}`]}>
-  <div class="container pagev2-hero__inner">
+  <div class:list={['container', 'pagev2-hero__inner', !hasPanel && 'pagev2-hero__inner--solo']}>
     <div class="pagev2-hero__copy">
       {section.eyebrow && <span class="pagev2-hero__eyebrow">{section.eyebrow}</span>}
       <h1>{section.title}</h1>
@@ -42,7 +43,7 @@ const variant = section.variant || 'default';
       )}
     </div>
 
-    {(panelItems.length > 0 || section.context_title || section.context_text) && (
+    {hasPanel && (
       <aside class="pagev2-hero__panel">
         {(section.context_title || section.context_text) && (
           <div class="pagev2-hero__panel-copy">
@@ -101,6 +102,10 @@ const variant = section.variant || 'default';
     grid-template-columns: minmax(0, 1.1fr) minmax(300px, .86fr);
     gap: 1.2rem;
     align-items: start;
+  }
+
+  .pagev2-hero__inner--solo {
+    grid-template-columns: minmax(0, 760px);
   }
 
   .pagev2-hero__eyebrow {

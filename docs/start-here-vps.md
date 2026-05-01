@@ -148,8 +148,14 @@ GITHUB_DISPATCH_EVENT=strapi-content-publish
 RELAY_ALLOWED_MODELS=landing-page,page-v2,tenders-page,business-types-page,site-setting,competitor,solution,channel,industry,integration,feature,business-type
 
 UPLOAD_PROVIDER=local
+OPENROUTER_API_KEY=
+OPENROUTER_MODEL=deepseek/deepseek-chat
+AI_API_BASE_URL=
+AI_API_KEY=
+AI_MODEL=
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
+PREVIEW_TOKEN=replace-with-random-preview-token
 ```
 
 Если пока нет email для Let's Encrypt:
@@ -159,8 +165,9 @@ OPENAI_MODEL=gpt-4o-mini
 
 Если AI-генерация черновиков пока не нужна:
 
-- `OPENAI_API_KEY` можно оставить пустым
+- `OPENROUTER_API_KEY` / `AI_API_KEY` / `OPENAI_API_KEY` можно оставить пустыми, если AI-генерация черновиков пока не включается
 - на deploy и обычный publish flow это не влияет
+- `PREVIEW_TOKEN` нужен для закрытых Astro preview-ссылок вида `/__preview/page/<documentId>?token=...`; не публикуйте его в Git, документации или чатах
 
 ## 5. Первый запуск: сначала контур, потом первичная подготовка CMS
 

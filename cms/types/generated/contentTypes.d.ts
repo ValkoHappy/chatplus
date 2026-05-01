@@ -975,7 +975,7 @@ export interface ApiGenerationJobGenerationJob
   extends Struct.CollectionTypeSchema {
   collectionName: 'generation_jobs';
   info: {
-    description: '\u0417\u0430\u0434\u0430\u043D\u0438\u0435 \u0434\u043B\u044F AI. \u0421\u043E\u0437\u0434\u0430\u0451\u0442 \u0438\u043B\u0438 \u043E\u0431\u043D\u043E\u0432\u043B\u044F\u0435\u0442 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A Page, \u043D\u043E \u043D\u0435 \u043F\u0443\u0431\u043B\u0438\u043A\u0443\u0435\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0441\u0430\u043C\u043E.';
+    description: '\u041E\u0441\u043D\u043E\u0432\u043D\u043E\u0439 \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441 \u0434\u043B\u044F AI-\u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430\u043C\u0438. \u0421\u043E\u0437\u0434\u0430\u0451\u0442 \u0438\u043B\u0438 \u043E\u0431\u043D\u043E\u0432\u043B\u044F\u0435\u0442 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A Page, \u043D\u043E \u043D\u0435 \u043F\u0443\u0431\u043B\u0438\u043A\u0443\u0435\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0441\u0430\u043C\u043E.';
     displayName: 'Generation Job';
     pluralName: 'generation-jobs';
     singularName: 'generation-job';
@@ -1004,7 +1004,15 @@ export interface ApiGenerationJobGenerationJob
     requested_by: Schema.Attribute.String;
     run_report: Schema.Attribute.JSON;
     status: Schema.Attribute.Enumeration<
-      ['queued', 'running', 'draft_ready', 'failed', 'approved', 'published']
+      [
+        'queued',
+        'running',
+        'needs_entity_review',
+        'draft_ready',
+        'failed',
+        'approved',
+        'published',
+      ]
     > &
       Schema.Attribute.DefaultTo<'queued'>;
     target_blocks: Schema.Attribute.JSON;

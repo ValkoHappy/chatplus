@@ -94,8 +94,9 @@ Cron-файл:
 
 Нужные env:
 
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
+- `OPENROUTER_API_KEY` и `OPENROUTER_MODEL`, если используем OpenRouter + DeepSeek
+- или `AI_API_BASE_URL`, `AI_API_KEY`, `AI_MODEL` для другого OpenAI-compatible провайдера
+- или `OPENAI_API_KEY`, `OPENAI_MODEL` для прямого OpenAI
 - `STRAPI_URL`
 - `STRAPI_TOKEN`
 

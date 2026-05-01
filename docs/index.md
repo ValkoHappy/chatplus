@@ -24,16 +24,19 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 
 Читайте в таком порядке:
 
-1. [Карта интерфейса Strapi](strapi-ui-map.md)
-2. [Понятная инструкция для редактора Strapi](strapi-editor-handbook.md)
-3. [Рецепты заполнения страниц](strapi-page-recipes.md)
-4. [Быстрый старт редактора](editor-quickstart.md)
-5. [Как добавлять страницы](how-to-add-page.md)
-6. [Глоссарий](glossary.md)
+1. [Быстрый старт редактора](editor-quickstart.md)
+2. [AI-генерация черновиков](ai-page-generation.md)
+3. [AI-черновик: проверка до публикации](ai-draft-preview-workflow.md)
+4. [Справочники: каналы, отрасли, интеграции и страницы по ним](entity-catalog-editor-workflow.md)
+5. [Понятная инструкция для редактора Strapi](strapi-editor-handbook.md)
+6. [Карта интерфейса Strapi](strapi-ui-map.md)
+7. [Как добавлять страницы](how-to-add-page.md)
+8. [Рецепты заполнения страниц](strapi-page-recipes.md)
+9. [Глоссарий](glossary.md)
 
-Главная идея: чтобы изменить контент, откройте `Content Manager -> Page`, найдите страницу по `route_path`, измените блоки в `sections`, сохраните и опубликуйте.
+Главная идея: для новой страницы сначала нужна `Page` с правильным макетом, а для большой правки текста используйте `Content Manager -> Generation Job` с выбранной `target_page`. Нейросеть заполняет или дорабатывает эту же `Page`, не меняя порядок блоков, `block_type` и `variant`; редактор смотрит preview, при необходимости отправляет эту же `Page` на доработку через новый `Generation Job`, и только после проверки публикует. Для маленькой правки можно открыть `Content Manager -> Page`, найти страницу по `route_path`, изменить блоки в `sections`, сохранить и опубликовать.
 
-Редактору не нужно читать `content-snapshot-workflow`, `release-flow`, `deploy` и команды npm. Это документы для разработчика или оператора.
+Редактору не нужно читать `content-snapshot-workflow`, `release-flow`, `deploy` и команды npm. Это документы для разработчика или оператора. Если меняете контент, не заходите на VPS, в Docker, GitHub Actions, терминал и `.env`: работайте только в Strapi.
 
 Редактору также не нужно открывать `start-here-vps.md`. Это аварийный runbook для чистого/сломавшегося сервера, а не инструкция по редактированию сайта.
 
@@ -55,15 +58,18 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 
 Второе главное правило: полный сайт не равен одному Git commit. Если задача касается страниц, блоков, Strapi, SEO, навигации или sitemap, сначала синхронизируйте content snapshot по [Workflow Strapi content snapshot](content-snapshot-workflow.md).
 
-## Если позже нужно будет работать с AI-генерацией
+## AI-заполнение страниц
 
 Читайте:
 
-1. [AI-генерация черновиков](ai-page-generation.md)
-2. [План AI-генерации и автопубликации](ai-scheduled-autopublish-plan.md)
-3. [Контекст для AI и разработчика](ai-agent-context.md)
+1. [AI-заполнение страниц](ai-page-generation.md)
+2. [AI-черновик: проверка до публикации](ai-draft-preview-workflow.md)
+3. [План AI-генерации и автопубликации](ai-scheduled-autopublish-plan.md)
+4. [Контекст для AI и разработчика](ai-agent-context.md)
 
-Сейчас обычный редакторский процесс ручной: человек создаёт и меняет `Page` в Strapi. AI-генерация описана как будущий отдельный процесс и не нужна для ручного добавления страниц.
+AI теперь считается удобным способом для крупных правок и заполнения новых каркасов страниц, но без автопубликации и без свободного создания макета. `Generation Job` обязан иметь `target_page`; `target_blueprint` должен совпадать с `page_kind`. Категории `channel`, `industry`, `integration`, `solution`, `feature`, `business_type`, `competitor` можно выбирать как контекст для prompt.
+
+Справочники `Channel`, `Industry`, `Integration`, `Solution`, `Feature`, `Business Type` и `Competitor` можно пополнять вручную в Strapi или через подтвержденные AI-предложения. `Generation Job` сначала пишет предложения в `run_report.proposed_entities` и ставит `status = needs_entity_review`; после подтверждения runner создает записи как черновики `managed/frozen`, привязывает их к задаче и обновляет выбранную `Page`. Новый справочник публикуется отдельно после проверки, потому что публикация может добавить новые catalog/intersection routes. Подробный порядок: [Справочники: каналы, отрасли, интеграции и страницы по ним](entity-catalog-editor-workflow.md).
 
 ## Где что лежит
 
@@ -71,7 +77,7 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 CHATPLUS/
 |- portal/          # Astro frontend и renderer страниц
 |- cms/             # Strapi CMS, схемы content types и components
-|- scripts/         # materializer, проверки, importer, будущий AI generation runner
+|- scripts/         # materializer, проверки, importer, AI generation runner
 |- docs/            # документация и runbook-и
 |- deploy/          # серверные примеры, cron, env и runbook-и
 |- pages-preview/   # legacy/demo snapshot
@@ -86,7 +92,7 @@ CHATPLUS/
 - старые страницы сохраняют legacy family-renderer;
 - `page_blueprint` хранит правила допустимых блоков;
 - `page_version` хранит snapshots для истории и rollback;
-- `generation_job` подготовлен для будущих AI drafts, но ручной процесс не зависит от него;
+- `generation_job` используется для AI drafts и доработки существующих черновиков;
 - проверки показывали целевое состояние `800/800` по materialized public pages, без bridge losses и без data quality issues.
 
 Важно: это не означает, что live server уже полностью cutover. Серверный перенос делается отдельно, по controlled waves, с smoke-проверками и rollback.

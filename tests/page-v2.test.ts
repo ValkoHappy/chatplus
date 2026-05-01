@@ -12,6 +12,7 @@ import {
   toPageV2CatchAllParam,
 } from '../config/page-v2-routes.mjs';
 import { isPageV2Renderable } from '../portal/src/lib/strapi.ts';
+import { isPreviewTokenValid, normalizePreviewDocumentId } from '../portal/src/lib/preview-auth.ts';
 import { normalizePageV2Record } from '../portal/src/lib/strapi-schemas.ts';
 import { getPageV2MigrationGateErrors } from '../cms/src/utils/page-v2-migration-gate.ts';
 
@@ -240,6 +241,37 @@ test('new native page_v2 routes are visible after publish and editorial approval
   assert.equal(isPageV2Renderable(normalizePageV2Record(base)), true);
   assert.equal(normalizePageV2Record({ ...base, editorial_status: 'review' }).is_migration_visible, false);
   assert.equal(normalizePageV2Record({ ...base, publishedAt: '' }).is_migration_visible, false);
+});
+
+test('Astro draft preview is closed, noindex and served by a runtime-only route', () => {
+  const astroConfig = readFileSync('portal/astro.config.mjs', 'utf8');
+  const previewRoute = readFileSync('portal/src/pages/preview/page/[documentId].astro', 'utf8');
+  const nginxTemplate = readFileSync('deploy/nginx/templates/public-site.conf.template', 'utf8');
+  const compose = readFileSync('deploy/docker-compose.prod.yml', 'utf8');
+  const baseLayout = readFileSync('portal/src/layouts/Base.astro', 'utf8');
+  const pageV2Page = readFileSync('portal/src/components/PageV2Page.astro', 'utf8');
+
+  assert.match(astroConfig, /output:\s*'static'/);
+  assert.match(astroConfig, /@astrojs\/node/);
+  assert.match(previewRoute, /export const prerender = false/);
+  assert.match(previewRoute, /isPreviewTokenValid/);
+  assert.match(previewRoute, /getPageV2DraftByDocumentId/);
+  assert.match(previewRoute, /noindex,\s*nofollow/);
+  assert.match(nginxTemplate, /location \^~ \/__preview\//);
+  assert.match(nginxTemplate, /proxy_pass http:\/\/portal-preview:4321\/preview\//);
+  assert.match(compose, /portal-preview:/);
+  assert.match(compose, /PREVIEW_TOKEN: \$\{PREVIEW_TOKEN\}/);
+  assert.match(baseLayout, /meta name="robots" content=\{robots\}/);
+  assert.match(pageV2Page, /robots=\{robots\}/);
+});
+
+test('preview token and document id helpers reject unsafe values', () => {
+  assert.equal(isPreviewTokenValid('secret', 'secret'), true);
+  assert.equal(isPreviewTokenValid('wrong', 'secret'), false);
+  assert.equal(isPreviewTokenValid('secret', ''), false);
+  assert.equal(normalizePreviewDocumentId('abc123'), 'abc123');
+  assert.equal(normalizePreviewDocumentId('../abc123'), '');
+  assert.equal(normalizePreviewDocumentId('abc-123'), '');
 });
 
 test('page-v2 schema enables draftAndPublish', () => {

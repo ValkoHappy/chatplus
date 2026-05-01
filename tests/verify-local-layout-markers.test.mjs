@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 import { parseArgs, routeToDistFile } from '../scripts/verify-local-layout-markers.mjs';
@@ -14,10 +15,14 @@ test('layout marker smoke parseArgs reads route list and smoke flags', () => {
 });
 
 test('routeToDistFile maps routes to built Astro html files', () => {
-  assert.equal(routeToDistFile('/'), path.join('portal', 'dist', 'index.html'));
-  assert.equal(routeToDistFile('/promo'), path.join('portal', 'dist', 'promo', 'index.html'));
+  const distRoot = existsSync(path.join('portal', 'dist', 'client'))
+    ? path.join('portal', 'dist', 'client')
+    : path.join('portal', 'dist');
+
+  assert.equal(routeToDistFile('/'), path.join(distRoot, 'index.html'));
+  assert.equal(routeToDistFile('/promo'), path.join(distRoot, 'promo', 'index.html'));
   assert.equal(
     routeToDistFile('/channels/email/amocrm'),
-    path.join('portal', 'dist', 'channels', 'email', 'amocrm', 'index.html'),
+    path.join(distRoot, 'channels', 'email', 'amocrm', 'index.html'),
   );
 });

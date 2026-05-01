@@ -2,17 +2,38 @@
 const { section } = Astro.props as { section: Record<string, any> };
 ---
 
-<section class="section">
-  <div class="container container-narrow pagev2-richtext">
-    {section.title && <h2>{section.title}</h2>}
-    {section.body && <div class="pagev2-richtext__body" set:html={section.body} />}
+<section class="section section-tonal">
+  <div class="container pagev2-richtext">
+    <div class="pagev2-richtext__panel">
+      {section.eyebrow && <span class="pagev2-richtext__eyebrow">{section.eyebrow}</span>}
+      {section.title && <h2>{section.title}</h2>}
+      {section.body && <div class="pagev2-richtext__body" set:html={section.body} />}
+    </div>
   </div>
 </section>
 
 <style>
   .pagev2-richtext {
-    display: grid;
-    gap: 1rem;
+    max-width: var(--container);
+  }
+
+  .pagev2-richtext__panel {
+    max-width: 860px;
+    padding: clamp(1.2rem, 3vw, 1.8rem);
+    border: 1px solid rgba(148, 163, 184, .14);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 18px 40px rgba(2, 6, 23, .06);
+  }
+
+  .pagev2-richtext__eyebrow {
+    display: inline-flex;
+    margin-bottom: .65rem;
+    color: #7c3aed;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
   }
 
   .pagev2-richtext h2 {
@@ -23,6 +44,7 @@ const { section } = Astro.props as { section: Record<string, any> };
   }
 
   .pagev2-richtext__body {
+    max-width: 72ch;
     color: #475569;
     line-height: 1.85;
   }

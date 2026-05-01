@@ -63,7 +63,7 @@ export const PAGE_V2_BLUEPRINTS = Object.freeze({
     pageKind: 'resource',
     templateVariant: 'editorial',
     requiredBlocks: ['hero', 'rich-text'],
-    allowedBlocks: ['hero', 'rich-text', 'cards-grid', 'faq', 'internal-links', 'final-cta', 'related-links'],
+    allowedBlocks: ['hero', 'rich-text', 'cards-grid', 'steps', 'faq', 'internal-links', 'final-cta', 'related-links'],
   },
   brand: {
     id: 'brand',

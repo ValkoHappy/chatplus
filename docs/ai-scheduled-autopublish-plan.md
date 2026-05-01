@@ -1,6 +1,6 @@
 # План AI-генерации и автопубликации страниц
 
-Этот документ фиксирует целевую схему для будущего этапа: страницы создаются через AI по запросу или по расписанию, но остаются обычными `page_v2` страницами в Strapi.
+Этот документ фиксирует схему AI-генерации: страницы создаются через AI по запросу или по расписанию, но остаются обычными `page_v2` страницами в Strapi.
 
 ## Главный принцип
 
@@ -108,10 +108,22 @@ npm.cmd run page-v2:generate:scheduled
 
 - `STRAPI_URL`;
 - `STRAPI_TOKEN`;
-- `OPENAI_API_KEY`;
-- `OPENAI_MODEL`.
+- `OPENROUTER_API_KEY` и `OPENROUTER_MODEL`, если используется OpenRouter;
+- или `AI_API_BASE_URL`, `AI_API_KEY`, `AI_MODEL` для другого OpenAI-compatible провайдера;
+- или `OPENAI_API_KEY`, `OPENAI_MODEL` для прямого OpenAI.
 
-Отдельный future publisher может запускаться после генератора, но только когда будет реализован auto mode validation.
+Пример для OpenRouter + DeepSeek:
+
+```env
+OPENROUTER_API_KEY=...
+OPENROUTER_MODEL=deepseek/deepseek-chat
+```
+
+Runner использует OpenAI-compatible endpoint `https://openrouter.ai/api/v1/chat/completions`, если задан `OPENROUTER_API_KEY` и не задан явный `AI_API_BASE_URL`.
+
+Реальные AI-ключи нельзя писать в Git, документацию, issue, pull request или чат. Если ключ уже попал в чат, его нужно перевыпустить.
+
+Отдельный auto publisher можно запускать после генератора только когда будет реализован и проверен auto mode validation. До этого AI создает только черновики для ручной проверки.
 
 ## Что нельзя делать
 

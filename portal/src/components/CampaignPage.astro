@@ -210,7 +210,9 @@ const sectionLabels = page.section_labels || {};
   .campaign-orb { position:absolute; border-radius:999px; filter:blur(42px); opacity:.42; pointer-events:none; }
   .campaign-orb--left { width:320px; height:320px; top:-60px; left:-70px; background:rgba(99,102,241,.38); }
   .campaign-orb--right { width:300px; height:300px; right:-70px; top:40px; background:rgba(236,72,153,.28); }
-  .campaign-hero-inner, .campaign-story { display:grid; grid-template-columns:minmax(0, 1.1fr) minmax(320px, .86fr); gap:1.2rem; align-items:start; }
+  .campaign-hero-inner, .campaign-story { display:grid; grid-template-columns:minmax(0, 1fr) minmax(280px, .72fr); gap:1.2rem; align-items:start; }
+  .campaign-copy,
+  .campaign-proof { min-width:0; }
   .campaign-kicker { display:inline-flex; padding:.4rem .82rem; border-radius:999px; background:rgba(255,255,255,.12); color:#fbcfe8; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
   .campaign-copy h1, .campaign-final h2, .section-header h2 { margin:.95rem 0 0; color:#0f172a; font-size:clamp(2.2rem, 4.2vw, 3.9rem); line-height:1; letter-spacing:-.05em; }
   .campaign-copy h1 { color:#fff; }
@@ -219,7 +221,7 @@ const sectionLabels = page.section_labels || {};
   .campaign-actions { display:flex; gap:.85rem; flex-wrap:wrap; margin-top:1.45rem; }
   .campaign-actions :global(.btn-outline) { border-color:rgba(255,255,255,.28); background:transparent; color:#fff; }
   .campaign-proof { display:grid; gap:.85rem; }
-  .campaign-proof-card, .campaign-card { padding:1.15rem; border-radius:24px; border:1px solid rgba(148,163,184,.14); background:linear-gradient(180deg, rgba(248,250,252,.98), rgba(241,245,249,.96)); color:#0f172a; box-shadow:0 18px 36px rgba(2,6,23,.12); }
+  .campaign-proof-card, .campaign-card { box-sizing:border-box; width:100%; padding:1.15rem; border-radius:24px; border:1px solid rgba(148,163,184,.14); background:linear-gradient(180deg, rgba(248,250,252,.98), rgba(241,245,249,.96)); color:#0f172a; box-shadow:0 18px 36px rgba(2,6,23,.12); overflow-wrap:anywhere; }
   .campaign-proof-card p, .campaign-card p { margin:.6rem 0 0; color:#475569; line-height:1.7; }
   .campaign-proof-icon { width:2.55rem; height:2.55rem; border-radius:16px; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #fdf2f8, #ede9fe); color:#7c3aed; }
   .section-tonal { background:linear-gradient(180deg, rgba(241,245,249,.88), rgba(255,255,255,.98)); border-top:1px solid rgba(148,163,184,.08); border-bottom:1px solid rgba(148,163,184,.08); }

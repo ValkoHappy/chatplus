@@ -75,16 +75,72 @@ export const AI_BLOCK_LIBRARY = Object.freeze({
 
 export const AI_BLUEPRINT_BLOCK_PLANS = Object.freeze({
   campaign: {
-    defaultBlocks: ['hero', 'cards-grid', 'steps', 'faq', 'related-links', 'final-cta'],
-    optionalBlocks: ['proof-stats', 'rich-text', 'testimonial'],
+    defaultBlocks: ['hero', 'cards-grid', 'cards-grid', 'rich-text', 'steps', 'cards-grid', 'faq', 'related-links', 'final-cta'],
+    optionalBlocks: ['proof-stats', 'testimonial'],
   },
   brand: {
-    defaultBlocks: ['hero', 'cards-grid', 'steps', 'faq', 'internal-links', 'final-cta'],
-    optionalBlocks: ['testimonial', 'rich-text', 'related-links'],
+    defaultBlocks: ['hero', 'cards-grid', 'cards-grid', 'rich-text', 'steps', 'faq', 'internal-links', 'final-cta'],
+    optionalBlocks: ['testimonial', 'related-links'],
   },
   resource: {
-    defaultBlocks: ['hero', 'rich-text', 'cards-grid', 'faq', 'internal-links', 'final-cta'],
+    defaultBlocks: ['hero', 'rich-text', 'cards-grid', 'cards-grid', 'steps', 'faq', 'internal-links', 'final-cta'],
     optionalBlocks: ['related-links'],
+  },
+});
+
+export const AI_PAGE_COMPOSITION_STANDARDS = Object.freeze({
+  campaign: {
+    targetSections: '6-8',
+    order: 'hero -> cards-grid(problems) -> cards-grid(pillars/features) -> rich-text -> steps -> cards-grid(use_cases) -> faq -> related-links/internal-links -> final-cta',
+    rules: [
+      'Use one clear hero with a concrete audience, channel, integration, or scenario from the request. Add 3-4 trust_facts so the family hero is not empty.',
+      'Use one cards-grid with variant "problems" and exactly 3 items for pain points.',
+      'Use one cards-grid with variant "pillars" or "editorial" and exactly 3-4 items for product capabilities.',
+      'Use rich-text after the first cards-grid so the page has an explanatory middle section, not only cards.',
+      'Use steps with exactly 3 items for a process. Use 4 items only when every step is short and necessary.',
+      'Use one cards-grid with variant "use_cases" and 3-4 items for scenarios or audiences.',
+      'Use FAQ with exactly 5 practical questions and answers.',
+      'Use related-links or internal-links with 2-4 real internal URLs. Prefer /solutions, /features, /channels, /integrations, /pricing, /demo, /site-map when unsure.',
+      'Use one final-cta at the end with primary_url /demo.',
+      'Use route_path under /campaigns/. Example: /campaigns/whatsapp-real-estate-preview.',
+      'Do not create breadcrumbs. The renderer builds standard breadcrumbs from page metadata.',
+      'Do not create sticky, floating, duplicate, or bottom navigation CTAs inside the page content.',
+    ],
+  },
+  brand: {
+    targetSections: '6-8',
+    order: 'hero -> cards-grid(problems) -> cards-grid(pillars/features) -> rich-text/steps -> faq -> internal-links -> final-cta',
+    rules: [
+      'Explain the brand/category context first, then show product capabilities. Add 3-4 hero trust_facts so the family hero is not empty.',
+      'Use one cards-grid with variant "problems" and exactly 3 items for pain points.',
+      'Use one cards-grid with variant "pillars" or "editorial" and exactly 3-4 items for product capabilities.',
+      'Use rich-text when the page needs a short explanatory middle section before steps.',
+      'Use steps with 3 items.',
+      'Use FAQ with 5 practical questions.',
+      'Use internal-links with 2-4 real internal URLs.',
+      'Use one final-cta at the end with primary_url /demo.',
+      'Use route_path under /brand/.',
+      'Do not create breadcrumbs. The renderer builds standard breadcrumbs from page metadata.',
+      'Do not create sticky, floating, duplicate, or bottom navigation CTAs inside the page content.',
+    ],
+  },
+  resource: {
+    targetSections: '7-8',
+    order: 'hero -> rich-text -> cards-grid(problems/editorial) -> cards-grid(pillars) -> steps -> cards-grid(use_cases) -> faq -> internal-links -> final-cta',
+    rules: [
+      'Make the page more explanatory than sales-heavy. Add 3-4 hero trust_facts so the family hero is not empty.',
+      'Use rich-text for the main explanation.',
+      'Use one cards-grid with variant "problems" and 3-4 checklist or pain-point items.',
+      'Use one cards-grid with variant "pillars" or "editorial" and 3-4 practical items.',
+      'Use steps with exactly 3 items for the reader workflow.',
+      'Use one cards-grid with variant "use_cases" and 3-4 practical scenarios.',
+      'Use FAQ with 4-5 practical questions.',
+      'Use internal-links with 2-4 real internal URLs.',
+      'Use one final-cta at the end with primary_url /demo.',
+      'Use route_path under /resources/.',
+      'Do not create breadcrumbs. The renderer builds standard breadcrumbs from page metadata.',
+      'Do not create sticky, floating, duplicate, or bottom navigation CTAs inside the page content.',
+    ],
   },
 });
 
@@ -154,8 +210,8 @@ export function getAiBlockPlan(job = {}) {
     ? requested
     : configuredPlan.defaultBlocks || required;
   const preferredBlocks = uniqueInOrder([
-    ...required,
     ...preferredBase,
+    ...required,
     ...requested,
     ...intentBlocks,
   ]).filter((blockType) => allowed.has(blockType));
@@ -198,5 +254,15 @@ export function formatAiBlockPlanForPrompt(plan) {
     '- Do not duplicate the same information in multiple blocks.',
     '- Use the block whose goal best matches the information.',
     '- If the prompt asks for pricing/comparison/ROI but the blueprint disallows that block, skip it and keep the draft within the allowed blueprint.',
+  ].join('\n');
+}
+
+export function formatAiPageCompositionStandardForPrompt(blueprintId = 'campaign') {
+  const standard = AI_PAGE_COMPOSITION_STANDARDS[blueprintId] || AI_PAGE_COMPOSITION_STANDARDS.campaign;
+  return [
+    `Target visible section count: ${standard.targetSections}`,
+    `Recommended order: ${standard.order}`,
+    'Composition rules:',
+    ...standard.rules.map((rule) => `- ${rule}`),
   ].join('\n');
 }

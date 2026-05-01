@@ -101,8 +101,11 @@ cp deploy/.env.example deploy/.env
   - `UPLOAD_PROVIDER`
   - по умолчанию `UPLOAD_PROVIDER=local`
 - AI draft generation:
-  - `OPENAI_API_KEY`
-  - `OPENAI_MODEL`
+  - `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` for OpenRouter + DeepSeek
+  - or `AI_API_BASE_URL`, `AI_API_KEY`, `AI_MODEL` for another OpenAI-compatible provider
+  - or `OPENAI_API_KEY`, `OPENAI_MODEL` for direct OpenAI
+- closed draft preview:
+  - `PREVIEW_TOKEN` for `/__preview/page/<documentId>?token=...`
 
 Важно:
 

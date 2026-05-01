@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
+import node from '@astrojs/node';
 
 const site = process.env.PUBLIC_SITE_URL || 'https://chatplus.ru';
 const base = process.env.PUBLIC_BASE_PATH || undefined;
@@ -11,6 +12,10 @@ const isDevCommand = process.argv.includes('dev');
 export default defineConfig({
   site,
   base,
+  output: 'static',
+  adapter: node({
+    mode: 'standalone',
+  }),
   trailingSlash: isDevCommand ? 'ignore' : 'never',
 
   integrations: [

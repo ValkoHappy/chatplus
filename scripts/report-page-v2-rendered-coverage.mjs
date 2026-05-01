@@ -168,7 +168,9 @@ export function normalizeCoverageMarkers(markers, routePath = '/') {
 }
 
 function htmlPathForRoute(routePath) {
-  const distRoot = path.resolve(process.cwd(), 'portal', 'dist');
+  const distRoot = existsSync(path.resolve(process.cwd(), 'portal', 'dist', 'client'))
+    ? path.resolve(process.cwd(), 'portal', 'dist', 'client')
+    : path.resolve(process.cwd(), 'portal', 'dist');
   if (routePath === '/') return path.join(distRoot, 'index.html');
   return path.join(distRoot, routePath.replace(/^\/+/, ''), 'index.html');
 }
