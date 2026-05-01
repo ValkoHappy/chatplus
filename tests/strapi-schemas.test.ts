@@ -24,9 +24,9 @@ function assertRussianHelpText(schema: any, attributeNames: string[]) {
 function assertContentManagerHidden(schema: any, attributeNames: string[]) {
   for (const attributeName of attributeNames) {
     assert.equal(
-      schema.attributes?.[attributeName]?.pluginOptions?.['content-manager']?.visible,
-      false,
-      `${attributeName} should be hidden from Content Manager`
+      schema.config?.attributes?.[attributeName]?.hidden,
+      true,
+      `${attributeName} should be hidden from Content Manager edit/list layouts`
     );
   }
 }

@@ -386,5 +386,138 @@
         }
       }
     }
+  },
+  "config": {
+    "attributes": {
+      "content_origin": {
+        "hidden": true
+      },
+      "record_mode": {
+        "hidden": true
+      },
+      "external_id": {
+        "hidden": true
+      },
+      "import_batch_id": {
+        "hidden": true
+      },
+      "last_imported_at": {
+        "hidden": true
+      },
+      "sync_strategy": {
+        "hidden": true
+      },
+      "manual_override_fields": {
+        "hidden": true
+      },
+      "last_import_diff": {
+        "hidden": true
+      },
+      "last_import_payload": {
+        "hidden": true
+      },
+      "icon": {
+        "hidden": true
+      },
+      "emoji": {
+        "hidden": true
+      },
+      "cta": {
+        "hidden": true
+      },
+      "seo_title": {
+        "hidden": true
+      },
+      "seo_description": {
+        "hidden": true
+      },
+      "hero_eyebrow": {
+        "hidden": true
+      },
+      "hero_title": {
+        "hidden": true
+      },
+      "hero_secondary_cta_label": {
+        "hidden": true
+      },
+      "hero_secondary_cta_url": {
+        "hidden": true
+      },
+      "problem_title": {
+        "hidden": true
+      },
+      "problem_points": {
+        "hidden": true
+      },
+      "solution_title": {
+        "hidden": true
+      },
+      "solution_points": {
+        "hidden": true
+      },
+      "features_title": {
+        "hidden": true
+      },
+      "features": {
+        "hidden": true
+      },
+      "steps_title": {
+        "hidden": true
+      },
+      "steps": {
+        "hidden": true
+      },
+      "integrations_title": {
+        "hidden": true
+      },
+      "integrations_intro": {
+        "hidden": true
+      },
+      "integrations": {
+        "hidden": true
+      },
+      "integrations_more_text": {
+        "hidden": true
+      },
+      "roi_title": {
+        "hidden": true
+      },
+      "roi_intro": {
+        "hidden": true
+      },
+      "roi_metrics": {
+        "hidden": true
+      },
+      "roi_quote": {
+        "hidden": true
+      },
+      "roi_quote_author": {
+        "hidden": true
+      },
+      "faq_title": {
+        "hidden": true
+      },
+      "faq": {
+        "hidden": true
+      },
+      "related_types_title": {
+        "hidden": true
+      },
+      "related_links_intro": {
+        "hidden": true
+      },
+      "pricing_link_label": {
+        "hidden": true
+      },
+      "final_cta_title": {
+        "hidden": true
+      },
+      "final_cta_text": {
+        "hidden": true
+      },
+      "final_cta_label": {
+        "hidden": true
+      }
+    }
   }
 }

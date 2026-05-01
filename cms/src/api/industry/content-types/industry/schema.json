@@ -330,5 +330,75 @@
         }
       }
     }
+  },
+  "config": {
+    "attributes": {
+      "content_origin": {
+        "hidden": true
+      },
+      "record_mode": {
+        "hidden": true
+      },
+      "external_id": {
+        "hidden": true
+      },
+      "import_batch_id": {
+        "hidden": true
+      },
+      "last_imported_at": {
+        "hidden": true
+      },
+      "sync_strategy": {
+        "hidden": true
+      },
+      "manual_override_fields": {
+        "hidden": true
+      },
+      "last_import_diff": {
+        "hidden": true
+      },
+      "last_import_payload": {
+        "hidden": true
+      },
+      "emoji": {
+        "hidden": true
+      },
+      "icon": {
+        "hidden": true
+      },
+      "h1": {
+        "hidden": true
+      },
+      "subtitle": {
+        "hidden": true
+      },
+      "content": {
+        "hidden": true
+      },
+      "problem_title": {
+        "hidden": true
+      },
+      "solution_title": {
+        "hidden": true
+      },
+      "faq": {
+        "hidden": true
+      },
+      "faq_title": {
+        "hidden": true
+      },
+      "sticky_cta_title": {
+        "hidden": true
+      },
+      "sticky_cta_text": {
+        "hidden": true
+      },
+      "seo_title": {
+        "hidden": true
+      },
+      "seo_description": {
+        "hidden": true
+      }
+    }
   }
 }
