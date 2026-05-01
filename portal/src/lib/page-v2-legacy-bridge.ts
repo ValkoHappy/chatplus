@@ -135,11 +135,8 @@ function joinNonEmpty(values: string[], separator = ' / ') {
     .join(separator);
 }
 
-function collectLinkBlocks(page: UnknownRecord) {
-  const blocks = [
-    ...findBlocks(page, 'internal-links'),
-    ...findBlocks(page, 'related-links'),
-  ];
+function collectInternalLinkBlocks(page: UnknownRecord) {
+  const blocks = findBlocks(page, 'internal-links');
 
   return {
     eyebrow: blocks.map((block) => asString(block.eyebrow)).find(Boolean) || '',
@@ -259,7 +256,7 @@ function mapFaqItems(items: unknown) {
 function buildBasePage(page: UnknownRecord) {
   const hero = findBlock(page, 'hero');
   const finalCta = findBlock(page, 'final-cta');
-  const linkBlocks = collectLinkBlocks(page);
+  const linkBlocks = collectInternalLinkBlocks(page);
   const faq = findBlock(page, 'faq');
   const routeSlug = routeSlugFromPage(page);
   const currentHref = normalizeHref(asString(page.route_path) || `/${routeSlug}`);
@@ -450,6 +447,14 @@ function pickUseCases(page: UnknownRecord) {
     findBlockByVariant(page, 'cards-grid', 'use_cases') ||
     findBlockByVariant(page, 'cards-grid', 'use-cases') ||
     findBlock(page, 'related-links') ||
+    null
+  );
+}
+
+function pickUseCaseCards(page: UnknownRecord) {
+  return (
+    findBlockByVariant(page, 'cards-grid', 'use_cases') ||
+    findBlockByVariant(page, 'cards-grid', 'use-cases') ||
     null
   );
 }
@@ -894,7 +899,8 @@ function mapStructuredPage(page: UnknownRecord) {
   const cardsGrid = findBlockByVariant(page, 'cards-grid', 'problems') || findBlock(page, 'cards-grid');
   const integrationsGrid = pickIntegrationCards(page);
   const featureList = findBlock(page, 'feature-list');
-  const useCasesGrid = pickUseCases(page);
+  const useCasesGrid = pickUseCaseCards(page);
+  const relatedLinks = findBlock(page, 'related-links');
 
   applyHeroPanel(target, hero, 'structured');
   applyCardsToProblems(target, cardsGrid);
@@ -904,7 +910,7 @@ function mapStructuredPage(page: UnknownRecord) {
   applyBeforeAfter(target, findBlock(page, 'before-after'));
   applyComparison(target, findBlock(page, 'comparison-table'));
   applyUseCases(target, useCasesGrid);
-  applyNavigationGroups(target, useCasesGrid);
+  applyNavigationGroups(target, relatedLinks);
 
   const breadcrumbs = mapLinks(page.breadcrumbs)
     .map((item) => ({ label: item.label, href: item.href }))

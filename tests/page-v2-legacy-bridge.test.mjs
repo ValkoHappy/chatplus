@@ -360,6 +360,43 @@ test('page_v2 legacy bridge maps structured page to legacy structured props', ()
   assert.equal(result.breadcrumbs[1].href, '/channels');
 });
 
+test('page_v2 structured bridge keeps related links separate from internal links', () => {
+  const result = mapPageV2ToLegacyPage({
+    route_path: '/for/government/real-estate',
+    title: 'Government and real estate',
+    sections: [
+      {
+        block_type: 'hero',
+        title: 'Government and real estate',
+      },
+      {
+        block_type: 'related-links',
+        eyebrow: 'Ready scenarios',
+        title: 'Related pages',
+        intro: 'Scenario routes.',
+        links: [
+          { label: 'Government', href: '/for/government', description: 'Public sector workflows.' },
+          { label: 'Real estate', href: '/industries/real-estate', description: 'Property workflows.' },
+        ],
+      },
+      {
+        block_type: 'internal-links',
+        title: 'Next steps',
+        intro: 'Useful product routes.',
+        links: [
+          { label: 'Demo', href: '/demo', description: 'Book a demo.' },
+        ],
+      },
+    ],
+  }, 'structured');
+
+  assert.equal(result.navigation_groups_title, 'Related pages');
+  assert.equal(result.navigation_groups[0].items.length, 2);
+  assert.equal(result.internal_links_title, 'Next steps');
+  assert.deepEqual(result.internal_links.map((item) => item.href), ['/demo']);
+  assert.equal(result.use_cases_title, undefined);
+});
+
 test('page_v2 legacy bridge maps directory page to legacy directory props', () => {
   const result = mapPageV2ToLegacyPage({
     title: 'Solutions',
