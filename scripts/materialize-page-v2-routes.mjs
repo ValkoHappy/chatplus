@@ -118,13 +118,13 @@ function repairMojibakeDeep(value) {
 }
 
 const COLLECTIONS = Object.freeze({
-  channels: { endpoint: 'channels', routeRoot: '/channels', label: 'Channels', singular: 'channel' },
-  industries: { endpoint: 'industries', routeRoot: '/industries', label: 'Industries', singular: 'industry' },
-  integrations: { endpoint: 'integrations', routeRoot: '/integrations', label: 'Integrations', singular: 'integration' },
-  solutions: { endpoint: 'solutions', routeRoot: '/solutions', label: 'Solutions', singular: 'solution' },
-  features: { endpoint: 'features', routeRoot: '/features', label: 'Features', singular: 'feature' },
-  business_types: { endpoint: 'business-types', routeRoot: '/for', label: 'For business', singular: 'business_type' },
-  competitors: { endpoint: 'competitors', routeRoot: '/compare', label: 'Compare', singular: 'competitor' },
+  channels: { endpoint: 'channels', routeRoot: '/channels', label: 'Каналы', singular: 'channel' },
+  industries: { endpoint: 'industries', routeRoot: '/industries', label: 'Отрасли', singular: 'industry' },
+  integrations: { endpoint: 'integrations', routeRoot: '/integrations', label: 'Интеграции', singular: 'integration' },
+  solutions: { endpoint: 'solutions', routeRoot: '/solutions', label: 'Решения', singular: 'solution' },
+  features: { endpoint: 'features', routeRoot: '/features', label: 'Возможности', singular: 'feature' },
+  business_types: { endpoint: 'business-types', routeRoot: '/for', label: 'Для бизнеса', singular: 'business_type' },
+  competitors: { endpoint: 'competitors', routeRoot: '/compare', label: 'Сравнения', singular: 'competitor' },
 });
 
 const LOCAL_ENTITY_UIDS = Object.freeze({
@@ -142,12 +142,12 @@ const LOCAL_ENTITY_UIDS = Object.freeze({
 });
 
 const DIRECTORY_ROUTES = Object.freeze([
-  { family: 'directory', key: 'channels', routePath: '/channels', title: 'Channels', collection: 'channels', navGroup: 'catalogs', order: 10 },
-  { family: 'directory', key: 'industries', routePath: '/industries', title: 'Industries', collection: 'industries', navGroup: 'catalogs', order: 20 },
-  { family: 'directory', key: 'integrations', routePath: '/integrations', title: 'Integrations', collection: 'integrations', navGroup: 'catalogs', order: 30 },
-  { family: 'directory', key: 'solutions', routePath: '/solutions', title: 'Solutions', collection: 'solutions', navGroup: 'catalogs', order: 40 },
-  { family: 'directory', key: 'features', routePath: '/features', title: 'Features', collection: 'features', navGroup: 'catalogs', order: 50 },
-  { family: 'directory', key: 'for', routePath: '/for', title: 'For business', collection: 'business_types', navGroup: 'catalogs', order: 60 },
+  { family: 'directory', key: 'channels', routePath: '/channels', title: 'Каналы', collection: 'channels', navGroup: 'catalogs', order: 10 },
+  { family: 'directory', key: 'industries', routePath: '/industries', title: 'Отрасли', collection: 'industries', navGroup: 'catalogs', order: 20 },
+  { family: 'directory', key: 'integrations', routePath: '/integrations', title: 'Интеграции', collection: 'integrations', navGroup: 'catalogs', order: 30 },
+  { family: 'directory', key: 'solutions', routePath: '/solutions', title: 'Решения', collection: 'solutions', navGroup: 'catalogs', order: 40 },
+  { family: 'directory', key: 'features', routePath: '/features', title: 'Возможности', collection: 'features', navGroup: 'catalogs', order: 50 },
+  { family: 'directory', key: 'for', routePath: '/for', title: 'Для бизнеса', collection: 'business_types', navGroup: 'catalogs', order: 60 },
   { family: 'comparison', key: 'compare', routePath: '/compare', title: 'Сравнение альтернатив', collection: 'competitors', navGroup: 'catalogs', order: 70 },
 ]);
 
@@ -168,7 +168,7 @@ const INTERSECTION_FAMILIES = Object.freeze([
     left: 'channels',
     right: 'industries',
     route: (channel, industry) => `/channels/${channel.slug}/${industry.slug}`,
-    title: (channel, industry) => `${channel.name} for ${industry.name}`,
+    title: (channel, industry) => `${channel.name} для отрасли «${industry.name}»`,
   },
   {
     family: 'entity_intersection',
@@ -176,7 +176,7 @@ const INTERSECTION_FAMILIES = Object.freeze([
     left: 'channels',
     right: 'integrations',
     route: (channel, integration) => `/channels/${channel.slug}/${integration.slug}`,
-    title: (channel, integration) => `${channel.name} вЂ” ${integration.name}`,
+    title: (channel, integration) => `${channel.name} и ${integration.name}`,
   },
   {
     family: 'entity_intersection',
@@ -184,7 +184,7 @@ const INTERSECTION_FAMILIES = Object.freeze([
     left: 'industries',
     right: 'solutions',
     route: (industry, solution) => `/industries/${industry.slug}/${solution.slug}`,
-    title: (industry, solution) => `${solution.name} for ${industry.name}`,
+    title: (industry, solution) => `${solution.name} для отрасли «${industry.name}»`,
   },
   {
     family: 'entity_intersection',
@@ -192,7 +192,7 @@ const INTERSECTION_FAMILIES = Object.freeze([
     left: 'integrations',
     right: 'solutions',
     route: (integration, solution) => `/integrations/${integration.slug}/${solution.slug}`,
-    title: (integration, solution) => `${integration.name} for ${solution.name}`,
+    title: (integration, solution) => `${integration.name} для сценария «${solution.name}»`,
   },
   {
     family: 'entity_intersection',
@@ -200,7 +200,7 @@ const INTERSECTION_FAMILIES = Object.freeze([
     left: 'business_types',
     right: 'industries',
     route: (businessType, industry) => `/for/${businessType.slug}/${industry.slug}`,
-    title: (businessType, industry) => `${businessType.name} in ${industry.name}`,
+    title: (businessType, industry) => `${businessType.name} для отрасли «${industry.name}»`,
   },
 ]);
 
@@ -760,11 +760,11 @@ function createCommonDetailSections({
   fallbackTitle,
   useCasesTitle,
   useCasesIntro = '',
-  useCasesEyebrow = 'Explore',
+  useCasesEyebrow = 'Каталог',
   useCasesLinks = [],
   integrationsTitle = '',
   integrationItems = [],
-  internalLinksTitle = 'Related pages',
+  internalLinksTitle = 'Связанные страницы',
   internalLinksIntro = '',
   internalLinkItems = [],
   comparisonRows = [],
@@ -803,7 +803,7 @@ function createCommonDetailSections({
   })).filter((item) => item.title || item.text);
   if (problems.length || asString(entity.problem_title) || asString(entity.problem_intro)) {
     sections.push(cardsGrid(
-      asString(entity.problem_title) || 'Why teams struggle',
+      asString(entity.problem_title) || 'Что мешает работе',
       asString(entity.problem_intro) || asString(entity.pain),
       problems,
       'problems',
@@ -816,7 +816,7 @@ function createCommonDetailSections({
   })).filter((item) => item.title || item.text);
   if (solutionSteps.length || asString(entity.solution_title) || asString(entity.solution_intro) || asString(entity.solution)) {
     sections.push(steps(
-      asString(entity.solution_title) || 'How it works',
+      asString(entity.solution_title) || 'Как это работает',
       solutionSteps.length ? solutionSteps : [{ title: fallbackTitle, text: asString(entity.solution) || descriptionForEntity(entity) }],
     ));
     const solutionPointsIntro = asArray(entity.solution_points)
@@ -828,14 +828,14 @@ function createCommonDetailSections({
 
   if (asArray(entity.features).length || asString(entity.features_title)) {
     sections.push(featureList(
-      asString(entity.features_title) || 'Included capabilities',
+      asString(entity.features_title) || 'Что входит',
       asArray(entity.features),
     ));
   }
 
   if (integrationItems.length) {
     sections.push(cardsGrid(
-      integrationsTitle || 'Connected tools',
+      integrationsTitle || 'Подключенные сервисы',
       '',
       integrationItems,
       'integrations',
@@ -850,10 +850,10 @@ function createCommonDetailSections({
     || asString(entity.roi_quote)
   ) {
     sections.push(beforeAfter({
-      title: asString(entity.roi_title) || 'Before and after',
+      title: asString(entity.roi_title) || 'До и после',
       intro: asString(entity.roi_intro),
-      beforeTitle: asString(entity.roi_without_title) || 'Without Chat Plus',
-      afterTitle: asString(entity.roi_with_title) || 'With Chat Plus',
+      beforeTitle: asString(entity.roi_without_title) || 'Без Chat Plus',
+      afterTitle: asString(entity.roi_with_title) || 'С Chat Plus',
       beforeItems: asArray(entity.roi_without_items).length
         ? entity.roi_without_items
         : problems.map((item) => item.title || item.text).filter(Boolean).slice(0, 3),
@@ -869,7 +869,7 @@ function createCommonDetailSections({
 
   if (comparisonRows.length || asString(entity.comparison_title) || asString(entity.pricing_title)) {
     sections.push(comparisonTable(
-      asString(entity.comparison_title) || asString(entity.pricing_title) || 'Comparison',
+      asString(entity.comparison_title) || asString(entity.pricing_title) || 'Сравнение',
       comparisonRows,
       comparisonLabels,
     ));
@@ -877,7 +877,7 @@ function createCommonDetailSections({
 
   if (useCasesLinks.length || asString(useCasesTitle)) {
     sections.push(relatedLinks(
-      useCasesTitle || 'Where this helps',
+      useCasesTitle || 'Где это помогает',
       useCasesLinks,
       useCasesIntro,
       useCasesEyebrow,
@@ -885,7 +885,7 @@ function createCommonDetailSections({
   }
 
   sections.push(faq(
-    asString(entity.faq_title) || 'FAQ',
+    asString(entity.faq_title) || 'Частые вопросы',
     asArray(entity.faq),
   ));
 
@@ -897,11 +897,11 @@ function createCommonDetailSections({
   ));
 
   sections.push(finalCta(
-    asString(entity.sticky_cta_title) || asString(entity.final_cta_title) || `See ${fallbackTitle} in action`,
+    asString(entity.sticky_cta_title) || asString(entity.final_cta_title) || `Попробовать сценарий «${fallbackTitle}»`,
     asString(entity.sticky_cta_text) || asString(entity.final_cta_text) || descriptionForEntity(entity),
     asString(entity.final_cta_label) || asString(entity.cta) || 'Записаться на демо',
     '/demo',
-    asString(entity.pricing_link_label) || 'See pricing',
+    asString(entity.pricing_link_label) || 'Цены',
     '/pricing',
   ));
 
@@ -941,7 +941,7 @@ function basePageData({
     legacy_layout_signature: {},
     parity_notes: {},
     seo_title: title,
-    seo_description: description || `${title} in the Chat Plus page layer.`,
+    seo_description: description || `Страница Chat Plus по теме «${title}».`,
     robots: 'index,follow',
     nav_group: navGroup,
     nav_label: navLabel || title,
@@ -1366,7 +1366,7 @@ export function buildDirectoryDraft(config, collections) {
 export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
   const config = COLLECTIONS[collectionKey];
   const title = titleForEntity(entity, config.label);
-  const description = descriptionForEntity(entity, `${title} page generated from Strapi entity facts.`);
+  const description = descriptionForEntity(entity, `Страница Chat Plus по теме «${title}».`);
   const routePath = `${config.routeRoot}/${entity.slug}`;
   let links = [linkItem(config.label, config.routeRoot)];
   for (const relatedLink of asArray(options.relatedLinks)) {
@@ -1378,7 +1378,7 @@ export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
     const siblings = asArray(options.collections?.[collectionKey])
       .filter((item) => item?.slug && item.slug !== entity.slug)
       .slice(0, 4)
-      .map((item) => linkItem(titleForEntity(item, 'Related page'), `${config.routeRoot}/${item.slug}`, descriptionForEntity(item)));
+      .map((item) => linkItem(titleForEntity(item, 'Связанная страница'), `${config.routeRoot}/${item.slug}`, descriptionForEntity(item)));
     for (const sibling of siblings) {
       links = appendUniqueLink(links, sibling);
     }
@@ -1387,17 +1387,17 @@ export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
   const useCaseLinks = [];
   const integrationItems = [];
   let integrationsTitle = asString(entity.integrations_title);
-  let detailUseCasesTitle = asString(entity.use_cases_title) || `Where ${title} helps`;
+  let detailUseCasesTitle = asString(entity.use_cases_title) || `Где помогает ${title}`;
   let detailUseCasesIntro = '';
-  let detailUseCasesEyebrow = 'Explore';
-  let detailInternalLinksTitle = asString(entity.internal_links_title) || 'Related pages';
+  let detailUseCasesEyebrow = 'Каталог';
+  let detailInternalLinksTitle = asString(entity.internal_links_title) || 'Связанные страницы';
   let detailInternalLinksIntro = '';
   let detailInternalLinkItems = links;
   if (collectionKey === 'channels') {
     for (const item of asArray(options.collections?.industries).slice(0, 4)) {
       useCaseLinks.push(linkItem(titleForEntity(item), `/channels/${entity.slug}/${item.slug}`, descriptionForEntity(item)));
     }
-    integrationsTitle = integrationsTitle || `Integrations with ${title}`;
+    integrationsTitle = integrationsTitle || `Интеграции с ${title}`;
     for (const item of asArray(options.collections?.integrations).slice(0, 6)) {
       integrationItems.push({
         title: titleForEntity(item),
@@ -1409,7 +1409,7 @@ export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
     for (const item of asArray(options.collections?.solutions).slice(0, 4)) {
       useCaseLinks.push(linkItem(titleForEntity(item), `/industries/${entity.slug}/${item.slug}`, descriptionForEntity(item)));
     }
-    integrationsTitle = integrationsTitle || `Top channels for ${title}`;
+    integrationsTitle = integrationsTitle || `Каналы для ${title}`;
     for (const item of asArray(options.collections?.channels).slice(0, 6)) {
       integrationItems.push({
         title: titleForEntity(item),
@@ -1421,7 +1421,7 @@ export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
     for (const item of asArray(options.collections?.solutions).slice(0, 4)) {
       useCaseLinks.push(linkItem(titleForEntity(item), `/integrations/${entity.slug}/${item.slug}`, descriptionForEntity(item)));
     }
-    integrationsTitle = integrationsTitle || `Works with ${title}`;
+    integrationsTitle = integrationsTitle || `Сценарии с ${title}`;
     for (const item of asArray(options.collections?.solutions).slice(0, 6)) {
       integrationItems.push({
         title: titleForEntity(item),
@@ -1433,7 +1433,7 @@ export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
     for (const item of asArray(options.collections?.industries).slice(0, 4)) {
       useCaseLinks.push(linkItem(titleForEntity(item), `/industries/${item.slug}`, descriptionForEntity(item)));
     }
-    integrationsTitle = integrationsTitle || `Connected services for ${title}`;
+    integrationsTitle = integrationsTitle || `Подключенные сервисы для ${title}`;
     for (const item of asArray(options.collections?.integrations).slice(0, 6)) {
       integrationItems.push({
         title: titleForEntity(item),
@@ -1445,7 +1445,7 @@ export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
     for (const item of asArray(options.collections?.industries).slice(0, 4)) {
       useCaseLinks.push(linkItem(titleForEntity(item), `/industries/${item.slug}/${entity.slug}`, descriptionForEntity(item)));
     }
-    integrationsTitle = integrationsTitle || `Connected tools for ${title}`;
+    integrationsTitle = integrationsTitle || `Инструменты для ${title}`;
     for (const item of asArray(options.collections?.integrations).slice(0, 6)) {
       integrationItems.push({
         title: titleForEntity(item),
@@ -1477,7 +1477,7 @@ export function buildEntityDetailDraft(collectionKey, entity, options = {}) {
         .map((item) => linkItem(titleForEntity(item), `/channels/${item.slug}`, descriptionForEntity(item))),
       linkItem(asString(entity.pricing_link_label) || 'РџРѕСЃРјРѕС‚СЂРµС‚СЊ С†РµРЅС‹', '/pricing'),
     ];
-    integrationsTitle = integrationsTitle || `Common channels for ${title}`;
+    integrationsTitle = integrationsTitle || `Популярные каналы для ${title}`;
     for (const item of asArray(options.collections?.channels).slice(0, 6)) {
       integrationItems.push({
         title: titleForEntity(item),
@@ -1696,7 +1696,7 @@ function buildIntersectionDraft(config, left, right, collections = {}) {
     descriptionForEntity(right),
     asString(left.subtitle),
     descriptionForEntity(left),
-    `${title} page generated from Strapi entity facts.`,
+    `Готовый сценарий Chat Plus по теме «${title}».`,
   );
 
   const leftRoute = config.left === 'business_types'
@@ -2079,7 +2079,7 @@ async function buildDrafts(options = {}, context = {}) {
 
         const routePath = normalizePageV2RoutePath(config.route(left, right));
         const title = config.title(left, right);
-        const description = `${title} page generated from Strapi entity facts.`;
+        const description = `Готовый сценарий Chat Plus по теме «${title}».`;
         const relatedLink = linkItem(title, routePath, description);
 
         appendRelatedEntityLink(entityDetailRoute(config.left, left), relatedLink);

@@ -577,6 +577,34 @@ test('buildEntityDetailDraft can include related intersection links for incoming
   assert.ok(internalLinksSection.links.some((link) => link.href === '/channels'));
 });
 
+test('buildEntityDetailDraft uses Russian page-v2 fallback copy for catalog links', () => {
+  const draft = buildEntityDetailDraft(
+    'industries',
+    {
+      slug: 'beauty',
+      name: 'Салоны красоты',
+      description: '',
+    },
+    {
+      collections: {
+        industries: [],
+        solutions: [{ slug: 'sales', name: 'Продажи', description: '' }],
+        channels: [{ slug: 'whatsapp', name: 'WhatsApp', description: '' }],
+      },
+    },
+  );
+
+  const rendered = JSON.stringify(draft.data.sections);
+
+  assert.doesNotMatch(rendered, /page generated from Strapi entity facts/i);
+  assert.doesNotMatch(rendered, /\bfor\b/);
+  assert.doesNotMatch(rendered, /\bin\b/);
+  assert.doesNotMatch(rendered, /Related pages|Connected services|Top channels/);
+  assert.match(rendered, /Отрасли/);
+  assert.match(rendered, /Связанные страницы/);
+  assert.match(rendered, /Каналы для Салоны красоты/);
+});
+
 test('buildEntityDetailDraft preserves rich feature page sections from entity facts', () => {
   const draft = buildEntityDetailDraft(
     'features',
