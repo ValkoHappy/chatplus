@@ -130,11 +130,14 @@ jobs:
           WITH_SEED: ${{ steps.importer.outputs.with_seed }}
         run: |
           REMOTE_BRANCH="${GITHUB_REF_NAME:-main}"
-          REMOTE_CMD="cd '${VPS_APP_DIR}' && git checkout '${REMOTE_BRANCH}' && git pull --ff-only origin '${REMOTE_BRANCH}' && ./deploy/scripts/update.sh --skip-pull"
+          UPDATE_CMD="./deploy/scripts/update.sh --skip-pull"
 
           if [[ "${WITH_SEED}" == "true" ]]; then
-            REMOTE_CMD="${REMOTE_CMD} --with-seed"
+            UPDATE_CMD="${UPDATE_CMD} --with-seed"
           fi
+
+          REMOTE_LOG="deploy/logs/github-actions-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.log"
+          REMOTE_CMD="cd '${VPS_APP_DIR}' && git checkout '${REMOTE_BRANCH}' && git pull --ff-only origin '${REMOTE_BRANCH}' && mkdir -p deploy/logs && echo 'Running production update; full log: ${REMOTE_LOG}' && if ${UPDATE_CMD} > '${REMOTE_LOG}' 2>&1; then echo 'Production update completed'; tail -n 80 '${REMOTE_LOG}'; else status=\$?; echo 'Production update failed; last 200 log lines:'; tail -n 200 '${REMOTE_LOG}'; exit \$status; fi"
 
           ssh \
             -o ServerAliveInterval=30 \
