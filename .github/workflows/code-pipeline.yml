@@ -1,7 +1,7 @@
 name: Code Pipeline
 
 env:
-  # Keep GitHub-hosted JavaScript actions on the runtime GitHub will enforce next.
+  # Keep GitHub-hosted JavaScript actions on the runtime GitHub is rolling out.
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
