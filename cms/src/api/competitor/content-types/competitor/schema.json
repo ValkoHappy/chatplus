@@ -380,6 +380,48 @@
       },
       "section_labels": {
         "hidden": true
+      },
+      "eyebrow": {
+        "hidden": true
+      },
+      "hero_description": {
+        "hidden": true
+      },
+      "compare_summary": {
+        "hidden": true
+      },
+      "compare_points": {
+        "hidden": true
+      },
+      "pricing_title": {
+        "hidden": true
+      },
+      "our_price_label": {
+        "hidden": true
+      },
+      "our_price_caption": {
+        "hidden": true
+      },
+      "competitor_price_caption": {
+        "hidden": true
+      },
+      "advantages_title": {
+        "hidden": true
+      },
+      "advantages_intro": {
+        "hidden": true
+      },
+      "weaknesses_title": {
+        "hidden": true
+      },
+      "our_strengths": {
+        "hidden": true
+      },
+      "weaknesses": {
+        "hidden": true
+      },
+      "sticky_cta_text": {
+        "hidden": true
       }
     }
   }

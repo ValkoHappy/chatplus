@@ -31,6 +31,14 @@ function assertContentManagerHidden(schema: any, attributeNames: string[]) {
   }
 }
 
+function assertContentManagerVisibleFields(schema: any, expectedVisibleFields: string[]) {
+  const visibleFields = Object.keys(schema.attributes ?? {}).filter(
+    (attributeName) => schema.config?.attributes?.[attributeName]?.hidden !== true
+  );
+
+  assert.deepEqual(visibleFields, expectedVisibleFields);
+}
+
 test('parseCollectionData validates collection payloads', () => {
   const data = parseCollectionData(
     {
@@ -187,22 +195,24 @@ test('AI generation job schema explains controls in Russian', () => {
 });
 
 test('legacy catalog page fields stay hidden from Content Manager', () => {
-  const catalogSchemas = [
-    'cms/src/api/business-type/content-types/business-type/schema.json',
-    'cms/src/api/channel/content-types/channel/schema.json',
-    'cms/src/api/feature/content-types/feature/schema.json',
-    'cms/src/api/industry/content-types/industry/schema.json',
-    'cms/src/api/integration/content-types/integration/schema.json',
-    'cms/src/api/solution/content-types/solution/schema.json',
-  ];
+  const catalogSchemas = {
+    'cms/src/api/business-type/content-types/business-type/schema.json': ['slug', 'name', 'description'],
+    'cms/src/api/channel/content-types/channel/schema.json': ['slug', 'name', 'description'],
+    'cms/src/api/feature/content-types/feature/schema.json': ['slug', 'name', 'description'],
+    'cms/src/api/industry/content-types/industry/schema.json': ['slug', 'name', 'description', 'pain', 'solution'],
+    'cms/src/api/integration/content-types/integration/schema.json': ['slug', 'name', 'category', 'description'],
+    'cms/src/api/solution/content-types/solution/schema.json': ['slug', 'name', 'description', 'pain', 'solution'],
+  };
 
-  for (const schemaPath of catalogSchemas) {
+  for (const [schemaPath, expectedVisibleFields] of Object.entries(catalogSchemas)) {
     const schema = readJson(schemaPath);
     assertContentManagerHidden(schema, ['icon', 'emoji', 'seo_title', 'seo_description']);
+    assertContentManagerVisibleFields(schema, expectedVisibleFields);
   }
 
   const competitorSchema = readJson('cms/src/api/competitor/content-types/competitor/schema.json');
   assertContentManagerHidden(competitorSchema, ['seo_title', 'seo_description', 'hero_title', 'sticky_cta_title']);
+  assertContentManagerVisibleFields(competitorSchema, ['slug', 'name', 'price', 'our_price']);
 });
 
 test('page block components include Russian editor examples', () => {

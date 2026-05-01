@@ -396,6 +396,39 @@
       },
       "seo_description": {
         "hidden": true
+      },
+      "problem_intro": {
+        "hidden": true
+      },
+      "problems": {
+        "hidden": true
+      },
+      "solution_intro": {
+        "hidden": true
+      },
+      "solution_steps": {
+        "hidden": true
+      },
+      "features_title": {
+        "hidden": true
+      },
+      "roi_title": {
+        "hidden": true
+      },
+      "roi_without_items": {
+        "hidden": true
+      },
+      "roi_with_items": {
+        "hidden": true
+      },
+      "roi_quote": {
+        "hidden": true
+      },
+      "cta": {
+        "hidden": true
+      },
+      "roi_metrics": {
+        "hidden": true
       }
     }
   }
