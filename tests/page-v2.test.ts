@@ -246,6 +246,7 @@ test('new native page_v2 routes are visible after publish and editorial approval
 test('Astro draft preview is closed, noindex and served by a runtime-only route', () => {
   const astroConfig = readFileSync('portal/astro.config.mjs', 'utf8');
   const previewRoute = readFileSync('portal/src/pages/preview/page/[documentId].astro', 'utf8');
+  const strapiAdminConfig = readFileSync('cms/config/admin.ts', 'utf8');
   const nginxTemplate = readFileSync('deploy/nginx/templates/public-site.conf.template', 'utf8');
   const compose = readFileSync('deploy/docker-compose.prod.yml', 'utf8');
   const baseLayout = readFileSync('portal/src/layouts/Base.astro', 'utf8');
@@ -257,9 +258,15 @@ test('Astro draft preview is closed, noindex and served by a runtime-only route'
   assert.match(previewRoute, /isPreviewTokenValid/);
   assert.match(previewRoute, /getPageV2DraftByDocumentId/);
   assert.match(previewRoute, /noindex,\s*nofollow/);
+  assert.match(strapiAdminConfig, /preview:\s*\{/);
+  assert.match(strapiAdminConfig, /PAGE_V2_UID/);
+  assert.match(strapiAdminConfig, /allowedOrigins:\s*\[/);
+  assert.match(strapiAdminConfig, /\/__preview\/page\/\$\{encodeURIComponent\(previewDocumentId\)\}/);
   assert.match(nginxTemplate, /location \^~ \/__preview\//);
   assert.match(nginxTemplate, /proxy_pass http:\/\/portal-preview:4321\/preview\//);
   assert.match(compose, /portal-preview:/);
+  assert.match(compose, /strapi:[\s\S]*PREVIEW_TOKEN: \$\{PREVIEW_TOKEN\}/);
+  assert.match(compose, /strapi:[\s\S]*PUBLIC_SITE_URL: \$\{PUBLIC_SITE_URL\}/);
   assert.match(compose, /PREVIEW_TOKEN: \$\{PREVIEW_TOKEN\}/);
   assert.match(baseLayout, /meta name="robots" content=\{robots\}/);
   assert.match(pageV2Page, /robots=\{robots\}/);
