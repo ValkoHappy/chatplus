@@ -453,37 +453,127 @@ export interface ApiBusinessTypeBusinessType
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    cta: Schema.Attribute.String;
+    cta: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    emoji: Schema.Attribute.String;
+    emoji: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     external_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
           visible: false;
         };
       }>;
-    faq: Schema.Attribute.JSON;
-    faq_title: Schema.Attribute.String;
-    features: Schema.Attribute.JSON;
-    features_title: Schema.Attribute.String;
-    final_cta_label: Schema.Attribute.String;
-    final_cta_text: Schema.Attribute.Text;
-    final_cta_title: Schema.Attribute.String;
-    hero_eyebrow: Schema.Attribute.String;
-    hero_secondary_cta_label: Schema.Attribute.String;
-    hero_secondary_cta_url: Schema.Attribute.String;
-    hero_title: Schema.Attribute.String;
-    icon: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    faq_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    final_cta_label: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    final_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    final_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    hero_eyebrow: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    hero_secondary_cta_label: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    hero_secondary_cta_url: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    hero_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     import_batch_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
           visible: false;
         };
       }>;
-    integrations: Schema.Attribute.JSON;
-    integrations_intro: Schema.Attribute.Text;
-    integrations_more_text: Schema.Attribute.String;
-    integrations_title: Schema.Attribute.String;
+    integrations: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    integrations_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    integrations_more_text: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    integrations_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     last_import_diff: Schema.Attribute.JSON &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -516,9 +606,24 @@ export interface ApiBusinessTypeBusinessType
         };
       }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    pricing_link_label: Schema.Attribute.String;
-    problem_points: Schema.Attribute.JSON;
-    problem_title: Schema.Attribute.String;
+    pricing_link_label: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_points: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     record_mode: Schema.Attribute.Enumeration<
       ['managed', 'imported', 'settings']
@@ -529,20 +634,85 @@ export interface ApiBusinessTypeBusinessType
         };
       }> &
       Schema.Attribute.DefaultTo<'imported'>;
-    related_links_intro: Schema.Attribute.String;
-    related_types_title: Schema.Attribute.String;
-    roi_intro: Schema.Attribute.String;
-    roi_metrics: Schema.Attribute.JSON;
-    roi_quote: Schema.Attribute.Text;
-    roi_quote_author: Schema.Attribute.String;
-    roi_title: Schema.Attribute.String;
-    seo_description: Schema.Attribute.Text;
-    seo_title: Schema.Attribute.String;
+    related_links_intro: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    related_types_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_intro: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_metrics: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_quote: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_quote_author: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    solution_points: Schema.Attribute.JSON;
-    solution_title: Schema.Attribute.String;
-    steps: Schema.Attribute.JSON;
-    steps_title: Schema.Attribute.String;
+    solution_points: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    steps_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     sync_strategy: Schema.Attribute.Enumeration<
       ['merge', 'frozen', 'system_only']
     > &
@@ -628,7 +798,12 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.RichText;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -639,21 +814,61 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    cta: Schema.Attribute.String;
+    cta: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    emoji: Schema.Attribute.String;
+    emoji: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     external_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
           visible: false;
         };
       }>;
-    faq: Schema.Attribute.JSON;
-    faq_title: Schema.Attribute.String;
-    features: Schema.Attribute.JSON;
-    features_title: Schema.Attribute.String;
-    h1: Schema.Attribute.String;
-    icon: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    faq_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    h1: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     import_batch_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -692,9 +907,24 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
         };
       }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    problem_intro: Schema.Attribute.Text;
-    problem_title: Schema.Attribute.String;
-    problems: Schema.Attribute.JSON;
+    problem_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problems: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     record_mode: Schema.Attribute.Enumeration<
       ['managed', 'imported', 'settings']
@@ -705,21 +935,91 @@ export interface ApiChannelChannel extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'imported'>;
-    roi_metrics: Schema.Attribute.JSON;
-    roi_quote: Schema.Attribute.Text;
-    roi_title: Schema.Attribute.String;
-    roi_with_items: Schema.Attribute.JSON;
-    roi_without_items: Schema.Attribute.JSON;
-    seo_description: Schema.Attribute.Text;
-    seo_title: Schema.Attribute.String;
+    roi_metrics: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_quote: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_with_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_without_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    solution_intro: Schema.Attribute.Text;
-    solution_steps: Schema.Attribute.JSON;
-    solution_title: Schema.Attribute.String;
-    steps: Schema.Attribute.JSON;
-    sticky_cta_text: Schema.Attribute.Text;
-    sticky_cta_title: Schema.Attribute.String;
-    subtitle: Schema.Attribute.Text;
+    solution_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    subtitle: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     sync_strategy: Schema.Attribute.Enumeration<
       ['merge', 'frozen', 'system_only']
     > &
@@ -747,11 +1047,36 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    advantages_intro: Schema.Attribute.Text;
-    advantages_title: Schema.Attribute.String;
-    compare_points: Schema.Attribute.JSON;
-    compare_summary: Schema.Attribute.Text;
-    competitor_price_caption: Schema.Attribute.String;
+    advantages_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    advantages_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    compare_points: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    compare_summary: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    competitor_price_caption: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -768,14 +1093,54 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
           visible: false;
         };
       }>;
-    eyebrow: Schema.Attribute.String;
-    faq_title: Schema.Attribute.String;
-    final_cta_label: Schema.Attribute.String;
-    final_cta_text: Schema.Attribute.Text;
-    final_cta_title: Schema.Attribute.String;
-    hero_description: Schema.Attribute.Text;
-    hero_eyebrow: Schema.Attribute.String;
-    hero_title: Schema.Attribute.String;
+    eyebrow: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    faq_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    final_cta_label: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    final_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    final_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    hero_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    hero_eyebrow: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    hero_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     import_batch_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -815,11 +1180,31 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
       }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     our_price: Schema.Attribute.String & Schema.Attribute.Required;
-    our_price_caption: Schema.Attribute.String;
-    our_price_label: Schema.Attribute.String;
-    our_strengths: Schema.Attribute.JSON;
+    our_price_caption: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    our_price_label: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    our_strengths: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     price: Schema.Attribute.String & Schema.Attribute.Required;
-    pricing_title: Schema.Attribute.String;
+    pricing_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     record_mode: Schema.Attribute.Enumeration<
       ['managed', 'imported', 'settings']
@@ -830,13 +1215,43 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'imported'>;
-    section_labels: Schema.Attribute.JSON;
-    seo_description: Schema.Attribute.Text;
-    seo_title: Schema.Attribute.String;
+    section_labels: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    sticky_cta_text: Schema.Attribute.Text;
-    sticky_cta_title: Schema.Attribute.String;
-    strengths_title: Schema.Attribute.String;
+    sticky_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    strengths_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     sync_strategy: Schema.Attribute.Enumeration<
       ['merge', 'frozen', 'system_only']
     > &
@@ -849,8 +1264,18 @@ export interface ApiCompetitorCompetitor extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    weaknesses: Schema.Attribute.JSON;
-    weaknesses_title: Schema.Attribute.String;
+    weaknesses: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    weaknesses_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
   };
 }
 
@@ -866,7 +1291,12 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.RichText;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -877,21 +1307,61 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    cta: Schema.Attribute.String;
+    cta: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    emoji: Schema.Attribute.String;
+    emoji: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     external_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
           visible: false;
         };
       }>;
-    faq: Schema.Attribute.JSON;
-    faq_title: Schema.Attribute.String;
-    features: Schema.Attribute.JSON;
-    features_title: Schema.Attribute.String;
-    h1: Schema.Attribute.String;
-    icon: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    faq_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    h1: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     import_batch_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -930,9 +1400,24 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
         };
       }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    problem_intro: Schema.Attribute.Text;
-    problem_title: Schema.Attribute.String;
-    problems: Schema.Attribute.JSON;
+    problem_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problems: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     record_mode: Schema.Attribute.Enumeration<
       ['managed', 'imported', 'settings']
@@ -943,19 +1428,79 @@ export interface ApiFeatureFeature extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'imported'>;
-    roi_quote: Schema.Attribute.Text;
-    roi_title: Schema.Attribute.String;
-    roi_with_items: Schema.Attribute.JSON;
-    roi_without_items: Schema.Attribute.JSON;
-    seo_description: Schema.Attribute.Text;
-    seo_title: Schema.Attribute.String;
+    roi_quote: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_with_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_without_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    solution_intro: Schema.Attribute.Text;
-    solution_steps: Schema.Attribute.JSON;
-    solution_title: Schema.Attribute.String;
-    sticky_cta_text: Schema.Attribute.Text;
-    sticky_cta_title: Schema.Attribute.String;
-    subtitle: Schema.Attribute.Text;
+    solution_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    subtitle: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     sync_strategy: Schema.Attribute.Enumeration<
       ['merge', 'frozen', 'system_only']
     > &
@@ -1065,7 +1610,12 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.RichText;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -1076,21 +1626,61 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    cta: Schema.Attribute.String;
+    cta: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    emoji: Schema.Attribute.String;
+    emoji: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     external_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
           visible: false;
         };
       }>;
-    faq: Schema.Attribute.JSON;
-    faq_title: Schema.Attribute.String;
-    features: Schema.Attribute.JSON;
-    features_title: Schema.Attribute.String;
-    h1: Schema.Attribute.String;
-    icon: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    faq_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    h1: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     import_batch_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -1129,10 +1719,30 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
         };
       }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    pain: Schema.Attribute.Text;
-    problem_intro: Schema.Attribute.Text;
-    problem_title: Schema.Attribute.String;
-    problems: Schema.Attribute.JSON;
+    pain: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problems: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     record_mode: Schema.Attribute.Enumeration<
       ['managed', 'imported', 'settings']
@@ -1143,21 +1753,91 @@ export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'imported'>;
-    roi_metrics: Schema.Attribute.JSON;
-    roi_quote: Schema.Attribute.Text;
-    roi_title: Schema.Attribute.String;
-    roi_with_items: Schema.Attribute.JSON;
-    roi_without_items: Schema.Attribute.JSON;
-    seo_description: Schema.Attribute.Text;
-    seo_title: Schema.Attribute.String;
+    roi_metrics: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_quote: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_with_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_without_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    solution: Schema.Attribute.Text;
-    solution_intro: Schema.Attribute.Text;
-    solution_steps: Schema.Attribute.JSON;
-    solution_title: Schema.Attribute.String;
-    sticky_cta_text: Schema.Attribute.Text;
-    sticky_cta_title: Schema.Attribute.String;
-    subtitle: Schema.Attribute.Text;
+    solution: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    subtitle: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     sync_strategy: Schema.Attribute.Enumeration<
       ['merge', 'frozen', 'system_only']
     > &
@@ -1186,7 +1866,12 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
   };
   attributes: {
     category: Schema.Attribute.String;
-    content: Schema.Attribute.RichText;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -1197,21 +1882,61 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    cta: Schema.Attribute.String;
+    cta: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    emoji: Schema.Attribute.String;
+    emoji: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     external_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
           visible: false;
         };
       }>;
-    faq: Schema.Attribute.JSON;
-    faq_title: Schema.Attribute.String;
-    features: Schema.Attribute.JSON;
-    features_title: Schema.Attribute.String;
-    h1: Schema.Attribute.String;
-    icon: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    faq_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    h1: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     import_batch_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -1250,9 +1975,24 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
         };
       }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    problem_intro: Schema.Attribute.Text;
-    problem_title: Schema.Attribute.String;
-    problems: Schema.Attribute.JSON;
+    problem_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problems: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     record_mode: Schema.Attribute.Enumeration<
       ['managed', 'imported', 'settings']
@@ -1263,19 +2003,79 @@ export interface ApiIntegrationIntegration extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'imported'>;
-    roi_quote: Schema.Attribute.Text;
-    roi_title: Schema.Attribute.String;
-    roi_with_items: Schema.Attribute.JSON;
-    roi_without_items: Schema.Attribute.JSON;
-    seo_description: Schema.Attribute.Text;
-    seo_title: Schema.Attribute.String;
+    roi_quote: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_with_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_without_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    solution_intro: Schema.Attribute.Text;
-    solution_steps: Schema.Attribute.JSON;
-    solution_title: Schema.Attribute.String;
-    sticky_cta_text: Schema.Attribute.Text;
-    sticky_cta_title: Schema.Attribute.String;
-    subtitle: Schema.Attribute.Text;
+    solution_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    subtitle: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     sync_strategy: Schema.Attribute.Enumeration<
       ['merge', 'frozen', 'system_only']
     > &
@@ -1779,7 +2579,12 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.RichText;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     content_origin: Schema.Attribute.Enumeration<['generated', 'managed']> &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -1790,21 +2595,61 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    cta: Schema.Attribute.String;
+    cta: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    emoji: Schema.Attribute.String;
+    emoji: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     external_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
           visible: false;
         };
       }>;
-    faq: Schema.Attribute.JSON;
-    faq_title: Schema.Attribute.String;
-    features: Schema.Attribute.JSON;
-    features_title: Schema.Attribute.String;
-    h1: Schema.Attribute.String;
-    icon: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    faq_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    features_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    h1: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    icon: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     import_batch_id: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         'content-manager': {
@@ -1843,10 +2688,30 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
         };
       }>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    pain: Schema.Attribute.Text;
-    problem_intro: Schema.Attribute.Text;
-    problem_title: Schema.Attribute.String;
-    problems: Schema.Attribute.JSON;
+    pain: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problem_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    problems: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     record_mode: Schema.Attribute.Enumeration<
       ['managed', 'imported', 'settings']
@@ -1857,22 +2722,97 @@ export interface ApiSolutionSolution extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'imported'>;
-    roi_metrics: Schema.Attribute.JSON;
-    roi_quote: Schema.Attribute.Text;
-    roi_title: Schema.Attribute.String;
-    roi_with_items: Schema.Attribute.JSON;
-    roi_without_items: Schema.Attribute.JSON;
-    seo_description: Schema.Attribute.Text;
-    seo_title: Schema.Attribute.String;
+    roi_metrics: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_quote: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_with_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    roi_without_items: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    seo_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    solution: Schema.Attribute.Text;
-    solution_intro: Schema.Attribute.Text;
-    solution_steps: Schema.Attribute.JSON;
-    solution_title: Schema.Attribute.String;
-    steps: Schema.Attribute.JSON;
-    sticky_cta_text: Schema.Attribute.Text;
-    sticky_cta_title: Schema.Attribute.String;
-    subtitle: Schema.Attribute.Text;
+    solution: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_intro: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    solution_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    steps: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_text: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    sticky_cta_title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
+    subtitle: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        'content-manager': {
+          visible: false;
+        };
+      }>;
     sync_strategy: Schema.Attribute.Enumeration<
       ['merge', 'frozen', 'system_only']
     > &

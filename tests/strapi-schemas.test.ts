@@ -21,6 +21,16 @@ function assertRussianHelpText(schema: any, attributeNames: string[]) {
   }
 }
 
+function assertContentManagerHidden(schema: any, attributeNames: string[]) {
+  for (const attributeName of attributeNames) {
+    assert.equal(
+      schema.attributes?.[attributeName]?.pluginOptions?.['content-manager']?.visible,
+      false,
+      `${attributeName} should be hidden from Content Manager`
+    );
+  }
+}
+
 test('parseCollectionData validates collection payloads', () => {
   const data = parseCollectionData(
     {
@@ -174,6 +184,25 @@ test('AI generation job schema explains controls in Russian', () => {
     'request_prompt',
     'run_report',
   ]);
+});
+
+test('legacy catalog page fields stay hidden from Content Manager', () => {
+  const catalogSchemas = [
+    'cms/src/api/business-type/content-types/business-type/schema.json',
+    'cms/src/api/channel/content-types/channel/schema.json',
+    'cms/src/api/feature/content-types/feature/schema.json',
+    'cms/src/api/industry/content-types/industry/schema.json',
+    'cms/src/api/integration/content-types/integration/schema.json',
+    'cms/src/api/solution/content-types/solution/schema.json',
+  ];
+
+  for (const schemaPath of catalogSchemas) {
+    const schema = readJson(schemaPath);
+    assertContentManagerHidden(schema, ['icon', 'emoji', 'seo_title', 'seo_description']);
+  }
+
+  const competitorSchema = readJson('cms/src/api/competitor/content-types/competitor/schema.json');
+  assertContentManagerHidden(competitorSchema, ['seo_title', 'seo_description', 'hero_title', 'sticky_cta_title']);
 });
 
 test('page block components include Russian editor examples', () => {

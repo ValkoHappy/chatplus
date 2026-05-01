@@ -7,81 +7,336 @@
     "displayName": "Solution",
     "description": "Бизнес-функции и решения"
   },
-  "options": { "draftAndPublish": true },
+  "options": {
+    "draftAndPublish": true
+  },
   "attributes": {
-    "slug": { "type": "uid", "targetField": "name", "required": true },
-    "name": { "type": "string", "required": true },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
     "content_origin": {
       "type": "enumeration",
-      "enum": ["generated", "managed"],
+      "enum": [
+        "generated",
+        "managed"
+      ],
       "default": "generated",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "record_mode": {
       "type": "enumeration",
-      "enum": ["managed", "imported", "settings"],
+      "enum": [
+        "managed",
+        "imported",
+        "settings"
+      ],
       "default": "imported",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "external_id": {
       "type": "string",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "import_batch_id": {
       "type": "string",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "last_imported_at": {
       "type": "datetime",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "sync_strategy": {
       "type": "enumeration",
-      "enum": ["merge", "frozen", "system_only"],
+      "enum": [
+        "merge",
+        "frozen",
+        "system_only"
+      ],
       "default": "merge",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "manual_override_fields": {
       "type": "json",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "last_import_diff": {
       "type": "json",
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
     "last_import_payload": {
       "type": "json",
       "private": true,
-      "pluginOptions": { "content-manager": { "visible": false } }
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
     },
-    "emoji": { "type": "string" },
-    "icon": { "type": "string" },
-    "description": { "type": "text", "required": true },
-    "pain": { "type": "text" },
-    "solution": { "type": "text" },
-    "h1": { "type": "string" },
-    "subtitle": { "type": "text" },
-    "problem_title": { "type": "string" },
-    "problem_intro": { "type": "text" },
-    "problems": { "type": "json" },
-    "solution_title": { "type": "string" },
-    "solution_intro": { "type": "text" },
-    "solution_steps": { "type": "json" },
-    "features_title": { "type": "string" },
-    "features": { "type": "json" },
-    "roi_title": { "type": "string" },
-    "roi_without_items": { "type": "json" },
-    "roi_with_items": { "type": "json" },
-    "roi_quote": { "type": "text" },
-    "faq_title": { "type": "string" },
-    "sticky_cta_title": { "type": "string" },
-    "sticky_cta_text": { "type": "text" },
-    "cta": { "type": "string" },
-    "seo_title": { "type": "string" },
-    "seo_description": { "type": "text" },
-    "faq": { "type": "json" },
-    "steps": { "type": "json" },
-    "roi_metrics": { "type": "json" },
-    "content": { "type": "richtext" }
+    "emoji": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "icon": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "pain": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "solution": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "h1": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "subtitle": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "problem_title": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "problem_intro": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "problems": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "solution_title": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "solution_intro": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "solution_steps": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "features_title": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "features": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "roi_title": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "roi_without_items": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "roi_with_items": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "roi_quote": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "faq_title": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "sticky_cta_title": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "sticky_cta_text": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "cta": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "seo_title": {
+      "type": "string",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "seo_description": {
+      "type": "text",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "faq": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "steps": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "roi_metrics": {
+      "type": "json",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    },
+    "content": {
+      "type": "richtext",
+      "pluginOptions": {
+        "content-manager": {
+          "visible": false
+        }
+      }
+    }
   }
 }
