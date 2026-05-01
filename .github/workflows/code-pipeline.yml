@@ -136,4 +136,9 @@ jobs:
             REMOTE_CMD="${REMOTE_CMD} --with-seed"
           fi
 
-          ssh -p "${VPS_SSH_PORT:-22}" "${VPS_USER}@${VPS_HOST}" "${REMOTE_CMD}"
+          ssh \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=20 \
+            -p "${VPS_SSH_PORT:-22}" \
+            "${VPS_USER}@${VPS_HOST}" \
+            "${REMOTE_CMD}"
