@@ -71,15 +71,17 @@ Value: Bearer <WEBHOOK_TOKEN из deploy/.env>
 
 4. включить события:
 - `entry.publish`
+- `entry.update`
 - `entry.unpublish`
 
 Дополнительно при необходимости:
 - `entry.create`
-- `entry.update`
 
 Важно:
 
 - `entry.publish` работает только для типов с `draftAndPublish`
+- `entry.update` нужен обязательно: если редактор меняет уже опубликованную `Page`, Strapi может отправить именно update-событие, а не новый publish
+- relay должен отслеживать модель `page-v2`, иначе изменения в `Content Manager -> Page` сохранятся в Strapi, но публичный Astro не пересоберется
 - relay использует `Authorization: Bearer ${WEBHOOK_TOKEN}` и по умолчанию запускает локальный rebuild на VPS
 - относитесь к `WEBHOOK_TOKEN` как к production secret с доступом к rebuild-контуру сервера, а не как к безобидному UI-hook токену
 - если header не задан, publish сохранится в Strapi, но сайт автоматически не пересоберется
@@ -154,6 +156,8 @@ docker compose --env-file deploy/.env -f deploy/docker-compose.prod.yml run --no
 3. убедиться, что webhook дошел до relay
 4. убедиться, что relay запустил локальный rebuild и сайт обновился
 5. убедиться, что публичный сайт обновился
+
+Для `Content Manager -> Page` проверяйте именно публичный URL после завершения rebuild. Preview может показать новый блок сразу, потому что читает свежий Strapi-контент, а публичный сайт отдает статический HTML последней сборки. Если preview уже показывает правку, а публичный URL еще нет, сначала смотрите webhook/relay/rebuild, а не renderer.
 
 ## 10. GitHub-секреты для production-pipeline
 

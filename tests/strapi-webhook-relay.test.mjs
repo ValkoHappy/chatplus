@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createRelayServer } from '../scripts/strapi-webhook-relay.mjs';
+import { buildRelayConfig, createEventFingerprint, createRelayServer } from '../scripts/strapi-webhook-relay.mjs';
 
 async function startRelay(overrides = {}) {
   const dispatchCalls = [];
@@ -182,6 +182,79 @@ test('relay supports local dispatch mode without github token', async () => {
     assert.equal(relay.dispatchCalls.length, 1);
     assert.equal(relay.dispatchCalls[0].localCommand, 'bash /srv/chatplus/deploy/scripts/build-portal.sh');
     assert.equal(relay.dispatchCalls[0].dispatchTarget, 'local');
+  } finally {
+    await relay.close();
+  }
+});
+
+test('default tracked models include page-v2 pages', () => {
+  const config = buildRelayConfig({
+    WEBHOOK_TOKEN: 'relay-token',
+    GITHUB_ACTIONS_TOKEN: 'github-token',
+  });
+
+  assert.equal(config.allowedModels.has('page-v2'), true);
+});
+
+test('page-v2 remains tracked when RELAY_ALLOWED_MODELS is customized', () => {
+  const config = buildRelayConfig({
+    WEBHOOK_TOKEN: 'relay-token',
+    GITHUB_ACTIONS_TOKEN: 'github-token',
+    RELAY_ALLOWED_MODELS: 'industry,integration',
+  });
+
+  assert.equal(config.allowedModels.has('industry'), true);
+  assert.equal(config.allowedModels.has('page-v2'), true);
+});
+
+test('page-v2 published updates are not deduped when updatedAt changes', async () => {
+  const relay = await startRelay({
+    allowedModels: new Set(['page-v2']),
+  });
+
+  try {
+    const headers = {
+      Authorization: 'Bearer relay-token',
+      'Content-Type': 'application/json',
+      'X-Strapi-Event': 'entry.update',
+    };
+    const firstPayload = {
+      model: 'page-v2',
+      event: 'entry.update',
+      entry: {
+        id: 101,
+        documentId: 'ikldbab9crub9y975l7jdyrn',
+        slug: 'industries-beauty',
+        updatedAt: '2026-05-04T09:00:00.000Z',
+        publishedAt: '2026-05-04T09:00:00.000Z',
+      },
+    };
+    const secondPayload = {
+      ...firstPayload,
+      entry: {
+        ...firstPayload.entry,
+        updatedAt: '2026-05-04T09:05:00.000Z',
+        publishedAt: '2026-05-04T09:05:00.000Z',
+      },
+    };
+
+    const first = await fetch(relay.url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(firstPayload),
+    });
+    const second = await fetch(relay.url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(secondPayload),
+    });
+
+    assert.notEqual(createEventFingerprint(firstPayload, headers), createEventFingerprint(secondPayload, headers));
+    assert.equal(first.status, 202);
+    assert.equal(second.status, 202);
+    assert.equal(relay.dispatchCalls.length, 2);
+    assert.equal(relay.dispatchCalls[0].body.client_payload.model, 'page-v2');
+    assert.equal(relay.dispatchCalls[1].body.client_payload.model, 'page-v2');
   } finally {
     await relay.close();
   }

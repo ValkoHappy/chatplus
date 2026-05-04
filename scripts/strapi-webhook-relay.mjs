@@ -8,12 +8,33 @@ function nowMs() {
 }
 
 function normalizeAllowedModels(value) {
-  return new Set(
-    (value || 'landing-page,tenders-page,business-types-page,site-setting,competitor,solution,channel,industry,integration,feature,business-type')
+  const mandatoryAllowedModels = ['page-v2'];
+  const defaultAllowedModels = [
+    'landing-page',
+    'tenders-page',
+    'business-types-page',
+    'site-setting',
+    'competitor',
+    'solution',
+    'channel',
+    'industry',
+    'integration',
+    'feature',
+    'business-type',
+  ];
+
+  const allowedModels = new Set(
+    (value || defaultAllowedModels.join(','))
       .split(',')
       .map((item) => item.trim())
       .filter(Boolean),
   );
+
+  for (const model of mandatoryAllowedModels) {
+    allowedModels.add(model);
+  }
+
+  return allowedModels;
 }
 
 export function buildRelayConfig(env = process.env) {
@@ -53,6 +74,8 @@ export function createEventFingerprint(payload, headers) {
     entryId: payload.entry?.id ?? null,
     documentId: payload.entry?.documentId ?? null,
     slug: payload.entry?.slug ?? null,
+    updatedAt: payload.entry?.updatedAt ?? null,
+    publishedAt: payload.entry?.publishedAt ?? null,
   });
 
   return createHash('sha256').update(raw).digest('hex');
