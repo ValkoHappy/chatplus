@@ -5,7 +5,7 @@
     "singularName": "generation-job",
     "pluralName": "generation-jobs",
     "displayName": "Generation Job",
-    "description": "Основной интерфейс для AI-управления страницами. Создаёт или обновляет черновик Page, но не публикует страницу само."
+    "description": "Интерфейс для AI-заполнения уже выбранной Page. Новую страницу сначала создают в Content Manager -> Page, затем выбирают здесь в target_page. Generation Job сам не публикует страницу."
   },
   "attributes": {
     "title": {
@@ -112,7 +112,7 @@
     },
     "run_report": {
       "type": "json",
-      "description": "Отчёт после запуска: создана новая Page или доработана target_page, какие блоки выбрал AI, какие warnings есть и какой документ получился."
+      "description": "Отчёт после запуска: какая target_page доработана, какие предупреждения есть, какие сущности предложены к проверке и какой документ получился."
     }
   }
 }

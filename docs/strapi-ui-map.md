@@ -304,11 +304,12 @@ Content Manager -> Page Version
 
 | Задача | Куда идти |
 | --- | --- |
-| Создать новую страницу через AI | `Content Manager -> Generation Job -> Create new entry` |
+| Создать новый URL / новую Page | `Content Manager -> Page -> Create new entry` |
+| Заполнить новую Page через AI | Сначала `Content Manager -> Page -> Save`, потом `Content Manager -> Generation Job -> target_page` |
 | Доработать AI-черновик | `Content Manager -> Generation Job -> target_page` |
 | Изменить текст на странице | `Content Manager -> Page -> sections` |
 | Добавить блок | `Content Manager -> Page -> sections -> Add component` |
-| Создать страницу вручную | `Content Manager -> Page -> Create new entry` |
+| Собрать страницу руками по блокам | `Content Manager -> Page -> sections -> Add component` |
 | Убрать страницу | `Content Manager -> Page -> Unpublish` |
 | Добавить в меню | `Content Manager -> Page -> show_in_header/show_in_footer/nav_*` |
 | Изменить SEO | `Content Manager -> Page -> seo_*` |
@@ -318,6 +319,6 @@ Content Manager -> Page Version
 
 ## Что с AI
 
-AI-генерация работает как отдельный контур черновиков. Редактор создает `Generation Job`, runner создает или обновляет обычную `Page`, а человек проверяет preview и решает, публиковать ли страницу.
+AI-генерация работает как отдельный контур заполнения черновиков. Редактор сначала создает или выбирает обычную `Page`, затем создает `Generation Job` и выбирает эту страницу в `target_page`. Runner обновляет выбранную `Page`, а человек проверяет preview и решает, публиковать ли страницу.
 
 Для доработки используйте поле `target_page`: выберите уже созданную страницу и напишите новый prompt. Так AI обновит этот же черновик и сохранит его `route_path`.
