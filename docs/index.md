@@ -71,7 +71,7 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 3. [План AI-генерации и автопубликации](ai-scheduled-autopublish-plan.md)
 4. [Контекст для AI и разработчика](ai-agent-context.md)
 
-AI теперь считается удобным способом для крупных правок и заполнения новых каркасов страниц, но без автопубликации и без свободного создания макета. `Generation Job` обязан иметь `target_page`; `target_blueprint` должен совпадать с `page_kind`. Категории `channel`, `industry`, `integration`, `solution`, `feature`, `business_type`, `competitor` можно выбирать как контекст для prompt.
+AI теперь считается удобным способом для крупных правок и заполнения новых каркасов страниц, но без автопубликации и без свободного создания макета. `Generation Job` обязан иметь `target_page`; `target_blueprint` должен совпадать с `page_kind`. Простая расшифровка: `campaign` - продающая страница, `brand` - направление или категория, `resource` - гайд или инструкция. Категории `channel`, `industry`, `integration`, `solution`, `feature`, `business_type`, `competitor` можно выбирать как контекст для prompt.
 
 Справочники `Channel`, `Industry`, `Integration`, `Solution`, `Feature`, `Business Type` и `Competitor` можно пополнять вручную в Strapi или через подтвержденные AI-предложения. `Generation Job` сначала пишет предложения в `run_report.proposed_entities` и ставит `status = needs_entity_review`; после подтверждения runner создает записи как черновики `managed/frozen`, привязывает их к задаче и обновляет выбранную `Page`. Новый справочник публикуется отдельно после проверки, потому что публикация может добавить новые catalog/intersection routes. Подробный порядок: [Справочники: каналы, отрасли, интеграции и страницы по ним](entity-catalog-editor-workflow.md).
 

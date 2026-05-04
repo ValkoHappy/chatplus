@@ -44,7 +44,11 @@ Content Manager -> Page -> Create new entry
    - `title` - понятное название задачи.
    - `job_type = manual_request`.
    - `status = queued`.
-   - `target_blueprint` - должен совпадать с `page_kind` выбранной `Page`. Если у Page `campaign`, здесь тоже `campaign`; если `resource`, здесь `resource`.
+   - `target_blueprint` - выберите тип страницы простыми словами:
+     - `campaign` - промо, спецпроект, продающая страница;
+     - `brand` - страница направления, категории или бренда;
+     - `resource` - гайд, инструкция, справка.
+     Этот пункт должен совпадать с `page_kind` выбранной `Page`. Если у Page `campaign`, здесь тоже `campaign`; если `resource`, здесь `resource`.
    - `target_page` - выбранная `Page`, которую AI должен заполнить.
    - `request_prompt` - что именно нужно сделать.
    - `requested_by` - кто поставил задачу, например `content`.
@@ -64,7 +68,7 @@ Content Manager -> Page -> Create new entry
 14. Если результат хороший, поставьте `editorial_status = approved` и нажмите `Publish`.
 15. Если результат плохой, не публикуйте. Создайте новый `Generation Job`, выберите эту же `Page` в `target_page` и напишите prompt на доработку.
 
-Частая ошибка: выбрать в `target_blueprint` значение `resource`, а в `target_page` указать страницу вида `/channels/email/beauty`. Это не новая resource-страница, а существующая страница пересечения канала и отрасли. Для такой задачи либо выберите правильный blueprint этой Page, либо сначала создайте новую Page с `page_kind = resource`.
+Частая ошибка: выбрать в `target_blueprint` значение `resource`, а в `target_page` указать страницу вида `/channels/email/beauty`. Это не новая resource-страница, а существующая страница пересечения канала и отрасли. Для такой задачи либо выберите правильный blueprint этой Page, либо сначала создайте новую Page с `page_kind = resource`. Если сомневаетесь, помните простое правило: `campaign` = продаём, `brand` = объясняем направление, `resource` = пишем гайд.
 
 ### Примеры prompt для заполнения готового макета
 

@@ -111,7 +111,7 @@ npm.cmd run page-v2:generate -- --job-id=DOCUMENT_ID --approve-entity-proposals
 3. Создайте задачу:
    - `job_type = manual_request`;
    - `status = queued`;
-   - `target_blueprint = campaign`, `brand` или `resource`;
+   - `target_blueprint` - выберите тип страницы простыми словами: `campaign` = продающая страница, `brand` = направление или категория, `resource` = гайд или инструкция;
    - `request_prompt` - что именно должна сделать нейросеть.
 4. В relation-поле выберите нужную запись:
    - `target_channels`;
