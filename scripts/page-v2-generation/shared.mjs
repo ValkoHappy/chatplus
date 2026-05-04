@@ -1401,6 +1401,7 @@ export function buildGenerationReport({ job = {}, pageDraft, warnings = [], mode
     page_kind: pageDraft.data.page_kind,
     template_variant: pageDraft.data.template_variant,
     generation_mode: pageDraft.data.generation_mode,
+    generated_preview: buildGeneratedPreview(pageDraft.data),
     section_types: pageDraft.data.sections.map((section) => section.__component),
     block_plan: blockPlan
       ? {
@@ -1412,5 +1413,42 @@ export function buildGenerationReport({ job = {}, pageDraft, warnings = [], mode
     warnings,
     model,
     generated_at: new Date().toISOString(),
+  };
+}
+
+function buildGeneratedPreview(pageData = {}) {
+  const sections = Array.isArray(pageData.sections) ? pageData.sections : [];
+
+  return {
+    title: pageData.title || null,
+    route_path: pageData.route_path || null,
+    seo_title: pageData.seo_title || null,
+    seo_description: pageData.seo_description || null,
+    sections: sections.map((section, index) => {
+      const items = Array.isArray(section.items) ? section.items : [];
+      const questions = Array.isArray(section.questions) ? section.questions : [];
+      const links = Array.isArray(section.links) ? section.links : [];
+
+      return {
+        index: index + 1,
+        component: section.__component || null,
+        block_type: section.block_type || null,
+        variant: section.variant || null,
+        title: section.title || section.heading || null,
+        intro: section.intro || section.subtitle || section.description || null,
+        items: items.slice(0, 5).map((item) => ({
+          title: item.title || item.label || item.question || null,
+          text: item.text || item.description || item.answer || null,
+        })),
+        questions: questions.slice(0, 5).map((item) => ({
+          question: item.question || item.title || null,
+          answer: item.answer || item.text || null,
+        })),
+        links: links.slice(0, 5).map((item) => ({
+          label: item.label || item.title || null,
+          href: item.href || item.url || null,
+        })),
+      };
+    }),
   };
 }

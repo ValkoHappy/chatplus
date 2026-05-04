@@ -159,6 +159,17 @@ test('page_v2 card items preserve route links needed by legacy directory rendere
 test('generation_job supports AI block planning controls', () => {
   const generationJobSchema = readJson('cms/src/api/generation-job/content-types/generation-job/schema.json');
 
+  assert.equal(generationJobSchema.attributes.status, undefined);
+  assert.deepEqual(generationJobSchema.attributes.job_status.enum, [
+    'queued',
+    'running',
+    'needs_entity_review',
+    'draft_ready',
+    'failed',
+    'approved',
+    'published',
+  ]);
+  assert.equal(generationJobSchema.attributes.job_status.default, 'queued');
   assert.deepEqual(generationJobSchema.attributes.block_strategy.enum, ['auto', 'blueprint_default', 'custom']);
   assert.equal(generationJobSchema.attributes.block_strategy.default, 'auto');
   assert.equal(generationJobSchema.attributes.target_blocks.type, 'json');
@@ -186,6 +197,7 @@ test('AI generation job schema explains controls in Russian', () => {
   assert.match(generationJobSchema.info.description, /[А-Яа-яЁё]/);
   assertRussianHelpText(generationJobSchema, [
     'job_type',
+    'job_status',
     'target_blueprint',
     'block_strategy',
     'target_blocks',

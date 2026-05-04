@@ -56,6 +56,20 @@ if (!reportMode && !AI_CHAT_CONFIG.apiKey && !mockResponseFile) {
   process.exit(1);
 }
 
+function normalizeGenerationJobUpdate(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return data;
+  }
+
+  const normalized = { ...data };
+  if (Object.prototype.hasOwnProperty.call(normalized, 'status')) {
+    normalized.job_status = normalized.job_status || normalized.status;
+    delete normalized.status;
+  }
+
+  return normalized;
+}
+
 function unwrapRecord(entry) {
   if (!entry) {
     return null;
@@ -123,7 +137,7 @@ function buildJobQuery() {
   if (jobId) {
     filters.push(`filters[id][$eq]=${encodeURIComponent(jobId)}`);
   } else if (queuedMode) {
-    filters.push('filters[status][$eq]=queued');
+    filters.push('filters[job_status][$eq]=queued');
   }
 
   if (jobTypeFilter) {
@@ -193,7 +207,7 @@ async function fetchJobsLocal() {
 
     const filters = {};
     if (queuedMode) {
-      filters.status = { $eq: 'queued' };
+      filters.job_status = { $eq: 'queued' };
     }
     if (jobTypeFilter) {
       filters.job_type = { $eq: jobTypeFilter };
@@ -431,7 +445,7 @@ async function updateGenerationJob(job, data) {
   const key = job.documentId || job.id;
   return request(`/generation-jobs/${encodeURIComponent(key)}`, {
     method: 'PUT',
-    body: JSON.stringify({ data }),
+    body: JSON.stringify({ data: normalizeGenerationJobUpdate(data) }),
   });
 }
 
@@ -456,7 +470,7 @@ async function updateGenerationJobLocal(job, data) {
       data: await service.update({
         documentId,
         status: 'draft',
-        data,
+        data: normalizeGenerationJobUpdate(data),
         populate: ['target_page'],
       }),
     };
@@ -905,7 +919,7 @@ async function runReport() {
   const jobs = unwrapCollection(await request(`/generation-jobs?pagination[pageSize]=${limit}&sort[0]=updatedAt:desc&populate=*`));
   console.log(`Generation jobs from ${STRAPI_URL}`);
   for (const job of jobs) {
-    console.log(`- #${job.id} ${job.title} | type=${job.job_type} | status=${job.status} | blueprint=${job.target_blueprint || '-'}`);
+    console.log(`- #${job.id} ${job.title} | type=${job.job_type} | status=${job.job_status || job.status || '-'} | blueprint=${job.target_blueprint || '-'}`);
   }
 }
 

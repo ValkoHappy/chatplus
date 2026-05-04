@@ -788,9 +788,18 @@ test('buildGenerationReport captures draft metadata for job review', () => {
         page_kind: 'resource',
         template_variant: 'editorial',
         generation_mode: 'ai_generated',
+        seo_title: 'AI guide SEO',
+        seo_description: 'AI guide description',
         sections: [
-          { __component: 'page-blocks.hero' },
-          { __component: 'page-blocks.rich-text' },
+          {
+            __component: 'page-blocks.hero',
+            block_type: 'hero',
+            variant: 'default',
+            title: 'AI guide hero',
+            intro: 'A short intro',
+            items: [{ title: 'First point', text: 'First point text' }],
+          },
+          { __component: 'page-blocks.rich-text', title: 'Main text' },
         ],
       },
     },
@@ -804,6 +813,13 @@ test('buildGenerationReport captures draft metadata for job review', () => {
   assert.equal(report.mode, 'create_new');
   assert.equal(report.blueprint, 'resource');
   assert.equal(report.route_path, '/resources/ai-guide');
+  assert.equal(report.generated_preview.title, 'AI guide');
+  assert.equal(report.generated_preview.seo_title, 'AI guide SEO');
+  assert.equal(report.generated_preview.sections[0].title, 'AI guide hero');
+  assert.deepEqual(report.generated_preview.sections[0].items[0], {
+    title: 'First point',
+    text: 'First point text',
+  });
   assert.deepEqual(report.section_types, ['page-blocks.hero', 'page-blocks.rich-text']);
   assert.equal(report.block_plan.strategy, 'auto');
   assert.ok(report.block_plan.preferred_blocks.includes('faq'));

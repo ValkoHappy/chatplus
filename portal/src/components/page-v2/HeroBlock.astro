@@ -2,10 +2,17 @@
 import { Icon } from 'astro-icon/components';
 import { withBasePath } from '../../lib/urls';
 
+type BreadcrumbItem = {
+  label?: string;
+  href?: string;
+};
+
 const { section, templateVariant = 'default' } = Astro.props as {
   section: Record<string, any>;
   templateVariant?: string;
+  breadcrumbs?: BreadcrumbItem[];
 };
+const { breadcrumbs = [] } = Astro.props as { breadcrumbs?: BreadcrumbItem[] };
 
 const toHref = (href?: string) => withBasePath(href);
 const trustFacts = Array.isArray(section.trust_facts) ? section.trust_facts.filter(Boolean) : [];
@@ -16,6 +23,21 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
 
 <section class:list={['pagev2-hero', `pagev2-hero--${templateVariant}`, `pagev2-hero--variant-${variant}`]}>
   <div class:list={['container', 'pagev2-hero__inner', !hasPanel && 'pagev2-hero__inner--solo']}>
+    {breadcrumbs.length > 0 && (
+      <nav class="pagev2-hero__breadcrumbs" aria-label="Хлебные крошки">
+        {breadcrumbs.map((item, index) => (
+          <>
+            {index > 0 && <span class="pagev2-hero__breadcrumbs-sep">/</span>}
+            {item.href && index < breadcrumbs.length - 1 ? (
+              <a href={toHref(item.href)}>{item.label}</a>
+            ) : (
+              <span aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}>{item.label}</span>
+            )}
+          </>
+        ))}
+      </nav>
+    )}
+
     <div class="pagev2-hero__copy">
       {section.eyebrow && <span class="pagev2-hero__eyebrow">{section.eyebrow}</span>}
       <h1>{section.title}</h1>
@@ -108,6 +130,29 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
     grid-template-columns: minmax(0, 760px);
   }
 
+  .pagev2-hero__breadcrumbs {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .42rem;
+    margin-bottom: .35rem;
+    color: rgba(226, 232, 240, .86);
+    font-size: .84rem;
+    font-weight: 700;
+  }
+
+  .pagev2-hero__breadcrumbs a {
+    color: rgba(255, 255, 255, .92);
+  }
+
+  .pagev2-hero__breadcrumbs span[aria-current='page'] {
+    color: rgba(255, 255, 255, .72);
+  }
+
+  .pagev2-hero__breadcrumbs-sep {
+    color: rgba(148, 163, 184, .85);
+  }
+
   .pagev2-hero__eyebrow {
     display: inline-flex;
     padding: .42rem .82rem;
@@ -124,7 +169,8 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
     margin: .95rem 0 0;
     font-size: clamp(2.4rem, 5vw, 4.4rem);
     line-height: .98;
-    letter-spacing: -.05em;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
   }
 
   .pagev2-hero p {
@@ -132,6 +178,7 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
     max-width: 60ch;
     color: #dbe4ff;
     line-height: 1.8;
+    overflow-wrap: anywhere;
   }
 
   .pagev2-hero__actions {
@@ -179,7 +226,7 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
   .pagev2-hero__panel-copy,
   .pagev2-hero__panel-card {
     padding: 1rem;
-    border-radius: 18px;
+    border-radius: 8px;
     background: rgba(255, 255, 255, .12);
     border: 1px solid rgba(255, 255, 255, .14);
     box-shadow: 0 18px 36px rgba(15, 23, 42, .14);
@@ -189,7 +236,7 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
     display: block;
     font-size: .76rem;
     font-weight: 800;
-    letter-spacing: .08em;
+    letter-spacing: .04em;
     text-transform: uppercase;
     color: #c7d2fe;
   }
@@ -214,7 +261,7 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
   .pagev2-hero__panel-icon {
     width: 2.4rem;
     height: 2.4rem;
-    border-radius: 14px;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -227,7 +274,7 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
     display: block;
     font-size: .72rem;
     font-weight: 800;
-    letter-spacing: .08em;
+    letter-spacing: .04em;
     text-transform: uppercase;
     color: #c7d2fe;
   }
@@ -236,6 +283,7 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
     display: block;
     margin-top: .15rem;
     color: #fff;
+    overflow-wrap: anywhere;
   }
 
   .pagev2-hero__panel-card p {

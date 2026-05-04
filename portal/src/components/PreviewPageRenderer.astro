@@ -1,52 +1,16 @@
 ---
-import BrandContentPage from './BrandContentPage.astro';
-import CampaignPage from './CampaignPage.astro';
-import ComparisonPage from './ComparisonPage.astro';
-import DirectoryPage from './DirectoryPage.astro';
-import HomePage from './HomePage.astro';
 import PageV2Page from './PageV2Page.astro';
-import PartnershipPage from './PartnershipPage.astro';
-import PricingPage from './PricingPage.astro';
-import ResourceHubPage from './ResourceHubPage.astro';
-import StructuredLandingPage from './StructuredLandingPage.astro';
-import TendersPage from './TendersPage.astro';
-import { mapPageV2ToLegacyPage, type LegacyPageFamily } from '../lib/page-v2-legacy-bridge';
 
 interface Props {
   page: Record<string, any>;
 }
 
 const { page } = Astro.props as Props;
-const rawFamily = String(page.legacy_template_family || '');
-const pageKind = String(page.page_kind || '');
-const family = (
-  rawFamily === 'entity_detail' || rawFamily === 'entity_intersection' || pageKind === 'entity_detail' || pageKind === 'entity_intersection'
-    ? 'structured'
-    : rawFamily
-) as LegacyPageFamily | '';
-const legacyPage = family ? mapPageV2ToLegacyPage(page, family) : null;
+const previewPage = {
+  ...page,
+  force_v2_preview: true,
+  robots: 'noindex,nofollow',
+};
 ---
 
-{family === 'structured' && legacyPage ? (
-  <StructuredLandingPage page={legacyPage} />
-) : family === 'campaign' && legacyPage ? (
-  <CampaignPage page={legacyPage} />
-) : family === 'brand' && legacyPage ? (
-  <BrandContentPage page={legacyPage} />
-) : family === 'resource' && legacyPage ? (
-  <ResourceHubPage page={legacyPage} />
-) : family === 'pricing' && legacyPage ? (
-  <PricingPage page={legacyPage} />
-) : family === 'partnership' && legacyPage ? (
-  <PartnershipPage page={legacyPage} />
-) : family === 'directory' && legacyPage ? (
-  <DirectoryPage {...legacyPage} />
-) : family === 'comparison' && legacyPage ? (
-  <ComparisonPage page={legacyPage} />
-) : family === 'tenders' && legacyPage ? (
-  <TendersPage page={legacyPage} />
-) : family === 'home' && legacyPage ? (
-  <HomePage page={legacyPage} />
-) : (
-  <PageV2Page page={{ ...page, robots: 'noindex,nofollow' }} />
-)}
+<PageV2Page page={previewPage} />

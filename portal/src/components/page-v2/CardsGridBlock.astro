@@ -41,26 +41,27 @@ const variant = section.variant || 'default';
 <style>
   .pagev2-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 1rem;
   }
 
   .pagev2-grid--editorial,
   .pagev2-grid--pillars,
   .pagev2-grid--integrations {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   }
 
   .pagev2-card {
-    padding: 1.2rem;
-    border-radius: 24px;
-    background: linear-gradient(180deg, rgba(248, 250, 252, .98), rgba(241, 245, 249, .96));
-    border: 1px solid rgba(148, 163, 184, .14);
-    box-shadow: 0 18px 36px rgba(2, 6, 23, .08);
+    min-width: 0;
+    padding: 1.15rem;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid rgba(226, 232, 240, .95);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .045);
   }
 
   .pagev2-card:nth-child(even) {
-    background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(248, 250, 252, .96));
+    background: #f8fafc;
   }
 
   .pagev2-card__head {
@@ -75,16 +76,16 @@ const variant = section.variant || 'default';
     justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #fdf2f8, #ede9fe);
-    color: #7c3aed;
+    border-radius: 8px;
+    background: #eef2ff;
+    color: #4f46e5;
   }
 
   .pagev2-card__eyebrow {
-    color: #7c3aed;
+    color: #4f46e5;
     font-size: .76rem;
     font-weight: 800;
-    letter-spacing: .08em;
+    letter-spacing: .04em;
     text-transform: uppercase;
   }
 
@@ -93,25 +94,21 @@ const variant = section.variant || 'default';
     color: #0f172a;
     font-size: 1.08rem;
     line-height: 1.3;
+    overflow-wrap: anywhere;
   }
 
   .pagev2-card p {
     margin: .7rem 0 0;
     color: #475569;
     line-height: 1.7;
+    overflow-wrap: anywhere;
   }
 
-  .pagev2-card__secondary {
-    color: #64748b;
-    font-size: .95rem;
-  }
-
-  @media (max-width: 900px) {
-    .pagev2-grid,
+  @media (min-width: 1180px) {
     .pagev2-grid--editorial,
     .pagev2-grid--pillars,
     .pagev2-grid--integrations {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

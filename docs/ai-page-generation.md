@@ -1,4 +1,4 @@
-# AI-заполнение страниц через Generation Job
+﻿# AI-заполнение страниц через Generation Job
 
 Этот документ описывает рабочий AI-контур для `page_v2` в `CHATPLUS`.
 
@@ -38,7 +38,7 @@
 3. Обязательно выбрать эту страницу в `target_page`.
 4. В prompt описать задачу человеческим языком: тема, аудитория, цель страницы, CTA, ограничения.
 5. При необходимости выбрать связи-категории: `target_channels`, `target_industries`, `target_integrations`, `target_solutions`, `target_features`, `target_business_types`, `target_competitors`.
-6. Оставить `status = queued`.
+6. Оставить `job_status = queued`.
 7. После запуска runner открыть ту же `Page` как черновик, посмотреть Astro preview и проверить текст.
 8. Если страница слабая, создать новый `Generation Job`, снова выбрать эту же страницу в `target_page` и написать prompt на доработку.
 9. Публиковать только после человеческой проверки.
@@ -106,7 +106,7 @@ AI не должен создавать sticky/floating CTA внутри кон�
 - `target_page` - выберите существующую `Page`, которую надо доработать.
 - `target_blueprint` - должен совпадать с `page_kind` выбранной страницы. Если `page_kind = campaign`, здесь тоже `campaign`; если `page_kind = brand`, здесь `brand`; если `page_kind = resource`, здесь `resource`.
 - `request_prompt` - напишите, что именно улучшить.
-- `status = queued`.
+- `job_status = queued`.
 
 Когда `target_page` выбран, runner передает AI краткий снимок текущей страницы: title, route, SEO и структуру блоков. `route_path` выбранной страницы сохраняется, даже если AI предложит другой URL. Результат обновляет черновик этой же `Page`, а не создает отдельную страницу. Если AI вернет другое число секций, другой порядок, другой `block_type` или другой `variant`, runner отклонит результат.
 
@@ -161,7 +161,7 @@ AI может заполнять контент для всех текущих `
 1. Создать запись вручную в соответствующем справочнике Strapi: `Channel`, `Industry`, `Integration`, `Solution`, `Feature`, `Business Type` или `Competitor`.
 2. Позволить AI предложить новую запись в `run_report.proposed_entities`.
 
-Во втором варианте runner ставит `status = needs_entity_review` и не обновляет страницу сразу. Оператор проверяет предложения и перезапускает задачу с `--approve-entity-proposals`. Только после этого недостающие справочники создаются как черновики `managed/frozen`, привязываются к задаче, и выбранная `Page` обновляется. Новый справочник не публикуется автоматически: перед публикацией нужно проверить страницу, связи и локальный `portal build`, потому что опубликованная категория может добавить новые catalog/intersection routes. Не создавайте записи случайно через `Create a relation` внутри `Generation Job`. Подробная инструкция: [Справочники: каналы, отрасли, интеграции и страницы по ним](entity-catalog-editor-workflow.md).
+Во втором варианте runner ставит `job_status = needs_entity_review` и не обновляет страницу сразу. Оператор проверяет предложения и перезапускает задачу с `--approve-entity-proposals`. Только после этого недостающие справочники создаются как черновики `managed/frozen`, привязываются к задаче, и выбранная `Page` обновляется. Новый справочник не публикуется автоматически: перед публикацией нужно проверить страницу, связи и локальный `portal build`, потому что опубликованная категория может добавить новые catalog/intersection routes. Не создавайте записи случайно через `Create a relation` внутри `Generation Job`. Подробная инструкция: [Справочники: каналы, отрасли, интеграции и страницы по ним](entity-catalog-editor-workflow.md).
 
 Если AI предложил сущность, которая уже есть в справочнике, runner не создает дубль и использует существующую запись как связь.
 
@@ -342,7 +342,7 @@ npm run page-v2:generate:queued -- --mock-response-file=scripts/page-v2-generati
    - features
    - business types
    - competitors
-4. Оставьте `status = queued`
+4. Оставьте `job_status = queued`
 
 Дальше запустите:
 
@@ -358,7 +358,7 @@ npm run page-v2:generate:queued -- --job-type=manual_request
 
 Результат:
 
-- `generation_job.status` станет `draft_ready` или `failed`
+- `generation_job.job_status` станет `draft_ready` или `failed`
 - `run_report` заполнится
 - выбранная `page_v2` обновится как draft для редакторского review
 
@@ -367,7 +367,7 @@ npm run page-v2:generate:queued -- --job-type=manual_request
 Для scheduled задачи в `Strapi`:
 
 - `job_type = scheduled`
-- `status = queued`
+- `job_status = queued`
 
 Обработчик:
 

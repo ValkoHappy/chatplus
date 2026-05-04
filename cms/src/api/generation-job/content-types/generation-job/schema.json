@@ -22,7 +22,7 @@
       "required": true,
       "description": "manual_request - запустить по запросу редактора. scheduled - задание по расписанию."
     },
-    "status": {
+    "job_status": {
       "type": "enumeration",
       "enum": [
         "queued",
