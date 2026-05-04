@@ -1,5 +1,7 @@
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Run queued scheduled page_v2 AI jobs every 30 minutes
-*/30 * * * * cd /srv/chatplus && npm run page-v2:generate:scheduled >> /var/log/chatplus-page-v2-ai.log 2>&1
+# Run queued scheduled page_v2 AI jobs every 30 minutes.
+# The server runner executes inside the Strapi container so it can update drafts
+# through Strapi Document Service even when public REST permissions are locked down.
+*/30 * * * * /srv/chatplus/deploy/scripts/run-page-v2-ai.sh --queued --job-type=scheduled >> /var/log/chatplus-page-v2-ai.log 2>&1

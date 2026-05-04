@@ -33,11 +33,24 @@
         "approved",
         "published"
       ],
+      "required": true,
       "default": "queued",
       "description": "Статус выполнения: queued - ждёт, running - в работе, draft_ready - черновик готов, failed - ошибка."
     },
     "target_blueprint": {
-      "type": "string",
+      "type": "enumeration",
+      "enum": [
+        "landing",
+        "directory",
+        "entity_detail",
+        "entity_intersection",
+        "comparison",
+        "campaign",
+        "brand",
+        "resource",
+        "system"
+      ],
+      "required": true,
       "description": "Какой тип выбранной Page заполняет AI. Значение должно совпадать с page_kind у target_page. Безопасные варианты сейчас: campaign, brand, resource; остальные типы требуют готового каркаса и отдельной проверки."
     },
     "block_strategy": {
@@ -56,6 +69,7 @@
     },
     "request_prompt": {
       "type": "text",
+      "required": true,
       "description": "Главное поле задачи для AI. Опишите тему, аудиторию, цель страницы, CTA, SEO, ограничения и что надо исправить, если это доработка."
     },
     "requested_by": {
@@ -66,6 +80,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::page-v2.page-v2",
+      "required": true,
       "description": "Обязательное поле. Выберите Page, которую AI должен заполнить или доработать. Для новой страницы сначала создайте Page с route_path, page_kind, blueprint и каркасом блоков, затем вернитесь сюда и выберите её."
     },
     "target_channels": {

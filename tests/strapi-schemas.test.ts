@@ -169,10 +169,26 @@ test('generation_job supports AI block planning controls', () => {
     'approved',
     'published',
   ]);
+  assert.equal(generationJobSchema.attributes.job_status.required, true);
   assert.equal(generationJobSchema.attributes.job_status.default, 'queued');
+  assert.equal(generationJobSchema.attributes.target_blueprint.type, 'enumeration');
+  assert.equal(generationJobSchema.attributes.target_blueprint.required, true);
+  assert.deepEqual(generationJobSchema.attributes.target_blueprint.enum, [
+    'landing',
+    'directory',
+    'entity_detail',
+    'entity_intersection',
+    'comparison',
+    'campaign',
+    'brand',
+    'resource',
+    'system',
+  ]);
   assert.deepEqual(generationJobSchema.attributes.block_strategy.enum, ['auto', 'blueprint_default', 'custom']);
   assert.equal(generationJobSchema.attributes.block_strategy.default, 'auto');
   assert.equal(generationJobSchema.attributes.target_blocks.type, 'json');
+  assert.equal(generationJobSchema.attributes.request_prompt.required, true);
+  assert.equal(generationJobSchema.attributes.target_page.required, true);
 });
 
 test('page editor schema exposes Russian help text for high-risk fields', () => {

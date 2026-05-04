@@ -855,6 +855,60 @@ test('buildGenerationReport marks refinement jobs and target page ids', () => {
   assert.equal(report.target_page_document_id, 'target-doc');
 });
 
+test('buildGenerationReport includes FAQ items in generated preview questions', () => {
+  const report = buildGenerationReport({
+    job: { job_type: 'manual_request', target_blueprint: 'resource' },
+    pageDraft: {
+      data: {
+        title: 'FAQ page',
+        route_path: '/resources/faq-page',
+        page_kind: 'resource',
+        template_variant: 'editorial',
+        generation_mode: 'ai_assisted',
+        sections: [
+          {
+            __component: 'page-blocks.faq',
+            block_type: 'faq',
+            title: 'FAQ',
+            items: [
+              { question: 'How does it work?', answer: 'The draft updates the selected Page.' },
+            ],
+          },
+        ],
+      },
+    },
+  });
+
+  assert.deepEqual(report.generated_preview.sections[0].questions[0], {
+    question: 'How does it work?',
+    answer: 'The draft updates the selected Page.',
+  });
+});
+
+test('target page prompt context redacts unsupported old claims before AI sees them', () => {
+  const context = getTargetPageContext({
+    target_page: {
+      title: 'Existing page',
+      route_path: '/resources/existing',
+      page_kind: 'resource',
+      seo_description: 'Launch in 15 minutes with 24/7 support.',
+      sections: [
+        {
+          block_type: 'cards-grid',
+          title: 'Setup in 15 minutes',
+          items: [{ title: '24/7 answers', text: 'Useful but unsupported old copy.' }],
+        },
+      ],
+    },
+  });
+
+  const serialized = JSON.stringify(context);
+  assert.ok(!serialized.includes('15 minutes'));
+  assert.ok(!serialized.includes('24/7'));
+  assert.ok(serialized.includes('[redacted unsupported time claim]'));
+  assert.ok(serialized.includes('[redacted unsupported availability claim]'));
+});
+
 test('AI block planner lets the model choose blocks inside blueprint guardrails', () => {
   const plan = getAiBlockPlan({
     target_blueprint: 'campaign',

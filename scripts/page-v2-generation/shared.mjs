@@ -502,27 +502,46 @@ function limitPromptText(value = '', maxLength = 700) {
   return `${text.slice(0, maxLength - 1)}…`;
 }
 
+function redactUnsupportedClaimsForPrompt(value = '') {
+  const text = asString(value);
+  if (!text) {
+    return '';
+  }
+
+  const timeUnit = '(?:seconds?|minutes?|hours?|days?|weeks?|\\u0441\\u0435\\u043a\\u0443\\u043d\\u0434|\\u043c\\u0438\\u043d\\u0443\\u0442|\\u0447\\u0430\\u0441\\u0430?|\\u0447\\u0430\\u0441\\u043e\\u0432|\\u0434\\u043d\\u044f?|\\u0434\\u043d\\u0435\\u0439|\\u043d\\u0435\\u0434\\u0435\\u043b)';
+
+  return text
+    .replace(/\b24\s*\/\s*7\b/giu, '[redacted unsupported availability claim]')
+    .replace(new RegExp(`\\b\\d+\\s*[-\\u2013\\u2014]?\\s*${timeUnit}`, 'giu'), '[redacted unsupported time claim]')
+    .replace(/\u0434\u043e\s+\u043d\u0435\u0434\u0435\u043b/giu, '[redacted unsupported time claim]')
+    .replace(/\u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a[\u0430\u043e]\s+(?:\u0441\u0435\u043a\u0443\u043d\u0434|\u043c\u0438\u043d\u0443\u0442|\u0447\u0430\u0441\u043e\u0432|\u0434\u043d\u0435\u0439|\u043d\u0435\u0434\u0435\u043b\u044c)/giu, '[redacted unsupported time claim]');
+}
+
+function safePromptText(value = '', maxLength = 700) {
+  return limitPromptText(redactUnsupportedClaimsForPrompt(value), maxLength);
+}
+
 function summarizeSectionForPrompt(section = {}) {
   const blockType = getPageV2SectionBlockType(section);
   const variant = asString(section.variant);
 
   const summary = {
     block_type: blockType,
-    title: limitPromptText(section.title, 180),
+    title: safePromptText(section.title, 180),
   };
   if (variant) {
     summary.variant = variant;
   }
 
   for (const key of ['eyebrow', 'subtitle', 'body', 'text', 'context_title', 'context_text']) {
-    const value = limitPromptText(section[key], key === 'body' ? 900 : 260);
+    const value = safePromptText(section[key], key === 'body' ? 900 : 260);
     if (value) {
       summary[key] = value;
     }
   }
 
   const cards = asArray(section.cards || section.items || section.panel_items)
-    .map((item) => limitPromptText(item?.title || item?.question || item?.label, 120))
+    .map((item) => safePromptText(item?.title || item?.question || item?.label, 120))
     .filter(Boolean)
     .slice(0, 8);
   if (cards.length) {
@@ -530,7 +549,7 @@ function summarizeSectionForPrompt(section = {}) {
   }
 
   const faq = asArray(section.faq || section.questions)
-    .map((item) => limitPromptText(item?.question || item?.title, 160))
+    .map((item) => safePromptText(item?.question || item?.title, 160))
     .filter(Boolean)
     .slice(0, 8);
   if (faq.length) {
@@ -558,12 +577,12 @@ export function getTargetPageContext(job = {}) {
     route_path: routePath,
     page_kind: asString(page.page_kind),
     template_variant: asString(page.template_variant),
-    seo_title: asString(page.seo_title),
-    seo_description: limitPromptText(page.seo_description, 320),
-    nav_label: asString(page.nav_label),
+    seo_title: safePromptText(page.seo_title, 180),
+    seo_description: safePromptText(page.seo_description, 320),
+    nav_label: safePromptText(page.nav_label, 120),
     nav_group: asString(page.nav_group),
     nav_order: page.nav_order ?? null,
-    nav_description: limitPromptText(page.nav_description, 260),
+    nav_description: safePromptText(page.nav_description, 260),
     show_in_header: Boolean(page.show_in_header),
     show_in_footer: Boolean(page.show_in_footer),
     show_in_sitemap: page.show_in_sitemap !== false,
@@ -1426,7 +1445,7 @@ function buildGeneratedPreview(pageData = {}) {
     seo_description: pageData.seo_description || null,
     sections: sections.map((section, index) => {
       const items = Array.isArray(section.items) ? section.items : [];
-      const questions = Array.isArray(section.questions) ? section.questions : [];
+      const questions = Array.isArray(section.questions) ? section.questions : items;
       const links = Array.isArray(section.links) ? section.links : [];
 
       return {

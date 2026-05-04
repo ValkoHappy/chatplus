@@ -23,7 +23,9 @@ import {
   withLocalStrapi,
 } from './lib/page-v2-document-service.mjs';
 
-const STRAPI_URL = (process.env.STRAPI_URL || '').replace(/\/+$/, '');
+const RAW_STRAPI_URL = (process.env.STRAPI_URL || '').replace(/\/+$/, '');
+const STRAPI_URL = RAW_STRAPI_URL.replace(/\/api$/i, '');
+const STRAPI_API_URL = /\/api$/i.test(RAW_STRAPI_URL) ? RAW_STRAPI_URL : `${RAW_STRAPI_URL}/api`;
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN || '';
 const AI_CHAT_CONFIG = buildAiChatClientConfig();
 
@@ -115,7 +117,7 @@ function addGenerationJobPopulate(query) {
 }
 
 async function request(path, init = {}) {
-  const response = await fetch(`${STRAPI_URL}/api${path}`, {
+  const response = await fetch(`${STRAPI_API_URL}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
@@ -917,7 +919,7 @@ async function processJob(job, existingRoutes, blueprintMap, existingEntitiesByF
 
 async function runReport() {
   const jobs = unwrapCollection(await request(`/generation-jobs?pagination[pageSize]=${limit}&sort[0]=updatedAt:desc&populate=*`));
-  console.log(`Generation jobs from ${STRAPI_URL}`);
+  console.log(`Generation jobs from ${STRAPI_API_URL}`);
   for (const job of jobs) {
     console.log(`- #${job.id} ${job.title} | type=${job.job_type} | status=${job.job_status || job.status || '-'} | blueprint=${job.target_blueprint || '-'}`);
   }

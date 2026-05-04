@@ -1547,6 +1547,7 @@ export interface ApiGenerationJobGenerationJob
         'published',
       ]
     > &
+      Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'queued'>;
     job_type: Schema.Attribute.Enumeration<['manual_request', 'scheduled']> &
       Schema.Attribute.Required;
@@ -1557,11 +1558,24 @@ export interface ApiGenerationJobGenerationJob
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    request_prompt: Schema.Attribute.Text;
+    request_prompt: Schema.Attribute.Text & Schema.Attribute.Required;
     requested_by: Schema.Attribute.String;
     run_report: Schema.Attribute.JSON;
     target_blocks: Schema.Attribute.JSON;
-    target_blueprint: Schema.Attribute.String;
+    target_blueprint: Schema.Attribute.Enumeration<
+      [
+        'landing',
+        'directory',
+        'entity_detail',
+        'entity_intersection',
+        'comparison',
+        'campaign',
+        'brand',
+        'resource',
+        'system',
+      ]
+    > &
+      Schema.Attribute.Required;
     target_business_types: Schema.Attribute.Relation<
       'manyToMany',
       'api::business-type.business-type'
@@ -1586,7 +1600,11 @@ export interface ApiGenerationJobGenerationJob
       'manyToMany',
       'api::integration.integration'
     >;
-    target_page: Schema.Attribute.Relation<'manyToOne', 'api::page-v2.page-v2'>;
+    target_page: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::page-v2.page-v2'
+    > &
+      Schema.Attribute.Required;
     target_solutions: Schema.Attribute.Relation<
       'manyToMany',
       'api::solution.solution'

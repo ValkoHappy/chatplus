@@ -281,6 +281,14 @@ STRAPI_TOKEN=...
 - `STRAPI_URL`
 - `STRAPI_TOKEN`
 
+На production-сервере используйте обертку, которая запускает runner внутри Strapi-контейнера:
+
+```bash
+/srv/chatplus/deploy/scripts/run-page-v2-ai.sh --queued --job-type=manual_request --limit=1
+```
+
+Так runner видит Strapi Document Service и может безопасно обновлять draft даже если REST-доступ к `/api/generation-jobs` закрыт для публичного API-токена.
+
 Если нужен реальный AI-запрос, нужен ключ провайдера. Сейчас runner поддерживает OpenAI-compatible chat completions:
 
 ```env
@@ -373,6 +381,12 @@ npm run page-v2:generate:queued -- --job-type=manual_request
 
 ```powershell
 npm run page-v2:generate:scheduled
+```
+
+На сервере cron должен вызывать:
+
+```bash
+/srv/chatplus/deploy/scripts/run-page-v2-ai.sh --queued --job-type=scheduled
 ```
 
 Этот режим берёт только queued jobs с `job_type = scheduled` и тоже обновляет только выбранные drafts. Для scheduled jobs `target_page` также обязателен.
