@@ -918,8 +918,25 @@ async function processJob(job, existingRoutes, blueprintMap, existingEntitiesByF
 }
 
 async function runReport() {
-  const jobs = unwrapCollection(await request(`/generation-jobs?pagination[pageSize]=${limit}&sort[0]=updatedAt:desc&populate=*`));
-  console.log(`Generation jobs from ${STRAPI_API_URL}`);
+  const localMode = isLocalStrapiUrl(STRAPI_URL);
+  const jobs = localMode
+    ? await withLocalStrapi({}, async (strapi) => {
+        const service = strapi.documents('api::generation-job.generation-job');
+        return service.findMany({
+          status: 'draft',
+          sort: ['updatedAt:desc'],
+          populate: {
+            target_page: true,
+          },
+          pagination: {
+            page: 1,
+            pageSize: limit,
+          },
+        });
+      })
+    : unwrapCollection(await request(`/generation-jobs?pagination[pageSize]=${limit}&sort[0]=updatedAt:desc&populate=*`));
+
+  console.log(`Generation jobs from ${localMode ? `${STRAPI_URL} (local document service)` : STRAPI_API_URL}`);
   for (const job of jobs) {
     console.log(`- #${job.id} ${job.title} | type=${job.job_type} | status=${job.job_status || job.status || '-'} | blueprint=${job.target_blueprint || '-'}`);
   }
