@@ -17,7 +17,13 @@ interface Props {
 }
 
 const { page } = Astro.props as Props;
-const family = String(page.legacy_template_family || '') as LegacyPageFamily | '';
+const rawFamily = String(page.legacy_template_family || '');
+const pageKind = String(page.page_kind || '');
+const family = (
+  rawFamily === 'entity_detail' || rawFamily === 'entity_intersection' || pageKind === 'entity_detail' || pageKind === 'entity_intersection'
+    ? 'structured'
+    : rawFamily
+) as LegacyPageFamily | '';
 const legacyPage = family ? mapPageV2ToLegacyPage(page, family) : null;
 ---
 
