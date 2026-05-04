@@ -38,7 +38,7 @@
     },
     "target_blueprint": {
       "type": "string",
-      "description": "Какой тип страницы сделать. Безопасные варианты для AI сейчас: campaign, brand, resource. Для comparison, landing, home, demo и tenders нужен отдельный технический этап."
+      "description": "Какой тип выбранной Page заполняет AI. Значение должно совпадать с page_kind у target_page. Безопасные варианты сейчас: campaign, brand, resource; остальные типы требуют готового каркаса и отдельной проверки."
     },
     "block_strategy": {
       "type": "enumeration",
@@ -48,11 +48,11 @@
         "custom"
       ],
       "default": "auto",
-      "description": "Как AI выбирает блоки: auto - сам по prompt и категориям, blueprint_default - строго по blueprint, custom - использовать target_blocks в рамках разрешённых блоков."
+      "description": "Как AI заполняет существующий каркас: auto - сохранить блоки выбранной Page и заполнить по prompt, blueprint_default - следовать blueprint выбранной Page, custom - использовать target_blocks только как подсказку без добавления новых типов блоков."
     },
     "target_blocks": {
       "type": "json",
-      "description": "Список нужных блоков для custom-режима. Пример JSON: [\"hero\", \"cards-grid\", \"faq\", \"final-cta\"]. Неподдержанные для blueprint блоки будут отклонены, новый тип блока через prompt создать нельзя."
+      "description": "Подсказка для custom-режима. Новый тип блока через prompt создать нельзя: AI может заполнять только блоки, которые уже есть в выбранной target_page."
     },
     "request_prompt": {
       "type": "text",
@@ -66,7 +66,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::page-v2.page-v2",
-      "description": "Выберите Page здесь, если AI должен доработать уже созданный черновик. Runner передаст AI текущую страницу, сохранит её route_path и обновит эту же Page. Для новой страницы оставьте пустым."
+      "description": "Обязательное поле. Выберите Page, которую AI должен заполнить или доработать. Для новой страницы сначала создайте Page с route_path, page_kind, blueprint и каркасом блоков, затем вернитесь сюда и выберите её."
     },
     "target_channels": {
       "type": "relation",

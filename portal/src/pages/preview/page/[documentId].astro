@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 
-import PageV2Page from '../../../components/PageV2Page.astro';
+import PreviewPageRenderer from '../../../components/PreviewPageRenderer.astro';
 import { getPageV2DraftByDocumentId, isPreviewTokenValid } from '../../../lib/strapi';
 
 const { documentId } = Astro.params;
@@ -21,7 +21,7 @@ if (!page) {
 }
 ---
 
-<PageV2Page page={{ ...page, robots: 'noindex,nofollow' }} />
+<PreviewPageRenderer page={{ ...page, robots: 'noindex,nofollow' }} />
 
 <style is:global>
   body::before {

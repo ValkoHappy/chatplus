@@ -1,0 +1,46 @@
+---
+import BrandContentPage from './BrandContentPage.astro';
+import CampaignPage from './CampaignPage.astro';
+import ComparisonPage from './ComparisonPage.astro';
+import DirectoryPage from './DirectoryPage.astro';
+import HomePage from './HomePage.astro';
+import PageV2Page from './PageV2Page.astro';
+import PartnershipPage from './PartnershipPage.astro';
+import PricingPage from './PricingPage.astro';
+import ResourceHubPage from './ResourceHubPage.astro';
+import StructuredLandingPage from './StructuredLandingPage.astro';
+import TendersPage from './TendersPage.astro';
+import { mapPageV2ToLegacyPage, type LegacyPageFamily } from '../lib/page-v2-legacy-bridge';
+
+interface Props {
+  page: Record<string, any>;
+}
+
+const { page } = Astro.props as Props;
+const family = String(page.legacy_template_family || '') as LegacyPageFamily | '';
+const legacyPage = family ? mapPageV2ToLegacyPage(page, family) : null;
+---
+
+{family === 'structured' && legacyPage ? (
+  <StructuredLandingPage page={legacyPage} />
+) : family === 'campaign' && legacyPage ? (
+  <CampaignPage page={legacyPage} />
+) : family === 'brand' && legacyPage ? (
+  <BrandContentPage page={legacyPage} />
+) : family === 'resource' && legacyPage ? (
+  <ResourceHubPage page={legacyPage} />
+) : family === 'pricing' && legacyPage ? (
+  <PricingPage page={legacyPage} />
+) : family === 'partnership' && legacyPage ? (
+  <PartnershipPage page={legacyPage} />
+) : family === 'directory' && legacyPage ? (
+  <DirectoryPage {...legacyPage} />
+) : family === 'comparison' && legacyPage ? (
+  <ComparisonPage page={legacyPage} />
+) : family === 'tenders' && legacyPage ? (
+  <TendersPage page={legacyPage} />
+) : family === 'home' && legacyPage ? (
+  <HomePage page={legacyPage} />
+) : (
+  <PageV2Page page={{ ...page, robots: 'noindex,nofollow' }} />
+)}
