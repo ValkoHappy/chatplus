@@ -107,13 +107,13 @@ npm.cmd run page-v2:generate -- --job-id=DOCUMENT_ID --approve-entity-proposals
 Самый удобный путь:
 
 1. Создайте или найдите запись в справочнике.
-2. Откройте `Content Manager -> Generation Job`.
-3. Создайте задачу:
+2. Создайте или откройте нужную `Page`.
+3. В правой панели `Page` нажмите `Сгенерировать через AI`.
+4. Strapi откроет связанную `Generation Job`. В ней проверьте:
    - `job_type = manual_request`;
-   - `job_status = queued`;
-   - `target_blueprint` - выберите тип страницы простыми словами: `campaign` = продающая страница, `brand` = направление или категория, `resource` = гайд или инструкция;
+   - `target_blueprint` - тип страницы простыми словами: `campaign` = продающая страница, `brand` = направление или категория, `resource` = гайд или инструкция;
    - `request_prompt` - что именно должна сделать нейросеть.
-4. В relation-поле выберите нужную запись:
+5. В relation-поле выберите нужную запись:
    - `target_channels`;
    - `target_industries`;
    - `target_integrations`;
@@ -121,10 +121,10 @@ npm.cmd run page-v2:generate -- --job-id=DOCUMENT_ID --approve-entity-proposals
    - `target_features`;
    - `target_business_types`;
    - `target_competitors`.
-5. После генерации откройте созданную `Page`.
-6. Посмотрите Astro preview.
-7. Если результат хороший, поставьте `editorial_status = approved` и нажмите `Publish`.
-8. Если результат слабый, не публикуйте. Создайте новый `Generation Job`, выберите эту же страницу в `target_page` и напишите prompt на доработку.
+6. После генерации откройте созданную `Page`.
+7. Посмотрите Astro preview.
+8. Если результат хороший, поставьте `editorial_status = approved` и нажмите `Publish`.
+9. Если результат слабый, не публикуйте. Снова откройте эту же `Page`, нажмите `Сгенерировать через AI` и напишите prompt на доработку.
 
 ## Если нужного варианта нет в выпадающем списке
 
