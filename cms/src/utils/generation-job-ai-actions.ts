@@ -5,6 +5,35 @@ import path from 'node:path';
 const GENERATION_JOB_UID = 'api::generation-job.generation-job' as any;
 const PAGE_V2_UID = 'api::page-v2.page-v2' as any;
 
+function isDocumentLookupMiss(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error || '');
+  return message.includes('Document with id') && message.includes('not found');
+}
+
+async function findDraftDocumentByDocumentId(service: any, documentId: string, populate: any) {
+  try {
+    const entry = await service.findOne({
+      documentId,
+      status: 'draft',
+      populate,
+    });
+    if (entry) {
+      return entry;
+    }
+  } catch (error) {
+    if (!isDocumentLookupMiss(error)) {
+      throw error;
+    }
+  }
+
+  return (await service.findMany({
+    status: 'draft',
+    filters: { documentId: { $eq: documentId } },
+    populate,
+    pagination: { page: 1, pageSize: 1 },
+  }))?.[0] || null;
+}
+
 function normalizeRoutePath(value = '') {
   const routePath = typeof value === 'string' ? value.trim() : '';
   if (!routePath || routePath === '/') {
@@ -93,11 +122,7 @@ export async function findGenerationJob(strapi: any, idOrDocumentId: string) {
   };
 
   if (Number.isNaN(Number(idOrDocumentId))) {
-    return service.findOne({
-      documentId: idOrDocumentId,
-      status: 'draft',
-      populate,
-    });
+    return findDraftDocumentByDocumentId(service, idOrDocumentId, populate);
   }
 
   return (await service.findMany({
@@ -135,11 +160,7 @@ export async function findPageForGeneration(strapi: any, idOrDocumentId: string)
   const service = strapi.documents(PAGE_V2_UID);
 
   if (Number.isNaN(Number(idOrDocumentId))) {
-    return service.findOne({
-      documentId: idOrDocumentId,
-      status: 'draft',
-      populate: ['blueprint'],
-    });
+    return findDraftDocumentByDocumentId(service, idOrDocumentId, ['blueprint']);
   }
 
   return (await service.findMany({
