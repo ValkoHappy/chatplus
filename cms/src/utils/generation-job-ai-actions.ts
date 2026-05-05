@@ -131,6 +131,96 @@ export function buildPagePreviewUrl(documentId: string) {
   return `${publicSiteUrl}/preview/page/${encodeURIComponent(documentId)}?token=${encodeURIComponent(previewToken)}`;
 }
 
+export async function findPageForGeneration(strapi: any, idOrDocumentId: string) {
+  const service = strapi.documents(PAGE_V2_UID);
+
+  if (Number.isNaN(Number(idOrDocumentId))) {
+    return service.findOne({
+      documentId: idOrDocumentId,
+      status: 'draft',
+      populate: ['blueprint'],
+    });
+  }
+
+  return (await service.findMany({
+    status: 'draft',
+    filters: { id: { $eq: Number(idOrDocumentId) || -1 } },
+    populate: ['blueprint'],
+    pagination: { page: 1, pageSize: 1 },
+  }))?.[0] || null;
+}
+
+export async function createGenerationJobForPage(strapi: any, pageId: string, requestedBy = '') {
+  const page = await findPageForGeneration(strapi, pageId);
+  if (!page?.documentId) {
+    const error = new Error(`Page ${pageId} was not found.`);
+    (error as any).status = 404;
+    throw error;
+  }
+
+  const now = new Date();
+  const stamp = now.toISOString().replace(/[-:T]/g, '').slice(0, 12);
+  const routePath = normalizeRoutePath(page.route_path || page.slug || '');
+  const pageLabel = routePath || page.title || page.slug || page.documentId;
+  const targetBlueprint = page.page_kind || 'landing';
+
+  const job = await strapi.documents(GENERATION_JOB_UID).create({
+    status: 'draft',
+    data: {
+      title: `AI refill ${pageLabel} ${stamp}`,
+      job_type: 'manual_request',
+      job_status: 'queued',
+      target_blueprint: targetBlueprint,
+      block_strategy: 'auto',
+      request_prompt:
+        `Доработай выбранную Page ${pageLabel}. Сохрани текущий порядок и типы блоков, заполни пустые места, улучшай тексты на русском и не меняй route_path.`,
+      requested_by: requestedBy || 'strapi-editor',
+      target_page: {
+        connect: [page.documentId],
+      },
+      run_report: {
+        created_from_page: true,
+        source_page_id: page.id,
+        source_page_document_id: page.documentId,
+        source_page_route_path: page.route_path || null,
+        created_at: now.toISOString(),
+      },
+    } as any,
+    populate: ['target_page'],
+  });
+
+  return {
+    ok: true,
+    job,
+    job_document_id: job?.documentId || null,
+    page_document_id: page.documentId,
+  };
+}
+
+export async function getGenerationJobTargetPage(strapi: any, id: string) {
+  const job = await findGenerationJob(strapi, id);
+  if (!job) {
+    const error = new Error(`Generation Job ${id} was not found.`);
+    (error as any).status = 404;
+    throw error;
+  }
+
+  const targetPage = job.target_page || null;
+  if (!targetPage?.documentId) {
+    const error = new Error('Generation Job has no linked target_page.');
+    (error as any).status = 400;
+    throw error;
+  }
+
+  return {
+    ok: true,
+    page_document_id: targetPage.documentId,
+    page_id: targetPage.id || null,
+    route_path: targetPage.route_path || null,
+    title: targetPage.title || null,
+  };
+}
+
 export async function runAiForGenerationJob(strapi: any, id: string) {
   const before = await findGenerationJob(strapi, id);
   if (!before) {

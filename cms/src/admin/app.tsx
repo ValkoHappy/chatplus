@@ -561,6 +561,88 @@ const ModelGuidePanel: PanelComponent = ({ model }: PanelComponentProps) => {
   };
 };
 
+function adminEditUrl(model: string, documentId: string) {
+  return `/admin/content-manager/collection-types/${model}/${encodeURIComponent(documentId)}`;
+}
+
+const PageGenerationBridgePanelContent = ({
+  document,
+  model,
+}: PanelComponentProps) => {
+  if (String(model) !== 'api::page-v2.page-v2') {
+    return null;
+  }
+
+  const record = readDocument(document);
+  const documentId = String(record.documentId || record.document_id || record.id || '').trim();
+  const routePath = String(record.route_path || record.slug || '').trim();
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const { post } = useFetchClient();
+
+  const createJob = async () => {
+    if (!documentId || busy) {
+      return;
+    }
+
+    setBusy(true);
+    setMessage('');
+
+    try {
+      const { data: payload } = await post(
+        `/admin/page-v2-ai/pages/${encodeURIComponent(documentId)}/create-generation-job`,
+        {},
+      );
+      const jobDocumentId = String(payload?.job_document_id || '').trim();
+
+      if (!jobDocumentId) {
+        throw new Error('Generation Job was created, but documentId was not returned.');
+      }
+
+      window.location.assign(adminEditUrl('api::generation-job.generation-job', jobDocumentId));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div style={{ fontWeight: 700 }}>AI generation</div>
+      <p style={{ margin: 0 }}>
+        Создает связанную Generation Job для этой Page и сразу открывает ее. Страница уже будет выбрана в target_page.
+      </p>
+
+      <button
+        type="button"
+        onClick={createJob}
+        disabled={!documentId || busy}
+        style={buttonStyle}
+      >
+        {busy ? 'Создаем задачу...' : 'Сгенерировать через AI'}
+      </button>
+
+      <div style={{ fontSize: 12, lineHeight: 1.5, color: '#64748b' }}>
+        {documentId ? `Page: ${routePath || documentId}` : 'Сначала сохраните Page.'}
+      </div>
+
+      {message && <div style={{ fontSize: 13, lineHeight: 1.5 }}>{message}</div>}
+    </div>
+  );
+};
+
+const PageGenerationBridgePanel: PanelComponent = (props: PanelComponentProps) => {
+  if (String(props.model) !== 'api::page-v2.page-v2') {
+    return null as never;
+  }
+
+  return {
+    title: 'AI Generation',
+    content: <PageGenerationBridgePanelContent {...props} />,
+  };
+};
+
 const GenerationJobActionsPanelContent = ({
   document,
   model,
@@ -575,6 +657,32 @@ const GenerationJobActionsPanelContent = ({
   const [busyAction, setBusyAction] = useState('');
   const [message, setMessage] = useState('');
   const { get, post } = useFetchClient();
+
+  const openTargetPage = async () => {
+    if (!documentId || busyAction) {
+      return;
+    }
+
+    setBusyAction('/target-page');
+    setMessage('');
+
+    try {
+      const { data: payload } = await get(
+        `/admin/page-v2-ai/generation-jobs/${encodeURIComponent(documentId)}/target-page`,
+      );
+      const pageDocumentId = String(payload?.page_document_id || '').trim();
+
+      if (!pageDocumentId) {
+        throw new Error('Linked Page was not returned.');
+      }
+
+      window.location.assign(adminEditUrl('api::page-v2.page-v2', pageDocumentId));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusyAction('');
+    }
+  };
 
   const postAction = async (actionPath: string) => {
     if (!documentId || busyAction) {
@@ -642,6 +750,14 @@ const GenerationJobActionsPanelContent = ({
         >
           {busyAction === '/apply-ai-draft' ? 'Применяем…' : 'Принять в Page'}
         </button>
+        <button
+          type="button"
+          onClick={openTargetPage}
+          disabled={!documentId || Boolean(busyAction)}
+          style={secondaryButtonStyle}
+        >
+          {busyAction === '/target-page' ? 'Открываем Page...' : 'Вернуться к Page'}
+        </button>
       </div>
 
       <div style={{ fontSize: 12, lineHeight: 1.5, color: '#64748b' }}>
@@ -675,12 +791,19 @@ const buttonStyle: CSSProperties = {
   cursor: 'pointer',
 };
 
+const secondaryButtonStyle: CSSProperties = {
+  ...buttonStyle,
+  background: 'transparent',
+  color: '#4f46e5',
+};
+
 export default {
   config: {
     locales: ['ru', 'uk', 'en'],
   },
   bootstrap(app: StrapiApp) {
     app.getPlugin('content-manager').apis.addEditViewSidePanel((panels) => [
+      PageGenerationBridgePanel,
       GenerationJobActionsPanel,
       ModelGuidePanel,
       SyncStatusPanel,

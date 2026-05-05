@@ -1,5 +1,7 @@
 import {
   applyAiDraftToPage,
+  createGenerationJobForPage,
+  getGenerationJobTargetPage,
   getAiDraftPreview,
   runAiForGenerationJob,
 } from './utils/generation-job-ai-actions';
@@ -15,6 +17,45 @@ export default {
     strapi.admin.routes['page-v2-ai'] = {
       type: 'admin',
       routes: [
+        {
+          method: 'POST',
+          path: '/page-v2-ai/pages/:id/create-generation-job',
+          handler: async (ctx: any) => {
+            const id = String(ctx.params.id || '').trim();
+            if (!id) {
+              ctx.throw(400, 'Page id is required.');
+            }
+
+            try {
+              const requestedBy = ctx.state?.user?.email || ctx.state?.user?.username || '';
+              ctx.body = await createGenerationJobForPage(strapi, id, requestedBy);
+            } catch (error) {
+              throwHttpError(ctx, error);
+            }
+          },
+          config: {
+            policies: ['admin::isAuthenticatedAdmin'],
+          },
+        },
+        {
+          method: 'GET',
+          path: '/page-v2-ai/generation-jobs/:id/target-page',
+          handler: async (ctx: any) => {
+            const id = String(ctx.params.id || '').trim();
+            if (!id) {
+              ctx.throw(400, 'Generation Job id is required.');
+            }
+
+            try {
+              ctx.body = await getGenerationJobTargetPage(strapi, id);
+            } catch (error) {
+              throwHttpError(ctx, error);
+            }
+          },
+          config: {
+            policies: ['admin::isAuthenticatedAdmin'],
+          },
+        },
         {
           method: 'POST',
           path: '/page-v2-ai/generation-jobs/:id/run-ai',
