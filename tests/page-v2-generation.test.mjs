@@ -1084,6 +1084,16 @@ test('buildAiChatClientConfig treats OPENROUTER_API_KEY as OpenRouter by default
   assert.equal(config.chatCompletionsUrl, 'https://openrouter.ai/api/v1/chat/completions');
 });
 
+test('buildAiChatClientConfig treats DEEPSEEK_API_KEY as direct DeepSeek by default', () => {
+  const config = buildAiChatClientConfig({
+    DEEPSEEK_API_KEY: 'deepseek-key',
+  });
+
+  assert.equal(config.apiKey, 'deepseek-key');
+  assert.equal(config.model, 'deepseek-chat');
+  assert.equal(config.chatCompletionsUrl, 'https://api.deepseek.com/v1/chat/completions');
+});
+
 test('parseAiJsonObject accepts UTF-8 BOM JSON from mock files', () => {
   const parsed = parseAiJsonObject('\uFEFF{"title":"Smoke"}');
 

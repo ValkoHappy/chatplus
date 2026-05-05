@@ -1529,6 +1529,7 @@ export interface ApiGenerationJobGenerationJob
     draftAndPublish: false;
   };
   attributes: {
+    applied_at: Schema.Attribute.DateTime;
     block_strategy: Schema.Attribute.Enumeration<
       ['auto', 'blueprint_default', 'custom']
     > &
@@ -1536,6 +1537,7 @@ export interface ApiGenerationJobGenerationJob
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    generated_draft: Schema.Attribute.JSON;
     job_status: Schema.Attribute.Enumeration<
       [
         'queued',

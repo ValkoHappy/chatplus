@@ -77,6 +77,35 @@ export async function getPageV2DraftByDocumentId(documentId: string) {
   }
 }
 
+export async function getGenerationJobDraftByDocumentId(documentId: string) {
+  const safeDocumentId = normalizePreviewDocumentId(documentId);
+  if (!safeDocumentId) {
+    return null;
+  }
+
+  try {
+    const json = await request(`/generation-jobs/${encodeURIComponent(safeDocumentId)}?status=draft`);
+    if (!json) {
+      return null;
+    }
+
+    const record = parseSingleData(json, `/generation-jobs/${safeDocumentId}`);
+    const generatedDraft = record.generated_draft;
+    if (!generatedDraft || typeof generatedDraft !== 'object' || Array.isArray(generatedDraft)) {
+      return null;
+    }
+
+    const draftData = (generatedDraft as { data?: unknown }).data;
+    if (!draftData || typeof draftData !== 'object' || Array.isArray(draftData)) {
+      return null;
+    }
+
+    return normalizePageV2Record(draftData as StrapiRecord);
+  } catch {
+    return null;
+  }
+}
+
 async function fetchCollection(path: string, pageSize = 100, options?: { allowEmpty?: boolean }) {
   const safePageSize = Math.min(pageSize, 100);
   const records: StrapiRecord[] = [];

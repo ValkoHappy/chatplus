@@ -39,9 +39,10 @@
 4. В prompt описать задачу человеческим языком: тема, аудитория, цель страницы, CTA, ограничения.
 5. При необходимости выбрать связи-категории: `target_channels`, `target_industries`, `target_integrations`, `target_solutions`, `target_features`, `target_business_types`, `target_competitors`.
 6. Оставить `job_status = queued`.
-7. После запуска runner открыть ту же `Page` как черновик, посмотреть Astro preview и проверить текст.
-8. Если страница слабая, создать новый `Generation Job`, снова выбрать эту же страницу в `target_page` и написать prompt на доработку.
-9. Публиковать только после человеческой проверки.
+7. Нажать кнопку запуска в `Generation Job`: runner сначала соберет AI-кандидат черновика.
+8. Открыть preview кандидата, проверить текст и только потом нажать `Принять в Page`.
+9. Если страница слабая, создать новый `Generation Job`, снова выбрать эту же страницу в `target_page` и написать prompt на доработку.
+10. Публиковать только после человеческой проверки.
 
 Ручное редактирование `Page -> sections` остаётся запасным способом для маленьких точечных правок: заменить фразу, ссылку, CTA или SEO. Для новой страницы сначала нужен правильный каркас `Page`; AI потом заполняет текст внутри этого каркаса.
 
@@ -290,6 +291,12 @@ STRAPI_TOKEN=...
 Так runner видит Strapi Document Service и может безопасно обновлять draft даже если REST-доступ к `/api/generation-jobs` закрыт для публичного API-токена.
 
 Если нужен реальный AI-запрос, нужен ключ провайдера. Сейчас runner поддерживает OpenAI-compatible chat completions:
+
+```env
+# Direct DeepSeek
+DEEPSEEK_API_KEY=...
+DEEPSEEK_MODEL=deepseek-chat
+```
 
 ```env
 # OpenRouter + DeepSeek

@@ -1,0 +1,29 @@
+---
+export const prerender = false;
+
+import PreviewPageRenderer from '../../../components/PreviewPageRenderer.astro';
+import { getGenerationJobDraftByDocumentId, isPreviewTokenValid } from '../../../lib/strapi';
+
+const { documentId } = Astro.params;
+const token = Astro.url.searchParams.get('token');
+
+Astro.response.headers.set('Cache-Control', 'no-store, private');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+
+if (!isPreviewTokenValid(token)) {
+  return new Response('Unauthorized preview', { status: 401 });
+}
+
+const page = await getGenerationJobDraftByDocumentId(documentId || '');
+if (!page) {
+  return new Response('Draft candidate not found', { status: 404 });
+}
+
+const previewPage = {
+  ...page,
+  force_v2_preview: true,
+  robots: 'noindex,nofollow',
+};
+---
+
+<PreviewPageRenderer page={previewPage} />

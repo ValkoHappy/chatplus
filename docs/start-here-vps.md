@@ -148,6 +148,8 @@ GITHUB_DISPATCH_EVENT=strapi-content-publish
 RELAY_ALLOWED_MODELS=landing-page,page-v2,tenders-page,business-types-page,site-setting,competitor,solution,channel,industry,integration,feature,business-type
 
 UPLOAD_PROVIDER=local
+DEEPSEEK_API_KEY=
+DEEPSEEK_MODEL=deepseek-chat
 OPENROUTER_API_KEY=
 OPENROUTER_MODEL=deepseek/deepseek-chat
 AI_API_BASE_URL=

@@ -128,6 +128,14 @@
     "run_report": {
       "type": "json",
       "description": "Отчёт после запуска: какая target_page доработана, какие предупреждения есть, какие сущности предложены к проверке и какой документ получился."
+    },
+    "generated_draft": {
+      "type": "json",
+      "description": "AI draft candidate for preview before applying to target_page. Filled by the runner; editors should not edit this JSON by hand."
+    },
+    "applied_at": {
+      "type": "datetime",
+      "description": "When the AI candidate was accepted and written into target_page."
     }
   }
 }

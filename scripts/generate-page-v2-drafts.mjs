@@ -42,6 +42,7 @@ const argMap = new Map(
 const reportMode = args.includes('--report');
 const queuedMode = args.includes('--queued');
 const dryRun = args.includes('--dry-run');
+const candidateOnly = args.includes('--candidate-only');
 const approveEntityProposals = args.includes('--approve-entity-proposals');
 const jobId = argMap.get('--job-id') || '';
 const jobTypeFilter = argMap.get('--job-type') || '';
@@ -54,7 +55,7 @@ if (!STRAPI_URL || !STRAPI_TOKEN) {
 }
 
 if (!reportMode && !AI_CHAT_CONFIG.apiKey && !mockResponseFile) {
-  console.error('OPENROUTER_API_KEY, AI_API_KEY, OPENAI_API_KEY or --mock-response-file is required for page_v2 draft generation.');
+  console.error('DEEPSEEK_API_KEY, OPENROUTER_API_KEY, AI_API_KEY, OPENAI_API_KEY or --mock-response-file is required for page_v2 draft generation.');
   process.exit(1);
 }
 
@@ -882,12 +883,47 @@ async function processJob(job, existingRoutes, blueprintMap, existingEntitiesByF
       return { action: 'dry-run', job, report };
     }
 
+    const generatedDraft = {
+      data: pageDraft.data,
+      warnings: [...entityReview.warnings, ...pageDraft.warnings],
+      validation_attempts: validationAttempts,
+      model: AI_CHAT_CONFIG.model,
+      generated_at: report.generated_at,
+      target_page_id: getTargetPageContext(jobForDraft)?.id || null,
+      target_page_document_id: getTargetPageContext(jobForDraft)?.documentId || null,
+      route_path: pageDraft.data.route_path,
+    };
+
+    if (candidateOnly) {
+      const updatedJob = await updateJob(job, {
+        status: 'draft_ready',
+        generated_draft: generatedDraft,
+        run_report: {
+          ...report,
+          candidate_ready: true,
+          apply_required: true,
+          target_page_id: generatedDraft.target_page_id,
+          target_page_document_id: generatedDraft.target_page_document_id,
+        },
+      });
+
+      return {
+        action: 'draft_ready',
+        job: unwrapRecord(updatedJob.data) || job,
+        page: null,
+        report,
+      };
+    }
+
     const page = await upsertPageDraft(jobForDraft, pageDraft.data);
     const updatedJob = await updateJob(job, {
       status: 'draft_ready',
       target_page: page?.id || null,
+      generated_draft: generatedDraft,
       run_report: {
         ...report,
+        candidate_ready: false,
+        apply_required: false,
         target_page_id: page?.id || null,
         target_page_document_id: page?.documentId || null,
       },
@@ -958,6 +994,7 @@ async function main() {
   const blueprintMap = localMode ? await fetchBlueprintMapLocal() : await fetchBlueprintMap();
   const existingRoutes = localMode ? await fetchExistingPageRoutesLocal() : await fetchExistingPageRoutes();
   const existingEntitiesByFamily = localMode ? await fetchCatalogEntitiesLocal() : await fetchCatalogEntities();
+  let hadFailures = false;
   for (const job of jobs) {
     const result = await processJob(job, existingRoutes, blueprintMap, existingEntitiesByFamily);
     if (result.action === 'draft_ready' && result.page?.route_path) {
@@ -965,6 +1002,7 @@ async function main() {
     }
 
     if (result.action === 'failed') {
+      hadFailures = true;
       console.error(`FAILED job #${job.id}: ${result.error}`);
       continue;
     }
@@ -972,6 +1010,10 @@ async function main() {
     const resultTarget = result.report.route_path
       || `${Object.values(result.report.proposed_entities || {}).flat().length} entity proposal(s)`;
     console.log(`${result.action.toUpperCase()} job #${job.id}: ${resultTarget}`);
+  }
+
+  if (hadFailures) {
+    process.exitCode = 1;
   }
 }
 

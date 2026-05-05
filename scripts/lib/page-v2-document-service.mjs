@@ -17,7 +17,7 @@ export function isLocalStrapiUrl(value = '') {
   }
 }
 
-export async function withLocalStrapi({ appDir = 'cms', createStrapiFactory } = {}, callback) {
+export async function withLocalStrapi({ appDir = process.env.STRAPI_APP_DIR || 'cms', createStrapiFactory } = {}, callback) {
   const resolvedAppDir = path.resolve(process.cwd(), appDir);
   const distDir = path.join(resolvedAppDir, 'dist');
   dotenv.config({ path: path.join(resolvedAppDir, '.env'), override: false, quiet: true });

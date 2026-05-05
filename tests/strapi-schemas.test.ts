@@ -187,6 +187,8 @@ test('generation_job supports AI block planning controls', () => {
   assert.deepEqual(generationJobSchema.attributes.block_strategy.enum, ['auto', 'blueprint_default', 'custom']);
   assert.equal(generationJobSchema.attributes.block_strategy.default, 'auto');
   assert.equal(generationJobSchema.attributes.target_blocks.type, 'json');
+  assert.equal(generationJobSchema.attributes.generated_draft.type, 'json');
+  assert.equal(generationJobSchema.attributes.applied_at.type, 'datetime');
   assert.equal(generationJobSchema.attributes.request_prompt.required, true);
   assert.equal(generationJobSchema.attributes.target_page.required, true);
 });

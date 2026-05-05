@@ -108,6 +108,7 @@ npm.cmd run page-v2:generate:scheduled
 
 - `STRAPI_URL`;
 - `STRAPI_TOKEN`;
+- `DEEPSEEK_API_KEY` и `DEEPSEEK_MODEL`, если используется прямой DeepSeek;
 - `OPENROUTER_API_KEY` и `OPENROUTER_MODEL`, если используется OpenRouter;
 - или `AI_API_BASE_URL`, `AI_API_KEY`, `AI_MODEL` для другого OpenAI-compatible провайдера;
 - или `OPENAI_API_KEY`, `OPENAI_MODEL` для прямого OpenAI.

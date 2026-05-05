@@ -183,13 +183,17 @@ function normalizeApiBaseUrl(value) {
 
 export function buildAiChatClientConfig(env = process.env) {
   const hasOpenRouterKey = Boolean(asString(env.OPENROUTER_API_KEY));
+  const hasDeepSeekKey = Boolean(asString(env.DEEPSEEK_API_KEY));
   const apiBaseUrl = normalizeApiBaseUrl(
-    env.AI_API_BASE_URL || env.OPENAI_API_BASE_URL || (hasOpenRouterKey ? 'https://openrouter.ai/api/v1' : ''),
+    env.AI_API_BASE_URL
+      || env.OPENAI_API_BASE_URL
+      || (hasOpenRouterKey ? 'https://openrouter.ai/api/v1' : '')
+      || (hasDeepSeekKey ? 'https://api.deepseek.com/v1' : ''),
   );
 
   return {
-    apiKey: asString(env.AI_API_KEY || env.OPENROUTER_API_KEY || env.OPENAI_API_KEY),
-    model: asString(env.AI_MODEL || env.OPENROUTER_MODEL || env.OPENAI_MODEL, 'gpt-4o-mini'),
+    apiKey: asString(env.AI_API_KEY || env.DEEPSEEK_API_KEY || env.OPENROUTER_API_KEY || env.OPENAI_API_KEY),
+    model: asString(env.AI_MODEL || env.DEEPSEEK_MODEL || env.OPENROUTER_MODEL || env.OPENAI_MODEL, hasDeepSeekKey ? 'deepseek-chat' : 'gpt-4o-mini'),
     apiBaseUrl,
     chatCompletionsUrl: `${apiBaseUrl}${CHAT_COMPLETIONS_PATH}`,
   };
@@ -1179,7 +1183,7 @@ export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existing
       robots: asString(aiDraft.robots) || 'index,follow',
       nav_group: preserveValue('nav_group', navGroup),
       nav_label: asString(aiDraft.nav_label) || title,
-      nav_description: asString(aiDraft.nav_description) || summary || targetPageContext?.nav_description || '',
+      nav_description: asString(aiDraft.nav_description) || targetPageContext?.nav_description || (!targetPageContext ? summary : ''),
       nav_order: asFiniteNumber(preserveValue('nav_order', aiDraft.nav_order), 100),
       show_in_header: preserveBoolean('show_in_header', Boolean(aiDraft.show_in_header)),
       show_in_footer: preserveBoolean('show_in_footer', Boolean(aiDraft.show_in_footer)),

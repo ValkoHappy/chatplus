@@ -21,8 +21,8 @@ services:
 
   strapi:
     build:
-      context: ../cms
-      dockerfile: Dockerfile.prod
+      context: ..
+      dockerfile: cms/Dockerfile.prod
     restart: unless-stopped
     depends_on:
       postgres:
@@ -41,6 +41,15 @@ services:
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       PREVIEW_TOKEN: ${PREVIEW_TOKEN}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_API_BASE_URL: ${AI_API_BASE_URL:-}
+      AI_MODEL: ${AI_MODEL:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
       DATABASE_CLIENT: postgres
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
@@ -58,7 +67,7 @@ services:
       retries: 12
       start_period: 40s
     volumes:
-      - strapi_uploads:/app/public/uploads
+      - strapi_uploads:/app/cms/public/uploads
     networks:
       - internal
 

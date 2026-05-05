@@ -1,5 +1,6 @@
-import type { StrapiApp } from '@strapi/strapi/admin';
+import { useFetchClient, type StrapiApp } from '@strapi/strapi/admin';
 import type { PanelComponent, PanelComponentProps } from '@strapi/content-manager/strapi-admin';
+import { useState, type CSSProperties } from 'react';
 
 type GuideItem = {
   key: string;
@@ -560,11 +561,130 @@ const ModelGuidePanel: PanelComponent = ({ model }: PanelComponentProps) => {
   };
 };
 
+const GenerationJobActionsPanelContent = ({
+  document,
+  model,
+}: PanelComponentProps) => {
+  if (String(model) !== 'api::generation-job.generation-job') {
+    return null;
+  }
+
+  const record = readDocument(document);
+  const documentId = String(record.documentId || record.document_id || record.id || '').trim();
+  const hasCandidate = Boolean(record.generated_draft && typeof record.generated_draft === 'object');
+  const [busyAction, setBusyAction] = useState('');
+  const [message, setMessage] = useState('');
+  const { get, post } = useFetchClient();
+
+  const postAction = async (actionPath: string) => {
+    if (!documentId || busyAction) {
+      return;
+    }
+
+    setBusyAction(actionPath);
+    setMessage('');
+
+    try {
+      const url = `/admin/page-v2-ai/generation-jobs/${encodeURIComponent(documentId)}${actionPath}`;
+      const { data: payload } = actionPath === '/ai-preview'
+        ? await get(url)
+        : await post(url, {});
+
+      if (payload?.preview_url) {
+        window.open(payload.preview_url, '_blank', 'noopener,noreferrer');
+      }
+
+      setMessage(
+        actionPath === '/run-ai'
+          ? 'Генерация запущена. Откройте preview кандидата или обновите запись.'
+          : 'Кандидат принят в Page. Откройте preview страницы в новой вкладке.',
+      );
+
+      window.setTimeout(() => window.location.reload(), 800);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div style={{ fontWeight: 700 }}>AI draft flow</div>
+      <p style={{ margin: 0 }}>
+        Сначала запустите генерацию кандидата, затем откройте preview и только после проверки примите результат в Page.
+      </p>
+
+      <div style={{ display: 'grid', gap: 8 }}>
+        <button
+          type="button"
+          onClick={() => postAction('/run-ai')}
+          disabled={!documentId || Boolean(busyAction)}
+          style={buttonStyle}
+        >
+          {busyAction === '/run-ai' ? 'Генерируем…' : 'Сгенерировать AI'}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => postAction('/ai-preview')}
+          disabled={!documentId || Boolean(busyAction) || !hasCandidate}
+          style={buttonStyle}
+        >
+          Открыть preview кандидата
+        </button>
+
+        <button
+          type="button"
+          onClick={() => postAction('/apply-ai-draft')}
+          disabled={!documentId || Boolean(busyAction) || !hasCandidate}
+          style={buttonStyle}
+        >
+          {busyAction === '/apply-ai-draft' ? 'Применяем…' : 'Принять в Page'}
+        </button>
+      </div>
+
+      <div style={{ fontSize: 12, lineHeight: 1.5, color: '#64748b' }}>
+        {documentId ? `Document ID: ${documentId}` : 'Document ID не найден.'}
+      </div>
+
+      {message && <div style={{ fontSize: 13, lineHeight: 1.5 }}>{message}</div>}
+    </div>
+  );
+};
+
+const GenerationJobActionsPanel: PanelComponent = (props: PanelComponentProps) => {
+  if (String(props.model) !== 'api::generation-job.generation-job') {
+    return null as never;
+  }
+
+  return {
+    title: 'AI Draft',
+    content: <GenerationJobActionsPanelContent {...props} />,
+  };
+};
+
+const buttonStyle: CSSProperties = {
+  appearance: 'none',
+  border: '1px solid rgba(99, 102, 241, 0.45)',
+  background: '#4f46e5',
+  color: '#fff',
+  borderRadius: 8,
+  padding: '10px 12px',
+  fontWeight: 700,
+  cursor: 'pointer',
+};
+
 export default {
   config: {
     locales: ['ru', 'uk', 'en'],
   },
   bootstrap(app: StrapiApp) {
-    app.getPlugin('content-manager').apis.addEditViewSidePanel((panels) => [ModelGuidePanel, SyncStatusPanel, ...panels]);
+    app.getPlugin('content-manager').apis.addEditViewSidePanel((panels) => [
+      GenerationJobActionsPanel,
+      ModelGuidePanel,
+      SyncStatusPanel,
+      ...panels,
+    ]);
   },
 };
