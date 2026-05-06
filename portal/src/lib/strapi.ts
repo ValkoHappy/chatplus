@@ -17,8 +17,12 @@ import { mapPageV2ToLegacyPage, type LegacyPageFamily } from './page-v2-legacy-b
 import { getRuntimeEnvValue, isPreviewTokenValid, normalizePreviewDocumentId } from './preview-auth.ts';
 
 const ASTRO_ENV = import.meta.env || {};
-const STRAPI_URL = getRuntimeEnvValue('STRAPI_URL') || 'http://127.0.0.1:1337';
-const STRAPI_TOKEN = getRuntimeEnvValue('STRAPI_TOKEN');
+const STRAPI_URL = getRuntimeEnvValue('STRAPI_URL')
+  || getRuntimeEnvValue('STRAPI_INTERNAL_URL')
+  || getRuntimeEnvValue('CMS_PUBLIC_URL')
+  || 'http://127.0.0.1:1337';
+const STRAPI_TOKEN = getRuntimeEnvValue('STRAPI_TOKEN')
+  || getRuntimeEnvValue('STRAPI_API_TOKEN');
 
 let siteSettingsPromise: Promise<ReturnType<typeof normalizeSiteSettingsRecord>> | undefined;
 let pageV2Promise: Promise<ReturnType<typeof normalizePageV2Record>[]> | undefined;

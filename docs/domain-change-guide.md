@@ -18,7 +18,7 @@
 
 ```bash
 cd /srv/chatplus
-bash deploy/scripts/change-domain.sh chatplus.ru strapi.chatplus.ru ops@example.com --apply --ssl --rebuild
+bash deploy/scripts/change-domain.sh astro.integromat.ru strapi.integromat.ru ops@example.com --apply --ssl --rebuild
 ```
 
 Эта команда:
@@ -34,21 +34,21 @@ bash deploy/scripts/change-domain.sh chatplus.ru strapi.chatplus.ru ops@example.
 
 ```bash
 cd /srv/chatplus
-bash deploy/scripts/change-domain.sh chatplus.ru strapi.chatplus.ru ops@example.com
+bash deploy/scripts/change-domain.sh astro.integromat.ru strapi.integromat.ru ops@example.com
 ```
 
 Если нужно сначала подтянуть свежий Git, добавьте `--pull`:
 
 ```bash
 cd /srv/chatplus
-bash deploy/scripts/change-domain.sh chatplus.ru strapi.chatplus.ru ops@example.com --apply --ssl --rebuild --pull
+bash deploy/scripts/change-domain.sh astro.integromat.ru strapi.integromat.ru ops@example.com --apply --ssl --rebuild --pull
 ```
 
 Если backup Strapi уже сделан вручную и нужно не тратить время:
 
 ```bash
 cd /srv/chatplus
-bash deploy/scripts/change-domain.sh chatplus.ru strapi.chatplus.ru ops@example.com --apply --ssl --rebuild --no-site-backup
+bash deploy/scripts/change-domain.sh astro.integromat.ru strapi.integromat.ru ops@example.com --apply --ssl --rebuild --no-site-backup
 ```
 
 ## Какие домены нужны
@@ -128,10 +128,10 @@ LETSENCRYPT_EMAIL=ops@example.com
 Пример правильно:
 
 ```env
-PUBLIC_DOMAIN=chatplus.ru
-CMS_DOMAIN=strapi.chatplus.ru
-PUBLIC_SITE_URL=https://chatplus.ru
-CMS_PUBLIC_URL=https://strapi.chatplus.ru
+PUBLIC_DOMAIN=astro.integromat.ru
+CMS_DOMAIN=strapi.integromat.ru
+PUBLIC_SITE_URL=https://astro.integromat.ru
+CMS_PUBLIC_URL=https://strapi.integromat.ru
 ```
 
 ## Если Astro должен быть на основном домене
@@ -141,27 +141,27 @@ CMS_PUBLIC_URL=https://strapi.chatplus.ru
 В `deploy/.env`:
 
 ```env
-PUBLIC_DOMAIN=chatplus.ru
-CMS_DOMAIN=strapi.chatplus.ru
-PUBLIC_SITE_URL=https://chatplus.ru
-CMS_PUBLIC_URL=https://strapi.chatplus.ru
+PUBLIC_DOMAIN=astro.integromat.ru
+CMS_DOMAIN=strapi.integromat.ru
+PUBLIC_SITE_URL=https://astro.integromat.ru
+CMS_PUBLIC_URL=https://strapi.integromat.ru
 ```
 
 DNS:
 
 ```text
-chatplus.ru         A     188.120.236.230
-strapi.chatplus.ru  A     188.120.236.230
+astro.integromat.ru   A     188.120.236.230
+strapi.integromat.ru  A     188.120.236.230
 ```
 
-В этом случае не нужно указывать `astro.chatplus.ru`. Переменная `PUBLIC_DOMAIN` должна быть именно тем host, на котором пользователь открывает сайт.
+В этом случае не нужно указывать дополнительный host вроде `www` или `root`-домена. Переменная `PUBLIC_DOMAIN` должна быть именно тем host, на котором пользователь открывает сайт.
 
 Пример плохо:
 
 ```env
-PUBLIC_DOMAIN=https://chatplus.ru/
-PUBLIC_SITE_URL=https://chatplus.ru/
-CMS_DOMAIN=strapi.chatplus.ru/admin
+PUBLIC_DOMAIN=https://astro.integromat.ru/
+PUBLIC_SITE_URL=https://astro.integromat.ru/
+CMS_DOMAIN=strapi.integromat.ru/admin
 ```
 
 Секреты, токены, пароли и API keys при смене домена обычно не трогаются.

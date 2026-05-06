@@ -11,7 +11,7 @@ import { createStrapiClient } from './seed-runtime-content/strapi-client.mjs';
 const env = { ...loadEnv(), ...process.env };
 const STRAPI_URL = env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = env.STRAPI_TOKEN || '';
-const PUBLIC_SITE_URL = (env.PUBLIC_SITE_URL || 'https://chatplus.ru').replace(/\/+$/, '');
+const PUBLIC_SITE_URL = (env.PUBLIC_SITE_URL || 'https://astro.integromat.ru').replace(/\/+$/, '');
 const now = new Date().toISOString();
 const args = new Set(process.argv.slice(2));
 const mode = args.has('--plan') ? 'plan' : args.has('--report') ? 'report' : 'apply';
@@ -1775,8 +1775,4 @@ main().catch(error => {
   console.error(error.message);
   process.exit(1);
 });
-
-
-
-
 

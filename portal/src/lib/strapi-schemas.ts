@@ -58,7 +58,7 @@ function asInteger(value: unknown, fallback = 0) {
 }
 
 function getPublicSiteUrl() {
-  return (process.env.PUBLIC_SITE_URL || 'https://chatplus.ru').replace(/\/+$/, '');
+  return (process.env.PUBLIC_SITE_URL || 'https://astro.integromat.ru').replace(/\/+$/, '');
 }
 
 function rebaseAbsoluteSiteUrl(value: unknown) {

@@ -14,7 +14,7 @@ const CONFIG = {
   academy: {
     title: 'Академия',
     meta: 'Гайды, разборы и рабочие материалы для команд, которые внедряют Chat Plus и запускают омниканальные сценарии без хаоса.',
-    canonical: 'https://chatplus.ru/academy',
+    canonical: 'https://astro.integromat.ru/academy',
     eyebrow: 'Материалы для запуска',
     variant: 'resource',
     highlights: ['Гайды по запуску', 'Onboarding для команды', 'Разборы сценариев и интеграций'],
@@ -26,7 +26,7 @@ const CONFIG = {
   docs: {
     title: 'Документация',
     meta: 'API, интеграции, ограничения и технические материалы, которые помогают быстрее запускать Chat Plus в реальном проекте.',
-    canonical: 'https://chatplus.ru/docs',
+    canonical: 'https://astro.integromat.ru/docs',
     eyebrow: 'API и интеграции',
     variant: 'resource',
     highlights: ['API reference', 'Webhook-события', 'Интеграции и ограничения'],
@@ -38,7 +38,7 @@ const CONFIG = {
   help: {
     title: 'Помощь',
     meta: 'Справочный слой Chat Plus для онбординга, частых вопросов и понятной навигации по следующему шагу.',
-    canonical: 'https://chatplus.ru/help',
+    canonical: 'https://astro.integromat.ru/help',
     eyebrow: 'Справочный маршрут',
     variant: 'resource',
     highlights: ['Быстрые ответы', 'Onboarding по продукту', 'Связка с docs, demo и support'],
@@ -50,7 +50,7 @@ const CONFIG = {
   status: {
     title: 'Статус',
     meta: 'Прозрачный служебный слой Chat Plus о доступности сервисов, изменениях и рабочем состоянии платформы.',
-    canonical: 'https://chatplus.ru/status',
+    canonical: 'https://astro.integromat.ru/status',
     eyebrow: 'Служебный контур',
     variant: 'resource',
     highlights: ['Доступность сервисов', 'Прозрачность для клиентов', 'Понятный рабочий ритм команды'],
@@ -62,7 +62,7 @@ const CONFIG = {
   media: {
     title: 'Медиа',
     meta: 'Материалы для публикаций, внешней упаковки и согласованной публичной коммуникации вокруг Chat Plus.',
-    canonical: 'https://chatplus.ru/media',
+    canonical: 'https://astro.integromat.ru/media',
     eyebrow: 'Публичная упаковка',
     variant: 'company',
     highlights: ['Пресс-материалы', 'Короткие формулировки', 'Внешняя подача продукта'],
@@ -74,7 +74,7 @@ const CONFIG = {
   team: {
     title: 'Команда',
     meta: 'Страница о людях и подходе Chat Plus: кто делает продукт и как мы думаем о клиентском результате.',
-    canonical: 'https://chatplus.ru/team',
+    canonical: 'https://astro.integromat.ru/team',
     eyebrow: 'Люди за продуктом',
     variant: 'company',
     highlights: ['Кто делает продукт', 'Как мы принимаем решения', 'Почему это важно клиенту'],
@@ -86,7 +86,7 @@ const CONFIG = {
   conversation: {
     title: 'Диалоги',
     meta: 'Раздел о подходе Chat Plus к клиентскому разговору как к управляемой системе, а не набору случайных сообщений.',
-    canonical: 'https://chatplus.ru/conversation',
+    canonical: 'https://astro.integromat.ru/conversation',
     eyebrow: 'Подход к коммуникации',
     variant: 'company',
     highlights: ['Диалог как система', 'Меньше хаоса в сообщениях', 'Связка с CRM, AI и процессом'],
@@ -98,7 +98,7 @@ const CONFIG = {
   tv: {
     title: 'Видео',
     meta: 'Видео-слой Chat Plus: демо, разборы интерфейса и наглядные объяснения продукта в движении.',
-    canonical: 'https://chatplus.ru/tv',
+    canonical: 'https://astro.integromat.ru/tv',
     eyebrow: 'Видео и демонстрации',
     variant: 'campaign',
     highlights: ['Демо в движении', 'Разборы интерфейса', 'Материалы для пресейла и прогрева'],
@@ -110,7 +110,7 @@ const CONFIG = {
   promo: {
     title: 'Промо',
     meta: 'Промо-слой Chat Plus: офферы, упаковка и материалы, которые помогают маркетингу, продажам и партнерам говорить точнее.',
-    canonical: 'https://chatplus.ru/promo',
+    canonical: 'https://astro.integromat.ru/promo',
     eyebrow: 'Офферы и упаковка',
     variant: 'campaign',
     highlights: ['Офферы для сегментов', 'Материалы для маркетинга', 'Связка с product-led сценарием'],
@@ -122,7 +122,7 @@ const CONFIG = {
   prozorro: {
     title: 'Prozorro',
     meta: 'Специальный сценарий Chat Plus для мониторинга закупок, реакции команды и контроля следующего шага в одном контуре.',
-    canonical: 'https://chatplus.ru/prozorro',
+    canonical: 'https://astro.integromat.ru/prozorro',
     eyebrow: 'Тендерный сценарий',
     variant: 'campaign',
     highlights: ['Сигналы по закупкам', 'Реакция команды в одном окне', 'Контроль дедлайнов и касаний'],

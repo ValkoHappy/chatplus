@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
 import node from '@astrojs/node';
 
-const site = process.env.PUBLIC_SITE_URL || 'https://chatplus.ru';
+const site = process.env.PUBLIC_SITE_URL || 'https://astro.integromat.ru';
 const base = process.env.PUBLIC_BASE_PATH || undefined;
 const isDevCommand = process.argv.includes('dev');
 

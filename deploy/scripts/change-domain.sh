@@ -22,14 +22,14 @@ Usage:
   bash deploy/scripts/change-domain.sh PUBLIC_DOMAIN CMS_DOMAIN [LETSENCRYPT_EMAIL] --apply [--ssl] [--rebuild] [--pull] [--no-site-backup]
 
 Examples:
-  bash deploy/scripts/change-domain.sh chatplus.ru strapi.chatplus.ru ops@example.com --apply --ssl --rebuild
+  bash deploy/scripts/change-domain.sh astro.integromat.ru strapi.integromat.ru ops@example.com --apply --ssl --rebuild
   bash deploy/scripts/change-domain.sh astro.example.com strapi.example.com --apply
 
 What it changes in deploy/.env:
-  PUBLIC_DOMAIN=chatplus.ru
-  CMS_DOMAIN=strapi.chatplus.ru
-  PUBLIC_SITE_URL=https://chatplus.ru
-  CMS_PUBLIC_URL=https://strapi.chatplus.ru
+  PUBLIC_DOMAIN=astro.integromat.ru
+  CMS_DOMAIN=strapi.integromat.ru
+  PUBLIC_SITE_URL=https://astro.integromat.ru
+  CMS_PUBLIC_URL=https://strapi.integromat.ru
   LETSENCRYPT_EMAIL=ops@example.com
 
 Flags:

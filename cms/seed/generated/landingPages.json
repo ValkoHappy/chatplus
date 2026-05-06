@@ -7,7 +7,7 @@
     "meta_description": "Chat Plus объединяет WhatsApp, Telegram, Instagram и другие каналы в одном окне. AI-агенты, автоматизация и CRM-интеграции для роста продаж и снижения нагрузки на команду.",
     "h1": "Все каналы клиентов в одном окне — WhatsApp, Telegram и другие",
     "subtitle": "Chat Plus собирает сообщения из всех мессенджеров, автоматизирует ответы с AI и синхронизирует данные с вашей CRM. Ни одна заявка не теряется.",
-    "canonical": "https://chatplus.ru/",
+    "canonical": "https://astro.integromat.ru/",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -69,7 +69,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web, iOS, Android",
       "description": "Омниканальная платформа для бизнеса: WhatsApp, Telegram, Instagram и другие каналы в одном окне с AI и автоматизацией.",
-      "url": "https://chatplus.ru",
+      "url": "https://astro.integromat.ru",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -351,7 +351,7 @@
     "meta_description": "Прозрачные цены Chat Plus без скрытых платежей. Фиксированная ежемесячная подписка, бесплатный пилот и поддержка при подключении.",
     "h1": "Цены Chat Plus",
     "subtitle": "Фиксированная подписка, никаких наценок за сообщения и скрытых платежей. Подберите план под размер вашей команды.",
-    "canonical": "https://chatplus.ru/pricing",
+    "canonical": "https://astro.integromat.ru/pricing",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -410,7 +410,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Прозрачные цены Chat Plus без скрытых платежей. Фиксированная ежемесячная подписка, бесплатный пилот и поддержка при подключении.",
-      "url": "https://chatplus.ru/pricing",
+      "url": "https://astro.integromat.ru/pricing",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -747,7 +747,7 @@
     "meta_description": "Запишитесь на бесплатное демо Chat Plus. Покажем как подключить WhatsApp, Telegram и другие каналы, настроить AI и автоматизацию под ваш бизнес.",
     "h1": "Запишитесь на бесплатное демо Chat Plus",
     "subtitle": "За 30 минут покажем как Chat Plus решает вашу задачу: подключение каналов, AI-агенты, автоматизация и CRM-интеграция.",
-    "canonical": "https://chatplus.ru/demo",
+    "canonical": "https://astro.integromat.ru/demo",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -806,7 +806,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Запишитесь на бесплатное демо Chat Plus. Покажем как подключить WhatsApp, Telegram и другие каналы, настроить AI и автоматизацию под ваш бизнес.",
-      "url": "https://chatplus.ru/demo",
+      "url": "https://astro.integromat.ru/demo",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -999,7 +999,7 @@
     "meta_description": "Партнёрская программа Chat Plus для агентств, интеграторов и реселлеров. Зарабатывайте на подключении и сопровождении клиентов на омниканальной платформе.",
     "h1": "Партнёрская программа Chat Plus",
     "subtitle": "Зарабатывайте на внедрении Chat Plus у своих клиентов. Агентства, интеграторы и реселлеры получают партнёрскую комиссию и приоритетную техническую поддержку.",
-    "canonical": "https://chatplus.ru/partnership",
+    "canonical": "https://astro.integromat.ru/partnership",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -1058,7 +1058,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Партнёрская программа Chat Plus для агентств, интеграторов и реселлеров. Зарабатывайте на подключении и сопровождении клиентов на омниканальной платформе.",
-      "url": "https://chatplus.ru/partnership",
+      "url": "https://astro.integromat.ru/partnership",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -1292,7 +1292,7 @@
     "meta_description": "Гайды, разборы и рабочие материалы для команд, которые внедряют Chat Plus и запускают омниканальные сценарии без хаоса.",
     "h1": "Академия Chat Plus",
     "subtitle": "Практический раздел для onboarding, обучения команды и запуска первых сценариев без лишней ручной расшифровки.",
-    "canonical": "https://chatplus.ru/academy",
+    "canonical": "https://astro.integromat.ru/academy",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -1351,7 +1351,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Гайды, разборы и рабочие материалы для команд, которые внедряют Chat Plus и запускают омниканальные сценарии без хаоса.",
-      "url": "https://chatplus.ru/academy",
+      "url": "https://astro.integromat.ru/academy",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -1540,7 +1540,7 @@
     "meta_description": "Полезные статьи о автоматизации коммуникации, мессенджер-маркетинге, AI-агентах и CRM-интеграциях. Кейсы клиентов Chat Plus.",
     "h1": "Блог Chat Plus",
     "subtitle": "Практические статьи об омниканальных продажах, автоматизации с AI и работе с клиентами в мессенджерах. Кейсы, гайды и обзоры для бизнеса.",
-    "canonical": "https://chatplus.ru/blog",
+    "canonical": "https://astro.integromat.ru/blog",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -1599,7 +1599,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Полезные статьи о автоматизации коммуникации, мессенджер-маркетинге, AI-агентах и CRM-интеграциях. Кейсы клиентов Chat Plus.",
-      "url": "https://chatplus.ru/blog",
+      "url": "https://astro.integromat.ru/blog",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -1788,7 +1788,7 @@
     "meta_description": "API, интеграции, ограничения и технические материалы, которые помогают быстрее запускать Chat Plus в реальном проекте.",
     "h1": "Документация Chat Plus",
     "subtitle": "Единый технический слой по API, интеграциям и ограничениям платформы, который помогает быстрее перейти от интереса к рабочему запуску.",
-    "canonical": "https://chatplus.ru/docs",
+    "canonical": "https://astro.integromat.ru/docs",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -1847,7 +1847,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "API, интеграции, ограничения и технические материалы, которые помогают быстрее запускать Chat Plus в реальном проекте.",
-      "url": "https://chatplus.ru/docs",
+      "url": "https://astro.integromat.ru/docs",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -2036,7 +2036,7 @@
     "meta_description": "Справочный слой Chat Plus для onboarding, частых вопросов и понятной навигации по следующему шагу.",
     "h1": "Справка Chat Plus",
     "subtitle": "Понятный справочный слой, который помогает быстро снять вопрос, не потерять контекст и перейти к следующему осмысленному шагу.",
-    "canonical": "https://chatplus.ru/help",
+    "canonical": "https://astro.integromat.ru/help",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -2095,7 +2095,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Справочный слой Chat Plus для onboarding, частых вопросов и понятной навигации по следующему шагу.",
-      "url": "https://chatplus.ru/help",
+      "url": "https://astro.integromat.ru/help",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -2284,7 +2284,7 @@
     "meta_description": "Прозрачный служебный слой Chat Plus о доступности сервисов, изменениях и рабочем состоянии платформы.",
     "h1": "Статус Chat Plus",
     "subtitle": "Служебная страница для прозрачной картины по доступности сервисов, изменениям и рабочему ритму команды.",
-    "canonical": "https://chatplus.ru/status",
+    "canonical": "https://astro.integromat.ru/status",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -2343,7 +2343,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Прозрачный служебный слой Chat Plus о доступности сервисов, изменениях и рабочем состоянии платформы.",
-      "url": "https://chatplus.ru/status",
+      "url": "https://astro.integromat.ru/status",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -2532,7 +2532,7 @@
     "meta_description": "Документация для разработчиков, API и интеграции для кастомных сценариев.",
     "h1": "Chat Plus Dev",
     "subtitle": "Документация для разработчиков, API и интеграции для кастомных сценариев.",
-    "canonical": "https://chatplus.ru/dev",
+    "canonical": "https://astro.integromat.ru/dev",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -2735,7 +2735,7 @@
     "meta_description": "Страница о людях и подходе Chat Plus: кто делает продукт и как мы думаем о клиентском результате.",
     "h1": "Команда Chat Plus",
     "subtitle": "Страница о людях и подходе Chat Plus: кто делает продукт и как мы думаем о клиентском результате.",
-    "canonical": "https://chatplus.ru/team",
+    "canonical": "https://astro.integromat.ru/team",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -2794,7 +2794,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Страница о людях и подходе Chat Plus: кто делает продукт и как мы думаем о клиентском результате.",
-      "url": "https://chatplus.ru/team",
+      "url": "https://astro.integromat.ru/team",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -2984,7 +2984,7 @@
     "meta_description": "Раздел о подходе Chat Plus к клиентскому разговору как к управляемой системе, а не набору случайных сообщений.",
     "h1": "Диалоги Chat Plus",
     "subtitle": "Контентный слой о том, как Chat Plus превращает хаотичную переписку в управляемый процесс с контекстом, CRM и AI.",
-    "canonical": "https://chatplus.ru/conversation",
+    "canonical": "https://astro.integromat.ru/conversation",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -3043,7 +3043,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Раздел о подходе Chat Plus к клиентскому разговору как к управляемой системе, а не набору случайных сообщений.",
-      "url": "https://chatplus.ru/conversation",
+      "url": "https://astro.integromat.ru/conversation",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -3233,7 +3233,7 @@
     "meta_description": "Промо-слой Chat Plus: офферы, упаковка и материалы, которые помогают маркетингу, продажам и партнерам говорить точнее.",
     "h1": "Промо Chat Plus",
     "subtitle": "Промо-слой Chat Plus: офферы, продуктовая упаковка и материалы, которые помогают маркетингу и продажам говорить точнее.",
-    "canonical": "https://chatplus.ru/promo",
+    "canonical": "https://astro.integromat.ru/promo",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -3292,7 +3292,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Промо-слой Chat Plus: офферы, упаковка и материалы, которые помогают маркетингу, продажам и партнерам говорить точнее.",
-      "url": "https://chatplus.ru/promo",
+      "url": "https://astro.integromat.ru/promo",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -3480,7 +3480,7 @@
     "meta_description": "Материалы для публикаций, внешней упаковки и согласованной публичной коммуникации вокруг Chat Plus.",
     "h1": "Медиа Chat Plus",
     "subtitle": "Публичный слой бренда: короткие формулировки, материалы для публикаций и понятная внешняя упаковка продукта.",
-    "canonical": "https://chatplus.ru/media",
+    "canonical": "https://astro.integromat.ru/media",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -3539,7 +3539,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Материалы для публикаций, внешней упаковки и согласованной публичной коммуникации вокруг Chat Plus.",
-      "url": "https://chatplus.ru/media",
+      "url": "https://astro.integromat.ru/media",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -3729,7 +3729,7 @@
     "meta_description": "Видео-слой Chat Plus: демо, разборы интерфейса и наглядные объяснения продукта в движении.",
     "h1": "Видео Chat Plus",
     "subtitle": "Видеоматериалы, разборы интерфейса и демонстрации продукта, которые помогают быстрее показать Chat Plus без лишних расшифровок.",
-    "canonical": "https://chatplus.ru/tv",
+    "canonical": "https://astro.integromat.ru/tv",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -3788,7 +3788,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Видео-слой Chat Plus: демо, разборы интерфейса и наглядные объяснения продукта в движении.",
-      "url": "https://chatplus.ru/tv",
+      "url": "https://astro.integromat.ru/tv",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"
@@ -3978,7 +3978,7 @@
     "meta_description": "Специальный сценарий Chat Plus для мониторинга закупок, реакции команды и контроля следующего шага в одном контуре.",
     "h1": "Prozorro Chat Plus",
     "subtitle": "Специальный сценарий Chat Plus для мониторинга закупок, реакции команды и контроля следующего шага в одном контуре.",
-    "canonical": "https://chatplus.ru/prozorro",
+    "canonical": "https://astro.integromat.ru/prozorro",
     "hreflang_ru": null,
     "hreflang_uk": null,
     "hreflang_en": null,
@@ -4037,7 +4037,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": "Специальный сценарий Chat Plus для мониторинга закупок, реакции команды и контроля следующего шага в одном контуре.",
-      "url": "https://chatplus.ru/prozorro",
+      "url": "https://astro.integromat.ru/prozorro",
       "author": {
         "@type": "Organization",
         "name": "Chat Plus"

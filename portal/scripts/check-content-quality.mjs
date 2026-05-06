@@ -6,7 +6,7 @@ const repoRoot = path.resolve(portalRoot, '..');
 const distRoot = fs.existsSync(path.join(portalRoot, 'dist', 'client'))
   ? path.join(portalRoot, 'dist', 'client')
   : path.join(portalRoot, 'dist');
-const expectedPublicSiteUrl = (process.env.PUBLIC_SITE_URL || 'https://chatplus.ru').replace(/\/+$/, '');
+const expectedPublicSiteUrl = (process.env.PUBLIC_SITE_URL || 'https://astro.integromat.ru').replace(/\/+$/, '');
 
 const sourceFiles = [
   path.join(repoRoot, 'cms', 'seed', 'generated', 'landingPages.json'),

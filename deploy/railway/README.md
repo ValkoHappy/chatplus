@@ -248,8 +248,8 @@ Portal: https://...up.railway.app
 Когда все проверено, можно подключить custom domains:
 
 ```text
-chatplus.ru
-strapi.chatplus.ru
+astro.integromat.ru
+strapi.integromat.ru
 ```
 
 После смены доменов обновите:
