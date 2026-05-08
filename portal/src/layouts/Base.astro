@@ -1112,7 +1112,7 @@ const yandexMetrikaOptions = JSON.stringify({
           </div>
           <button type="button" class="lead-modal__close" data-lead-close aria-label="Закрыть">&times;</button>
         </div>
-        <form id="global-lead-form" class="lead-form" data-lead-form data-analytics-event="lead_submit" data-analytics-location="lead_modal">
+        <form id="global-lead-form" class="lead-form" data-lead-form data-analytics-location="lead_modal">
           <input class="lead-form__honeypot" type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" />
           {leadFormFields.map((field) => (
             <div class="lead-form__field">
@@ -1214,6 +1214,24 @@ const yandexMetrikaOptions = JSON.stringify({
       const closeButtons = document.querySelectorAll('[data-lead-close]');
       if (!modal || !form) return;
 
+      function getAttribution() {
+        const params = new URLSearchParams(window.location.search);
+        const utm = {};
+        params.forEach(function (value, key) {
+          const normalizedKey = String(key || '').trim().toLowerCase();
+          if (normalizedKey.indexOf('utm_') === 0 || normalizedKey === 'yclid' || normalizedKey === 'gclid') {
+            utm[normalizedKey] = String(value || '').trim().slice(0, 500);
+          }
+        });
+
+        return {
+          source_url: window.location.href,
+          source_query: window.location.search,
+          referrer: document.referrer || '',
+          utm,
+        };
+      }
+
       function setStatus(message, state) {
         if (!status) return;
         status.textContent = message || '';
@@ -1311,6 +1329,7 @@ const yandexMetrikaOptions = JSON.stringify({
               form_id: form.id || 'global-lead-form',
               source_path: window.location.pathname,
               source_title: document.title,
+              attribution: getAttribution(),
               website: String(formData.get('website') || ''),
               fields,
             }),
@@ -1323,6 +1342,7 @@ const yandexMetrikaOptions = JSON.stringify({
           form.reset();
           setStatus('', '');
           showSuccessState();
+          window.chatplusTrack('lead_submit', { location: 'lead_modal' });
           window.chatplusTrack('lead_submit_success', { location: 'lead_modal' });
         } catch (error) {
           setStatus('Не получилось отправить. Проверьте поля или попробуйте позже.', 'error');

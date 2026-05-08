@@ -435,6 +435,34 @@ const REFERENCE_GUIDES: Record<string, GuideConfig> = {
   },
 };
 
+const LEAD_REQUEST_GUIDE: GuideConfig = {
+  title: 'Как читать заявку',
+  intro:
+    'Здесь сохраняются заявки с публичной формы сайта. Поля формы настраиваются в Site Settings, а эта запись нужна для обработки лида и проверки источника.',
+  sections: [
+    {
+      title: 'Контакт',
+      items: [
+        { key: 'status', description: 'Статус обработки: new, in_progress, done или spam.' },
+        { key: 'name', description: 'Имя посетителя из формы.' },
+        { key: 'phone', description: 'Телефон посетителя из формы.' },
+        { key: 'email', description: 'Почта посетителя из формы.' },
+        { key: 'payload', description: 'Все отправленные поля формы целиком, включая нестандартные поля.' },
+      ],
+    },
+    {
+      title: 'Источник',
+      items: [
+        { key: 'source_path', description: 'Страница сайта, с которой отправили заявку.' },
+        { key: 'source_url', description: 'Полный URL страницы вместе с query string.' },
+        { key: 'source_query', description: 'Query string на момент отправки.' },
+        { key: 'referrer', description: 'Откуда пришел посетитель, если браузер передал referrer.' },
+        { key: 'utm', description: 'Рекламные метки: utm_*, gclid, yclid.' },
+      ],
+    },
+  ],
+};
+
 function getGuideConfig(model: string): GuideConfig | null {
   if (model === 'api::generation-job.generation-job') {
     return GENERATION_JOB_GUIDE;
@@ -466,6 +494,10 @@ function getGuideConfig(model: string): GuideConfig | null {
 
   if (model === 'api::business-types-page.business-types-page') {
     return BUSINESS_TYPES_PAGE_GUIDE;
+  }
+
+  if (model === 'api::lead-request.lead-request') {
+    return LEAD_REQUEST_GUIDE;
   }
 
   if (REFERENCE_MODELS.has(model)) {

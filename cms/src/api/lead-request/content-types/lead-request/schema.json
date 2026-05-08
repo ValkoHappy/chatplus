@@ -47,6 +47,22 @@
       "type": "string",
       "description": "Страница сайта, с которой отправили заявку."
     },
+    "source_url": {
+      "type": "text",
+      "description": "Полный URL страницы с query/UTM, с которой отправили заявку."
+    },
+    "source_query": {
+      "type": "text",
+      "description": "Query string с UTM/gclid/yclid на момент отправки."
+    },
+    "referrer": {
+      "type": "text",
+      "description": "HTTP referrer из браузера, если он был доступен."
+    },
+    "utm": {
+      "type": "json",
+      "description": "Рекламная атрибуция: utm_*, gclid, yclid."
+    },
     "source_title": {
       "type": "string",
       "description": "Title страницы, с которой отправили заявку."

@@ -13,6 +13,7 @@
 - добавлена поддержка Яндекс Метрики;
 - добавлена поддержка Google tag или Google Tag Manager;
 - CTA-кнопки отправляют единое событие `cta_try_click`;
+- форма заявки отправляет успешное событие `lead_submit` и сохраняет UTM/gclid/yclid вместе с заявкой в Strapi;
 - на странице доступен helper `window.chatplusTrack(eventName, params)` для будущих целей.
 
 ## Env-переменные
@@ -168,7 +169,29 @@ utm_content=ad_group_or_creative
 utm_term=keyword
 ```
 
-Если на сайте появятся формы заявок, нужно сохранять UTM вместе с заявкой. Пока формальный слой отправки заявок не описан, не теряйте UTM в редиректах и CTA.
+Форма заявки уже сохраняет рекламную атрибуцию вместе с заявкой в Strapi:
+
+- `source_url` - полный URL страницы;
+- `source_query` - query string;
+- `referrer` - откуда пришел посетитель, если браузер передал это значение;
+- `utm` - `utm_*`, `gclid`, `yclid`.
+
+В Strapi заявки смотрятся в `Content Manager -> Lead Request`.
+
+Важно: не теряйте UTM в редиректах и CTA. Если рекламная ссылка ведет через промежуточную страницу, она должна сохранять query string до открытия формы.
+
+## Минимальный релизный чеклист
+
+Перед отправкой сайта в Google Search Console и Яндекс Вебмастер:
+
+1. Проверить финальный домен в `PUBLIC_SITE_URL`.
+2. Пересобрать portal после изменения env.
+3. Проверить `robots.txt` и `sitemap-index.xml`.
+4. Проверить главную, `/demo`, `/pricing`, `/solutions/tenders` и 2-3 каталоговые страницы.
+5. Проставить verification-коды в server env или выбрать DNS-verification.
+6. Проставить `PUBLIC_YANDEX_METRIKA_ID` и Google tag/GTM, если аналитика уже создана.
+7. Создать цели `cta_try_click`, `lead_modal_open`, `lead_submit`, `lead_submit_error`.
+8. Отправить sitemap в Google Search Console и Яндекс Вебмастер.
 
 ## Проверка после настройки
 
