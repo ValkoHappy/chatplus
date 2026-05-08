@@ -1169,7 +1169,10 @@ const yandexMetrikaOptions = JSON.stringify({
         const trigger = event.target && event.target.closest
           ? event.target.closest('a[href="modal:lead"], [data-lead-modal]')
           : null;
-        if (!trigger) return;
+        const selfDemoLink = !trigger && window.location.pathname.replace(/\/+$/, '') === '/demo' && event.target && event.target.closest
+          ? event.target.closest('a[href="/demo"], a[href="/demo/"]')
+          : null;
+        if (!trigger && !selfDemoLink) return;
         event.preventDefault();
         openModal();
       });
