@@ -105,6 +105,13 @@ cp deploy/.env.example deploy/.env
   - `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` for OpenRouter + DeepSeek
   - or `AI_API_BASE_URL`, `AI_API_KEY`, `AI_MODEL` for another OpenAI-compatible provider
   - or `OPENAI_API_KEY`, `OPENAI_MODEL` for direct OpenAI
+- search, analytics and ads:
+  - `PUBLIC_GOOGLE_SITE_VERIFICATION`
+  - `PUBLIC_YANDEX_SITE_VERIFICATION`
+  - `PUBLIC_YANDEX_METRIKA_ID`
+  - `PUBLIC_YANDEX_METRIKA_WEBVISOR`
+  - `PUBLIC_GOOGLE_TAG_ID`
+  - `PUBLIC_GOOGLE_TAG_MANAGER_ID`
 - closed draft preview:
   - `PREVIEW_TOKEN` for `/__preview/page/<documentId>?token=...`
 

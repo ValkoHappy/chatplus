@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/block-primitives.css';
 import { getPageV2Pages, getSiteSettings } from '../lib/strapi';
 import { getFooterColumns, getHeaderLinks, getMobileNavSections, isPathActive } from '../lib/navigation';
+import { getSearchAnalyticsConfig, isAnalyticsEnabled } from '../lib/search-analytics';
 import { normalizeInternalPath, withBasePath } from '../lib/urls';
 
 export interface Props {
@@ -78,6 +79,15 @@ const websiteSchema = JSON.stringify({
     'query-input': 'required name=search_term_string',
   },
 });
+
+const analytics = getSearchAnalyticsConfig(import.meta.env || {});
+const hasAnalytics = isAnalyticsEnabled(analytics);
+const yandexMetrikaOptions = JSON.stringify({
+  clickmap: true,
+  trackLinks: true,
+  accurateTrackBounce: true,
+  webvisor: analytics.yandexMetrikaWebvisor,
+});
 ---
 <!DOCTYPE html>
 <html lang="ru">
@@ -94,6 +104,12 @@ const websiteSchema = JSON.stringify({
   <meta name="description" content={finalDescription} />
   <meta name="robots" content={robots} />
   <link rel="canonical" href={canonicalURL} />
+  {analytics.googleSiteVerification && (
+    <meta name="google-site-verification" content={analytics.googleSiteVerification} />
+  )}
+  {analytics.yandexSiteVerification && (
+    <meta name="yandex-verification" content={analytics.yandexSiteVerification} />
+  )}
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content={settings.site_name} />
@@ -120,6 +136,19 @@ const websiteSchema = JSON.stringify({
 
   <script type="application/ld+json" set:html={orgSchema} />
   <script type="application/ld+json" set:html={websiteSchema} />
+
+  {analytics.googleTagManagerId && (
+    <script is:inline set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${analytics.googleTagManagerId}');`} />
+  )}
+  {analytics.googleTagId && (
+    <>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${analytics.googleTagId}`}></script>
+      <script is:inline set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${analytics.googleTagId}');`} />
+    </>
+  )}
+  {analytics.yandexMetrikaId && (
+    <script is:inline set:html={`(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments);};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');ym(${analytics.yandexMetrikaId},'init',${yandexMetrikaOptions});`} />
+  )}
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -732,6 +761,18 @@ const websiteSchema = JSON.stringify({
   </style>
 </head>
 <body>
+  {analytics.googleTagManagerId && (
+    <noscript>
+      <iframe src={`https://www.googletagmanager.com/ns.html?id=${analytics.googleTagManagerId}`} height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+  )}
+  {analytics.yandexMetrikaId && (
+    <noscript>
+      <div>
+        <img src={`https://mc.yandex.ru/watch/${analytics.yandexMetrikaId}`} style="position:absolute;left:-9999px;" alt="" />
+      </div>
+    </noscript>
+  )}
   <header class="site-header" id="site-header">
     <nav class="site-nav">
       <a href={toHref('/')} class="brand-link">{settings.site_name}</a>
@@ -741,7 +782,7 @@ const websiteSchema = JSON.stringify({
         ))}
       </div>
       <div class="nav-actions">
-        <a href={toHref(settings.header_cta_url)} class="header-cta">{settings.header_cta_label}</a>
+        <a href={toHref(settings.header_cta_url)} class="header-cta" data-analytics-event="cta_try_click" data-analytics-location="header">{settings.header_cta_label}</a>
         <button id="nav-toggle" type="button" class="nav-toggle" aria-label="Меню" aria-controls="mobile-nav" aria-expanded="false">
           <svg id="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           <svg id="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -749,7 +790,7 @@ const websiteSchema = JSON.stringify({
       </div>
     </nav>
     <div id="mobile-nav" class="mobile-nav-panel">
-      <a href={toHref(settings.header_cta_url)} class="mobile-nav-cta">{settings.header_cta_label}</a>
+      <a href={toHref(settings.header_cta_url)} class="mobile-nav-cta" data-analytics-event="cta_try_click" data-analytics-location="mobile_nav">{settings.header_cta_label}</a>
       <div class="mobile-nav-sections">
         {mobileNavSections.map((section) => (
           <section class="mobile-nav-section">
@@ -775,7 +816,7 @@ const websiteSchema = JSON.stringify({
         <div class="footer-brand-block">
           <p class="footer-brand">{settings.site_name}</p>
           <p class="footer-tagline">{settings.footer_tagline}</p>
-          <a href={toHref(settings.header_cta_url)} class="footer-brand-cta">{settings.header_cta_label}</a>
+          <a href={toHref(settings.header_cta_url)} class="footer-brand-cta" data-analytics-event="cta_try_click" data-analytics-location="footer">{settings.header_cta_label}</a>
         </div>
         {footerColumns.map((column) => (
           <div class="footer-column-card">
@@ -809,14 +850,62 @@ const websiteSchema = JSON.stringify({
           <p class="sticky-cta-text">{settings.sticky_cta_text}</p>
         </div>
         <div class="sticky-cta-actions">
-          <a href={toHref(settings.sticky_cta_url)} class="sticky-cta-button">{settings.sticky_cta_label}</a>
+          <a href={toHref(settings.sticky_cta_url)} class="sticky-cta-button" data-analytics-event="cta_try_click" data-analytics-location="sticky_cta">{settings.sticky_cta_label}</a>
           <button id="close-sticky" class="sticky-close" aria-label="Закрыть">&times;</button>
         </div>
       </div>
     </div>
   )}
 
-  <script is:inline>
+  <script is:inline define:vars={{
+    analyticsYandexMetrikaId: analytics.yandexMetrikaId ? Number(analytics.yandexMetrikaId) : null,
+    analyticsEnabled: hasAnalytics,
+  }}>
+    (function () {
+      window.chatplusTrack = function (eventName, params) {
+        const safeName = String(eventName || '').trim();
+        if (!safeName || !analyticsEnabled) return;
+
+        const payload = Object.assign({
+          page_path: window.location.pathname,
+          page_title: document.title,
+        }, params || {});
+
+        if (analyticsYandexMetrikaId && typeof window.ym === 'function') {
+          window.ym(analyticsYandexMetrikaId, 'reachGoal', safeName, payload);
+        }
+
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', safeName, payload);
+        } else if (Array.isArray(window.dataLayer)) {
+          window.dataLayer.push(Object.assign({ event: safeName }, payload));
+        }
+      };
+
+      document.addEventListener('click', function (event) {
+        const target = event.target && event.target.closest
+          ? event.target.closest('[data-analytics-event]')
+          : null;
+        if (!target) return;
+
+        window.chatplusTrack(target.dataset.analyticsEvent, {
+          location: target.dataset.analyticsLocation || undefined,
+          href: target.href || undefined,
+          text: (target.textContent || '').trim().slice(0, 120),
+        });
+      });
+
+      document.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (!form || !form.matches || !form.matches('[data-analytics-event]')) return;
+
+        window.chatplusTrack(form.dataset.analyticsEvent || 'lead_submit', {
+          location: form.dataset.analyticsLocation || 'form',
+          form_id: form.id || undefined,
+        });
+      }, true);
+    })();
+
     (function () {
       const toggle = document.getElementById('nav-toggle');
       const menu = document.getElementById('mobile-nav');
