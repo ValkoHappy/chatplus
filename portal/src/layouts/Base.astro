@@ -47,12 +47,8 @@ const headerLinks = getHeaderLinks(settings.header_links, pageV2Pages);
 const footerColumns = getFooterColumns(settings.footer_columns, pageV2Pages);
 const mobileNavSections = getMobileNavSections(headerLinks, footerColumns);
 const toHref = (href?: string) => withBasePath(href);
-const cmsPublicUrl = (
-  getRuntimeEnvValue('CMS_PUBLIC_URL')
-  || getRuntimeEnvValue('PUBLIC_URL')
-  || getRuntimeEnvValue('STRAPI_URL')
-  || 'https://strapi.integromat.ru'
-).replace(/\/+$/, '');
+const configuredCmsPublicUrl = getRuntimeEnvValue('CMS_PUBLIC_URL') || getRuntimeEnvValue('PUBLIC_URL');
+const cmsPublicUrl = (configuredCmsPublicUrl || 'https://strapi.integromat.ru').replace(/\/+$/, '');
 const leadSubmitUrl = `${cmsPublicUrl}/api/lead-requests/submit`;
 const leadFormFields = Array.isArray(settings.lead_form_fields) ? settings.lead_form_fields : [];
 const normalizedTitle = (title || '').trim();
