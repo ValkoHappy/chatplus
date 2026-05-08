@@ -413,6 +413,30 @@ export function normalizeLandingPageRecord(data: StrapiRecord, slugHint?: string
 
 export function normalizeSiteSettingsRecord(data: StrapiRecord) {
   const normalizedSiteUrl = rebaseAbsoluteSiteUrl(data.site_url);
+  const rawLeadFields = asArray(data.lead_form_fields);
+  const leadFormFields = (rawLeadFields.length > 0 ? rawLeadFields : [
+    { key: 'name', label: 'Имя', type: 'text', required: true, placeholder: 'Как к вам обращаться', sort_order: 10 },
+    { key: 'phone', label: 'Телефон', type: 'tel', required: true, placeholder: '+7 999 123-45-67', sort_order: 20 },
+    { key: 'email', label: 'Email', type: 'email', required: false, placeholder: 'mail@example.com', sort_order: 30 },
+    { key: 'message', label: 'Комментарий', type: 'textarea', required: false, placeholder: 'Коротко опишите задачу', sort_order: 40 },
+  ]).map((field, index) => {
+    const record = asRecord(field);
+    const key = asString(record.key).toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    return {
+      ...record,
+      key: key || `field_${index + 1}`,
+      label: asString(record.label) || 'Поле',
+      type: ['text', 'email', 'tel', 'textarea', 'select', 'checkbox'].includes(asString(record.type))
+        ? asString(record.type)
+        : 'text',
+      required: asBoolean(record.required),
+      placeholder: asString(record.placeholder),
+      help_text: asString(record.help_text),
+      options: asArray(record.options).map((option) => asString(option)).filter(Boolean),
+      sort_order: asInteger(record.sort_order, 100 + index),
+    };
+  }).sort((a, b) => a.sort_order - b.sort_order);
+
   return {
     ...data,
     record_mode: asString(data.record_mode) || 'settings',
@@ -424,6 +448,11 @@ export function normalizeSiteSettingsRecord(data: StrapiRecord) {
     special_page_defaults: asRecord(data.special_page_defaults),
     global_labels: asRecord(data.global_labels),
     generator_defaults: asRecord(data.generator_defaults),
+    lead_form_title: asString(data.lead_form_title) || 'Оставить заявку',
+    lead_form_intro: asString(data.lead_form_intro) || 'Напишите контакты, и мы вернемся с понятным следующим шагом.',
+    lead_form_submit_label: asString(data.lead_form_submit_label) || 'Отправить заявку',
+    lead_form_success_text: asString(data.lead_form_success_text) || 'Спасибо, заявка отправлена. Мы скоро свяжемся с вами.',
+    lead_form_fields: leadFormFields,
   };
 }
 

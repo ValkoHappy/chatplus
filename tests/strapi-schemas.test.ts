@@ -125,6 +125,9 @@ test('normalizeSiteSettingsRecord guarantees array and object boundaries', () =>
     assert.deepEqual(normalized.template_defaults, {});
     assert.deepEqual(normalized.header_links, []);
     assert.deepEqual(normalized.footer_columns, [{ title: 'Footer' }]);
+    assert.equal(normalized.lead_form_title, 'Оставить заявку');
+    assert.equal(normalized.lead_form_fields[0].key, 'name');
+    assert.equal(normalized.lead_form_fields[0].required, true);
   } finally {
     if (previousPublicSiteUrl === undefined) {
       delete process.env.PUBLIC_SITE_URL;
@@ -132,6 +135,29 @@ test('normalizeSiteSettingsRecord guarantees array and object boundaries', () =>
       process.env.PUBLIC_SITE_URL = previousPublicSiteUrl;
     }
   }
+});
+
+test('normalizeSiteSettingsRecord normalizes configurable lead form fields', () => {
+  const normalized = normalizeSiteSettingsRecord({
+    site_url: 'https://astro.integromat.ru',
+    lead_form_title: 'Заявка на демо',
+    lead_form_fields: [
+      { key: 'PHONE!', label: 'Телефон', type: 'tel', required: true, sort_order: 20 },
+      { key: 'team', label: 'Команда', type: 'select', options: ['Продажи', 'Поддержка'], sort_order: 10 },
+      { key: 'bad', label: 'Bad', type: 'script', sort_order: 30 },
+    ],
+  });
+
+  assert.equal(normalized.lead_form_title, 'Заявка на демо');
+  assert.deepEqual(
+    normalized.lead_form_fields.map((field) => [field.key, field.type, field.required]),
+    [
+      ['team', 'select', false],
+      ['phone', 'tel', true],
+      ['bad', 'text', false],
+    ],
+  );
+  assert.deepEqual(normalized.lead_form_fields[0].options, ['Продажи', 'Поддержка']);
 });
 
 test('editorial schemas enable draftAndPublish for publish lifecycle', () => {
@@ -146,6 +172,20 @@ test('editorial schemas enable draftAndPublish for publish lifecycle', () => {
   assert.equal(tendersPageSchema.options.draftAndPublish, true);
   assert.equal(businessTypesPageSchema.options.draftAndPublish, true);
   assert.equal(siteSettingSchema.options.draftAndPublish, true);
+});
+
+test('lead request schemas expose editable form settings and stored submissions', () => {
+  const siteSettingSchema = readJson('cms/src/api/site-setting/content-types/site-setting/schema.json');
+  const leadFieldComponent = readJson('cms/src/components/forms/lead-field.json');
+  const leadRequestSchema = readJson('cms/src/api/lead-request/content-types/lead-request/schema.json');
+
+  assert.equal(siteSettingSchema.attributes.lead_form_fields.type, 'component');
+  assert.equal(siteSettingSchema.attributes.lead_form_fields.component, 'forms.lead-field');
+  assert.equal(siteSettingSchema.attributes.lead_form_fields.repeatable, true);
+  assert.deepEqual(leadFieldComponent.attributes.type.enum, ['text', 'email', 'tel', 'textarea', 'select', 'checkbox']);
+  assert.equal(leadRequestSchema.options.draftAndPublish, false);
+  assert.equal(leadRequestSchema.attributes.payload.type, 'json');
+  assert.deepEqual(leadRequestSchema.attributes.status.enum, ['new', 'in_progress', 'done', 'spam']);
 });
 
 test('page_v2 card items preserve route links needed by legacy directory renderers', () => {

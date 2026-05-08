@@ -1,0 +1,55 @@
+{
+  "collectionName": "components_forms_lead_fields",
+  "info": {
+    "displayName": "Lead Form Field",
+    "description": "Поле формы заявки: что показывать посетителю и обязательно ли заполнять."
+  },
+  "attributes": {
+    "key": {
+      "type": "uid",
+      "required": true,
+      "description": "Технический ключ поля латиницей. Примеры: name, phone, email, company, message."
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "description": "Название поля для посетителя. Пример: Телефон."
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "text",
+        "email",
+        "tel",
+        "textarea",
+        "select",
+        "checkbox"
+      ],
+      "default": "text",
+      "required": true,
+      "description": "Тип поля: text - строка, email - email, tel - телефон, textarea - длинный текст, select - список, checkbox - галочка."
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Включите, если поле обязательно для отправки формы."
+    },
+    "placeholder": {
+      "type": "string",
+      "description": "Подсказка внутри поля. Пример: +7 999 123-45-67."
+    },
+    "options": {
+      "type": "json",
+      "description": "Только для select: JSON-массив вариантов. Пример: [\"Продажи\", \"Поддержка\", \"Маркетинг\"]."
+    },
+    "help_text": {
+      "type": "string",
+      "description": "Маленькая подсказка под полем, если нужно объяснить формат."
+    },
+    "sort_order": {
+      "type": "integer",
+      "default": 100,
+      "description": "Порядок поля в форме. Чем меньше число, тем выше поле."
+    }
+  }
+}

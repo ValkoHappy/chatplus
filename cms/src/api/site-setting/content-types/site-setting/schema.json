@@ -89,6 +89,28 @@
     "sticky_cta_url": {
       "type": "string"
     },
+    "lead_form_title": {
+      "type": "string",
+      "description": "Заголовок формы заявки в модальном окне. Пример: Оставить заявку."
+    },
+    "lead_form_intro": {
+      "type": "text",
+      "description": "Короткий текст под заголовком формы. Пример: Напишите контакты, и мы вернемся с предложением."
+    },
+    "lead_form_submit_label": {
+      "type": "string",
+      "description": "Текст кнопки отправки формы. Пример: Отправить заявку."
+    },
+    "lead_form_success_text": {
+      "type": "text",
+      "description": "Сообщение после успешной отправки. Пример: Спасибо, заявка отправлена."
+    },
+    "lead_form_fields": {
+      "type": "component",
+      "component": "forms.lead-field",
+      "repeatable": true,
+      "description": "Поля формы заявки на сайте. Можно менять состав, подписи, обязательность и порядок."
+    },
     "page_templates": {
       "type": "json"
     },

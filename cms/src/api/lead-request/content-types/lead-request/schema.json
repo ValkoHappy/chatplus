@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lead_requests",
+  "info": {
+    "singularName": "lead-request",
+    "pluralName": "lead-requests",
+    "displayName": "Lead Request",
+    "description": "Заявки с публичной формы сайта. Редактор смотрит их здесь, форму на сайте настраивает в Site Settings."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "in_progress",
+        "done",
+        "spam"
+      ],
+      "default": "new",
+      "required": true,
+      "description": "Статус обработки заявки."
+    },
+    "name": {
+      "type": "string",
+      "description": "Имя посетителя, если поле есть в форме."
+    },
+    "phone": {
+      "type": "string",
+      "description": "Телефон посетителя, если поле есть в форме."
+    },
+    "email": {
+      "type": "email",
+      "description": "Email посетителя, если поле есть в форме."
+    },
+    "company": {
+      "type": "string",
+      "description": "Компания посетителя, если поле есть в форме."
+    },
+    "message": {
+      "type": "text",
+      "description": "Комментарий посетителя, если поле есть в форме."
+    },
+    "source_path": {
+      "type": "string",
+      "description": "Страница сайта, с которой отправили заявку."
+    },
+    "source_title": {
+      "type": "string",
+      "description": "Title страницы, с которой отправили заявку."
+    },
+    "form_id": {
+      "type": "string",
+      "description": "Идентификатор формы. Обычно global-lead-form."
+    },
+    "payload": {
+      "type": "json",
+      "description": "Все поля формы целиком. Здесь сохраняются даже нестандартные поля из настроек."
+    },
+    "submitted_at": {
+      "type": "datetime",
+      "description": "Когда заявка пришла на сервер."
+    },
+    "user_agent": {
+      "type": "text",
+      "description": "Браузер посетителя для диагностики."
+    }
+  }
+}

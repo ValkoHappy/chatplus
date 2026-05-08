@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/block-primitives.css';
 import { getPageV2Pages, getSiteSettings } from '../lib/strapi';
 import { getFooterColumns, getHeaderLinks, getMobileNavSections, isPathActive } from '../lib/navigation';
+import { getRuntimeEnvValue } from '../lib/preview-auth';
 import { getSearchAnalyticsConfig, isAnalyticsEnabled } from '../lib/search-analytics';
 import { normalizeInternalPath, withBasePath } from '../lib/urls';
 
@@ -46,6 +47,14 @@ const headerLinks = getHeaderLinks(settings.header_links, pageV2Pages);
 const footerColumns = getFooterColumns(settings.footer_columns, pageV2Pages);
 const mobileNavSections = getMobileNavSections(headerLinks, footerColumns);
 const toHref = (href?: string) => withBasePath(href);
+const cmsPublicUrl = (
+  getRuntimeEnvValue('CMS_PUBLIC_URL')
+  || getRuntimeEnvValue('PUBLIC_URL')
+  || getRuntimeEnvValue('STRAPI_URL')
+  || 'https://strapi.integromat.ru'
+).replace(/\/+$/, '');
+const leadSubmitUrl = `${cmsPublicUrl}/api/lead-requests/submit`;
+const leadFormFields = Array.isArray(settings.lead_form_fields) ? settings.lead_form_fields : [];
 const normalizedTitle = (title || '').trim();
 const fullTitle = normalizedTitle.endsWith(`| ${siteName}`) || normalizedTitle === siteName
   ? normalizedTitle
@@ -491,6 +500,178 @@ const yandexMetrikaOptions = JSON.stringify({
       transform: translateY(0);
     }
 
+    .lead-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 220;
+      display: grid;
+      place-items: center;
+      padding: 1.25rem;
+      background: rgba(15, 23, 42, .58);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+
+    .lead-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .lead-modal__dialog {
+      width: min(100%, 520px);
+      max-height: min(760px, calc(100vh - 2.5rem));
+      overflow: auto;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 28px 70px rgba(15, 23, 42, .26);
+      transform: translateY(12px);
+      transition: transform .2s ease;
+    }
+
+    .lead-modal.is-open .lead-modal__dialog {
+      transform: translateY(0);
+    }
+
+    .lead-modal__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.35rem .75rem;
+    }
+
+    .lead-modal__title {
+      margin: 0;
+      color: #0f172a;
+      font-size: 1.45rem;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .lead-modal__intro {
+      margin: .55rem 0 0;
+      color: #64748b;
+      line-height: 1.65;
+    }
+
+    .lead-modal__close {
+      width: 2.35rem;
+      height: 2.35rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .lead-form {
+      display: grid;
+      gap: .95rem;
+      padding: .6rem 1.35rem 1.35rem;
+    }
+
+    .lead-form__field {
+      display: grid;
+      gap: .4rem;
+    }
+
+    .lead-form__label {
+      color: #0f172a;
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    .lead-form__label span {
+      color: #ef4444;
+    }
+
+    .lead-form input,
+    .lead-form textarea,
+    .lead-form select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      padding: .72rem .82rem;
+      background: #fff;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    .lead-form textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .lead-form__checkbox {
+      display: flex;
+      gap: .65rem;
+      align-items: flex-start;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .lead-form__checkbox input {
+      width: 1.05rem;
+      min-height: 0;
+      height: 1.05rem;
+      margin-top: .18rem;
+      flex-shrink: 0;
+    }
+
+    .lead-form__help {
+      margin: 0;
+      color: #64748b;
+      font-size: .84rem;
+      line-height: 1.45;
+    }
+
+    .lead-form__honeypot {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    .lead-form__submit {
+      min-height: 48px;
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow-brand);
+    }
+
+    .lead-form__submit:disabled {
+      cursor: wait;
+      opacity: .68;
+      box-shadow: none;
+    }
+
+    .lead-form__status {
+      min-height: 1.25rem;
+      color: #475569;
+      font-size: .92rem;
+      line-height: 1.45;
+    }
+
+    .lead-form__status[data-state='success'] {
+      color: #047857;
+      font-weight: 700;
+    }
+
+    .lead-form__status[data-state='error'] {
+      color: #dc2626;
+      font-weight: 700;
+    }
+
     .sticky-cta-inner {
       width: 100%;
       max-width: var(--container);
@@ -857,9 +1038,57 @@ const yandexMetrikaOptions = JSON.stringify({
     </div>
   )}
 
+  {leadFormFields.length > 0 && (
+    <div id="lead-modal" class="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title" aria-hidden="true">
+      <div class="lead-modal__dialog" data-lead-dialog>
+        <div class="lead-modal__head">
+          <div>
+            <h2 id="lead-modal-title" class="lead-modal__title">{settings.lead_form_title}</h2>
+            {settings.lead_form_intro && <p class="lead-modal__intro">{settings.lead_form_intro}</p>}
+          </div>
+          <button type="button" class="lead-modal__close" data-lead-close aria-label="Закрыть">&times;</button>
+        </div>
+        <form id="global-lead-form" class="lead-form" data-lead-form data-analytics-event="lead_submit" data-analytics-location="lead_modal">
+          <input class="lead-form__honeypot" type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" />
+          {leadFormFields.map((field) => (
+            <div class="lead-form__field">
+              {field.type === 'checkbox' ? (
+                <label class="lead-form__checkbox">
+                  <input type="checkbox" name={field.key} required={field.required} />
+                  <span>{field.label}{field.required && <span> *</span>}</span>
+                </label>
+              ) : (
+                <>
+                  <label class="lead-form__label" for={`lead-${field.key}`}>
+                    {field.label}{field.required && <span> *</span>}
+                  </label>
+                  {field.type === 'textarea' ? (
+                    <textarea id={`lead-${field.key}`} name={field.key} placeholder={field.placeholder} required={field.required}></textarea>
+                  ) : field.type === 'select' ? (
+                    <select id={`lead-${field.key}`} name={field.key} required={field.required}>
+                      <option value="">Выберите вариант</option>
+                      {field.options.map((option) => <option value={option}>{option}</option>)}
+                    </select>
+                  ) : (
+                    <input id={`lead-${field.key}`} name={field.key} type={field.type} placeholder={field.placeholder} required={field.required} />
+                  )}
+                </>
+              )}
+              {field.help_text && <p class="lead-form__help">{field.help_text}</p>}
+            </div>
+          ))}
+          <button class="lead-form__submit" type="submit">{settings.lead_form_submit_label}</button>
+          <div class="lead-form__status" data-lead-status aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  )}
+
   <script is:inline define:vars={{
     analyticsYandexMetrikaId: analytics.yandexMetrikaId ? Number(analytics.yandexMetrikaId) : null,
     analyticsEnabled: hasAnalytics,
+    leadSubmitUrl,
+    leadSuccessText: settings.lead_form_success_text,
   }}>
     (function () {
       window.chatplusTrack = function (eventName, params) {
@@ -904,6 +1133,108 @@ const yandexMetrikaOptions = JSON.stringify({
           form_id: form.id || undefined,
         });
       }, true);
+    })();
+
+    (function () {
+      const modal = document.getElementById('lead-modal');
+      const form = document.querySelector('[data-lead-form]');
+      const status = document.querySelector('[data-lead-status]');
+      const closeButtons = document.querySelectorAll('[data-lead-close]');
+      if (!modal || !form) return;
+
+      function setStatus(message, state) {
+        if (!status) return;
+        status.textContent = message || '';
+        if (state) {
+          status.dataset.state = state;
+        } else {
+          delete status.dataset.state;
+        }
+      }
+
+      function openModal() {
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () {
+          const firstInput = modal.querySelector('input:not([type="hidden"]):not([aria-hidden="true"]), textarea, select, button');
+          if (firstInput && firstInput.focus) firstInput.focus();
+        }, 30);
+        window.chatplusTrack('lead_modal_open', { location: 'cta' });
+      }
+
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      document.addEventListener('click', function (event) {
+        const trigger = event.target && event.target.closest
+          ? event.target.closest('a[href="modal:lead"], [data-lead-modal]')
+          : null;
+        if (!trigger) return;
+        event.preventDefault();
+        openModal();
+      });
+
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) closeModal();
+      });
+
+      closeButtons.forEach(function (button) {
+        button.addEventListener('click', closeModal);
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+      });
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const submit = form.querySelector('button[type="submit"]');
+        const formData = new FormData(form);
+        const fields = {};
+        form.querySelectorAll('[name]').forEach(function (input) {
+          const name = input.getAttribute('name');
+          if (!name || name === 'website') return;
+          if (input.type === 'checkbox') {
+            fields[name] = Boolean(input.checked);
+          } else {
+            fields[name] = String(formData.get(name) || '').trim();
+          }
+        });
+
+        if (submit) submit.disabled = true;
+        setStatus('Отправляем заявку...', '');
+
+        try {
+          const response = await fetch(leadSubmitUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              form_id: form.id || 'global-lead-form',
+              source_path: window.location.pathname,
+              source_title: document.title,
+              website: String(formData.get('website') || ''),
+              fields,
+            }),
+          });
+          const result = await response.json().catch(function () { return {}; });
+          if (!response.ok || result.ok === false) {
+            throw new Error(result.error || 'submit_failed');
+          }
+
+          form.reset();
+          setStatus(leadSuccessText || 'Спасибо, заявка отправлена.', 'success');
+          window.chatplusTrack('lead_submit_success', { location: 'lead_modal' });
+        } catch (error) {
+          setStatus('Не получилось отправить. Проверьте поля или попробуйте позже.', 'error');
+          window.chatplusTrack('lead_submit_error', { location: 'lead_modal' });
+        } finally {
+          if (submit) submit.disabled = false;
+        }
+      });
     })();
 
     (function () {

@@ -99,6 +99,33 @@ Content Manager -> Page -> открыть страницу -> AI Generation -> �
 
 Если вы меняете только контент, вам не нужны Git, npm, Docker и команды терминала.
 
+## CTA и форма заявки
+
+Кнопки на страницах могут делать две разные вещи:
+
+- обычный переход: в поле ссылки укажите внутренний URL (`/pricing`) или внешний URL (`https://example.com`);
+- открыть форму заявки: в поле ссылки укажите `modal:lead`.
+
+Форма заявки настраивается в `Content Manager -> Single Types -> Site Settings`:
+
+- `lead_form_title` - заголовок формы;
+- `lead_form_intro` - короткое пояснение;
+- `lead_form_submit_label` - текст кнопки отправки;
+- `lead_form_success_text` - сообщение после успешной отправки;
+- `lead_form_fields` - список полей формы.
+
+В `lead_form_fields` для каждого поля задаются:
+
+- `key` - технический ключ латиницей, например `name`, `phone`, `email`, `company`, `message`;
+- `label` - подпись для посетителя;
+- `type` - тип поля: `text`, `email`, `tel`, `textarea`, `select`, `checkbox`;
+- `required` - обязательно ли поле;
+- `placeholder` - подсказка внутри поля;
+- `options` - варианты для `select` JSON-массивом, например `["Продажи", "Поддержка"]`;
+- `sort_order` - порядок поля.
+
+Заявки появляются в `Content Manager -> Lead Request`. Там видно статус, контакты, страницу отправки и полный `payload` со всеми полями формы.
+
 ## Где найти страницу
 
 1. Откройте Strapi admin.
