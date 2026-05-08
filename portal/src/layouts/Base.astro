@@ -547,6 +547,10 @@ const yandexMetrikaOptions = JSON.stringify({
       padding: 1.35rem 1.35rem .75rem;
     }
 
+    .lead-modal__head[hidden] {
+      display: none !important;
+    }
+
     .lead-modal__title {
       margin: 0;
       color: #0f172a;
@@ -578,6 +582,10 @@ const yandexMetrikaOptions = JSON.stringify({
       display: grid;
       gap: .95rem;
       padding: .6rem 1.35rem 1.35rem;
+    }
+
+    .lead-form[hidden] {
+      display: none !important;
     }
 
     .lead-form__field {
@@ -687,7 +695,7 @@ const yandexMetrikaOptions = JSON.stringify({
     }
 
     .lead-success[hidden] {
-      display: none;
+      display: none !important;
     }
 
     .lead-success__icon {
@@ -1202,6 +1210,7 @@ const yandexMetrikaOptions = JSON.stringify({
       const form = document.querySelector('[data-lead-form]');
       const status = document.querySelector('[data-lead-status]');
       const success = document.querySelector('[data-lead-success]');
+      const head = modal.querySelector('.lead-modal__head');
       const closeButtons = document.querySelectorAll('[data-lead-close]');
       if (!modal || !form) return;
 
@@ -1218,12 +1227,14 @@ const yandexMetrikaOptions = JSON.stringify({
       function showFormState() {
         modal.classList.remove('is-success');
         form.hidden = false;
+        if (head) head.hidden = false;
         if (success) success.hidden = true;
         setStatus('', '');
       }
 
       function showSuccessState() {
         form.hidden = true;
+        if (head) head.hidden = true;
         if (success) success.hidden = false;
         modal.classList.add('is-success');
         const closeButton = success ? success.querySelector('[data-lead-close]') : null;
