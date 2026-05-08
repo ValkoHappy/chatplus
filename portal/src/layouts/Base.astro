@@ -529,6 +529,12 @@ const yandexMetrikaOptions = JSON.stringify({
       transform: translateY(0);
     }
 
+    .lead-modal.is-success .lead-modal__dialog {
+      width: min(100%, 380px);
+      max-height: calc(100vh - 2.5rem);
+      overflow: visible;
+    }
+
     .lead-modal__head {
       display: flex;
       align-items: flex-start;
@@ -666,6 +672,56 @@ const yandexMetrikaOptions = JSON.stringify({
     .lead-form__status[data-state='error'] {
       color: #dc2626;
       font-weight: 700;
+    }
+
+    .lead-success {
+      display: grid;
+      gap: .95rem;
+      justify-items: center;
+      padding: 1.7rem 1.35rem;
+      text-align: center;
+    }
+
+    .lead-success[hidden] {
+      display: none;
+    }
+
+    .lead-success__icon {
+      display: grid;
+      place-items: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #047857;
+      font-size: 1.65rem;
+      font-weight: 900;
+    }
+
+    .lead-success__title {
+      margin: 0;
+      color: #0f172a;
+      font-size: 1.3rem;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .lead-success__text {
+      margin: 0;
+      color: #475569;
+      line-height: 1.55;
+    }
+
+    .lead-success__close {
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow-brand);
     }
 
     .sticky-cta-inner {
@@ -1076,6 +1132,12 @@ const yandexMetrikaOptions = JSON.stringify({
           <button class="lead-form__submit" type="submit">{settings.lead_form_submit_label}</button>
           <div class="lead-form__status" data-lead-status aria-live="polite"></div>
         </form>
+        <div class="lead-success" data-lead-success hidden>
+          <div class="lead-success__icon" aria-hidden="true">✓</div>
+          <h3 class="lead-success__title">Все прошло успешно</h3>
+          <p class="lead-success__text">{settings.lead_form_success_text}</p>
+          <button type="button" class="lead-success__close" data-lead-close>Закрыть форму</button>
+        </div>
       </div>
     </div>
   )}
@@ -1135,6 +1197,7 @@ const yandexMetrikaOptions = JSON.stringify({
       const modal = document.getElementById('lead-modal');
       const form = document.querySelector('[data-lead-form]');
       const status = document.querySelector('[data-lead-status]');
+      const success = document.querySelector('[data-lead-success]');
       const closeButtons = document.querySelectorAll('[data-lead-close]');
       if (!modal || !form) return;
 
@@ -1148,7 +1211,23 @@ const yandexMetrikaOptions = JSON.stringify({
         }
       }
 
+      function showFormState() {
+        modal.classList.remove('is-success');
+        form.hidden = false;
+        if (success) success.hidden = true;
+        setStatus('', '');
+      }
+
+      function showSuccessState() {
+        form.hidden = true;
+        if (success) success.hidden = false;
+        modal.classList.add('is-success');
+        const closeButton = success ? success.querySelector('[data-lead-close]') : null;
+        if (closeButton && closeButton.focus) closeButton.focus();
+      }
+
       function openModal() {
+        showFormState();
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
@@ -1163,6 +1242,7 @@ const yandexMetrikaOptions = JSON.stringify({
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        window.setTimeout(showFormState, 180);
       }
 
       document.addEventListener('click', function (event) {
@@ -1172,7 +1252,8 @@ const yandexMetrikaOptions = JSON.stringify({
         const selfDemoLink = !trigger && window.location.pathname.replace(/\/+$/, '') === '/demo' && event.target && event.target.closest
           ? event.target.closest('a[href="/demo"], a[href="/demo/"]')
           : null;
-        if (!trigger && !selfDemoLink) return;
+        const selfDemoLeadLink = selfDemoLink && /записаться\s+на\s+демо/i.test((selfDemoLink.textContent || '').trim());
+        if (!trigger && !selfDemoLeadLink) return;
         event.preventDefault();
         openModal();
       });
@@ -1225,7 +1306,8 @@ const yandexMetrikaOptions = JSON.stringify({
           }
 
           form.reset();
-          setStatus(leadSuccessText || 'Спасибо, заявка отправлена.', 'success');
+          setStatus('', '');
+          showSuccessState();
           window.chatplusTrack('lead_submit_success', { location: 'lead_modal' });
         } catch (error) {
           setStatus('Не получилось отправить. Проверьте поля или попробуйте позже.', 'error');
