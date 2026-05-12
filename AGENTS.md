@@ -10,7 +10,8 @@
 2. `docs/content-snapshot-workflow.md`
 3. `docs/index.md`
 4. `docs/strapi-editor-handbook.md`, если задача касается Strapi-контента
-5. `docs/unified-block-system-plan.md`, если задача касается блоков, верстки или шаблонов
+5. `docs/rendering-safety-map.md`, если задача касается страниц, route, renderer family, блоков, верстки или шаблонов
+6. `docs/unified-block-system-plan.md`, если задача касается блоков, верстки или шаблонов
 
 ## Главное правило проекта
 
@@ -65,6 +66,18 @@ npm.cmd --prefix cms run build
 - Если route выглядит плохо, сначала выключить `migration_ready` или снять publish, потом чинить materializer/bridge.
 - Новый блок добавляется только через Strapi schema, frontend primitive/renderer, тесты и документацию.
 
+## Карта рендеринга страниц и блоков
+
+Перед изменением страниц, route, blocks, styles, templates или adapters прочитайте `docs/rendering-safety-map.md`.
+
+Коротко:
+
+- `page_v2` - общий content contract, но не всегда общий visual renderer.
+- `PageV2Page` - только для новых/native страниц без старого уникального family layout.
+- Старые route families (`home`, `campaign`, `brand`, `resource`, `directory`, `comparison`, `structured` и другие) нельзя случайно заменять generic renderer.
+- Новый block type добавляется только полным контрактом: Strapi schema -> dynamic zone -> portal normalization -> renderer -> primitive/component -> tests -> docs.
+- Улучшать и унифицировать систему можно, но поэтапно: сначала сохранить текущий route contract, затем выносить общее в primitives, проверять parity и оставлять rollback.
+
 ## Работа с сервером
 
 - Перед destructive Strapi import всегда делать server backup.
@@ -78,4 +91,3 @@ npm.cmd --prefix cms run build
 - Не считать локальный SQLite или серверный Postgres “одноразовыми”: это часть состояния сайта.
 - Не делать массовый publish/cutover без smoke-проверок.
 - Не оставлять тестовый английский контент вроде `Can this page be edited in Strapi?` в production pages.
-

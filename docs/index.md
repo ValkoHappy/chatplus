@@ -52,18 +52,21 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 2. [Контекст для AI и разработчика](ai-agent-context.md)
 3. [Workflow Strapi content snapshot](content-snapshot-workflow.md)
 4. [CMS-модель](cms-model.md)
-5. [Единая система блоков](unified-block-system-plan.md)
-6. [Контракты шаблонов](template-contracts.md)
-7. [Миграция маршрутов](managed-route-migration.md)
-8. [Гайд оператора](operator-guide.md)
-9. [Смена домена production](domain-change-guide.md)
-10. [Подготовка сайта к поиску, Метрике и рекламе](search-ads-analytics-setup.md)
-11. [Перенос на Railway](railway-migration-guide.md)
-12. [Production handoff](manual-first-production-handoff.md)
+5. [Карта безопасного рендеринга](rendering-safety-map.md)
+6. [Единая система блоков](unified-block-system-plan.md)
+7. [Контракты шаблонов](template-contracts.md)
+8. [Миграция маршрутов](managed-route-migration.md)
+9. [Гайд оператора](operator-guide.md)
+10. [Смена домена production](domain-change-guide.md)
+11. [Подготовка сайта к поиску, Метрике и рекламе](search-ads-analytics-setup.md)
+12. [Перенос на Railway](railway-migration-guide.md)
+13. [Production handoff](manual-first-production-handoff.md)
 
 Главное правило для разработки: не переписывать старую страницу в generic `PageV2Page`, если у неё есть legacy family. Старый URL должен сохранять свой family-renderer, а `page_v2` становится владельцем контента и метаданных.
 
 Второе главное правило: полный сайт не равен одному Git commit. Если задача касается страниц, блоков, Strapi, SEO, навигации или sitemap, сначала синхронизируйте content snapshot по [Workflow Strapi content snapshot](content-snapshot-workflow.md).
+
+Если задача касается page layout, route wrappers, adapters, shared primitives, старых family templates или новых block types, сначала прочитайте [Карту безопасного рендеринга](rendering-safety-map.md). Она объясняет, где legacy renderer, где bridge, где native `PageV2Page`, и как безопасно улучшать систему без массового перелома макетов.
 
 ## AI-заполнение страниц
 
