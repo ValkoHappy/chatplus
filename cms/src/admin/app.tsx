@@ -597,6 +597,135 @@ function adminEditUrl(model: string, documentId: string) {
   return `/admin/content-manager/collection-types/${model}/${encodeURIComponent(documentId)}`;
 }
 
+function buildCopyDefaults(routePath: string, title: string) {
+  const basePath = routePath && routePath !== '/' ? routePath : '/page';
+  const cleanPath = `/${basePath.replace(/^\/+/, '').replace(/\/+$/, '')}`;
+  const copyPath = `${cleanPath}-copy`;
+
+  return {
+    routePath: copyPath,
+    slug: copyPath.replace(/^\/+/, '').replace(/[^\w-]+/g, '-').replace(/-+/g, '-').toLowerCase(),
+    title: title ? `${title} copy` : 'Page copy',
+  };
+}
+
+const PageDuplicatePanelContent = ({
+  document,
+  model,
+}: PanelComponentProps) => {
+  if (String(model) !== 'api::page-v2.page-v2') {
+    return null;
+  }
+
+  const record = readDocument(document);
+  const documentId = String(record.documentId || record.document_id || record.id || '').trim();
+  const routePath = String(record.route_path || record.slug || '').trim();
+  const title = String(record.title || '').trim();
+  const defaults = buildCopyDefaults(routePath, title);
+  const [newRoutePath, setNewRoutePath] = useState(defaults.routePath);
+  const [newSlug, setNewSlug] = useState(defaults.slug);
+  const [newTitle, setNewTitle] = useState(defaults.title);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const { post } = useFetchClient();
+
+  const duplicatePage = async () => {
+    if (!documentId || busy) {
+      return;
+    }
+
+    setBusy(true);
+    setMessage('');
+
+    try {
+      const { data: payload } = await post(
+        `/admin/page-v2-ai/pages/${encodeURIComponent(documentId)}/duplicate`,
+        {
+          route_path: newRoutePath,
+          slug: newSlug,
+          title: newTitle,
+        },
+      );
+      const pageDocumentId = String(payload?.page_document_id || '').trim();
+
+      if (!pageDocumentId) {
+        throw new Error('Page was copied, but documentId was not returned.');
+      }
+
+      window.location.assign(adminEditUrl('api::page-v2.page-v2', pageDocumentId));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div style={{ fontWeight: 700 }}>Дубликат страницы</div>
+      <p style={{ margin: 0 }}>
+        Создает черновик с теми же блоками и связями. Потом поменяйте контент руками или запустите AI для новой страницы.
+      </p>
+
+      <label style={fieldLabelStyle}>
+        Новый URL
+        <input
+          value={newRoutePath}
+          onChange={(event) => setNewRoutePath(event.target.value)}
+          placeholder="/new-page"
+          style={inputStyle}
+        />
+      </label>
+
+      <label style={fieldLabelStyle}>
+        Новый slug
+        <input
+          value={newSlug}
+          onChange={(event) => setNewSlug(event.target.value)}
+          placeholder="new-page"
+          style={inputStyle}
+        />
+      </label>
+
+      <label style={fieldLabelStyle}>
+        Название
+        <input
+          value={newTitle}
+          onChange={(event) => setNewTitle(event.target.value)}
+          placeholder="Новая страница"
+          style={inputStyle}
+        />
+      </label>
+
+      <button
+        type="button"
+        onClick={duplicatePage}
+        disabled={!documentId || busy}
+        style={buttonStyle}
+      >
+        {busy ? 'Копируем...' : 'Скопировать Page'}
+      </button>
+
+      <div style={{ fontSize: 12, lineHeight: 1.5, color: '#64748b' }}>
+        Копия будет draft, без показа в меню и sitemap.
+      </div>
+
+      {message && <div style={{ fontSize: 13, lineHeight: 1.5 }}>{message}</div>}
+    </div>
+  );
+};
+
+const PageDuplicatePanel: PanelComponent = (props: PanelComponentProps) => {
+  if (String(props.model) !== 'api::page-v2.page-v2') {
+    return null as never;
+  }
+
+  return {
+    title: 'Copy Page',
+    content: <PageDuplicatePanelContent {...props} />,
+  };
+};
+
 const PageGenerationBridgePanelContent = ({
   document,
   model,
@@ -829,12 +958,30 @@ const secondaryButtonStyle: CSSProperties = {
   color: '#4f46e5',
 };
 
+const fieldLabelStyle: CSSProperties = {
+  display: 'grid',
+  gap: 6,
+  fontSize: 12,
+  fontWeight: 700,
+};
+
+const inputStyle: CSSProperties = {
+  width: '100%',
+  boxSizing: 'border-box',
+  border: '1px solid rgba(148, 163, 184, 0.35)',
+  background: 'rgba(15, 23, 42, 0.08)',
+  color: 'inherit',
+  borderRadius: 8,
+  padding: '9px 10px',
+};
+
 export default {
   config: {
     locales: ['ru', 'uk', 'en'],
   },
   bootstrap(app: StrapiApp) {
     app.getPlugin('content-manager').apis.addEditViewSidePanel((panels) => [
+      PageDuplicatePanel,
       PageGenerationBridgePanel,
       GenerationJobActionsPanel,
       ModelGuidePanel,

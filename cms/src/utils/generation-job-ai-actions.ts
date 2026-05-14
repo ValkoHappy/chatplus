@@ -43,6 +43,53 @@ function normalizeRoutePath(value = '') {
   return `/${routePath.replace(/^\/+/, '').replace(/\/+$/, '')}`;
 }
 
+function normalizeSlug(value = '') {
+  return String(value || '')
+    .trim()
+    .replace(/^\/+/, '')
+    .replace(/\/+$/, '')
+    .replace(/\s+/g, '-')
+    .toLowerCase();
+}
+
+function stripIds(value: any): any {
+  if (Array.isArray(value)) {
+    return value.map((item) => stripIds(item));
+  }
+
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  const output: Record<string, any> = {};
+  for (const [key, nestedValue] of Object.entries(value)) {
+    if (key === 'id' || key === 'documentId' || key === 'createdAt' || key === 'updatedAt' || key === 'publishedAt') {
+      continue;
+    }
+
+    output[key] = stripIds(nestedValue);
+  }
+
+  return output;
+}
+
+function connectMany(records: any) {
+  if (!Array.isArray(records)) {
+    return undefined;
+  }
+
+  const ids = records
+    .map((record) => record?.documentId || record?.id)
+    .filter(Boolean);
+
+  return ids.length > 0 ? { connect: ids } : undefined;
+}
+
+function connectOne(record: any) {
+  const id = record?.documentId || record?.id;
+  return id ? { connect: [id] } : undefined;
+}
+
 function findProjectRoot() {
   const candidates = [
     process.cwd(),
@@ -219,6 +266,157 @@ export async function createGenerationJobForPage(strapi: any, pageId: string, re
     job,
     job_document_id: job?.documentId || null,
     page_document_id: page.documentId,
+  };
+}
+
+export async function duplicatePageForEditor(
+  strapi: any,
+  pageId: string,
+  input: { title?: string; slug?: string; route_path?: string; requested_by?: string } = {},
+) {
+  const service = strapi.documents(PAGE_V2_UID);
+  const source = await findDraftDocumentByDocumentId(service, pageId, {
+    blueprint: true,
+    channels: true,
+    industries: true,
+    integrations: true,
+    solutions: true,
+    features: true,
+    business_types: true,
+    competitors: true,
+    parent_page: true,
+    breadcrumbs: true,
+    internal_links: true,
+    sections: {
+      populate: '*',
+    },
+    og_image: true,
+  });
+
+  if (!source?.documentId) {
+    const error = new Error(`Page ${pageId} was not found.`);
+    (error as any).status = 404;
+    throw error;
+  }
+
+  const routePath = normalizeRoutePath(String(input.route_path || ''));
+  const slug = normalizeSlug(input.slug || routePath);
+  const title = String(input.title || '').trim();
+
+  if (!routePath || routePath === '/') {
+    const error = new Error('New route_path is required and cannot be /.');
+    (error as any).status = 400;
+    throw error;
+  }
+
+  if (!slug) {
+    const error = new Error('New slug is required.');
+    (error as any).status = 400;
+    throw error;
+  }
+
+  if (!title) {
+    const error = new Error('New title is required.');
+    (error as any).status = 400;
+    throw error;
+  }
+
+  const existing = await service.findMany({
+    status: 'draft',
+    filters: {
+      $or: [
+        { slug: { $eq: slug } },
+        { route_path: { $eq: routePath } },
+      ],
+    },
+    pagination: { page: 1, pageSize: 1 },
+  });
+
+  if (existing?.length) {
+    const error = new Error('A Page with this slug or route_path already exists.');
+    (error as any).status = 409;
+    throw error;
+  }
+
+  const now = new Date().toISOString();
+  const data: Record<string, any> = {
+    slug,
+    route_path: routePath,
+    title,
+    locale: source.locale || 'ru',
+    page_kind: source.page_kind || 'landing',
+    template_variant: source.template_variant || 'default',
+    generation_mode: 'manual',
+    source_mode: 'managed',
+    editorial_status: 'draft',
+    migration_ready: false,
+    parity_status: 'unchecked',
+    legacy_template_family: '',
+    legacy_layout_signature: null,
+    parity_notes: {
+      duplicated_from_document_id: source.documentId,
+      duplicated_from_route_path: source.route_path || null,
+      duplicated_by: input.requested_by || 'strapi-editor',
+      duplicated_at: now,
+    },
+    sections: stripIds(source.sections || []),
+    breadcrumbs: stripIds(source.breadcrumbs || []),
+    internal_links: stripIds(source.internal_links || []),
+    seo_title: source.seo_title ? `${source.seo_title} copy` : title,
+    seo_description: source.seo_description || '',
+    canonical: routePath,
+    robots: 'noindex,nofollow',
+    hreflang_policy: stripIds(source.hreflang_policy || null),
+    show_in_header: false,
+    show_in_footer: false,
+    show_in_sitemap: false,
+    nav_group: source.nav_group || 'resources',
+    nav_label: title,
+    nav_description: source.nav_description || '',
+    nav_order: source.nav_order || 100,
+    sitemap_priority: source.sitemap_priority || 0.5,
+    sitemap_changefreq: source.sitemap_changefreq || 'weekly',
+    generation_prompt: source.generation_prompt || '',
+    ai_metadata: {
+      duplicated_from_document_id: source.documentId,
+      duplicated_from_route_path: source.route_path || null,
+      duplicated_at: now,
+    },
+    human_review_required: true,
+    owner: source.owner || '',
+    reviewer: source.reviewer || '',
+  };
+
+  const relations: Record<string, any> = {
+    blueprint: connectOne(source.blueprint),
+    channels: connectMany(source.channels),
+    industries: connectMany(source.industries),
+    integrations: connectMany(source.integrations),
+    solutions: connectMany(source.solutions),
+    features: connectMany(source.features),
+    business_types: connectMany(source.business_types),
+    competitors: connectMany(source.competitors),
+    parent_page: connectOne(source.parent_page),
+    og_image: connectOne(source.og_image),
+  };
+
+  for (const [key, value] of Object.entries(relations)) {
+    if (value) {
+      data[key] = value;
+    }
+  }
+
+  const page = await service.create({
+    status: 'draft',
+    data,
+  });
+
+  return {
+    ok: true,
+    page,
+    page_document_id: page?.documentId || null,
+    route_path: page?.route_path || routePath,
+    slug: page?.slug || slug,
   };
 }
 

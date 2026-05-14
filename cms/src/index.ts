@@ -1,6 +1,7 @@
 import {
   applyAiDraftToPage,
   createGenerationJobForPage,
+  duplicatePageForEditor,
   getGenerationJobTargetPage,
   getAiDraftPreview,
   runAiForGenerationJob,
@@ -17,6 +18,29 @@ export default {
     strapi.admin.routes['page-v2-ai'] = {
       type: 'admin',
       routes: [
+        {
+          method: 'POST',
+          path: '/page-v2-ai/pages/:id/duplicate',
+          handler: async (ctx: any) => {
+            const id = String(ctx.params.id || '').trim();
+            if (!id) {
+              ctx.throw(400, 'Page id is required.');
+            }
+
+            try {
+              const requestedBy = ctx.state?.user?.email || ctx.state?.user?.username || '';
+              ctx.body = await duplicatePageForEditor(strapi, id, {
+                ...(ctx.request.body || {}),
+                requested_by: requestedBy,
+              });
+            } catch (error) {
+              throwHttpError(ctx, error);
+            }
+          },
+          config: {
+            policies: ['admin::isAuthenticatedAdmin'],
+          },
+        },
         {
           method: 'POST',
           path: '/page-v2-ai/pages/:id/create-generation-job',
