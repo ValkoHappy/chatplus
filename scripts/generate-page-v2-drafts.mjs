@@ -583,17 +583,24 @@ export function buildPrompts(job) {
   const prompt = job.request_prompt || job.title;
   const entities = relationSummary(job);
   const blockPlan = getAiBlockPlan(job);
+  const hasLockedTargetLayout = Array.isArray(targetPageContext?.sections) && targetPageContext.sections.length > 0;
 
   return {
     systemPrompt: [
       'You rewrite and fill content for an existing CHATPLUS page_v2 draft.',
       'Return only a valid JSON object with no markdown.',
       'Do not publish the page and do not mention internal system fields.',
-      'AI is in locked-layout content mode. You may rewrite visible text, cards, steps, FAQ answers, SEO text, and CTA labels only.',
-      'Do not add, remove, reorder, or rename sections. Do not change any section block_type. Do not change any existing section variant.',
+      hasLockedTargetLayout
+        ? 'AI is in locked-layout content mode. You may rewrite visible text, cards, steps, FAQ answers, SEO text, and CTA labels only.'
+        : 'AI is in first-fill mode for an existing empty Page. Create a complete sections array from the blueprint and block plan.',
+      hasLockedTargetLayout
+        ? 'Do not add, remove, reorder, or rename sections. Do not change any section block_type. Do not change any existing section variant.'
+        : 'Keep the existing route_path, page_kind, and template_variant, but you may add the sections needed for a complete page.',
       'Do not create a new route, new page kind, new template, breadcrumbs, sticky CTA, floating CTA, or custom layout.',
       'The render target is the existing page_v2 renderer and page-v2 primitives only. Legacy templates are visual references only, not a renderer choice.',
-      'Use the target page structure exactly as the layout source; the JSON sections array must match target_page.sections by count, order, block_type, and variant.',
+      hasLockedTargetLayout
+        ? 'Use the target page structure exactly as the layout source; the JSON sections array must match target_page.sections by count, order, block_type, and variant.'
+        : 'Use the blueprint composition standard and AI block plan as the layout source; the target page has no sections yet.',
       'Make the result suitable for editorial review: concrete, useful, and free of invented facts.',
       'If the prompt lacks exact facts, use careful wording and leave room for a human editor to refine the page.',
       'The JSON must contain: title, route_path, seo_title, seo_description, nav_group, nav_label, nav_description, sections, breadcrumbs, internal_links.',
@@ -603,7 +610,7 @@ export function buildPrompts(job) {
       'When using multiple cards-grid sections, set variant to explain the role: problems, pillars, editorial, integrations, stack, or use_cases. Do not return one generic cards-grid for the whole page.',
       'Hero sections should include 3-4 short trust_facts when the page standard asks for them, so the family layout hero has content on both sides.',
       'Do not use unsupported array names such as features, advantages, scenarios, process, workflow, questions, or faqs unless you also put the same content into the exact items/links field for that section.',
-      'Do not invent numeric claims, 24/7 claims, profit/growth claims, medical outcomes, prices, integrations, or guarantees unless the request or entity context explicitly provides them.',
+      'Do not invent numeric claims, trial periods, 24/7 claims, profit/growth claims, medical outcomes, prices, integrations, or guarantees unless the request or entity context explicitly provides them.',
       'For campaign, brand, and resource pages, keep the same original family page density and section order from the selected target Page.',
       'If the prompt needs a catalog entity that was not supplied in Entity context, add it only under proposed_entities. Do not put invented entities directly into page relations.',
       'If the request says not to add proposed_entities or not to create new catalog entities, return proposed_entities as an empty object.',
@@ -618,7 +625,9 @@ export function buildPrompts(job) {
         ? [
             'Target page to refine:',
             JSON.stringify(targetPageContext, null, 2),
-            'Locked-layout rules: keep the same route_path, page_kind, template_variant, section count, section order, block_type, and variant. Rewrite the content inside those sections only. If a section currently has too little text, fill that same section instead of adding a new one.',
+            hasLockedTargetLayout
+              ? 'Locked-layout rules: keep the same route_path, page_kind, template_variant, section count, section order, block_type, and variant. Rewrite the content inside those sections only. If a section currently has too little text, fill that same section instead of adding a new one.'
+              : 'First-fill rules: keep the same route_path, page_kind, and template_variant. Create sections for this existing empty Page using the blueprint composition standard and block plan.',
           ].join('\n')
         : 'Target page to refine: missing. This job is invalid because free page creation is disabled.',
       `CHATPLUS page composition standard:\n${formatAiPageCompositionStandardForPrompt(blueprint)}`,
@@ -681,6 +690,9 @@ async function generateValidatedPageDraft({
   let lastErrors = [];
   let lastAiDraft = null;
   let lastEntityReview = null;
+  let lastContentWarnings = [];
+  const targetPageContext = getTargetPageContext(job);
+  const hasLockedTargetLayout = Array.isArray(targetPageContext?.sections) && targetPageContext.sections.length > 0;
 
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     const repairPrompt = lastErrors.length
@@ -688,7 +700,10 @@ async function generateValidatedPageDraft({
           baseUserPrompt,
           'The previous JSON draft was rejected by validation.',
           `Validation errors: ${lastErrors.join(' ')}`,
-          'Return a corrected full JSON object. Keep the exact target page layout: same section count, same order, same block_type values, same variants. Remove every unsupported marketing claim. Do not say 24/7, round-the-clock, always online, constant availability, exact setup time, "a few seconds", implementation time, profit growth, sales growth, guarantees, prices, tariffs, or cost unless the human prompt explicitly provides them. Use cautious wording such as "helps organize requests", "keeps message history visible", "lets a human review the response", and "can be configured during onboarding". Keep visible item arrays non-empty.',
+          hasLockedTargetLayout
+            ? 'Return a corrected full JSON object. Keep the exact target page layout: same section count, same order, same block_type values, same variants.'
+            : 'Return a corrected full JSON object. Keep the existing route_path/page_kind/template_variant, but build a complete sections array from the blueprint.',
+          'Remove every unsupported marketing claim. Do not say 24/7, round-the-clock, always online, constant availability, exact setup time, "a few seconds", implementation time, trial periods like "14 days free", profit growth, sales growth, guarantees, prices, tariffs, or cost unless the human prompt explicitly provides them. Use cautious wording such as "helps organize requests", "keeps message history visible", "lets a human review the response", and "can be configured during onboarding". Keep visible item arrays non-empty.',
         ].join('\n\n')
       : baseUserPrompt;
 
@@ -708,26 +723,33 @@ async function generateValidatedPageDraft({
       blockPlan,
     });
     const contentValidation = validateVisiblePageV2DraftContent(pageDraft.data);
+    const hardContentErrors = contentValidation.errors.filter((error) => !isEditorialClaimWarning(error));
 
     lastAiDraft = aiDraft;
     lastEntityReview = entityReview;
+    lastContentWarnings = contentValidation.errors.filter((error) => isEditorialClaimWarning(error));
 
-    if (contentValidation.ok) {
+    if (hardContentErrors.length === 0) {
       return {
         aiDraft,
         entityReview,
         pageDraft,
         validationAttempts: attempt,
+        contentWarnings: lastContentWarnings,
       };
     }
 
-    lastErrors = contentValidation.errors;
+    lastErrors = hardContentErrors;
   }
 
   throw new Error(
     `AI draft failed visible content validation after 3 attempt(s): ${lastErrors.join(' ')}`,
     { cause: { aiDraft: lastAiDraft, entityReview: lastEntityReview } },
   );
+}
+
+function isEditorialClaimWarning(error = '') {
+  return `${error}`.startsWith('Unsupported AI claim detected:');
 }
 
 function buildEntityReviewReport({ job = {}, entityReview, model = '', dryRun = false }) {
@@ -790,6 +812,7 @@ async function processJob(job, existingRoutes, blueprintMap, existingEntitiesByF
       entityReview,
       pageDraft: validatedPageDraft,
       validationAttempts,
+      contentWarnings,
     } = await generateValidatedPageDraft({
       job,
       existingRoutes,
@@ -846,13 +869,15 @@ async function processJob(job, existingRoutes, blueprintMap, existingEntitiesByF
         })
       : validatedPageDraft;
     const finalContentValidation = validateVisiblePageV2DraftContent(pageDraft.data);
-    if (!finalContentValidation.ok) {
-      throw new Error(`AI draft failed visible content validation after entity relation mapping: ${finalContentValidation.errors.join(' ')}`);
+    const finalHardContentErrors = finalContentValidation.errors.filter((error) => !isEditorialClaimWarning(error));
+    const finalContentWarnings = finalContentValidation.errors.filter((error) => isEditorialClaimWarning(error));
+    if (finalHardContentErrors.length > 0) {
+      throw new Error(`AI draft failed visible content validation after entity relation mapping: ${finalHardContentErrors.join(' ')}`);
     }
     const report = buildGenerationReport({
       job: jobForDraft,
       pageDraft,
-      warnings: [...entityReview.warnings, ...pageDraft.warnings],
+      warnings: [...entityReview.warnings, ...pageDraft.warnings, ...(contentWarnings || []), ...finalContentWarnings],
       model: AI_CHAT_CONFIG.model,
       dryRun,
       blockPlan,

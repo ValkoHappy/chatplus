@@ -88,7 +88,9 @@ function runGeneratorForJob(jobKey: string) {
     let stderr = '';
     const timeout = setTimeout(() => {
       child.kill('SIGTERM');
-      reject(new Error('AI generation timed out after 180 seconds.'));
+      const error = new Error('AI generation timed out after 180 seconds.');
+      (error as any).status = 504;
+      reject(error);
     }, 180_000);
 
     child.stdout.on('data', (chunk) => {
@@ -108,7 +110,9 @@ function runGeneratorForJob(jobKey: string) {
         return;
       }
 
-      reject(new Error(`AI generation failed with exit code ${code}: ${stderr || stdout}`));
+      const error = new Error(`AI generation failed with exit code ${code}: ${stderr || stdout}`);
+      (error as any).status = 400;
+      reject(error);
     });
   });
 }

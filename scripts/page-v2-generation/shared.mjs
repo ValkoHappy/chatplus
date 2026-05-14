@@ -643,6 +643,10 @@ export function validateLockedPageV2Layout(targetSections = [], nextSections = [
   };
 }
 
+function hasLockedTargetLayout(targetPageContext = null) {
+  return asArray(targetPageContext?.sections).length > 0;
+}
+
 function normalizeFaqItem(item = {}) {
   const question = asString(item.question) || asString(item.title) || asString(item.heading) || asString(item.q);
   const answer = asString(item.answer)
@@ -1070,7 +1074,7 @@ export function normalizeGeneratedPageV2Draft({ job = {}, aiDraft = {}, existing
     .map((section) => normalizeSection(section))
     .filter(Boolean);
 
-  if (targetPageContext) {
+  if (hasLockedTargetLayout(targetPageContext)) {
     const targetSignature = getPageV2LayoutSignature(targetPageContext.sections);
     sections.forEach((section, index) => {
       const expectedVariant = targetSignature[index]?.variant || '';

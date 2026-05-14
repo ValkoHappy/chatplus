@@ -603,6 +603,41 @@ test('normalizeGeneratedPageV2Draft rejects AI attempts to change selected page 
   );
 });
 
+test('normalizeGeneratedPageV2Draft lets AI first-fill an empty selected page', () => {
+  const normalized = normalizeGeneratedPageV2Draft({
+    job: {
+      id: 193,
+      title: 'First fill empty page',
+      job_type: 'manual_request',
+      target_blueprint: 'landing',
+      request_prompt: 'Create a complete landing page.',
+      target_page: {
+        id: 94,
+        documentId: 'empty-page-doc',
+        title: 'Empty landing',
+        route_path: '/test-ai-page',
+        page_kind: 'landing',
+        template_variant: 'default',
+        sections: [],
+      },
+    },
+    aiDraft: {
+      title: 'Filled landing',
+      route_path: '/changed-by-ai',
+      sections: [
+        { block_type: 'hero', title: 'Hero', subtitle: 'Subtitle' },
+        { block_type: 'final-cta', title: 'CTA', text: 'Talk to us', primary_url: '/demo' },
+      ],
+    },
+    existingRoutes: ['/test-ai-page'],
+  });
+
+  assert.equal(normalized.data.route_path, '/test-ai-page');
+  assert.equal(normalized.data.sections.length, 2);
+  assert.equal(normalized.data.sections[0].__component, 'page-blocks.hero');
+  assert.equal(normalized.data.sections[1].__component, 'page-blocks.final-cta');
+});
+
 test('normalizeGeneratedPageV2Draft keeps target page variants and accepts its real section family', () => {
   const normalized = normalizeGeneratedPageV2Draft({
     job: {
