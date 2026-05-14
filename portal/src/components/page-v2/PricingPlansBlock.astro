@@ -25,7 +25,7 @@ const toHref = (href?: string) => withBasePath(href);
                 {item.icon && <Icon name={item.icon} />}
                 <span>{item.label || item.title}</span>
               </div>
-              {item.accent && <span class="pagev2-pricing-badge">Popular</span>}
+              {item.accent && <span class="pagev2-pricing-badge">Популярный</span>}
             </div>
 
             {item.kicker && <p class="pagev2-pricing-kicker">{item.kicker}</p>}
@@ -179,13 +179,18 @@ const toHref = (href?: string) => withBasePath(href);
     align-items: center;
     justify-content: center;
     min-height: 46px;
+    width: 100%;
     margin-top: 1.1rem;
+    padding: .75rem 1.15rem;
     border-radius: 12px;
     border: 1px solid #cbd5e1;
     background: #fff;
     color: #0f172a;
     text-decoration: none;
+    text-align: center;
     font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
   }
 
   .pagev2-pricing-cta--accent {

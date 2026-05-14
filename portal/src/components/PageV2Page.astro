@@ -64,8 +64,12 @@ const pageKindBreadcrumbMap: Record<string, { label: string; href: string }> = {
   comparison: { label: 'Сравнения', href: '/site-map' },
 };
 
+const navGroupBreadcrumbMap: Record<string, { label: string; href: string }> = {
+  special: { label: 'Спецразделы', href: '/site-map' },
+};
+
 const cleanLabel = (value?: string) => `${value || ''}`.trim();
-const pageKindBreadcrumb = pageKindBreadcrumbMap[page.page_kind || ''] || pageKindBreadcrumbMap[page.nav_group || ''];
+const pageKindBreadcrumb = navGroupBreadcrumbMap[page.nav_group || ''] || pageKindBreadcrumbMap[page.page_kind || ''];
 const parentBreadcrumb = page.parent_page?.route_path
   ? {
       label: cleanLabel(page.parent_page.nav_label || page.parent_page.title),

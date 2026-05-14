@@ -2251,6 +2251,54 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLeadRequestLeadRequest extends Struct.CollectionTypeSchema {
+  collectionName: 'lead_requests';
+  info: {
+    description: '\u0417\u0430\u044F\u0432\u043A\u0438 \u0441 \u043F\u0443\u0431\u043B\u0438\u0447\u043D\u043E\u0439 \u0444\u043E\u0440\u043C\u044B \u0441\u0430\u0439\u0442\u0430. \u0420\u0435\u0434\u0430\u043A\u0442\u043E\u0440 \u0441\u043C\u043E\u0442\u0440\u0438\u0442 \u0438\u0445 \u0437\u0434\u0435\u0441\u044C, \u0444\u043E\u0440\u043C\u0443 \u043D\u0430 \u0441\u0430\u0439\u0442\u0435 \u043D\u0430\u0441\u0442\u0440\u0430\u0438\u0432\u0430\u0435\u0442 \u0432 Site Settings.';
+    displayName: 'Lead Request';
+    pluralName: 'lead-requests';
+    singularName: 'lead-request';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    company: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email;
+    form_id: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::lead-request.lead-request'
+    > &
+      Schema.Attribute.Private;
+    message: Schema.Attribute.Text;
+    name: Schema.Attribute.String;
+    payload: Schema.Attribute.JSON;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    referrer: Schema.Attribute.Text;
+    source_path: Schema.Attribute.String;
+    source_query: Schema.Attribute.Text;
+    source_title: Schema.Attribute.String;
+    source_url: Schema.Attribute.Text;
+    status: Schema.Attribute.Enumeration<
+      ['new', 'in_progress', 'done', 'spam']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'new'>;
+    submitted_at: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user_agent: Schema.Attribute.Text;
+    utm: Schema.Attribute.JSON;
+  };
+}
+
 export interface ApiPageBlueprintPageBlueprint
   extends Struct.CollectionTypeSchema {
   collectionName: 'page_blueprints';
@@ -2547,6 +2595,11 @@ export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
     header_cta_label: Schema.Attribute.String;
     header_cta_url: Schema.Attribute.String;
     header_links: Schema.Attribute.JSON;
+    lead_form_fields: Schema.Attribute.Component<'forms.lead-field', true>;
+    lead_form_intro: Schema.Attribute.Text;
+    lead_form_submit_label: Schema.Attribute.String;
+    lead_form_success_text: Schema.Attribute.Text;
+    lead_form_title: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -3482,6 +3535,7 @@ declare module '@strapi/strapi' {
       'api::industry.industry': ApiIndustryIndustry;
       'api::integration.integration': ApiIntegrationIntegration;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::lead-request.lead-request': ApiLeadRequestLeadRequest;
       'api::page-blueprint.page-blueprint': ApiPageBlueprintPageBlueprint;
       'api::page-v2.page-v2': ApiPageV2PageV2;
       'api::page-version.page-version': ApiPageVersionPageVersion;

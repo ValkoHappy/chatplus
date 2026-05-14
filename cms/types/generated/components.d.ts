@@ -1,5 +1,27 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface FormsLeadField extends Struct.ComponentSchema {
+  collectionName: 'components_forms_lead_fields';
+  info: {
+    description: '\u041F\u043E\u043B\u0435 \u0444\u043E\u0440\u043C\u044B \u0437\u0430\u044F\u0432\u043A\u0438: \u0447\u0442\u043E \u043F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C \u043F\u043E\u0441\u0435\u0442\u0438\u0442\u0435\u043B\u044E \u0438 \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E \u043B\u0438 \u0437\u0430\u043F\u043E\u043B\u043D\u044F\u0442\u044C.';
+    displayName: 'Lead Form Field';
+  };
+  attributes: {
+    help_text: Schema.Attribute.String;
+    key: Schema.Attribute.UID & Schema.Attribute.Required;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+    options: Schema.Attribute.JSON;
+    placeholder: Schema.Attribute.String;
+    required: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    sort_order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<100>;
+    type: Schema.Attribute.Enumeration<
+      ['text', 'email', 'tel', 'textarea', 'select', 'checkbox']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'text'>;
+  };
+}
+
 export interface PageBlocksBeforeAfter extends Struct.ComponentSchema {
   collectionName: 'components_page_blocks_before_afters';
   info: {
@@ -422,6 +444,7 @@ export interface TendersUseCaseItem extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'forms.lead-field': FormsLeadField;
       'page-blocks.before-after': PageBlocksBeforeAfter;
       'page-blocks.card-item': PageBlocksCardItem;
       'page-blocks.cards-grid': PageBlocksCardsGrid;

@@ -866,13 +866,18 @@ const yandexMetrikaOptions = JSON.stringify({
       }
 
       .mobile-nav-panel {
-        position: absolute;
-        top: calc(100% + .55rem);
+        position: fixed;
+        top: calc(72px + .55rem);
         left: .95rem;
         right: .95rem;
-        z-index: 120;
+        z-index: 210;
         display: grid;
         gap: 1rem;
+        max-height: calc(100dvh - 72px - 1.55rem);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-gutter: stable;
         padding: 1rem;
         border: 1px solid var(--border-main);
         border-radius: 22px;
@@ -983,6 +988,8 @@ const yandexMetrikaOptions = JSON.stringify({
       .mobile-nav-panel {
         left: .7rem;
         right: .7rem;
+        top: calc(62px + .55rem);
+        max-height: calc(100dvh - 62px - 1.25rem);
         padding: .85rem;
       }
 
@@ -1431,6 +1438,9 @@ const yandexMetrikaOptions = JSON.stringify({
 
       document.querySelectorAll('main section').forEach(function (section, index) {
         if (index === 0) return;
+        if (section.scrollHeight > window.innerHeight * 1.5) {
+          return;
+        }
         section.style.opacity = '0';
         section.style.transform = 'translateY(28px)';
         section.style.transition = 'opacity 0.65s ease, transform 0.65s ease';
