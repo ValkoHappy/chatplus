@@ -57,10 +57,11 @@ CHATPLUS сейчас строится вокруг модели **Strapi-first*
 7. [Контракты шаблонов](template-contracts.md)
 8. [Миграция маршрутов](managed-route-migration.md)
 9. [Гайд оператора](operator-guide.md)
-10. [Смена домена production](domain-change-guide.md)
-11. [Подготовка сайта к поиску, Метрике и рекламе](search-ads-analytics-setup.md)
-12. [Перенос на Railway](railway-migration-guide.md)
-13. [Production handoff](manual-first-production-handoff.md)
+10. [Перенос новых страниц и изменение стилей](page-transfer-and-style-change-runbook.md)
+11. [Смена домена production](domain-change-guide.md)
+12. [Подготовка сайта к поиску, Метрике и рекламе](search-ads-analytics-setup.md)
+13. [Перенос на Railway](railway-migration-guide.md)
+14. [Production handoff](manual-first-production-handoff.md)
 
 Главное правило для разработки: не переписывать старую страницу в generic `PageV2Page`, если у неё есть legacy family. Старый URL должен сохранять свой family-renderer, а `page_v2` становится владельцем контента и метаданных.
 

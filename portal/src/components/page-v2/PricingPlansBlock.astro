@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { safeIconName } from '../../lib/icons';
 import { withBasePath } from '../../lib/urls';
 
 const { section } = Astro.props as { section: Record<string, any> };
@@ -22,7 +23,7 @@ const toHref = (href?: string) => withBasePath(href);
           <article class:list={['pagev2-pricing-card', item.accent && 'pagev2-pricing-card--accent']}>
             <div class="pagev2-pricing-card__top">
               <div class="pagev2-pricing-chip">
-                {item.icon && <Icon name={item.icon} />}
+                {item.icon && <Icon name={safeIconName(item.icon)} />}
                 <span>{item.label || item.title}</span>
               </div>
               {item.accent && <span class="pagev2-pricing-badge">Популярный</span>}

@@ -1,5 +1,7 @@
 type UnknownRecord = Record<string, any>;
 
+const ALLOWED_ICON_SETS = new Set(['lucide', 'simple-icons']);
+
 export type LegacyPageFamily =
   | 'home'
   | 'campaign'
@@ -37,7 +39,8 @@ function publicLabel(value: unknown, fallback = '') {
 function safeIcon(value: unknown, fallback = '') {
   const icon = asString(value).trim();
   if (!icon) return fallback;
-  return icon.includes(':') ? icon : fallback;
+  const [set, name] = icon.split(':');
+  return set && name && ALLOWED_ICON_SETS.has(set) ? icon : fallback;
 }
 
 function asArray<T = unknown>(value: unknown) {

@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { safeIconName } from '../../lib/icons';
 import { withBasePath } from '../../lib/urls';
 
 type BreadcrumbItem = {
@@ -81,7 +82,7 @@ const hasPanel = panelItems.length > 0 || section.context_title || section.conte
                 <div class="pagev2-hero__panel-head">
                   {item.icon && (
                     <span class="pagev2-hero__panel-icon">
-                      <Icon name={item.icon} />
+                      <Icon name={safeIconName(item.icon)} />
                     </span>
                   )}
                   <div>

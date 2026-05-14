@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { safeIconName } from '../../lib/icons';
 import { withBasePath } from '../../lib/urls';
 import BlockHeader from './BlockHeader.astro';
 
@@ -69,7 +70,7 @@ const cardClass = [
           <a href={withBasePath(item.href)} class={cardClass}>
             {showIcons && (
               <div class="block-card__icon">
-                <Icon name={item.icon} />
+                <Icon name={safeIconName(item.icon)} />
               </div>
             )}
             <div>

@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { safeIconName } from '../../lib/icons';
 
 const { section } = Astro.props as { section: Record<string, any> };
 const items = Array.isArray(section.items) ? section.items : [];
@@ -21,7 +22,7 @@ const variant = section.variant || 'default';
             <div class="pagev2-card__head">
               {item.icon ? (
                 <span class="pagev2-card__icon">
-                  <Icon name={item.icon} />
+                  <Icon name={safeIconName(item.icon)} />
                 </span>
               ) : (
                 <span class="pagev2-card__eyebrow">{item.eyebrow || String(index + 1).padStart(2, '0')}</span>

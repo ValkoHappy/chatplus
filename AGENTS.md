@@ -12,6 +12,7 @@
 4. `docs/strapi-editor-handbook.md`, если задача касается Strapi-контента
 5. `docs/rendering-safety-map.md`, если задача касается страниц, route, renderer family, блоков, верстки или шаблонов
 6. `docs/unified-block-system-plan.md`, если задача касается блоков, верстки или шаблонов
+7. `docs/page-transfer-and-style-change-runbook.md`, если задача касается новой страницы, переноса Strapi-контента на сервер или правки стилей
 
 ## Главное правило проекта
 

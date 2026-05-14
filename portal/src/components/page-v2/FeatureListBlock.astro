@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { safeIconName } from '../../lib/icons';
 
 const { section } = Astro.props as { section: Record<string, any> };
 const items = Array.isArray(section.items) ? section.items : [];
@@ -18,7 +19,7 @@ const items = Array.isArray(section.items) ? section.items : [];
         {items.map((item) => (
           <article class="pagev2-feature">
             <div class="pagev2-feature__bullet">
-              {item.icon ? <Icon name={item.icon} /> : null}
+              {item.icon ? <Icon name={safeIconName(item.icon)} /> : null}
             </div>
             <div>
               {item.eyebrow && <span class="pagev2-feature__eyebrow">{item.eyebrow}</span>}
