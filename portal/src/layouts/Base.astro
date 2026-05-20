@@ -1120,7 +1120,7 @@ const yandexMetrikaOptions = JSON.stringify({
           <button type="button" class="lead-modal__close" data-lead-close aria-label="Закрыть">&times;</button>
         </div>
         <form id="global-lead-form" class="lead-form" data-lead-form data-analytics-location="lead_modal">
-          <input class="lead-form__honeypot" type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" />
+          <input class="lead-form__honeypot" type="text" name="lead_company_site" autocomplete="new-password" tabindex="-1" aria-hidden="true" />
           {leadFormFields.map((field) => (
             <div class="lead-form__field">
               {field.type === 'checkbox' ? (
@@ -1337,7 +1337,7 @@ const yandexMetrikaOptions = JSON.stringify({
               source_path: window.location.pathname,
               source_title: document.title,
               attribution: getAttribution(),
-              website: String(formData.get('website') || ''),
+              website: '',
               fields,
             }),
           });

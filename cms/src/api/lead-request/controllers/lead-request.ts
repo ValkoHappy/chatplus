@@ -70,13 +70,16 @@ function getClientIp(ctx: any) {
 export default factories.createCoreController(LEAD_REQUEST_UID, ({ strapi }) => ({
   async submit(ctx) {
     const body = asRecord(ctx.request?.body);
+    const submittedFields = asRecord(body.fields);
     const honeypot = asString(body.website);
-    if (honeypot) {
+    if (honeypot && Object.keys(submittedFields).length === 0) {
       ctx.body = { ok: true };
       return;
     }
+    if (honeypot) {
+      strapi.log.warn('lead_request.submit received legacy honeypot value; continuing to avoid dropping real leads');
+    }
 
-    const submittedFields = asRecord(body.fields);
     const settings = await strapi.documents(SITE_SETTING_UID).findFirst({
       status: 'published',
       populate: ['lead_form_fields'],
