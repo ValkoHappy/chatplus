@@ -181,6 +181,7 @@ services:
     volumes:
       - ./nginx/templates/public-site.conf.template:/etc/nginx/templates/public-site.conf.template:ro
       - ./nginx/templates/cms-site.conf.template:/etc/nginx/templates/cms-site.conf.template:ro
+      - ./nginx/templates/legacy-domain-redirect.conf.template:/etc/nginx/templates/legacy-domain-redirect.conf.template:ro
       - ./nginx/snippets:/etc/nginx/snippets:ro
       - ./data/letsencrypt:/etc/letsencrypt
       - ./data/certbot-webroot:/var/www/certbot
