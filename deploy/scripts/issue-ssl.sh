@@ -44,20 +44,21 @@ create_dummy_cert "${CMS_DOMAIN}"
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --build postgres strapi content-relay nginx
 
-# Remove bootstrap-only dummy certificate paths before asking certbot to create
-# the real Let's Encrypt material in the same location.
-rm -rf \
-  "${LETSENCRYPT_DIR}/live/${PUBLIC_DOMAIN}" \
-  "${LETSENCRYPT_DIR}/live/${CMS_DOMAIN}"
+# Keep the bootstrap-only dummy certificates in place while Certbot runs.
+# Nginx must stay online on port 80 for the webroot challenge. Certbot writes
+# the real certificate under a separate name, then we point both domains to it.
+CERT_NAME="${PUBLIC_DOMAIN}-le"
 
 CERTBOT_ARGS=(
   certonly
   --webroot
   -w /var/www/certbot
+  --cert-name "${CERT_NAME}"
   -d "${PUBLIC_DOMAIN}"
   -d "${CMS_DOMAIN}"
   --agree-tos
   --keep-until-expiring
+  --non-interactive
 )
 
 if [[ -n "${LETSENCRYPT_EMAIL:-}" ]]; then
@@ -69,10 +70,10 @@ fi
 
 docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" run --rm certbot "${CERTBOT_ARGS[@]}"
 
-PRIMARY_CERT_DIR="$(find "${LETSENCRYPT_DIR}/live" -maxdepth 1 -mindepth 1 -type d -name "${PUBLIC_DOMAIN}*" | sort | tail -n 1)"
+PRIMARY_CERT_DIR="${LETSENCRYPT_DIR}/live/${CERT_NAME}"
 
-if [[ -z "${PRIMARY_CERT_DIR}" ]]; then
-  echo "Could not find issued certificate directory for ${PUBLIC_DOMAIN} in ${LETSENCRYPT_DIR}/live."
+if [[ ! -f "${PRIMARY_CERT_DIR}/fullchain.pem" || ! -f "${PRIMARY_CERT_DIR}/privkey.pem" ]]; then
+  echo "Could not find issued certificate files for ${CERT_NAME} in ${PRIMARY_CERT_DIR}."
   exit 1
 fi
 
@@ -81,7 +82,7 @@ for domain in "${PUBLIC_DOMAIN}" "${CMS_DOMAIN}"; do
 
   if [[ "${TARGET_DIR}" != "${PRIMARY_CERT_DIR}" ]]; then
     rm -rf "${TARGET_DIR}"
-    ln -s "$(basename "${PRIMARY_CERT_DIR}")" "${TARGET_DIR}"
+    ln -s "${CERT_NAME}" "${TARGET_DIR}"
   fi
 done
 
